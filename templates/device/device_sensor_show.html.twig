@@ -1,0 +1,324 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+{{ parent() }}
+    <script>
+
+      //
+      //   $('.toggle').click(function() { /* BLOCK TOGGLE */
+      //     $(this).toggleClass('show');
+      //     $(this).parent().parent().children('.block_cont').slideToggle(300);
+      //     $(this).parent().toggleClass('show');
+      //     return false;
+      //   });
+      //
+      //   $('.hide_btn').click(function() { /* ALERT HIDE */
+      //     $(this).parent().fadeOut(300);
+      //     return false;
+      //   });
+      //
+      //   setInterval(function() {
+      //     /////////////////////////// DATA
+      //     $.getJSON(page_url + 'device_details/logger_' + device_id + '/' + sensor + '/data_feed.json', {troll:Math.random()}, function(dadata, s, r) {
+      //       if (r.getResponseHeader('Requires-Auth') == 1) {
+      //         $(location).attr('href', page_url);
+      //         return false;
+      //       }
+      //       $.each(dadata, function(i, bdata) {
+      //         if (i.match(/^\w+_value$|^device_date$/)) {
+      //           if ($('#'+i).html() != bdata) {
+      //             $('#'+i).fadeOut(300, function() {
+      //               $(this).html(bdata).fadeIn(300);
+      //             });
+      //           }
+      //         }
+      //         /*else if (i.match(/^\w+_image$/)) {
+      //             if (bdata == 'disabled') {
+      //               if ($('#'+i+' img').length) {
+      //                   $('#'+i+' img').fadeOut(300, function() { $(this).remove(); });
+      //               }
+      //             }
+      //             else if ($('#'+i+' img').attr('src') != bdata) {
+      //               $('#'+i).addClass('detimage_zombie');
+      //               if ($('#'+i+' img').length) {
+      //                   $('#'+i+' img').fadeOut(300, function() {
+      //                       $(this).remove();
+      //                       var img = new Image();
+      //                       $(img).load(function() {
+      //                           $(this).hide();
+      //                           $('#'+i).removeClass('detimage_zombie').append(this);
+      //                           $(this).fadeIn(600);
+      //                       }).attr('src', bdata);
+      //                   });
+      //               }
+      //               else {
+      //                   var img = new Image();
+      //                   $(img).load(function() {
+      //                       $(this).hide();
+      //                       $('#'+i).removeClass('detimage_zombie').append(this);
+      //                       $(this).fadeIn(600);
+      //                   }).attr('src', bdata);
+      //               }
+      //             }
+      //         }*/
+      //       });
+      //     });
+      //     /////////////////
+      //     /////////////////////////// ALARMS
+      //     var notif = '';
+      //     var arridalarm = [];
+      //     $.getJSON(page_url + 'device_details/logger_' + device_id + '/' + sensor + '/alarm_feed.json', {troll:Math.random()}, function(jadata, s, r) {
+      //       if (r.getResponseHeader('Requires-Auth') == 1) {
+      //         $(location).attr('href', page_url);
+      //         return false;
+      //       }
+      //       $.each(jadata, function(i, adata) {
+      //         arridalarm[adata.id] = 1;
+      //         if (!$('#notifications #' + adata.id).length){
+      //           notif =
+      //             '<div id="'+ adata.id +'" class="error grid_12">\
+      //                       <h3>'+ adata.type +' aktivan na '+ adata.sensor +'!</h3>\
+      //                       <!-- Notification ID '+ adata.id +' -->\
+      //                   </div>';
+      //           $(notif).appendTo('#notifications').fadeIn(300).corner('5px');
+      //         }
+      //       });
+      //       $('#notifications').children().each(function() {
+      //         if (!arridalarm[$(this).attr('id')]){
+      //           $(this).fadeOut(300, function() { $(this).remove(); });
+      //         }
+      //       });
+      //     });
+      //     /////////////////
+      //   },60000);
+      //
+      //   $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+      //   $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+      //   $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+      //   $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+      //
+      //   $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+      //   $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+      //   $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+      //   $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+      // });
+
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/stock.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+      $(document).ready(function() {
+        const rangeSelector = {
+          buttons: [{
+            type: 'day',
+            count: 3,
+            text: '3d'
+          }, {
+            type: 'week',
+            count: 1,
+            text: '1w'
+          }, {
+            type: 'month',
+            count: 1,
+            text: '1m'
+          }, {
+            type: 'month',
+            count: 6,
+            text: '6m'
+          }, {
+            type: 'year',
+            count: 1,
+            text: '1y'
+          }, {
+            type: 'all',
+            text: 'All'
+          }],
+          selected: 5
+        };
+
+        function render(containerId, type, title) {
+          (async () => {
+            let navigationSeries;
+            const data = await fetch(
+              '{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry}) }}?type=' + type
+            ).then(response => response.json());
+
+            if (type === "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}") {
+              navigationSeries = {
+                data: data.t,
+                name: 'Temperatura'
+              };
+              series = [{
+                name: 'Temperatura',
+                data: data.t
+              }, {
+                name: 'MKT',
+                data: data.mkt
+              }];
+
+              yAxisText = "{{ device.getEntryData(entry).t_unit }}"
+            } else {
+              navigationSeries = {
+                name: 'Vlaznost',
+                data: data.rh
+              };
+              series = [{
+                name: 'Vlaznost',
+                data: data.rh
+              }]
+
+              yAxisText = "{{ device.getEntryData(entry).rh_unit }}"
+            }
+
+            Highcharts.stockChart(containerId, {
+              chart: {
+                zoomType: 'x'
+              },
+              navigator: {
+                adaptToUpdatedData: false,
+                series: navigationSeries
+              },
+              rangeSelector: rangeSelector,
+              title: {
+                text: title,
+                align: 'left'
+              },
+              subtitle: {
+                text: document.ontouchstart === undefined ?
+                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in',
+                align: 'left'
+              },
+              scrollbar: {
+                liveRedraw: false
+              },
+              xAxis: {
+                events: {
+                  afterSetExtremes:
+                    function(e) {
+                      let min = Math.floor(e.min / 1000);
+                      let max = Math.floor(e.max / 1000);
+
+                      let chart = $('#'+containerId).highcharts();
+                      chart.showLoading('Učitavam...');
+                      $.getJSON("{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry }) }}?type=" + type + "&fromDate=" + min + "&toDate=" + max,
+                        function(data) {
+                          if (data.t) {
+                            chart.series[0].setData(data.t);
+                            chart.series[1].setData(data.mkt);
+                          } else {
+                            chart.series[0].setData(data.rh);
+                          }
+                          chart.hideLoading();
+                        });
+                    }
+                },
+                minRange: 3600 * 1000 // one hour
+              },
+              yAxis: {
+                title: {
+                  text: yAxisText
+                }
+              },
+              legend: {
+                enabled: false
+              },
+              plotOptions: {
+                area: {
+                  fillColor: {
+                    linearGradient: {
+                      x1: 0,
+                      y1: 0,
+                      x2: 0,
+                      y2: 1
+                    },
+                    stops: [
+                      [0, Highcharts.getOptions().colors[0]],
+                      [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                  },
+                  marker: {
+                    radius: 2
+                  },
+                  lineWidth: 1,
+                  states: {
+                    hover: {
+                      lineWidth: 1
+                    }
+                  },
+                  threshold: null
+                }
+              },
+
+              series: series,
+              tooltip: {
+                valueDecimals: 2,
+                valueSuffix: yAxisText
+              },
+              dataGrouping: {
+                enabled: false
+              }
+            });
+          })();
+        }
+
+        if (document.getElementById('container_t')) {
+          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}");
+        }
+
+        if (document.getElementById('container_rh')) {
+          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).rh_name }}");
+        }
+      })
+
+
+    </script>
+{% endblock %}
+
+{% block navigation %}
+    <li><a href="{{ path('app_devicedataarchive_read', {id: device.id, entry: entry}) }}" class="icon_save">Arhiva</a></li>
+    <li><a href="{{ path('app_device_export', {id: device.id, entry:entry }) }}" class="icon_xls">Izvoz podataka</a></li>
+    <li><a href="{{ path('app_alarm_list', {id: device.id}) }}" class="icon_time">Lista alarma</a></li>
+    <li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+        {% if device.entryData(entry).t_show_chart %}
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+
+            <div class="block_cont" style="padding:4px;">
+                <div style="margin-bottom:10px;">
+                    <div id="container_t"></div>
+                </div>
+            </div>
+        </div><!-- Block End -->
+        {% endif %}
+
+        {% if device.entryData(entry).rh_show_chart %}
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+
+            <div class="block_cont" style="padding:4px;">
+                <div style="margin-bottom:10px;">
+                    <div id="container_rh"></div>
+                </div>
+            </div>
+        </div><!-- Block End -->
+        {% endif %}
+
+
+        <div class="clear"></div>
+        <div class="clear"></div>
+    </div>
+{% endblock %}

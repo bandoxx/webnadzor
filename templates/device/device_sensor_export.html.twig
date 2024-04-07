@@ -1,0 +1,185 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+{{ parent() }}
+    <script>
+      $(document).ready(function() {
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        $('#preview').click(function() { /* PREVIEW DATA */
+          $('#exportform').attr('action', "{{ path('app_device_export', {id: device.id, entry:entry}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val())
+            .submit();
+        });
+
+        $('#xls').click(function() { /* DOWNLOAD XLS */
+          $('#exportform').attr('action', "{{ path('app_device_export', {id: device.id, entry:entry}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=xlsx")
+            .submit();
+        });
+
+        $('#pdf').click(function() { /* DOWNLOAD XLS */
+          $('#exportform').attr('action', "{{ path('app_device_export', {id: device.id, entry:entry}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=pdf")
+            .submit();
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $('.dateinput').datepicker({
+          'dateFormat': 'dd.mm.yy.',
+          'constrainInput': true
+        });
+
+        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        var oTable = $('#table').dataTable({
+          pageLength: 10,
+          language: {
+            search: "Pretraga",
+            loading: "Ucitavanje...",
+            lengthMenu: '_MENU_ broj prikaza',
+            emptyTable: 'Prazna tablica',
+            info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+            infoEmpty: '',
+            infoFiltered: '(filtrirano od _MAX_ rezultata)',
+          },
+          columns: [
+            {
+              data: 'id',
+              orderable: false
+            }, {
+              data: 'date',
+              orderable: false
+            }, {
+              data: 'note',
+              orderable: false
+            }, {
+              data: 'temp',
+              orderable: false
+            }, {
+              data: 'max',
+              orderable: false
+            }, {
+              data: 'min',
+              orderable: false
+            }, {
+              data: 'avrg',
+              orderable: false
+            }, {
+              data: 'rh',
+              orderable: false
+            }
+          ],
+          columnDefs: [
+            { className: 'dt-center', targets: '_all' }
+          ],
+        }); /* DATA TABLES */
+
+        var editor = new DataTable.Editor({
+          ajax: '/something',
+          fields: [
+            {
+              label: 'Note',
+              name: 'note'
+            }
+          ],
+          table: '#table'
+        });
+
+        $('#table').on('click', '.note', function (e) {
+          editor.inline(this);
+        });
+        // oTable.makeEditable({
+        //   sUpdateURL: page_url + 'data_export/logger_' + device_id + '/' + sensor + '/note',
+        //   fnShowError: function (message, a) {alert(message);},
+        //   sReadOnlyCellClass: 'read_only'
+        // });
+
+      });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #date_from, #date_to {
+            background: transparent;
+        }
+    </style>
+{% endblock %}
+
+{% block navigation %}
+    <li><a href="#" id="preview" class="icon_target">Prikaži</a></li>
+    <li><a href="#" id="xls" class="icon_xls">Preuzmi excel</a></li>
+    <li><a href="#" id="pdf" class="icon_pdf">Preuzmi PDF</a></li>
+    <li><a href="{{ path('app_device_entry_show', {id: device.id, entry:entry}) }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block userbar %}
+<div id="infoarea"><!-- Infoarea Begin -->
+    <div id="infomsg">
+        <form id="exportform" class="form" action="{{ app.request.getBaseURL() }}" method="POST"><!-- Header Search Begin -->
+            <div class="datediv"><input value="{{ date_to|date('d.m.Y') }}" type="text" id="date_to" name="date_to" class="dateinput tipLeft" placeholder="Kraj dat." original-title="Odaberite krajnji datum za izvoz podataka" /></div>
+            <div class="datediv" style="margin-right:10px;"><input value="{{ date_from|date('d.m.Y') }}" type="text" id="date_from" name="date_from" class="dateinput tipLeft" placeholder="Start dat." original-title="Odaberite početni datum za izvoz podataka" /></div>
+        </form>
+    </div>
+</div><!-- Infoarea End -->
+{% endblock %}
+{% block content %}
+    <div id="body">
+        <div class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Izvoz podataka za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}</h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding: 4px;">
+                <table id="table" class="display compact hover"><!-- Table Wrapper Begin -->
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th colspan="5">{{ device.getEntryData(entry).t_name }}</th>
+                        </tr>
+                        <tr>
+                            <th>BR.</th>
+                            <th>DATUM</th>
+                            <th>NAPOMENA</th>
+                            <th>TREN.</th>
+                            <th>MAKS.</th>
+                            <th>MIN.</th>
+                            <th>MKT</th>
+                            <th>VL.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for data in table_data %}
+                        <tr>
+                            <td></td>
+                            <td>{{ data.date }}</td>
+                            <td class="note">{{ data.note }}</td>
+                            <td>{{ data.temp }}</td>
+                            <td>{{ data.max }}</td>
+                            <td>{{ data.min }}</td>
+                            <td>{{ data.avrg }}</td>
+                            <td>{{ data.rh }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table><!-- Table Wrapper End -->
+            </div>
+        </div><!-- Block End -->
+    </div>
+{% endblock %}

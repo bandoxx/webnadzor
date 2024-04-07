@@ -1,0 +1,156 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Client name{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="{{ asset('assets/js/intelteh/overview.js') }}"></script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"></script>
+{% endblock %}
+{% block body %}
+    {{ parent() }}
+    <div id="delete-confirm" title="Obriši podatke ili obriši lokaciju?" style="display:none;">
+        <p style="border: 1px solid transparent; padding: 0.3em;">Molimo budite pažljivi, podaci će biti trajno
+            izbrisani.</p>
+        <p style="border: 1px solid transparent; padding: 0.3em;"><strong>Lokacija:</strong> <span
+                    id="del_device_name"></span></p>
+        <form id="delform" class="form" action="{{ app.request.getBaseURL() }}" method="POST">
+            <fieldset>
+                <div class="form_row radioui">
+                    <label style="display:block; margin-top:12px;">Odaberite opciju</label>
+                    <input type="radio" id="r4" name="del_action" class="radio validate[required]"
+                           value="empty_data"/><label for="r4">Obriši podatke</label>
+                    <input type="radio" id="r5" name="del_action" class="radio validate[required]"
+                           value="delete_device"/><label for="r5">Obriši lokaciju</label>
+                </div>
+                <div class="form_row">
+                    <label for="del_password" style="display:block; margin-top:12px;">Trenutna zaporka</label>
+                    <input type="password" name="del_password" id="del_password"
+                           class="input text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="add-form" title="Dodaj novu lokaciju" style="display:none;">
+        <p style="border: 1px solid transparent; padding: 0.3em;">Naziv XML datoteke mora biti jedinstven za svaku
+            lokaciju.</p>
+        <form id="addform" class="form" action="{{ app.request.getBaseURL() }}" method="POST">
+            <fieldset>
+                <div class="form_row">
+                    <label for="xml_name" style="display:block; margin-top:12px;">Naziv XML datoteke</label>
+                    <input type="text" name="xml_name" id="xml_name"
+                           class="input text ui-widget-content ui-corner-all validate[required,maxSize[18],ajax[ajax_xmlnameadd]]"
+                           style="display:block; width:95%; padding: .4em;"/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+{% endblock %}
+
+    {% block navigation %}
+        {% if app.user.permission > 3 %}
+            <li><a href="#" id="device_add" class="icon_plus">Dodaj lokaciju</a></li>
+            <li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+        {% endif %}
+    {% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+        <div class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Pregled mjernih uredjaja</h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding: 4px;">
+                <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
+                    <div class="data-table-top"></div>
+                    <div class="clear"></div>
+                        <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
+                            Obrađujem...
+                        </div>
+                        <table id="otable" class="display compact hover"><!-- Table Wrapper Begin -->
+                            <thead>
+                            <tr role="row">
+                                <th>Br.</th>
+                                <th>Lokacija</th>
+                                <th>Status</th>
+                                <th>Alarm</th>
+                                <th>Signal</th>
+                                <th>Napon b.</th>
+                                <th>Stanje b.</th>
+                                <th>Opcije</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% set style = 'odd' %}
+                            {% for device in devices_table %}
+                                <tr class="{{ style }}">
+                                    <td>{{ device.id }}</td>
+                                    <td>{{ device.name }}</td>
+                                    <td>
+                                        {% if device.online %}
+                                            <span class="green">Online</span>
+                                        {% else %}
+                                            <span class="red">Offline</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if device.alarm %}
+                                            <span class="red">Aktivan</span>
+                                        {% else %}
+                                            <span class="green">Nije aktivan</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><span class="{% if device.signal < 30 %}red{% else %}green{% endif %}">{{ device.signal }}%</span></td>
+                                    <td><span class="{% if device.power < 2.7 %}red{% else %}green{% endif %}">{{ device.power }}V</span></td>
+                                    <td><span class="{% if device.battery < 30 %}red{% else %}green{% endif %}">{{ device.battery }}%</span></td>
+                                    <td>
+                                        <div style="height: 3px;">&nbsp;</div>
+                                        <div id="{{ device.id }}" data-devnam="{{ device.name }}" class="actionbar">
+                                            <a href="{{ path('app_device_edit', {id: device.id}) }}" class="action edit">
+                                                <span>Uredi</span>
+                                            </a>
+                                            <a href="#" class="action delete"><span>Obriši</span></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% if style == 'odd' %}
+                                    {% set style = 'even' %}
+                                {% else %}
+                                    {% set style = 'odd' %}
+                                {% endif %}
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    <div class="clear"></div>
+                    <div class="data-table-bottom"></div>
+                    <div class="clear"></div>
+                </div><!-- Table Wrapper End -->
+            </div>
+        </div><!-- Block End -->
+    </div>
+{% endblock %}
+
+{% block bottom_javascripts %}
+    {{ parent() }}
+
+    <script>
+      $(document).ready(function () {
+        $('#myTable').DataTable({
+          scrollY: true,
+          scroller: {
+            rowHeight: 10
+          }
+        });
+      });
+    </script>
+
+{% endblock %}

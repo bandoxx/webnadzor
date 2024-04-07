@@ -1,0 +1,425 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+      $(document).ready(function() {
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        var delete_parent, delete_id, delete_username = '';
+        $('.delete').click(function() { /* DELETE USER */
+          delete_parent = $(this).parent();
+          delete_id = $(delete_parent).attr('id');
+
+          $('#del_username').html($(delete_parent).data('username'));
+
+          $('#delete-confirm').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Obriši korisnika': function() {
+                $.post(page_url + 'users/delete', {user_id:delete_id,troll:Math.random()}, function(deldata, s, r) {
+                  if (r.getResponseHeader('Requires-Auth') == 1) {
+                    $(location).attr('href', page_url);
+                    return false;
+                  }
+                  if (deldata == 'ok') {
+                    $(location).attr('href', page_url + 'users');
+                  }
+                  else {
+                    alert('Greška! Molimo pokušajte ponovo');
+                    console.log('error data: ' + deldata);
+                  }
+                });
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#del_username').html('');
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
+
+        var adedit;
+        // $('#editform').validationEngine('attach', {
+        //   onValidationComplete: function(form, status){
+        //     var form_data = $('#editform').serialize();
+        //     if (status === true) {
+        //       adedit = [];
+        //       $('#newallowed_devices').multiselect('getChecked').each(function() {
+        //         adedit.push($(this).val());
+        //       })
+        //       adedit = adedit.join(',');
+        //       $.post(page_url + 'users/edit', $.param({troll:Math.random(),
+        //         user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
+        //         if (data == 'ok') {
+        //           $(location).attr('href', page_url + 'users');
+        //         }
+        //         else {
+        //           alert('Greška! Molimo pokušajte ponovo');
+        //           console.log('response data: ' + data);
+        //         }
+        //       });
+        //
+        //     }
+        //   }
+        // });/* VALIDATION ENGINE */
+
+        var edit_parent, edit_id, edit_username, edit_permissions, edit_ad = '';
+        $('div.actionbar a.edit').click(function() { /* EDIT ICON */
+
+          edit_parent = $(this).parent();
+
+          edit_id = $(edit_parent).attr('id');
+          edit_username = $(edit_parent).data('username');
+          edit_permissions = $(edit_parent).data('permissions');
+          edit_ad = $(edit_parent).data('ad').split(',');
+
+          $('#edit-form').attr('title', 'Editing user - "' + edit_username + '"');
+
+          if (edit_permissions == 1) {
+            $('#r4').prop('checked', true).button('refresh');
+
+            $('#newallowed_devices').multiselect('enable');
+            find('input[name="multiselect_newallowed_devices"]').each(function(){
+				$(this).prop('checked', true);
+                if ($.inArray($(this).val(), edit_ad)) {
+                    $(this).prop('checked', true);
+                }
+            });
+            $('#newallowed_devices').multiselect('refresh');//.multiselect('disable');
+          }
+          else if (edit_permissions == 2) {
+            $('#r5').prop('checked', true).button('refresh');
+          }
+          else if (edit_permissions == 3) {
+            $('#r6').prop('checked', true).button('refresh');
+          }
+
+          $('#c1').click(function(){
+            if ($('#c1').is(':checked')) {
+              $('#editform input[type=password]').removeAttr('disabled');
+            }
+            else {
+              $('#editform input[type=password]').attr('disabled', 'disabled');
+            }
+          });
+          $('#c2').click(function(){
+            if ($('#c2').is(':checked')) {
+              $('#editform input[type=radio]').button('enable');
+              if (edit_permissions == 1) {
+                $widget.multiselect('enable');
+              }
+            }
+            else {
+              $('#editform input[type=radio]').button('disable');
+              $widget.multiselect('disable');
+            }
+          });
+          $('#editform input[type=radio]').click(function(){
+            if ($('#r4').is(':checked')) {
+              $widget.multiselect('enable');
+            }
+            else {
+              $widget.multiselect('disable');
+            }
+          });
+          $('#edit-form').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Spremi promjene': function() {
+                $('#editform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#editform').validationEngine('hideAll');
+              $('#editform input[type=password]').val('').attr('disabled', 'disabled');
+              $('#editform label').removeClass('ui-state-active');
+              $('#editform input[type=radio]').button('disable');
+              $widget.multiselect('uncheckAll');
+              $widget.multiselect('disable')
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
+
+        var locations;
+        $('#addform').validationEngine('attach', {
+          onValidationComplete: function(form, status){
+            var form_data = $('#addform').serialize();
+            if (status === true) {
+              locations = [];
+              $('#allowed_devices').multiselect('getChecked').each(function() {
+                locations.push($(this).val());
+              })
+              locations = locations.join(',');
+              $.post("{{ path('app_user_createuser') }}", $.param({troll:Math.random(),locations:locations}) + "&" + form_data, function(data, s, r) {
+                console.log(r);
+                if (r.getResponseHeader('Requires-Auth') == 1) {
+                  $(location).attr('href', page_url);
+                  return false;
+                }
+                if (r.status === 201) {
+                  $(location).attr('href', "{{ path('app_user_getusers') }}");
+                }
+                else {
+                  alert('Greška! Molimo pokušajte ponovo');
+                  console.log('response data: ' + data);
+                }
+              });
+
+            }
+          }
+        });/* VALIDATION ENGINE */
+
+        $('#useradd').click(function() { /* ADD USER */
+          $('#addform input[type=radio]').click(function(){
+            if ($('#r1').is(':checked')) {
+              $widget.multiselect('enable');
+            }
+            else {
+              $widget.multiselect('disable');
+            }
+          });
+          $('#add-form').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Kreiraj korisnika': function() {
+                $('#addform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#addform').validationEngine('hideAll');
+              $('#addform input[type=text], input[type=password]').val('');
+              $('#addform label').removeClass('ui-state-active');
+              $widget.multiselect('uncheckAll').multiselect('disable');
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
+
+        $('.radioui').buttonset();
+        var $widget = $(".multiselect").multiselect({header: false, selectedList: 1});	/* MULTIPLE SELECT */
+        $widget.multiselect('uncheckAll');
+        $widget.multiselect('disable');
+
+        $(".select").multiselect({multiple: false, header: false, selectedList: 1});	/* SELECT */
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $("a.fancy").fancybox(); /* FANCYBOX CLASS */
+
+        $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('.data-table').dataTable({
+          'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
+          'bJQueryUI': true,
+          'bPaginate': false,
+          'bInfo': false,
+          'bFilter': false,
+          'aoColumnDefs': [{
+            bSortable: false, aTargets: ['sorting_disabled']
+          }],
+          'fnDrawCallback': function(oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+              for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
+                $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i+1);
+              }
+            }
+          }
+        }); /* DATA TABLES */
+
+      });
+    </script>
+{% endblock %}
+
+{% block navigation %}
+<li><a href="#" id="useradd" class="icon_plus">Dodaj korisnika</a></li>
+<li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block content %}
+    <div id="delete-confirm" title="Obriši korisnika?" style="display:none;">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Korisnik &quot;<span id="del_username"></span>&quot; biti će trajno obrisan. Jeste li sigurni?
+        </p>
+    </div>
+    <div id="add-form" title="Dodaj korisnika" style="display:none;">
+        <p style="border: 1px solid transparent; padding: 0.3em;">Username must be unique.</p>
+        <form id="addform" class="form" action="{{ path('app_user_createuser') }}" method="POST">
+            <fieldset>
+                <div class="form_row">
+                    <label for="username" style="display:block; margin-top:12px;">Korisničko ime</label>
+                    <input type="text" name="username" id="username" class="input validate[required,minSize[6],maxSize[18],ajax[ajax_username]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                </div>
+                <div class="form_row">
+                    <label for="password" style="display:block; margin-top:12px;">Zaporka</label>
+                    <input type="password" name="password" id="password" class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                </div>
+                <div class="form_row">
+                    <label for="password_again" style="display:block; margin-top:12px;">Zaporka (ponoviti)</label>
+                    <input type="password" name="password_again" id="password_again" class="input validate[required,equals[password]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                </div>
+                <div class="form_row radioui">
+                    <input type="radio" id="r1" name="permissions" class="radio validate[required]" value="1"/><label for="r1">Korisnik</label>
+                    <input type="radio" id="r2" name="permissions" class="radio validate[required]" value="2"/><label for="r2">Moderator</label>
+                    <input type="radio" id="r3" name="permissions" class="radio validate[required]" value="3"/><label for="r3">Admin</label>
+                </div>
+                <div class="form_row">
+                    <label for="allowed_devices">Dozvoljene lokacije</label>
+                    <select id="allowed_devices" name="" class="multiselect" style="width: 270px;">
+                        {% for key, location in client_locations %}
+                            <option value="{{ key }}">{{ location.name }} - {{ location.location }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div id="edit-form" title="" style="display:none;">
+        <form id="editform" class="form" action="{url}" method="POST">
+            <fieldset>
+                <div class="form_row radioui" style="margin-top:10px;">
+                    <input type="checkbox" id="c1" name="change_password" value="1"/><label for="c1">Promjeni zaporku</label>
+                </div>
+                <div class="form_row">
+                    <label for="password" style="display:block; margin-top:12px;">Nova zaporka</label>
+                    <input type="password" name="password" id="newpassword" class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
+                </div>
+                <div class="form_row">
+                    <label for="password_again" style="display:block; margin-top:12px;">Zaporka (ponoviti)</label>
+                    <input type="password" name="password_again" id="newpassword_again" class="input validate[required,equals[newpassword]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
+                </div>
+                <div class="form_row radioui" style="margin-top:25px;">
+                    <input type="checkbox" id="c2" name="change_permissions" value="1"/><label for="c2">Promjeni dozvole</label>
+                </div>
+                <div class="form_row radioui">
+                    <input type="radio" id="r4" name="permissions" class="radio validate[required]" value="1" disabled="disabled"/><label for="r4">Korisnik</label>
+                    <input type="radio" id="r5" name="permissions" class="radio validate[required]" value="2" disabled="disabled"/><label for="r5">Moderator</label>
+                    <input type="radio" id="r6" name="permissions" class="radio validate[required]" value="3" disabled="disabled"/><label for="r6">Admin</label>
+                </div>
+                <div class="form_row">
+                    <label for="allowed_devices">Dozvoljene lokacije</label>
+                    <select id="newallowed_devices" name="" class="multiselect" style="width: 270px;">
+                        {% for key, location in client_locations %}
+                            <option value="{{ key }}">{{ location.name }} - {{ location.location }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+    <div class="block big"><!-- Block Begin -->
+        <div class="titlebar">
+            <h3>Popis korisnika</h3>
+            <a href="#" class="toggle">&nbsp;</a>
+        </div>
+        <div class="block_cont" style="padding: 4px;">
+            <table class="data-table display compact hover"><!-- Table Wrapper Begin -->
+                <thead>
+                <tr>
+                    <th width="40" class="sorting_disabled">Br.</th>
+                    <th>Kor. ime</th>
+                    <th>Dozvole</th>
+                    <th class="sorting_disabled">Dozvoljene lokacije</th>
+                    <th width="80" class="sorting_disabled">Opcije</th>
+                </tr>
+                </thead>
+                <tbody role="alert" aria-live="polite" aria-relevant="all">
+                {% set style = 'odd' %}
+                {% for user in users %}
+                    <tr class="{{ style }}">
+                        <td class=" sorting_1">{{ user.id }}</td>
+                        <td class="">{{ user.username }}</td>
+                        <td class="">{{ user.permissionName }}</td>
+                        <td class="">
+                            {% if user.permission == 1 %}
+                            <select class="select">
+                                {% for location in user.availableLocations %}
+                                    <option value="">{{ location.name }} - {{ location.location }}</option>
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                                Sve
+                            {% endif %}
+                        </td>
+                        <td class="">
+                            <div style="height: 3px;">&nbsp;</div>
+                            <div id="{{ user.id }}"
+                                 data-username="{{ user.username }}"
+                                 data-permissions="{{ user.permission }}"
+                                 data-ad="" class="actionbar">
+                                <a href="#" class="action edit"><span>Uredi</span></a>
+                                <a href="#" class="action delete"><span>Obriši</span></a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% if style == 'odd' %}
+                        {% set style = 'even' %}
+                    {% else %}
+                        {% set style = 'odd' %}
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table><!-- Table Wrapper End -->
+        </div>
+    </div><!-- Block End -->
+{% endblock %}
