@@ -21,14 +21,15 @@ class DeviceDataImport
     {
         $devices = $pdo->query('SELECT * FROM `config_ldevices`')->fetchAll(\PDO::FETCH_OBJ);
 
-        $this->importDeviceIcons($pdo);
+        $this->importDeviceIcons($pdo, $client);
 
         foreach ($devices as $deviceData) {
-            $client = $this->entityManager->getRepository(Client::class)->find($client->getId());
-
             echo sprintf("Importing %s \r\n", $deviceData->device_name);
 
-            $device = $this->importDevice($deviceData, $client);
+            $client = $this->entityManager->getRepository(Client::class)->find($client->getId());
+            $alarmData = $pdo->query(sprintf("SELECT * FROM `config_idevices` WHERE id = %s", $deviceData->id))->fetch(\PDO::FETCH_OBJ);
+
+            $device = $this->importDevice($deviceData, $client, $alarmData);
 
             $this->importDeviceData($pdo, $device->getId());
             $this->importArchiveDaily($pdo, $device->getId());
@@ -37,7 +38,7 @@ class DeviceDataImport
         }
     }
 
-    private function importDevice($deviceData, $client)
+    private function importDevice($deviceData, $client, $alarmData)
     {
         $device = new Device();
         $device->setName($deviceData->device_name)
@@ -50,13 +51,13 @@ class DeviceDataImport
         ;
 
         $device->setEntry1([
-            't_location' => $deviceData->t1_location ?? null,
+            't_location' => $deviceData->t1_location ?? $deviceData->device_name ?? null,
             't_name' => $deviceData->t1_name,
             't_unit' => $deviceData->t1_unit,
             't_image' => $deviceData->t1_image,
             't_show_chart' => $deviceData->t1_show_chart,
-            't_min' => $deviceData->t1_min ?? null,
-            't_max' => $deviceData->t1_max ?? null,
+            't_min' => $deviceData->t1_min ?? $alarmData->A1L ? ($alarmData->A1L - 1) / 100 : null,
+            't_max' => $deviceData->t1_max ?? $alarmData->A1H ? ($alarmData->A1H - 1) / 100 : null,
             'rh_name' => $deviceData->rh1_name,
             'rh_unit' => $deviceData->rh1_unit,
             'rh_image' => $deviceData->rh1_image,
@@ -74,13 +75,13 @@ class DeviceDataImport
         ]);
 
         $device->setEntry2([
-            't_location' => $deviceData->t2_location ?? null,
+            't_location' => $deviceData->t2_location ?? $deviceData->device_name ?? null,
             't_name' => $deviceData->t2_name,
             't_unit' => $deviceData->t2_unit,
             't_image' => $deviceData->t2_image,
             't_show_chart' => $deviceData->t2_show_chart,
-            't_min' => $deviceData->t2_min ?? null,
-            't_max' => $deviceData->t2_max ?? null,
+            't_min' => $deviceData->t2_min ?? $alarmData->A2L ? ($alarmData->A2L - 1) / 100 : null,
+            't_max' => $deviceData->t2_max ?? $alarmData->A2H ? ($alarmData->A2H - 1) / 100 : null,
             'rh_name' => $deviceData->rh2_name,
             'rh_unit' => $deviceData->rh2_unit,
             'rh_image' => $deviceData->rh2_image,
@@ -267,7 +268,7 @@ class DeviceDataImport
         $this->entityManager->clear();
     }
 
-    private function importDeviceIcons(\PDO $pdo)
+    private function importDeviceIcons(\PDO $pdo, Client $client)
     {
         $query = sprintf("SELECT * FROM `config_icons`");
 
@@ -278,6 +279,7 @@ class DeviceDataImport
 
             $icon->setFilename($data->filename)
                 ->setTitle($data->title)
+                ->setClient($client)
             ;
 
             $this->entityManager->persist($icon);

@@ -43,9 +43,6 @@ class DeviceController extends AbstractController
             }
         }
 
-        if ($error) {
-            dd($error);
-        }
         return $this->render('device/edit.html.twig', [
             'device' => $device,
             'icons' => $icons,

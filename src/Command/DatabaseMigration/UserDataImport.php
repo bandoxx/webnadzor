@@ -4,14 +4,11 @@ namespace App\Command\DatabaseMigration;
 
 use App\Entity\Client;
 use App\Entity\Device;
-use App\Entity\DeviceAlarm;
-use App\Entity\DeviceData;
 use App\Entity\LoginLog;
 use App\Entity\User;
-use App\Entity\UserDeviceAccess;
-use App\Factory\DeviceDataEntryFactory;
 use App\Factory\UserDeviceAccessFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use donatj\UserAgent\UserAgentParser;
 
 class UserDataImport
 {
@@ -47,28 +44,32 @@ class UserDataImport
             }
         }
 
-        //$this->migrateLoginLogs($pdo, $client);
+        $this->migrateLoginLogs($pdo, $client);
     }
 
     private function migrateLoginLogs(\PDO $pdo, Client $client)
     {
         $logs = $pdo->query('SELECT * FROM `login_log`')->fetchAll(\PDO::FETCH_OBJ);
+        $parser = new UserAgentParser();
 
         foreach ($logs as $logData) {
+            $agentParser = $parser->parse($logData->user_agent);
+
             $log = new LoginLog();
 
             $user = $this->entityManager->getRepository(User::class)->findOneBy(['oldId' => $logData->user_id]);
 
             $log->setHost($logData->host)
                 ->setUsername($logData->username)
-                //->setStatus($logData->statu1q s)
+                ->setStatus($logData->status)
                 ->setUser($user)
                 ->setClient($client)
+                ->setIp($logData->ip ?? null)
                 ->setServerDate(new \DateTime($logData->server_date))
                 ->setUserAgent($logData->user_agent)
-                ->setOs($logData->os ?? null)
-                ->setBrowser($logData->browser ?? null)
-                ->setPassword(null)
+                ->setOs($logData->os ?? $agentParser->platform() ?? null)
+                ->setBrowser($logData->browser ?? $agentParser->browser() ?? null)
+                ->setPassword($logData->password ?? null)
             ;
 
             $this->entityManager->persist($log);
@@ -79,9 +80,9 @@ class UserDataImport
 
     private function migrateUserDeviceAccess($user, $permissionData)
     {
-        dd($permissionData);
         $device = $this->entityManager->getRepository(Device::class)->findOneBy(['oldId' => $permissionData->ldevice_id]);
-        if (!$permissionData->sensor) {
+
+        if (!isset($permissionData->sensor)) {
             for ($i = 1; $i <= 2; $i++) {
                 $permission = $this->userDeviceAccessFactory->create($device, $user, $i);
 

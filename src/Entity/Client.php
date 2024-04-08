@@ -36,6 +36,12 @@ class Client
     #[ORM\OneToMany(targetEntity: LoginLog::class, mappedBy: 'client')]
     private Collection $loginLogs;
 
+    #[ORM\Column]
+    private bool $mapActive = false;
+
+    #[ORM\Column]
+    private bool $temperatureActive = false;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -239,6 +245,30 @@ class Client
                 $loginLog->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isMapActive(): ?bool
+    {
+        return $this->mapActive;
+    }
+
+    public function setMapActive(bool $mapActive): static
+    {
+        $this->mapActive = $mapActive;
+
+        return $this;
+    }
+
+    public function isTemperatureActive(): ?bool
+    {
+        return $this->temperatureActive;
+    }
+
+    public function setTemperatureActive(bool $temperatureActive): static
+    {
+        $this->temperatureActive = $temperatureActive;
 
         return $this;
     }

@@ -51,7 +51,7 @@ class MigrateDatabases extends Command
             $client = $this->migrateClient($pdo, $databaseName);
             $clientId = $client->getId();
 
-            //$this->deviceDataImport->import($pdo, $client);
+            $this->deviceDataImport->import($pdo, $client);
 
             $client = $this->entityManager->getRepository(Client::class)->find($clientId);
 
