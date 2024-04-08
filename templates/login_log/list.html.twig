@@ -1,6 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block javascripts %}
+  {{ parent() }}
 <script>
   $(document).ready(function() {
 
@@ -62,22 +63,20 @@
 
     $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
     $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-    $('.data-table').dataTable({
-      'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
-      'bJQueryUI': true,
-      'bPaginate': false,
-      'bInfo': false,
-      'bFilter': false,
-      'aoColumnDefs': [{
-        bSortable: false, aTargets: ['sorting_disabled']
-      }],
-      'fnDrawCallback': function(oSettings) {
-        if (oSettings.bSorted || oSettings.bFiltered) {
-          for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
-            $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i+1);
-          }
-        }
-      }
+    var otable = $('#login_log_table').dataTable({
+      pageLength: 50,
+      language: {
+        search: "Pretraga",
+        loading: "Ucitavanje...",
+        lengthMenu: '_MENU_ broj prikaza',
+        emptyTable: 'Prazna tablica',
+        info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+        infoEmpty: '',
+        infoFiltered: '(filtrirano od _MAX_ rezultata)',
+      },
+      columnDefs: [
+        { className: 'dt-center', targets: '_all' }
+      ],
     }); /* DATA TABLES */
 
   });
@@ -90,5 +89,61 @@
 {% endblock %}
 
 {% block content %}
+  <div class="block big"><!-- Block Begin -->
+    <div class="titlebar">
+      <h3>PREGLED MJERNIH MJESTA</h3>
+      <a href="#" class="toggle">&nbsp;</a>
+    </div>
+    <div class="block_cont" style="padding: 4px;">
+      <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
+        <div class="data-table-top"></div>
+        <div class="clear"></div>
+        <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
+          Obrađujem...
+        </div>
+        <table id="login_log_table" class="display hover"><!-- Table Wrapper Begin -->
+          <thead>
+          <tr role="row">
+            <th>Datum</th>
+            <th>Status</th>
+            <th>Korisnicko ime</th>
+            <th>IP Adresa</th>
+            <th>Preglednik</th>
+            <th>OS</th>
+          </tr>
+          </thead>
 
+          <tbody role="alert" aria-live="polite" aria-relevant="all">
+          {% set style = 'odd' %}
+          {% for log in logs %}
+            <tr class="{{ style }}">
+              <td class="">{{ log.serverDate|date('d.m.Y H:i:s') }}</td>
+              <td class="">
+                {% if log.status == 1%}
+                  <span class="green">PR. OK</span>
+                {% elseif log.status == 2 %}
+                  <span class="red">GR. KOR.</span>
+                {% else %}
+                  <span class="red">GR. ZAP</span>
+                {% endif %}
+              </td>
+              <td class="">{{ log.username }}</td>
+              <td class="">{{ log.ip|long2ip }}</td>
+              <td class="">{{ log.browser }}</td>
+              <td class="">{{ log.os }}</td>
+            </tr>
+            {% if style == 'odd' %}
+              {% set style = 'even' %}
+            {% else %}
+              {% set style = 'odd' %}
+            {% endif %}
+          {% endfor %}
+          </tbody>
+        </table>
+        <div class="clear"></div>
+        <div class="data-table-bottom"></div>
+        <div class="clear"></div>
+      </div><!-- Table Wrapper End -->
+    </div>
+  </div><!-- Block End -->
 {% endblock %}

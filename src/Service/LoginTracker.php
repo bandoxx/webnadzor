@@ -15,15 +15,15 @@ class LoginTracker
     {
     }
 
-    public function log(Request $request, bool $successLogin): void
+    public function log(Request $request, bool $successfulLogin = true): void
     {
         $user = $this->userRepository->findOneByUsername($request->request->get('username'));
 
-        if (!$user) {
-            throw new BadRequestException("User not found");
+        if (!$user || !$successfulLogin) {
+            $log = $this->loginLogFactory->badLogin($request, $user);
+        } else {
+            $log = $this->loginLogFactory->create($request, $user);
         }
-
-        $log = $this->loginLogFactory->create($request, $user);
 
         $this->entityManager->persist($log);
         $this->entityManager->flush();

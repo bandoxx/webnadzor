@@ -9,6 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: LoginLogRepository::class)]
 class LoginLog
 {
+    public const STATUS_OK = 1;
+    public const STATUS_WRONG_USERNAME = 2;
+    public const STATUS_WRONG_PASSWORD = 3;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
