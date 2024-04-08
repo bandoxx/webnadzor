@@ -5,19 +5,12 @@ namespace App\Command;
 use App\Command\DatabaseMigration\DeviceDataImport;
 use App\Command\DatabaseMigration\UserDataImport;
 use App\Entity\Client;
-use App\Entity\ClientInfo;
-use App\Entity\Device;
-use App\Entity\DeviceData;
-use App\Factory\DeviceDataEntryFactory;
-use App\Factory\DeviceDataFactory;
+use App\Entity\ClientFtp;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:migrate-database',
@@ -71,14 +64,14 @@ class MigrateDatabases extends Command
             return $client;
         }
 
-        $clientInfo = new ClientInfo();
-        $clientInfo->setClient($client)
+        $clientFtp = new ClientFtp();
+        $clientFtp->setClient($client)
             ->setHost($info->host)
             ->setUsername($info->username)
             ->setPassword($info->password)
         ;
 
-        $this->entityManager->persist($clientInfo);
+        $this->entityManager->persist($clientFtp);
         $this->entityManager->flush();
 
         return $client;

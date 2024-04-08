@@ -3,18 +3,16 @@
 namespace App\Command;
 
 use App\Factory\DeviceDataFactory;
+use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:parse-xmls',
-    description: 'Add a short description for your command',
+    description: 'Parse XMLs and insert into database',
 )]
 class ParseXmlsCommand extends Command
 {
@@ -24,6 +22,7 @@ class ParseXmlsCommand extends Command
 
     public function __construct(
         private DeviceDataFactory $deviceDataFactory,
+        private DeviceRepository $deviceRepository,
         private EntityManagerInterface $entityManager
     )
     {
@@ -36,14 +35,22 @@ class ParseXmlsCommand extends Command
         $xmls = array_diff(scandir($xmlDirectoryPath), ['.', '..']);
 
         foreach ($xmls as $fileName) {
+            $xmlPath = sprintf("%s/%s", $xmlDirectoryPath, $fileName);
 
-            for ($i = 0; $i < 100; $i++) {
-                $xmlPath = sprintf("%s/%s", $xmlDirectoryPath, $fileName);
-                $deviceData = $this->deviceDataFactory->createFromXml($xmlPath);
+            $device = $this->deviceRepository->findOneBy(['xmlFile' => $fileName]);
 
-                $this->entityManager->persist($deviceData);
-                $this->entityManager->flush();
+            if (!$device) {
+                // xml doesn't exist in our database
             }
+
+            if ($device->isParserActive() === false) {
+                continue;
+            }
+
+            $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
+
+            $this->entityManager->persist($deviceData);
+            $this->entityManager->flush();
         }
 
 

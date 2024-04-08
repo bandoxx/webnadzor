@@ -2,21 +2,17 @@
 
 namespace App\Factory;
 
+use App\Entity\Device;
 use App\Entity\DeviceData;
-use App\Repository\DeviceRepository;
 use App\Service\XmlParser\ParserTemperatureChecker;
 
 class DeviceDataFactory
 {
-    public function __construct(private DeviceRepository $repository) {}
-
-    public function createFromXml(string $filePath): ?DeviceData
+    public function createFromXml(Device $device, string $filePath): ?DeviceData
     {
-        $device = $this->repository->findOneBy(['xmlFile' => $filePath]);
+        $xmlData = @file_get_contents($filePath);
 
-        $xml_data = @file_get_contents($filePath);
-
-        if ($xml = @simplexml_load_string($xml_data)) {
+        if ($xml = @simplexml_load_string($xmlData)) {
 
             //unlink($filePath); remove a file
 

@@ -26,7 +26,7 @@ class GarbageCollectorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $this->garbageCollector->cleanLoginList();
+        $this->garbageCollector->clean();
 
         return Command::SUCCESS;
     }

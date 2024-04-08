@@ -240,7 +240,7 @@
         {% if app.user.permission > 3 %}
             <li><a href="{{ path('app_device_list') }}" class="icon_square">Mjerni uređaji</a></li>
             <li><a href="{{ path('app_icon_index') }}" class="icon_pictures">Uredi ikone</a></li>
-            <li><a href="{{ path('app_clientinfo_read') }}" class="icon_bookmark">FTP podaci</a></li>
+            <li><a href="{{ path('app_clientftp_read') }}" class="icon_bookmark">FTP podaci</a></li>
         {% endif %}
 
         {% if app.user.permission > 2 %}

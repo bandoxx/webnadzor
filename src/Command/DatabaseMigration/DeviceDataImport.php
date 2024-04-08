@@ -8,7 +8,7 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceData;
 use App\Entity\DeviceDataArchive;
 use App\Entity\DeviceIcon;
-use App\Factory\DeviceDataEntryFactory;
+use App\Model\AlarmType;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DeviceDataImport
@@ -257,8 +257,8 @@ class DeviceDataImport
                 ->setServerDate(new \DateTime($data->server_date))
                 ->setEndServerDate($data->end_server_date ? new \DateTime($data->end_server_date) : null)
                 ->setEndDeviceDate($data->end_device_date ? new \DateTime($data->end_device_date) : null)
-                ->setSensor($data->sensor)
-                ->setType($data->type)
+                ->setType($data->type === 'p' ? AlarmType::BATTERY_LEVEL : $data->type)
+                ->setIsNotified(true)
             ;
 
             $this->entityManager->persist($alarm);

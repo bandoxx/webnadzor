@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Repository\DeviceAlarmRepository;
 use App\Repository\LoginLogRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -10,15 +11,33 @@ class DatabaseGarbageCollector
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private LoginLogRepository $loginLogRepository
+        private LoginLogRepository $loginLogRepository,
+        private DeviceAlarmRepository $deviceAlarmRepository
     )
-    {
+    {}
 
+    public function clean(): void
+    {
+        $this->cleanLoginList();
+        $this->cleanAlarmList();
     }
 
-    public function cleanLoginList(): void
+    private function cleanAlarmList(): void
     {
-        $records = $this->loginLogRepository->findOlderThen6Months();
+        $records = $this->deviceAlarmRepository->findOlderThen(6);
+
+        $this->remove($records);
+    }
+
+    private function cleanLoginList(): void
+    {
+        $records = $this->loginLogRepository->findOlderThen(6);
+
+        $this->remove($records);
+    }
+
+    private function remove($records): void
+    {
         $bulk = 500;
         $i = 0;
         foreach ($records as $record) {

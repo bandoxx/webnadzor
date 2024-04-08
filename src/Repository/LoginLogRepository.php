@@ -21,11 +21,11 @@ class LoginLogRepository extends ServiceEntityRepository
         parent::__construct($registry, LoginLog::class);
     }
 
-    public function findOlderThen6Months()
+    public function findOlderThen($months)
     {
         return $this->createQueryBuilder('ll')
             ->where('ll.serverDate < :date')
-            ->setParameter('date', new \DateTime('-6 months'))
+            ->setParameter('date', new \DateTime("-$months months"))
             ->getQuery()
             ->getResult()
         ;

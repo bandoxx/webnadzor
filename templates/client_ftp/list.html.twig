@@ -59,7 +59,7 @@
                     username: $("#username").val()
                   },
                   success: function(result) {
-                    $(location).attr('href', "{{ path('app_clientinfo_read') }}")
+                    $(location).attr('href', "{{ path('app_clientftp_read') }}")
                   },
                   error: function(result) {
                     alert('Greška! Molimo pokušajte ponovo');

@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ClientInfoRepository;
+use App\Repository\ClientFtpRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ClientInfoRepository::class)]
-class ClientInfo
+#[ORM\Entity(repositoryClass: ClientFtpRepository::class)]
+class ClientFtp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]

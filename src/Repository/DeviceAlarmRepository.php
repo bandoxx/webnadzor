@@ -22,11 +22,30 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceAlarm::class);
     }
 
-    public function findByDevice(Device $device): array
+    public function findByDevice(Device $device): DeviceAlarm
     {
-        return $this->findBy(['device' => $device], ['deviceDate' => 'DESC']);
+        return $this->findOneBy(['device' => $device], ['deviceDate' => 'DESC']);
     }
 
+    public function findActiveAlarms(Device $device)
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.device = :device AND a.endDeviceDate IS NULL')
+            ->setParameter('device', $device->getId())
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findOlderThen($months)
+    {
+        return $this->createQueryBuilder('da')
+            ->where('da.deviceDate < :date AND da.endDeviceDate IS NOT NULL')
+            ->setParameter('date', new \DateTime("-$months months"))
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 //    /**
 //     * @return DeviceAlarm[] Returns an array of DeviceAlarm objects
 //     */
@@ -51,4 +70,5 @@ class DeviceAlarmRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
 }

@@ -36,6 +36,9 @@ class DeviceAlarm
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
 
+    #[ORM\Column]
+    private bool $isNotified = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class DeviceAlarm
     public function setType(?string $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function isIsNotified(): ?bool
+    {
+        return $this->isNotified;
+    }
+
+    public function setIsNotified(bool $isNotified): static
+    {
+        $this->isNotified = $isNotified;
 
         return $this;
     }

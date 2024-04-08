@@ -12,17 +12,15 @@ use App\Service\Archiver\XLSXArchiver;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:test',
-    description: 'Add a short description for your command',
+    name: 'app:device-data-archiver',
+    description: 'Command for making XLSX and PDF archives on daily and monthly level.',
 )]
-class TestCommand extends Command
+class DeviceDataArchiver extends Command
 {
     public function __construct(
         private XLSXArchiver $XLSXArchiver,
@@ -109,7 +107,7 @@ class TestCommand extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
+        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
         $this->entityManager->persist($archive);
         $this->entityManager->flush();

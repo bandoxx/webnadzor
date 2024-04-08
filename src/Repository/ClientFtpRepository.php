@@ -2,23 +2,23 @@
 
 namespace App\Repository;
 
-use App\Entity\ClientInfo;
+use App\Entity\ClientFtp;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ClientInfo>
+ * @extends ServiceEntityRepository<ClientFtp>
  *
- * @method ClientInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method ClientInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method ClientInfo[]    findAll()
- * @method ClientInfo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ClientFtp|null find($id, $lockMode = null, $lockVersion = null)
+ * @method ClientFtp|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ClientFtp[]    findAll()
+ * @method ClientFtp[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ClientInfoRepository extends ServiceEntityRepository
+class ClientFtpRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ClientInfo::class);
+        parent::__construct($registry, ClientFtp::class);
     }
 
 //    /**
