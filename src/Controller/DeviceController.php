@@ -38,6 +38,8 @@ class DeviceController extends AbstractController
         if ($request->getMethod() === 'POST') {
             try {
                 $device = $deviceUpdater->update($device, $request->request->all());
+
+                return $this->json(true, Response::HTTP_ACCEPTED);
             } catch (\Throwable $e) {
                 $error = [$e->getMessage()];
             }

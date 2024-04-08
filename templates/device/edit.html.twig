@@ -35,48 +35,49 @@
         $('#settingsform').validationEngine('attach', {
           onValidationComplete: function(form, status){
             var form_data = $('#settingsform').serialize();
-            console.log(form_data);
             if (status === true) {
 
               var loading = 'Učitavam..';
               var ok = 'Promjene spremljene!';
               var error = 'Greška! Pokušajte ponovo.';
 
-              {#$('#infomsg').hide().html(loading).fadeIn(1000, function() {#}
-              {#  $.post("{{ path('app_device_edit', {id: device.id}) }}", form_data,#}
-              {#    function(data, s, r) {#}
-              {#      if (r.getResponseHeader('Requires-Auth') == 1) {#}
-              {#        // $(location).attr('href', page_url);#}
-              {#        return false;#}
-              {#      }#}
-              {#      if (data == 'ok') {#}
-              {#        $('#infomsg').fadeOut(1000).hide(0, function() {#}
-              {#          $(this).html(ok).fadeIn(1000, function() {#}
-              {#            setTimeout(function() {#}
-              {#              $('#infomsg').fadeOut(1000, function() {#}
-              {#                $(this).hide();#}
-              {#              });#}
-              {#            }, 4000);#}
-              {#          });#}
-              {#        });#}
-              {#      }#}
-              {#      else if (data == 'fail') {#}
-              {#        $('#infomsg').fadeOut(1000).hide(0, function() {#}
-              {#          $(this).html(error).fadeIn(1000, function() {#}
-              {#            setTimeout(function() {#}
-              {#              $('#infomsg').fadeOut(1000, function() {#}
-              {#                $(this).hide();#}
-              {#              });#}
-              {#            }, 4000);#}
-              {#          });#}
-              {#        });#}
-              {#      }#}
-              {#      else {#}
-              {#        console.log('response data: ' + data);#}
-              {#      }#}
-              {#    });#}
-              {#});#}
+              $('#infomsg').hide().html(loading).fadeIn(1000, function() {
+                $.post("{{ path('app_device_edit', {id: device.id}) }}", form_data,
+                  function(data, s, r) {
+                    if (r.getResponseHeader('Requires-Auth') == 1) {
+                      $(location).attr('href', "{{ path('app_home_overview') }}");
+                      return false;
+                    }
 
+                    if (r.status == 202) {
+                      $('#infomsg').fadeOut(1000).hide(0, function() {
+                        $(this).html(ok).fadeIn(1000, function() {
+                          setTimeout(function() {
+                            $('#infomsg').fadeOut(1000, function() {
+                              $(this).hide();
+                            });
+                          }, 4000);
+                        });
+                      });
+                    }
+
+                    else if (r.status !== 202) {
+                      $('#infomsg').fadeOut(1000).hide(0, function() {
+                        $(this).html(error).fadeIn(1000, function() {
+                          setTimeout(function() {
+                            $('#infomsg').fadeOut(1000, function() {
+                              $(this).hide();
+                            });
+                          }, 4000);
+                        });
+                      });
+                    }
+
+                    else {
+                      console.log('response data: ' + data);
+                    }
+                  });
+              });
             }
           }
         });/* VALIDATION ENGINE */
@@ -99,6 +100,12 @@
         {% endif %}
         <li><a href="{{ path('app_device_list') }}" class="icon_left">Povratak</a></li>
     </ul>
+{% endblock %}
+
+{% block userbar %}
+<div id="infoarea"><!-- Infoarea Begin -->
+    <div id="infomsg" style="display:none;"></div>
+</div><!-- Infoarea End -->
 {% endblock %}
 
 {% block content %}
@@ -381,20 +388,6 @@
                             <div class="form_row">
                                 <label>Email 3</label>
                                 <input value="{SmtpT3}" class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text" style="width: 290px;" name="SmtpT3" id="SmtpT3" placeholder="Unesite email 3" original-title="E-mail adresa za alarme, maksimalno 40 znakova" />
-                            </div>
-                        </div>
-                        <div class="grid_4 push_1 omega">
-                            <div class="form_row">
-                                <label>Mobitel 1</label>
-                                <input value="{SMSNo1}" class="input validate[optional,maxSize[20]] tipRight" type="text" style="width: 290px;" name="SMSNo1" id="SMSNo1" placeholder="Unesite mobitel 1" original-title="Broj mobitela za alarme, maksimalno 20 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Mobitel 2</label>
-                                <input value="{SMSNo2}" class="input validate[optional,maxSize[20]] tipRight" type="text" style="width: 290px;" name="SMSNo2" id="SMSNo2" placeholder="Unesite mobitel 2" original-title="Broj mobitela za alarme, maksimalno 20 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Mobitel 3</label>
-                                <input value="{SMSNo3}" class="input validate[optional,maxSize[20]] tipRight" type="text" style="width: 290px;" name="SMSNo3" id="SMSNo3" placeholder="Unesite mobitel 3" original-title="Broj mobitela za alarme, maksimalno 20 znakova" />
                             </div>
                         </div>
                         <div class="clear"></div>

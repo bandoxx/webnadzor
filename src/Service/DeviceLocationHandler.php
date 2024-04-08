@@ -44,8 +44,8 @@ class DeviceLocationHandler
         foreach ($devices as $device) {
             $locations = $this->getLocationsForDevice($device);
 
-            foreach ($locations as $location) {
-                $deviceLocations[] = $location;
+            foreach ($locations as $key => $location) {
+                $deviceLocations[$key] = $location;
             }
         }
 
