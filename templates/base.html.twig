@@ -12,23 +12,16 @@
             <script type="text/javascript" src="{{ asset('assets/js/css_browser_selector.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/jquery.multiselect.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/tooltip/jquery.tipsy.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('assets/js/validation/languages/jquery.validationEngine-en.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/validation/jquery.validationEngine.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/jquery.dataTables.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/jquery.dataTables.fnReloadAjax.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/fancybox/jquery.fancybox-1.3.4.pack.js') }}"></script>
             <script type="text/javascript" src="{{ asset('assets/js/fancybox/jquery.easing-1.4.pack.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('assets/js/validation/languages/jquery.validationEngine-en.js') }}"></script>
         {% endblock %}
 
         {% block stylesheets %}
             <link rel="stylesheet" href="{{ asset('assets/css/all.css') }}" type="text/css">
-{#            <link rel="stylesheet" href="{{ asset('assets/css/reset.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/css/grid.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/js/ui/admincp/jquery-ui-1.8.17.custom.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/js/tooltip/tipsy.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/js/validation/validationEngine.jquery.css') }}" type="text/css">#}
-{#            <link rel="stylesheet" href="{{ asset('assets/js/fancybox/jquery.fancybox-1.3.4.css') }}" type="text/css">#}
             <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
             <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.js"></script>
@@ -83,7 +76,9 @@
             {% endblock %}
         </div>
         {% endblock %}
-        Copyright © {{ 'now' | date('Y') }} by <a href="http://www.intelteh.hr/" target="_BLANK">Intelteh d.o.o.</a>
+        <div id="copyright"><!-- Copyright Begin -->
+            Copyright © {{ 'now' | date('Y') }} by <a href="http://www.intelteh.hr/" target="_BLANK">Intelteh d.o.o.</a>
+        </div>
     </body>
 
     {% block bottom_javascripts %}
