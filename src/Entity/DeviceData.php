@@ -200,7 +200,7 @@ class DeviceData
 
         $maximum = $deviceEntrySettings['t_max'];
 
-        return $maximum && $maximum > $temperature;
+        return $maximum && $maximum < $temperature;
     }
 
     public function isHumidityOutOfRange($entry): bool
@@ -218,7 +218,7 @@ class DeviceData
 
         $maximum = $deviceEntrySettings['rh_max'];
 
-        return $maximum && $maximum > $humidity;
+        return $maximum && $maximum < $humidity;
     }
 
     public function isD($entry): bool

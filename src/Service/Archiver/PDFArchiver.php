@@ -39,7 +39,7 @@ class PDFArchiver implements ArchiverInterface
         $rhUnit = $deviceEntryData['rh_unit'];
 
         // create new PDF document
-        $pdf = new TCPDF('P', 'mm', 'A4', true, 'UTF-8', false);
+        $pdf = new TCPDF();
 
         // set document information
         $pdf->SetCreator('Intelteh d.o.o.');
@@ -50,9 +50,8 @@ class PDFArchiver implements ArchiverInterface
         $headerData = $subtitle . "\n";
         $headerData .= 'Cedevita webnadzor';
 
-        $logoPath = __DIR__ . '/../../../public/assets/images/pdflogo.png';
-
-        $pdf->SetHeaderData($logoPath, 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
+        # ../../../ is because constant cannot be changed, and it's reading from vendor root
+        $pdf->SetHeaderData('../../../../../public/assets/images/pdflogo.png', 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont(['dejavusanscondensed', '', 8]);
