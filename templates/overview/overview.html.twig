@@ -1,6 +1,12 @@
 {% extends 'base.html.twig' %}
 {% set client = app.user.client %}
-{% block title %}{{ client.name }}{% endblock %}
+{% block title %}
+    {% if client is not null %}
+        {{ client.name }}
+    {% else %}
+        Administracija
+    {% endif %}
+{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -144,28 +150,7 @@
               $(this).dialog('destroy');
             }
           });
-          $('#delform').validationEngine('attach', {
-            onValidationComplete: function(form, status){
-              var form_data = $('#delform').serialize();
-              if (status === true) {
-                $.post(page_url + 'device_edit/' + delete_id + '/device_delete', $.param({troll:Math.random()}) + "&" + form_data,
-                  function(data, s, r) {
-                    if (r.getResponseHeader('Requires-Auth') == 1) {
-                      $(location).attr('href', page_url);
-                      return false;
-                    }
-                    if (data == 'ok') {
-                      otable.fnReloadAjax();
-                      $('#delete-confirm').dialog('close');
-                    }
-                    else {
-                      alert('Greška! Molimo pokušajte ponovo');
-                      console.log('response data: ' + data);
-                    }
-                  });
-              }
-            }
-          });/* VALIDATION ENGINE */
+
           return false;
         });
 
@@ -179,7 +164,7 @@
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        $.getJSON("{{ path('map_markers', {clientId: client.id}) }}", function(data) {
+        $.getJSON("{{ path('map_markers') }}", function(data) {
           var bounds = new L.LatLngBounds();
           $.each(data.places, function(i, item) {
 
@@ -197,29 +182,6 @@
 
 {% block body %}
     {{ parent() }}
-    <div id="delete-confirm" title="Obriši podatke ili obriši lokaciju?" style="display:none;">
-        <p style="border: 1px solid transparent; padding: 0.3em;">Molimo budite pažljivi, podaci će biti trajno
-            izbrisani.</p>
-        <p style="border: 1px solid transparent; padding: 0.3em;"><strong>Lokacija:</strong> <span
-                    id="del_device_name"></span></p>
-        <form id="delform" class="form" action="{{ app.request.getBaseURL() }}" method="POST">
-            <fieldset>
-                <div class="form_row radioui">
-                    <label style="display:block; margin-top:12px;">Odaberite opciju</label>
-                    <input type="radio" id="r4" name="del_action" class="radio validate[required]"
-                           value="empty_data"/><label for="r4">Obriši podatke</label>
-                    <input type="radio" id="r5" name="del_action" class="radio validate[required]"
-                           value="delete_device"/><label for="r5">Obriši lokaciju</label>
-                </div>
-                <div class="form_row">
-                    <label for="del_password" style="display:block; margin-top:12px;">Trenutna zaporka</label>
-                    <input type="password" name="del_password" id="del_password"
-                           class="input text ui-widget-content ui-corner-all"
-                           style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
-                </div>
-            </fieldset>
-        </form>
-    </div>
     <div id="add-form" title="Dodaj novu lokaciju" style="display:none;">
         <p style="border: 1px solid transparent; padding: 0.3em;">Naziv XML datoteke mora biti jedinstven za svaku
             lokaciju.</p>
@@ -237,13 +199,13 @@
 {% endblock %}
 
     {% block navigation %}
-        {% if app.user.permission > 3 %}
+        {% if app.user.permission == 4 %}
             <li><a href="{{ path('app_device_list') }}" class="icon_square">Mjerni uređaji</a></li>
             <li><a href="{{ path('app_icon_index') }}" class="icon_pictures">Uredi ikone</a></li>
             <li><a href="{{ path('app_clientftp_read') }}" class="icon_bookmark">FTP podaci</a></li>
         {% endif %}
 
-        {% if app.user.permission > 2 %}
+        {% if app.user.permission >= 3 %}
             <li><a href="{{ path('app_user_getusers') }}" class="icon_users">Korisnici</a></li>
             <li><a href="{{ path('app_loginlog_getloginlogs') }}" class="icon_article">Dnevnik prijava</a></li>
         {% endif %}
@@ -255,6 +217,7 @@
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
             {% if client.mapActive %}
+
             <div class="titlebar">
                 <h3>Lokacije</h3>
                 <a href="#" class="toggle">&nbsp;</a>
@@ -262,7 +225,9 @@
             <div class="block_cont" style="padding:4px;">
                 <div id="map_canvas" style="height: 600px;"></div>
             </div>
+
             {% elseif client.temperatureActive %}
+
             <div class="titlebar">
                 <h3>Trenutni podaci</h3>
                 <a href="#" class="toggle">&nbsp;</a>
@@ -293,6 +258,7 @@
                     <div class="clear"></div>
                 </div>
             </div>
+
             {% endif %}
         </div><!-- Block End -->
 

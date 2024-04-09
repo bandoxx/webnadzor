@@ -29,11 +29,8 @@ class HomeController extends AbstractController
     #[Route(path: '/overview', name: 'app_home_overview')]
     public function overview(DeviceLocationHandler $deviceLocationHandler)
     {
-        /** @var User $user */
-        $user = $this->getUser();
-
         return $this->render('overview/overview.html.twig', [
-            'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($user->getClient())
+            'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($this->getUser())
         ]);
     }
 

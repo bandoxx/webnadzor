@@ -22,9 +22,20 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
         parent::__construct($registry, UserDeviceAccess::class);
     }
 
-    public function findDevicesByUser(User $user)
+    public function findAccessibleEntries(User $user): array
     {
-        return $this->findBy(['user' => $user]);
+        $accesses = $this->findBy(['user' => $user]);
+
+        $data = [];
+
+        foreach ($accesses as $access) {
+            $data[] = [
+                'entry' => $access->getSensor(),
+                'device' => $access->getDevice()
+            ];
+        }
+
+        return $data;
     }
 
 //    /**

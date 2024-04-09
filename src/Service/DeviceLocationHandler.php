@@ -9,13 +9,17 @@ use App\Entity\UserDeviceAccess;
 use App\Model\DeviceOverviewModel;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
+use App\Repository\UserDeviceAccessRepository;
+use App\Service\Device\UserAccess;
 
 class DeviceLocationHandler
 {
 
     public function __construct(
         private DeviceRepository $deviceRepository,
-        private DeviceDataRepository $deviceDataRepository
+        private DeviceDataRepository $deviceDataRepository,
+        private UserDeviceAccessRepository $deviceAccessRepository,
+        private UserAccess $userAccess
     ) {}
 
     public function getUserDeviceLocations(User $user): array
@@ -56,48 +60,49 @@ class DeviceLocationHandler
      * @param Client $client
      * @return array<DeviceOverviewModel>
      */
-    public function getClientDeviceLocationData(Client $client): array
+    public function getClientDeviceLocationData(User $user): array
     {
-        $devices = $this->deviceRepository->findDevicesByClient($client);
-
+        $entries = $this->userAccess->getAccessibleEntries($user);
         $deviceTable = [];
-        foreach ($devices as $device) {
-            for ($i = 1; $i <= 2; $i++) {
-                $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $i);
 
-                if (!$data) {
-                    continue;
-                }
+        foreach ($entries as $entry) {
+            $device = $entry['device'];
+            $entryN = $entry['entry'];
 
-                $online = false;
-                if (time() - @strtotime($data->getDeviceDate()->format('Y-m-d H:i:s')) < 4200) {
-                    $online = true;
-                }
+            $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entryN);
 
-                $deviceOverviewModel = new DeviceOverviewModel();
-                $deviceEntryData = $device->getEntryData($i);
-
-                $temperatureUnit = $deviceEntryData['t_unit'];
-                $humidityUnit = $deviceEntryData['rh_unit'];
-
-                $deviceOverviewModel
-                    ->setId($device->getId())
-                    ->setEntry($i)
-                    ->setName($deviceEntryData['t_name'] ?? null)
-                    ->setLocation($deviceEntryData['t_location'] ?? null)
-                    ->setOnline($online)
-                    ->setAlarm(false)
-                    ->setTemperature(sprintf("%s %s", $data->getT($i), $temperatureUnit))
-                    ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($i), $temperatureUnit))
-                    ->setTemperatureMax(sprintf("%s %s", $data->getTMax($i), $temperatureUnit))
-                    ->setTemperatureMin(sprintf("%s %s", $data->getTMin($i), $temperatureUnit))
-                    ->setTemperatureAverage(sprintf("%s %s", $data->getTAvrg($i), $temperatureUnit))
-                    ->setRelativeHumidity(sprintf("%s %s", $data->getRh($i), $humidityUnit))
-                    ->setDeviceDate($data->getDeviceDate()->format("Y-m-d H:i:s"))
-                ;
-
-                $deviceTable[] = $deviceOverviewModel;
+            if (!$data) {
+                continue;
             }
+
+            $online = false;
+            if (time() - @strtotime($data->getDeviceDate()->format('Y-m-d H:i:s')) < 4200) {
+                $online = true;
+            }
+
+            $deviceOverviewModel = new DeviceOverviewModel();
+            $deviceEntryData = $device->getEntryData($entryN);
+
+            $temperatureUnit = $deviceEntryData['t_unit'];
+            $humidityUnit = $deviceEntryData['rh_unit'];
+
+            $deviceOverviewModel
+                ->setId($device->getId())
+                ->setEntry($entryN)
+                ->setName($deviceEntryData['t_name'] ?? null)
+                ->setLocation($deviceEntryData['t_location'] ?? null)
+                ->setOnline($online)
+                ->setAlarm(false)
+                ->setTemperature(sprintf("%s %s", $data->getT($entryN), $temperatureUnit))
+                ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entryN), $temperatureUnit))
+                ->setTemperatureMax(sprintf("%s %s", $data->getTMax($entryN), $temperatureUnit))
+                ->setTemperatureMin(sprintf("%s %s", $data->getTMin($entryN), $temperatureUnit))
+                ->setTemperatureAverage(sprintf("%s %s", $data->getTAvrg($entryN), $temperatureUnit))
+                ->setRelativeHumidity(sprintf("%s %s", $data->getRh($entryN), $humidityUnit))
+                ->setDeviceDate($data->getDeviceDate()->format("Y-m-d H:i:s"))
+            ;
+
+            $deviceTable[] = $deviceOverviewModel;
         }
 
         return $deviceTable;

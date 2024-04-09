@@ -46,8 +46,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: LoginLog::class, mappedBy: 'user')]
     private Collection $loginLogs;
 
-    #[ORM\ManyToOne(inversedBy: 'user')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(inversedBy: 'user', fetch: 'EAGER')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Client $client = null;
 
     #[ORM\Column]
