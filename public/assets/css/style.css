@@ -1,6 +1,6 @@
 
 body {
-    background: #363d47 url('../images/background.gif') top center repeat fixed;
+    background: #363d47 url('/assets/images/background.jpg') top center repeat fixed;
     font-family: Tahoma, Verdana, Arial, sans-serif;
     font-size: 12px;
     color: #ffffff;

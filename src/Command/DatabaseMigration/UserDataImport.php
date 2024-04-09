@@ -7,6 +7,7 @@ use App\Entity\Device;
 use App\Entity\LoginLog;
 use App\Entity\User;
 use App\Factory\UserDeviceAccessFactory;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use donatj\UserAgent\UserAgentParser;
 
@@ -14,6 +15,7 @@ class UserDataImport
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private UserRepository $userRepository,
         private UserDeviceAccessFactory $userDeviceAccessFactory
     ) {}
 
@@ -23,6 +25,13 @@ class UserDataImport
 
         foreach ($users as $userData) {
             $user = new User();
+
+            $username = $userData->username;
+
+            if ($this->userRepository->findOneByUsername($username)) {
+                echo sprintf("Username %s already exists, wronly inserted for client: %s", $username, $client->getName());
+                continue;
+            }
 
             $user->setClient($client)
                 ->setPassword($userData->password)

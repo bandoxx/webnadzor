@@ -22,6 +22,8 @@ class DeviceIcon
     #[ORM\ManyToOne(inversedBy: 'deviceIcons')]
     private ?Client $client = null;
 
+    private ?string $fullPath = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -61,5 +63,15 @@ class DeviceIcon
         $this->client = $client;
 
         return $this;
+    }
+
+    public function getFullPath(): ?string
+    {
+        return $this->fullPath;
+    }
+
+    public function setFullPath(?string $fullPath): void
+    {
+        $this->fullPath = $fullPath;
     }
 }

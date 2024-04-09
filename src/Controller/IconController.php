@@ -4,8 +4,12 @@ namespace App\Controller;
 
 use App\Entity\DeviceIcon;
 use App\Repository\DeviceIconRepository;
+use App\Service\Image\IconUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,11 +17,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconController extends AbstractController
 {
     #[Route(path: '/icons', name: 'app_icon_index', methods: 'GET')]
-    public function index(DeviceIconRepository $deviceIconRepository): Response
+    public function index(DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
     {
         $client = $this->getUser()->getClient();
 
         $icons = $deviceIconRepository->findBy(['client' => $client]);
+
+        foreach ($icons as $icon) {
+            $icon->setFullPath(sprintf("%s/%s", $parameterBag->get('icon_directory'), $icon->getFilename()));
+        }
 
         return $this->render('icon/index.html.twig', [
             'icons' => $icons
@@ -53,8 +61,17 @@ class IconController extends AbstractController
     }
 
     #[Route(path: '/api/icons', name: 'app_icon_new', methods: 'POST')]
-    public function new(Request $request): Response
+    public function new(Request $request, IconUploader $iconUploader): Response
     {
-        dd($request->request->all(), $request->files->all());
+        $icon = $request->files->get('icon');
+        $title = $request->request->get('icon_title');
+
+        if (!$icon || !$title) {
+            throw new BadRequestException();
+        }
+
+        $iconUploader->uploadAndSave($icon, $this->getUser()->getClient(), $title);
+
+        return new RedirectResponse($this->generateUrl('app_icon_index'));
     }
 }

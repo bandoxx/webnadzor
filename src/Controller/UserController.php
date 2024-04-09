@@ -25,27 +25,30 @@ class UserController extends AbstractController
     public function createUser(Request $request, EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, UserFactory $userFactory, UserDeviceAccessFactory $userDeviceAccessFactory)
     {
         $currentUser = $this->getUser();
+        $permission = $request->request->get('permissions');
 
         $user = $userFactory->create(
             $currentUser->getClient(),
             $request->request->get('username'),
             $request->request->get('password'),
-            $request->request->get('permissions')
+            $permission
         );
 
         $entityManager->persist($user);
         $entityManager->flush();
 
-        $locations = explode(',', $request->request->get('locations'));
+        if ($permission == 1) {
+            $locations = explode(',', $request->request->get('locations'));
 
-        foreach ($locations as $location) {
-            [$deviceId, $sensor] = explode('-', $location);
-            $device = $deviceRepository->find($deviceId);
+            foreach ($locations as $location) {
+                [$deviceId, $sensor] = explode('-', $location);
+                $device = $deviceRepository->find($deviceId);
 
-            $userDeviceAccess = $userDeviceAccessFactory->create($device, $user, $sensor);
+                $userDeviceAccess = $userDeviceAccessFactory->create($device, $user, $sensor);
 
-            $entityManager->persist($userDeviceAccess);
-            $entityManager->flush();
+                $entityManager->persist($userDeviceAccess);
+                $entityManager->flush();
+            }
         }
 
         return $this->json(true, Response::HTTP_CREATED);
