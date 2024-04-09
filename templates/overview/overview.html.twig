@@ -277,8 +277,9 @@
                                     <br><span class="red">Uređaj offline {{ device.deviceDate|timeAgo }}</span>
                                 {% endif %}
                             </span>
-                            <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image"><img
-                                        alt="t1" src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}"></div>
+                            <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
+                                <img alt="t1" src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}">
+                            </div>
                             <span style="color: #515d6b;">Trenutna:</span> <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br><span
                                     style="color: #515d6b;">Maksimalna:</span> <span style="float: right;"
                                                                                      id="t1max_value">{{ device.temperatureMax}}</span><br><br><span

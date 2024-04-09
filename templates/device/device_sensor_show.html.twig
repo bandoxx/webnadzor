@@ -287,6 +287,38 @@
 {% block content %}
     <div class="clear"></div>
     <div id="body">
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></span></h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding:4px;">
+                <div style="margin-bottom:10px;">
+                    <div class="dets" style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">H Panas. IO48H</span>
+                        <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
+                            <img alt="t1" src="{{ path('app_image_getimage', {deviceId: device.id, entry: entry}) }}">
+                        </div>
+                        <span style="color: #515d6b;">Trenutna</span>:<span style="float: right; display: block;" id="t1_value">4.77 °C</span>
+                        <br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right; display: block;" id="t1max_value">5.62 °C</span>
+                        <br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right; display: block;" id="t1min_value">4.68 °C</span>
+                        <br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right; display: block;" id="mkt1_value">5.26 °C</span>
+                    </div>
+                    <div class="dets" style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
+                        <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="rh1_image">
+                            <img alt="rh1" src="{{ path('app_image_rh', {deviceId: device.id, entry: entry}) }}">
+                        </div>
+                        <br><br>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">83.31 %</span>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+
         {% if device.entryData(entry).t_show_chart %}
         <div id="devdata" class="block big"><!-- Block Begin -->
             <div class="titlebar">
