@@ -1,11 +1,10 @@
 {% set user = app.user %}
 
 {% if user is not null %}
-    {% set client = user.client %}
-    {% if client %}
-        {% set clientId = client.id %}
+    {% if user.client is not null %}
+        {% set clientId = user.client.id %}
     {% else %}
-        {% set clientId = app.request.attributes.get('_route_params').clientId %}
+        {% set clientId = app.request.attributes.get('_route_params').clientId ?? null %}
     {% endif %}
 {% endif %}
 
@@ -15,7 +14,7 @@
         <meta charset="UTF-8">
         <title>
             {% block title %}
-                {% if client is not null %}
+                {% if user.client is not null %}
                     {{ client.name }}
                 {% else %}
                     Administracija
@@ -52,32 +51,11 @@
             <script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/js/editor.dataTables.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.css"></script>
-
-{#            <style>#}
-{#                span {#}
-{#                    vertical-align: middle; !important#}
-{#                }#}
-
-{#                table.dataTable.compact tbody td {#}
-{#                    padding: 2px;#}
-{#                }#}
-
-{#                table.dataTable thead tr {#}
-{#                    background-color: #495362;#}
-{#                    color: #cfd7e4;#}
-{#                    text-shadow: 1px 1px 0px #000;#}
-{#                    text-align: left;#}
-{#                    text-transform: uppercase;#}
-{#                    line-height: 40px;#}
-{#                }#}
-
-{#                table.dataTable td.dt-type-numeric {#}
-{#                    text-align: center;#}
-{#                }#}
-{#            </style>#}
-{#            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">#}
-{#            <link rel="stylesheet" href="{{ asset("assets/css/grid.css") }}" type="text/css" />#}
-{#            <link rel="stylesheet" href="{{ asset("assets/css/style.css") }}" type="text/css" />#}
+            <style>
+                .highcharts-range-selector {
+                    background: field !important;
+                }
+            </style>
         {% endblock %}
 
     </head>

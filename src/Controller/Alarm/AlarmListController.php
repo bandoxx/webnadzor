@@ -19,10 +19,8 @@ class AlarmListController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $alarms = $deviceAlarmRepository->findByDevice($device);
-
         return $this->render('alarm/list.html.twig', [
-            'alarms' => $alarms,
+            'alarms' => $deviceAlarmRepository->findByDevice($device),
             'device' => $device
         ]);
     }

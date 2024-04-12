@@ -2,6 +2,7 @@
 
 namespace App\Controller\Icon\API;
 
+use App\Repository\ClientRepository;
 use App\Service\Image\IconUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -12,16 +13,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, IconUploader $iconUploader)
+    public function __invoke($clientId, ClientRepository $clientRepository, Request $request, IconUploader $iconUploader)
     {
         $icon = $request->files->get('icon');
         $title = $request->request->get('icon_title');
+        $client = $clientRepository->find($clientId);
 
-        if (!$icon || !$title) {
+        if (!$icon || !$title || !$client) {
             throw new BadRequestException();
         }
 
-        $iconUploader->uploadAndSave($icon, $this->getUser()->getClient(), $title);
+        $iconUploader->uploadAndSave($icon, $client, $title);
 
         return $this->redirectToRoute('app_icon_index', [
             'clientId' => $clientId

@@ -11,11 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconReadController extends AbstractController
 {
 
-    public function __invoke(DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag)
+    public function __invoke($clientId, DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag)
     {
-        $client = $this->getUser()->getClient();
-
-        $icons = $deviceIconRepository->findBy(['client' => $client]);
+        $icons = $deviceIconRepository->findBy(['client' => $clientId]);
 
         foreach ($icons as $icon) {
             $icon->setFullPath(sprintf("%s/%s", $parameterBag->get('icon_directory'), $icon->getFilename()));

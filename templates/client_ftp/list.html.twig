@@ -51,7 +51,7 @@
               if (status === true) {
 
                 $.ajax({
-                  url: '/api/info/' + $('#id').val(),
+                  url: '/api/ftp/' + $('#id').val(),
                   type: 'PATCH',
                   data: {
                     host: $("#host").val(),
@@ -59,7 +59,7 @@
                     username: $("#username").val()
                   },
                   success: function(result) {
-                    $(location).attr('href', "{{ path('app_clientftp_read', clientId: clientId) }}")
+                    $(location).attr('href', "{{ path('app_clientftp_read', {clientId: clientId}) }}")
                   },
                   error: function(result) {
                     alert('Greška! Molimo pokušajte ponovo');

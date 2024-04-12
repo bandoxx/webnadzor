@@ -16,11 +16,11 @@ class ChartController extends AbstractController
     #[Route(path: '/api/chart/{deviceId}/{entry}', name: 'app_api_chart_getchartdata')]
     public function getChartData($deviceId, $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler)
     {
-        if ($fromDate = $request->query->get('fromDate', null)) {
+        if ($fromDate = $request->query->get('fromDate')) {
             $fromDate = (new \DateTime())->setTimestamp($fromDate);
         }
 
-        if ($toDate = $request->query->get('toDate', null)) {
+        if ($toDate = $request->query->get('toDate')) {
             $toDate = (new \DateTime())->setTimestamp($toDate);
         }
 

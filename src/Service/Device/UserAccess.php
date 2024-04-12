@@ -2,6 +2,7 @@
 
 namespace App\Service\Device;
 
+use App\Entity\Client;
 use App\Entity\Device;
 use App\Entity\User;
 use App\Repository\DeviceRepository;
@@ -45,11 +46,11 @@ class UserAccess
         return array_values($devices);
     }
 
-    public function getAccessibleEntries(User $user): array
+    public function getAccessibleEntries(User $user, Client $client): array
     {
         $entries = [];
         if ($user->getPermission() > 2) {
-            $devices = $this->deviceRepository->findDevicesByClient($user->getClient()->getId());
+            $devices = $this->deviceRepository->findDevicesByClient($client->getId());
             foreach ($devices as $device) {
                 for ($entry = 1; $entry <= 2; $entry++) {
                     $entries[] = [

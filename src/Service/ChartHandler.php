@@ -35,7 +35,6 @@ class ChartHandler
             $deviceData = $row[0];
             $time = self::convertDateTimeToChartStamp($deviceData->getDeviceDate());
 
-            $getter = "entry$entry";
             $result['t'][] = [$time, (float) $deviceData->getT($entry)];
             $result['mkt'][] = [$time, (float) $deviceData->getMkt($entry)];
         }

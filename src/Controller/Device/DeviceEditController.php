@@ -17,12 +17,9 @@ class DeviceEditController extends AbstractController
     public function __invoke($clientId, $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater)
     {
         $error = [];
-        $user = $this->getUser();
-        $client = $user->getClient();
-
         $device = $deviceRepository->find($id);
 
-        $icons = $deviceIconRepository->findBy(['client' => $client]);
+        $icons = $deviceIconRepository->findBy(['client' => $clientId]);
         if ($request->getMethod() === 'POST') {
             try {
                 $device = $deviceUpdater->update($device, $request->request->all());

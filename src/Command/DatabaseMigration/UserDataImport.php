@@ -33,7 +33,11 @@ class UserDataImport
                 continue;
             }
 
-            $user->setClient($client)
+            if ($userData->permissions !== 4) {
+                $user->setClient($client);
+            }
+
+            $user
                 ->setPassword($userData->password)
                 ->setUsername($userData->username)
                 ->setPermission($userData->permissions)

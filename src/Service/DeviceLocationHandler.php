@@ -60,9 +60,9 @@ class DeviceLocationHandler
      * @param Client $client
      * @return array<DeviceOverviewModel>
      */
-    public function getClientDeviceLocationData(User $user): array
+    public function getClientDeviceLocationData(User $user, Client $client): array
     {
-        $entries = $this->userAccess->getAccessibleEntries($user);
+        $entries = $this->userAccess->getAccessibleEntries($user, $client);
         $deviceTable = [];
 
         foreach ($entries as $entry) {

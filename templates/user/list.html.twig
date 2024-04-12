@@ -59,29 +59,29 @@
         });
 
         var adedit;
-        // $('#editform').validationEngine('attach', {
-        //   onValidationComplete: function(form, status){
-        //     var form_data = $('#editform').serialize();
-        //     if (status === true) {
-        //       adedit = [];
-        //       $('#newallowed_devices').multiselect('getChecked').each(function() {
-        //         adedit.push($(this).val());
-        //       })
-        //       adedit = adedit.join(',');
-        //       $.post(page_url + 'users/edit', $.param({troll:Math.random(),
-        //         user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
-        //         if (data == 'ok') {
-        //           $(location).attr('href', page_url + 'users');
-        //         }
-        //         else {
-        //           alert('Greška! Molimo pokušajte ponovo');
-        //           console.log('response data: ' + data);
-        //         }
-        //       });
-        //
-        //     }
-        //   }
-        // });/* VALIDATION ENGINE */
+        $('#editform').validationEngine('attach', {
+          onValidationComplete: function(form, status){
+            var form_data = $('#editform').serialize();
+            if (status === true) {
+              adedit = [];
+              $('#newallowed_devices').multiselect('getChecked').each(function() {
+                adedit.push($(this).val());
+              })
+              adedit = adedit.join(',');
+              $.post(page_url + 'users/edit', $.param({troll:Math.random(),
+                user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
+                if (data == 'ok') {
+                  $(location).attr('href', page_url + 'users');
+                }
+                else {
+                  alert('Greška! Molimo pokušajte ponovo');
+                  console.log('response data: ' + data);
+                }
+              });
+
+            }
+          }
+        });/* VALIDATION ENGINE */
 
         var edit_parent, edit_id, edit_username, edit_permissions, edit_ad = '';
         $('div.actionbar a.edit').click(function () { /* EDIT ICON */
@@ -105,7 +105,7 @@
                 $(this).prop('checked', true);
               }
             });
-            $('#newallowed_devices').multiselect('refresh');//.multiselect('disable');
+            $('#newallowed_devices').multiselect('refresh');
           } else if (edit_permissions == 2) {
             $('#r5').prop('checked', true).button('refresh');
           } else if (edit_permissions == 3) {
@@ -279,7 +279,7 @@
 
 {% block navigation %}
     <li><a href="#" id="useradd" class="icon_plus">Dodaj korisnika</a></li>
-    <li><a href="{{ path('client_overview', {clientId: client.id}) }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
