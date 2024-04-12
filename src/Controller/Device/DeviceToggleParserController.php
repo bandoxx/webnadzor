@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Controller\Device;
+
+use App\Repository\ClientRepository;
+use App\Repository\DeviceRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\Routing\Annotation\Route;
+
+#[Route(path: '/admin/{clientId}/device/{deviceId}/toggle-parser', methods: 'GET', name: 'app_device_toggledeviceparser')]
+class DeviceToggleParserController extends AbstractController
+{
+    public function __invoke($clientId, $deviceId, ClientRepository $clientRepository, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager)
+    {
+        $device = $deviceRepository->find($deviceId);
+
+        if (!$device) {
+            throw new BadRequestException("Device doesn't exists.");
+        }
+
+        $device->setParserActive(!$device->isParserActive());
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'id' => $device->getId()]);
+    }
+
+}

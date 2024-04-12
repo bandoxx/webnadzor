@@ -5,6 +5,7 @@ namespace App\Model;
 class DeviceListModel
 {
     private ?int $id = null;
+    private ?string $xml = null;
     private ?string $name = null;
     private ?bool $online = null;
     private ?bool $alarm = null;
@@ -20,6 +21,18 @@ class DeviceListModel
     public function setId(?int $id): static
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    public function getXml(): ?string
+    {
+        return $this->xml;
+    }
+
+    public function setXml(?string $xml): static
+    {
+        $this->xml = $xml;
 
         return $this;
     }

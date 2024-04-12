@@ -1,50 +1,24 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Device;
 
-use App\Entity\Device;
-use App\Entity\DeviceData;
-use App\Entity\User;
-use App\Repository\DeviceAlarmRepository;
+use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
-use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\PDFArchiver;
 use App\Service\Archiver\XLSXArchiver;
 use App\Service\DeviceDataFormatter;
-use App\Service\DeviceUpdater;
 use Doctrine\ORM\EntityManagerInterface;
-use Mpdf\Tag\P;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-class AlarmController extends AbstractController
+#[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export')]
+class DeviceEntryExportController extends AbstractController
 {
-
-    #[Route(path: '/alarm/{id}/list', methods: 'GET', name: 'app_alarm_list')]
-    public function list($id, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository): Response
-    {
-        $device = $deviceRepository->find($id);
-
-        if (!$device) {
-            throw $this->createNotFoundException();
-        }
-
-        $alarms = $deviceAlarmRepository->findByDevice($device);
-
-        return $this->render('alarm/list.html.twig', [
-            'alarms' => $alarms,
-            'device' => $device
-        ]);
-    }
-
-    #[Route(path: '/alarm/{id}/export', name: 'app_alarm_export')]
-    public function export($id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver): Response
+    public function __invoke($clientId, $id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver)
     {
         if ($request->get('date_from')) {
             $dateFrom = (new \DateTime($request->get('date_from')));
@@ -100,7 +74,10 @@ class AlarmController extends AbstractController
             'table_data' => $tableData,
             'entry' => $entry,
             'date_from' => $dateFrom,
-            'date_to' => $dateTo
+            'date_to' => $dateTo,
+            'client_id' => $clientId
         ]);
+
     }
+
 }

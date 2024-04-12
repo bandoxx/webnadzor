@@ -51,7 +51,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        return new RedirectResponse($this->urlGenerator->generate('app_home_overview'));
+        return new RedirectResponse($this->urlGenerator->generate('admin_overview'));
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response

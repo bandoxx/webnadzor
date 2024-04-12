@@ -22,7 +22,7 @@ class Client
     private ?string $name = null;
 
     #[ORM\OneToMany(targetEntity: Device::class, mappedBy: 'client')]
-    private Collection $deviceConfigs;
+    private Collection $device;
 
     #[ORM\OneToMany(targetEntity: UserDeviceAccess::class, mappedBy: 'client')]
     private Collection $userDeviceAccesses;
@@ -42,10 +42,13 @@ class Client
     #[ORM\Column]
     private bool $temperatureActive = false;
 
+    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
+    private ?ClientImage $clientImage = null;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
-        $this->deviceConfigs = new ArrayCollection();
+        $this->device = new ArrayCollection();
         $this->userDeviceAccesses = new ArrayCollection();
         $this->deviceIcons = new ArrayCollection();
         $this->loginLogArchives = new ArrayCollection();
@@ -102,27 +105,27 @@ class Client
     /**
      * @return Collection<int, Device>
      */
-    public function getDeviceConfigs(): Collection
+    public function getDevice(): Collection
     {
-        return $this->deviceConfigs;
+        return $this->device;
     }
 
-    public function addDeviceConfig(Device $deviceConfig): static
+    public function addDevice(Device $device): static
     {
-        if (!$this->deviceConfigs->contains($deviceConfig)) {
-            $this->deviceConfigs->add($deviceConfig);
-            $deviceConfig->setClient($this);
+        if (!$this->device->contains($device)) {
+            $this->device->add($device);
+            $device->setClient($this);
         }
 
         return $this;
     }
 
-    public function removeDeviceConfig(Device $deviceConfig): static
+    public function removeDevice(Device $device): static
     {
-        if ($this->deviceConfigs->removeElement($deviceConfig)) {
+        if ($this->device->removeElement($device)) {
             // set the owning side to null (unless already changed)
-            if ($deviceConfig->getClient() === $this) {
-                $deviceConfig->setClient(null);
+            if ($device->getClient() === $this) {
+                $device->setClient(null);
             }
         }
 
@@ -269,6 +272,23 @@ class Client
     public function setTemperatureActive(bool $temperatureActive): static
     {
         $this->temperatureActive = $temperatureActive;
+
+        return $this;
+    }
+
+    public function getClientImage(): ?ClientImage
+    {
+        return $this->clientImage;
+    }
+
+    public function setClientImage(ClientImage $clientImage): static
+    {
+        // set the owning side of the relation if necessary
+        if ($clientImage->getClient() !== $this) {
+            $clientImage->setClient($this);
+        }
+
+        $this->clientImage = $clientImage;
 
         return $this;
     }

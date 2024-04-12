@@ -1,6 +1,6 @@
 
 body {
-    background: #363d47 url('/assets/images/background.jpg') top center repeat fixed;
+    background: #363d47 url('/assets/images/background.jpg') top center no-repeat fixed;
     font-family: Tahoma, Verdana, Arial, sans-serif;
     font-size: 12px;
     color: #ffffff;
@@ -118,7 +118,7 @@ ul li {
 .form .submit {
     display: block;
     height: 32px;
-    background: url('../images/form_button.png') top repeat-x;
+    background: url('/assets/images/form_button.png') top repeat-x;
     color: #ffffff;
     text-align: center;
     text-shadow: 1px 1px 0px #000000;
@@ -134,7 +134,7 @@ ul li {
 }
 
 .form .submit:hover {
-    background: url('../images/form_button.png') bottom repeat-x;
+    background: url('/assets/images/form_button.png') bottom repeat-x;
 }
 
 .form .submit:active {
@@ -179,7 +179,7 @@ div.error {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid #571c1c;
-    background: url('../images/alert_bg.png') top repeat-x;
+    background: url('/assets/images/alert_bg.png') top repeat-x;
     -webkit-box-shadow: 1px 2px 2px #323a43;
     -moz-box-shadow: 1px 2px 2px #323a43;
     box-shadow: 1px 2px 2px #323a43;
@@ -188,7 +188,7 @@ div.error {
 
 div.error h3 {
     height: 50px;
-    background: url('../images/alert_icons.png') left top no-repeat;
+    background: url('/assets/images/alert_icons.png') left top no-repeat;
     margin: 0;
     font-size: 12px;
     line-height: 50px;
@@ -205,7 +205,7 @@ div.error .hide_btn {
     position: absolute;
     right: 18px;
     top: 17px;
-    background: url('../images/alert_close_btn.png') top no-repeat;
+    background: url('/assets/images/alert_close_btn.png') top no-repeat;
     opacity: 0.7;
 }
 
@@ -221,7 +221,7 @@ div.warning {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid #493b15;
-    background: url('../images/alert_bg.png') left -50px repeat-x;
+    background: url('/assets/images/alert_bg.png') left -50px repeat-x;
     -webkit-box-shadow: 1px 2px 2px #323a43;
     -moz-box-shadow: 1px 2px 2px #323a43;
     box-shadow: 1px 2px 2px #323a43;
@@ -230,7 +230,7 @@ div.warning {
 
 div.warning h3 {
     height: 50px;
-    background: url('../images/alert_icons.png') left -50px no-repeat;
+    background: url('/assets/images/alert_icons.png') left -50px no-repeat;
     margin: 0;
     font-size: 12px;
     line-height: 50px;
@@ -247,7 +247,7 @@ div.warning .hide_btn {
     position: absolute;
     right: 18px;
     top: 17px;
-    background: url('../images/alert_close_btn.png') left -17px no-repeat;
+    background: url('/assets/images/alert_close_btn.png') left -17px no-repeat;
     opacity: 0.7;
 }
 
@@ -263,7 +263,7 @@ div.success {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid #364915;
-    background: url('../images/alert_bg.png') left -100px repeat-x;
+    background: url('/assets/images/alert_bg.png') left -100px repeat-x;
     -webkit-box-shadow: 1px 2px 2px #323a43;
     -moz-box-shadow: 1px 2px 2px #323a43;
     box-shadow: 1px 2px 2px #323a43;
@@ -272,7 +272,7 @@ div.success {
 
 div.success h3 {
     height: 50px;
-    background: url('../images/alert_icons.png') left -100px no-repeat;
+    background: url('/assets/images/alert_icons.png') left -100px no-repeat;
     margin: 0;
     font-size: 12px;
     line-height: 50px;
@@ -289,7 +289,7 @@ div.success .hide_btn {
     position: absolute;
     right: 18px;
     top: 17px;
-    background: url('../images/alert_close_btn.png') 0 -34px no-repeat;
+    background: url('/assets/images/alert_close_btn.png') 0 -34px no-repeat;
     opacity: 0.7;
 }
 
@@ -305,7 +305,7 @@ div.information {
     -moz-border-radius: 5px;
     border-radius: 5px;
     border: 1px solid #183239;
-    background: url('../images/alert_bg.png') bottom repeat-x;
+    background: url('/assets/images/alert_bg.png') bottom repeat-x;
     -webkit-box-shadow: 1px 2px 2px #323a43;
     -moz-box-shadow: 1px 2px 2px #323a43;
     box-shadow: 1px 2px 2px #323a43;
@@ -314,7 +314,7 @@ div.information {
 
 div.information h3 {
     height: 50px;
-    background: url('../images/alert_icons.png') left bottom no-repeat;
+    background: url('/assets/images/alert_icons.png') left bottom no-repeat;
     margin: 0;
     font-size: 12px;
     line-height: 50px;
@@ -331,7 +331,7 @@ div.information .hide_btn {
     position: absolute;
     right: 18px;
     top: 17px;
-    background: url('../images/alert_close_btn.png') bottom no-repeat;
+    background: url('/assets/images/alert_close_btn.png') bottom no-repeat;
     opacity: 0.7;
 }
 
@@ -353,7 +353,7 @@ div.information .hide_btn:hover {
 #userbar {
     height: 65px;
     margin: 5px;
-    background: url('../images/userbar_bg.png') top repeat-x;
+    background: url('/assets/images/userbar_bg.png') top repeat-x;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -366,7 +366,7 @@ div.information .hide_btn:hover {
 #logoarea {
         width: 180px;
     height: 65px;
-    background: url('../images/userbar_bg.png') 65px repeat-x;
+    background: url('/assets/images/userbar_bg.png') 65px repeat-x;
     -webkit-border-radius: 5px 0 0 0;
     -moz-border-radius: 5px 0 0 0;
         border-radius: 5px 0 0 0;
@@ -377,7 +377,7 @@ div.information .hide_btn:hover {
     width: 100%;
     height: 100%;
     display: block;
-    background: url('../images/logo.png') center no-repeat;
+    background: url('/assets/images/logo.png') center no-repeat;
     text-indent: -9999px;
 }
 
@@ -435,11 +435,11 @@ div.information .hide_btn:hover {
 }
 
 #navigation li:hover {
-    background: url('../images/userbar_bg.png') bottom repeat-x;
+    background: url('/assets/images/userbar_bg.png') bottom repeat-x;
 }
 
 #navigation li.activepage {
-    background: url('../images/userbar_bg.png') center repeat-x;
+    background: url('/assets/images/userbar_bg.png') center repeat-x;
 }
 
 #navigation li a {
@@ -487,7 +487,7 @@ div.information .hide_btn:hover {
 #navigation li ul li {
     height: auto;
     width: 160px;
-    background: url('../images/userbar_bg.png') top repeat-x;
+    background: url('/assets/images/userbar_bg.png') top repeat-x;
     border-right: 1px solid #343b47;
     border-bottom: 1px solid #343b47;
 }
@@ -507,56 +507,56 @@ div.information .hide_btn:hover {
 /************************ ICONS ************************/
 
 
-.icon_stats { background: url('../images/icons/icon_statistics.png') no-repeat; }
-.icon_settings { background: url('../images/icons/icon_settings.png') no-repeat; }
-.icon_email { background: url('../images/icons/icon_email.png') no-repeat; }
-.icon_logout{ background: url('../images/icons/icon_logout.png') no-repeat; }
-.icon_comment{ background: url('../images/icons/icon_comment.png') no-repeat; }
-.icon_users{ background: url('../images/icons/icon_users.png') no-repeat; }
-.icon_notify{ background: url('../images/icons/icon_notify.png') no-repeat; }
-.icon_lock{ background: url('../images/icons/icon_lock.png') no-repeat; }
-.icon_unlock{ background: url('../images/icons/icon_unlock.png') no-repeat; }
-.icon_search{ background: url('../images/icons/icon_search.png') no-repeat; }
-.icon_save{ background: url('../images/icons/icon_save.png') no-repeat; }
-.icon_calendar{ background: url('../images/icons/icon_calendar.png') no-repeat; }
-.icon_fav{ background: url('../images/icons/icon_fav.png') no-repeat; }
-.icon_folder{ background: url('../images/icons/icon_folder.png') no-repeat; }
-.icon_star{ background: url('../images/icons/icon_star.png') no-repeat; }
-.icon_star2{ background: url('../images/icons/icon_star2.png') no-repeat; }
-.icon_minus{ background: url('../images/icons/icon_minus.png') no-repeat; }
-.icon_plus{ background: url('../images/icons/icon_plus.png') no-repeat; }
-.icon_cross{ background: url('../images/icons/icon_cross.png') no-repeat; }
-.icon_check{ background: url('../images/icons/icon_check.png') no-repeat; }
-.icon_home{ background: url('../images/icons/icon_home.png') no-repeat; }
-.icon_up{ background: url('../images/icons/icon_up.png') no-repeat; }
-.icon_down{ background: url('../images/icons/icon_down.png') no-repeat; }
-.icon_left{ background: url('../images/icons/icon_left.png') no-repeat; }
-.icon_right{ background: url('../images/icons/icon_right.png') no-repeat; }
-.icon_article{ background: url('../images/icons/icon_article.png') no-repeat; }
-.icon_cut{ background: url('../images/icons/icon_cut.png') no-repeat; }
-.icon_doc{ background: url('../images/icons/icon_doc.png') no-repeat; }
-.icon_ppt{ background: url('../images/icons/icon_ppt.png') no-repeat; }
-.icon_xls{ background: url('../images/icons/icon_xls.png') no-repeat; }
-.icon_pdf{ background: url('../images/icons/icon_pdf.png') no-repeat; }
-.icon_zip{ background: url('../images/icons/icon_zip.png') no-repeat; }
-.icon_fb{ background: url('../images/icons/icon_fb.png') no-repeat; }
-.icon_twitter{ background: url('../images/icons/icon_twitter.png') no-repeat; }
-.icon_power{ background: url('../images/icons/icon_power.png') no-repeat; }
-.icon_target{ background: url('../images/icons/icon_target.png') no-repeat; }
-.icon_tag{ background: url('../images/icons/icon_tag.png') no-repeat; }
-.icon_bookmark{ background: url('../images/icons/icon_bookmark.png') no-repeat; }
-.icon_music{ background: url('../images/icons/icon_music.png') no-repeat; }
-.icon_time{ background: url('../images/icons/icon_time.png') no-repeat; }
-.icon_pen{ background: url('../images/icons/icon_pen.png') no-repeat; }
-.icon_monitor{ background: url('../images/icons/icon_monitor.png') no-repeat; }
-.icon_profile{ background: url('../images/icons/icon_profile.png') no-repeat; }
-.icon_charts{ background: url('../images/icons/icon_charts.png') no-repeat; }
-.icon_pictures{ background: url('../images/icons/icon_pictures.png') no-repeat; }
-.icon_video{ background: url('../images/icons/icon_video.png') no-repeat; }
-.icon_paste{ background: url('../images/icons/icon_paste.png') no-repeat; }
-.icon_square{ background: url('../images/icons/icon_square.png') no-repeat; }
-.icon_next{ background: url('../images/icons/icon_next.png') no-repeat; }
-.icon_prev{ background: url('../images/icons/icon_prev.png') no-repeat; }
+.icon_stats { background: url('/assets/images/icons/icon_statistics.png') no-repeat; }
+.icon_settings { background: url('/assets/images/icons/icon_settings.png') no-repeat; }
+.icon_email { background: url('/assets/images/icons/icon_email.png') no-repeat; }
+.icon_logout{ background: url('/assets/images/icons/icon_logout.png') no-repeat; }
+.icon_comment{ background: url('/assets/images/icons/icon_comment.png') no-repeat; }
+.icon_users{ background: url('/assets/images/icons/icon_users.png') no-repeat; }
+.icon_notify{ background: url('/assets/images/icons/icon_notify.png') no-repeat; }
+.icon_lock{ background: url('/assets/images/icons/icon_lock.png') no-repeat; }
+.icon_unlock{ background: url('/assets/images/icons/icon_unlock.png') no-repeat; }
+.icon_search{ background: url('/assets/images/icons/icon_search.png') no-repeat; }
+.icon_save{ background: url('/assets/images/icons/icon_save.png') no-repeat; }
+.icon_calendar{ background: url('/assets/images/icons/icon_calendar.png') no-repeat; }
+.icon_fav{ background: url('/assets/images/icons/icon_fav.png') no-repeat; }
+.icon_folder{ background: url('/assets/images/icons/icon_folder.png') no-repeat; }
+.icon_star{ background: url('/assets/images/icons/icon_star.png') no-repeat; }
+.icon_star2{ background: url('/assets/images/icons/icon_star2.png') no-repeat; }
+.icon_minus{ background: url('/assets/images/icons/icon_minus.png') no-repeat; }
+.icon_plus{ background: url('/assets/images/icons/icon_plus.png') no-repeat; }
+.icon_cross{ background: url('/assets/images/icons/icon_cross.png') no-repeat; }
+.icon_check{ background: url('/assets/images/icons/icon_check.png') no-repeat; }
+.icon_home{ background: url('/assets/images/icons/icon_home.png') no-repeat; }
+.icon_up{ background: url('/assets/images/icons/icon_up.png') no-repeat; }
+.icon_down{ background: url('/assets/images/icons/icon_down.png') no-repeat; }
+.icon_left{ background: url('/assets/images/icons/icon_left.png') no-repeat; }
+.icon_right{ background: url('/assets/images/icons/icon_right.png') no-repeat; }
+.icon_article{ background: url('/assets/images/icons/icon_article.png') no-repeat; }
+.icon_cut{ background: url('/assets/images/icons/icon_cut.png') no-repeat; }
+.icon_doc{ background: url('/assets/images/icons/icon_doc.png') no-repeat; }
+.icon_ppt{ background: url('/assets/images/icons/icon_ppt.png') no-repeat; }
+.icon_xls{ background: url('/assets/images/icons/icon_xls.png') no-repeat; }
+.icon_pdf{ background: url('/assets/images/icons/icon_pdf.png') no-repeat; }
+.icon_zip{ background: url('/assets/images/icons/icon_zip.png') no-repeat; }
+.icon_fb{ background: url('/assets/images/icons/icon_fb.png') no-repeat; }
+.icon_twitter{ background: url('/assets/images/icons/icon_twitter.png') no-repeat; }
+.icon_power{ background: url('/assets/images/icons/icon_power.png') no-repeat; }
+.icon_target{ background: url('/assets/images/icons/icon_target.png') no-repeat; }
+.icon_tag{ background: url('/assets/images/icons/icon_tag.png') no-repeat; }
+.icon_bookmark{ background: url('/assets/images/icons/icon_bookmark.png') no-repeat; }
+.icon_music{ background: url('/assets/images/icons/icon_music.png') no-repeat; }
+.icon_time{ background: url('/assets/images/icons/icon_time.png') no-repeat; }
+.icon_pen{ background: url('/assets/images/icons/icon_pen.png') no-repeat; }
+.icon_monitor{ background: url('/assets/images/icons/icon_monitor.png') no-repeat; }
+.icon_profile{ background: url('/assets/images/icons/icon_profile.png') no-repeat; }
+.icon_charts{ background: url('/assets/images/icons/icon_charts.png') no-repeat; }
+.icon_pictures{ background: url('/assets/images/icons/icon_pictures.png') no-repeat; }
+.icon_video{ background: url('/assets/images/icons/icon_video.png') no-repeat; }
+.icon_paste{ background: url('/assets/images/icons/icon_paste.png') no-repeat; }
+.icon_square{ background: url('/assets/images/icons/icon_square.png') no-repeat; }
+.icon_next{ background: url('/assets/images/icons/icon_next.png') no-repeat; }
+.icon_prev{ background: url('/assets/images/icons/icon_prev.png') no-repeat; }
 
 
 /************************ BODY ************************/
@@ -578,7 +578,7 @@ div.information .hide_btn:hover {
 }
 
 .block .titlebar {
-    background: url('../images/block_title_bg.png') repeat-x;
+    background: url('/assets/images/block_title_bg.png') repeat-x;
     -webkit-border-top-left-radius: 5px;
     -webkit-border-top-right-radius: 5px;
     -moz-border-radius-topleft: 5px;
@@ -597,7 +597,7 @@ div.information .hide_btn:hover {
     text-shadow: 1px 1px 0px #000000;
     text-transform: uppercase;
     line-height: 38px;
-    background: url('../images/block_title_bullet.png') 15px center no-repeat;
+    background: url('/assets/images/block_title_bullet.png') 15px center no-repeat;
     padding: 0 0 0 30px;
 }
 
@@ -609,7 +609,7 @@ div.information .hide_btn:hover {
     position: absolute;
     right: 10px;
     top: 12px;
-    background: url('../images/block_title_toggle.png') top no-repeat;
+    background: url('/assets/images/block_title_toggle.png') top no-repeat;
     opacity: 0.7;
 }
 
@@ -624,7 +624,7 @@ div.information .hide_btn:hover {
 }
 
 .titlebar .show {
-    background: url('../images/block_title_toggle.png') bottom no-repeat;
+    background: url('/assets/images/block_title_toggle.png') bottom no-repeat;
     -webkit-border-radius: 0px;
     -moz-border-radius: 0px;
     border-radius: 0px;
@@ -633,7 +633,7 @@ div.information .hide_btn:hover {
 .block .block_cont {
     color: #2e333b;
     padding: 10px;
-    background: #ffffff url('../images/block_cont_shadow.png') top repeat-x;
+    background: #ffffff url('/assets/images/block_cont_shadow.png') top repeat-x;
     -webkit-border-bottom-right-radius: 5px;
     -webkit-border-bottom-left-radius: 5px;
     -moz-border-radius-bottomright: 5px;
@@ -788,7 +788,7 @@ div.information .hide_btn:hover {
     position: absolute;
     top: 25px;
     left: -17px;
-    background: url('../images/action_tooltip.png') no-repeat;
+    background: url('/assets/images/action_tooltip.png') no-repeat;
     line-height: 26px;
     text-align: center;
     z-index: 999;
@@ -799,12 +799,12 @@ div.information .hide_btn:hover {
     display: block;
 }
 
-.actionbar .view { background: url('../images/action_icons.png') left top no-repeat; }
-.actionbar .view:hover { background: url('../images/action_icons.png') left bottom no-repeat; }
-.actionbar .edit { background: url('../images/action_icons.png') center top no-repeat; }
-.actionbar .edit:hover { background: url('../images/action_icons.png') center bottom no-repeat; }
-.actionbar .delete { background: url('../images/action_icons.png') right top no-repeat; }
-.actionbar .delete:hover { background: url('../images/action_icons.png') right bottom no-repeat; }
+.actionbar .view { background: url('/assets/images/action_icons.png') left top no-repeat; }
+.actionbar .view:hover { background: url('/assets/images/action_icons.png') left bottom no-repeat; }
+.actionbar .edit { background: url('/assets/images/action_icons.png') center top no-repeat; }
+.actionbar .edit:hover { background: url('/assets/images/action_icons.png') center bottom no-repeat; }
+.actionbar .delete { background: url('/assets/images/action_icons.png') right top no-repeat; }
+.actionbar .delete:hover { background: url('/assets/images/action_icons.png') right bottom no-repeat; }
 
 .gallery {
     overflow: hidden;
@@ -860,7 +860,7 @@ div.information .hide_btn:hover {
     width: 90px;
     height: 65px;
     margin: 3px;
-    background: url('../images/userbar_bg.png') top repeat-x;
+    background: url('/assets/images/userbar_bg.png') top repeat-x;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -877,12 +877,12 @@ div.information .hide_btn:hover {
 }
 
 .navbutton:hover {
-    background: url('../images/userbar_bg.png') bottom repeat-x;
+    background: url('/assets/images/userbar_bg.png') bottom repeat-x;
     color: #ffffff !important;
 }
 
 .navbutton:active {
-    background: url('../images/userbar_bg.png') center repeat-x;
+    background: url('/assets/images/userbar_bg.png') center repeat-x;
     color: #ffffff;
 }
 
@@ -911,7 +911,7 @@ div.information .hide_btn:hover {
 
 .progress .bar .percentage {
     height: 30px;
-    background: url('../images/block_title_bg.png') top repeat-x;
+    background: url('/assets/images/block_title_bg.png') top repeat-x;
     color: #B6BFCE;
     font-size: 11px;
     font-weight: bold;
@@ -933,7 +933,7 @@ div.information .hide_btn:hover {
     height: 35px;
     display: block;
     margin: 0 auto;
-    background: url('../images/logo.png') no-repeat;
+    background: url('/assets/images/logo.png') no-repeat;
     text-indent: -9999px;
 }
 
@@ -951,7 +951,7 @@ div.information .hide_btn:hover {
 #loginbox #loginform {
     margin: 10px 0 0 0;
     padding: 15px;
-    background: url('../images/loginbox_bg.png') repeat;
+    background: url('/assets/images/loginbox_bg.png') repeat;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -962,14 +962,14 @@ div.information .hide_btn:hover {
 #loginbox #username_field {
     width: 250px;
     height:36px;
-    background: url('../images/loginbox_username.png') repeat;
+    background: url('/assets/images/loginbox_username.png') repeat;
 }
 
 #loginbox #password_field {
     width: 250px;
     height:36px;
     margin: 5px 0 0 0;
-    background: url('../images/loginbox_password.png') repeat;
+    background: url('/assets/images/loginbox_password.png') repeat;
 }
 
 #loginbox #username_field input, #loginbox #password_field input {
@@ -989,7 +989,7 @@ div.information .hide_btn:hover {
 #loginbutton {
     display: block;
     height: 32px;
-    background: url('../images/form_button.png') top repeat-x;
+    background: url('/assets/images/form_button.png') top repeat-x;
     color: #ffffff;
     text-align: center;
     text-shadow: 1px 1px 0px #000000;
@@ -1022,7 +1022,7 @@ div.information .hide_btn:hover {
 }
 
 #loginbutton:hover {
-    background: url('../images/form_button.png') bottom repeat-x;
+    background: url('/assets/images/form_button.png') bottom repeat-x;
 }
 
 #loginbutton:active {
@@ -1098,7 +1098,7 @@ div.information .hide_btn:hover {
 #date {
     width: 85px;
     height: 27px;
-    background: url('../images/userbar_bg.png') center repeat-x;
+    background: url('/assets/images/userbar_bg.png') center repeat-x;
     float: right;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -1124,7 +1124,7 @@ div.information .hide_btn:hover {
 .datediv {
     width: 85px;
     height: 27px;
-    background: url('../images/userbar_bg.png') center repeat-x;
+    background: url('/assets/images/userbar_bg.png') center repeat-x;
     float: right;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -1148,7 +1148,7 @@ div.information .hide_btn:hover {
 }
 
 .detimage_zombie {
-    background: url('../images/loading.gif') no-repeat center center;
+    background: url('/assets/images/loading.gif') no-repeat center center;
 }
 
 .dataTables_processing {
@@ -1165,4 +1165,12 @@ div.information .hide_btn:hover {
 	color: #999;
 	font-size: 14px;
 	background-color: white;
+}
+
+.dt-type-numeric {
+    text-align: center !important;
+}
+
+table.dataTable.compact thead th {
+    padding: 1px !important;
 }

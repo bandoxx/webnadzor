@@ -12,45 +12,6 @@
       return false;
     });
 
-    $('#clear-confirm').dialog({
-      resizable: false,
-      autoOpen: false,
-      show: {
-        effect: 'drop',
-        duration: 200
-      },
-      hide: {
-        effect: 'drop',
-        duration: 200
-      },
-      modal: true,
-      buttons: {
-        'Obriši': function() {
-          $.post(page_url + 'login_log/clear_list', {troll:Math.random()}, function(data, s, r) {
-            if (r.getResponseHeader('Requires-Auth') == 1) {
-              $(location).attr('href', page_url);
-              return false;
-            }
-            if (data == 'ok') {
-              $(location).attr('href', page_url + 'login_log');
-            }
-            else {
-              alert('Greška! Molimo pokušajte ponovo');
-              console.log('error data: ' + data);
-            }
-          });
-        },
-        'Odustani': function() {
-          $(this).dialog('close');
-        }
-      }
-    });
-
-    $('#logclear').click(function() { /* CLEAR LOGIN LOG */
-      $('#clear-confirm').dialog('open');
-      return false;
-    });
-
     $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
     $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
     $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
@@ -61,9 +22,10 @@
     $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
     $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
 
-    $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
-    $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-    var otable = $('#login_log_table').dataTable({
+    let tableId = '#login_log_table';
+    $(tableId).wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+    $(tableId +' tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+    $(tableId).dataTable({
       pageLength: 50,
       language: {
         search: "Pretraga",
@@ -85,7 +47,7 @@
 
 {% block navigation %}
     <li><a href="{url}data_logarchive" class="icon_save">Arhiva</a></li>
-    <li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
@@ -101,7 +63,7 @@
         <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
           Obrađujem...
         </div>
-        <table id="login_log_table" class="display hover"><!-- Table Wrapper Begin -->
+        <table id="login_log_table" class="display compact hover"><!-- Table Wrapper Begin -->
           <thead>
           <tr role="row">
             <th>Datum</th>

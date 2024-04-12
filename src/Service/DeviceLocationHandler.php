@@ -7,9 +7,9 @@ use App\Entity\Device;
 use App\Entity\User;
 use App\Entity\UserDeviceAccess;
 use App\Model\DeviceOverviewModel;
+use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
-use App\Repository\UserDeviceAccessRepository;
 use App\Service\Device\UserAccess;
 
 class DeviceLocationHandler
@@ -18,7 +18,7 @@ class DeviceLocationHandler
     public function __construct(
         private DeviceRepository $deviceRepository,
         private DeviceDataRepository $deviceDataRepository,
-        private UserDeviceAccessRepository $deviceAccessRepository,
+        private ClientRepository $clientRepository,
         private UserAccess $userAccess
     ) {}
 
@@ -39,9 +39,9 @@ class DeviceLocationHandler
         return $deviceLocations;
     }
 
-    public function getClientDeviceLocations(Client $client): array
+    public function getClientDeviceLocations($clientId): array
     {
-        $devices = $this->deviceRepository->findDevicesByClient($client);
+        $devices = $this->deviceRepository->findDevicesByClient($clientId);
 
         $deviceLocations = [];
 

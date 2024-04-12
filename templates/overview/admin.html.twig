@@ -1,0 +1,75 @@
+{% extends 'overview/overview.html.twig' %}
+
+{% block navigation %}
+<li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
+<li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="block_cont" style="padding: 4px;">
+                <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
+                    <div class="data-table-top"></div>
+                    <div class="clear"></div>
+                    <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
+                        Obrađujem...
+                    </div>
+                    <table id="table" class="display compact hover"><!-- Table Wrapper Begin -->
+                        <thead>
+                        <tr role="row">
+                            <th>Klijent</th>
+                            <th>Broj uredjaja</th>
+                            <th>Online uredjaja</th>
+                            <th>Offline uredjaja</th>
+                            <th>Broj aktivnih alarma</th>
+                            <th>Detalji</th>
+                        </tr>
+                        </thead>
+
+                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        {% set style = 'odd' %}
+                        {% for client in clients %}
+                            <tr class="{{ style }}">
+                                <td class=" sorting_1">{{ client.name }}</td>
+                                <td class="">{{ client.numberOfDevices }}</td>
+                                <td class="">{{ client.onlineDevices }}</td>
+                                <td class="">
+                                    {% if client.offlineDevices %}
+                                        <span class="red">{{ client.offlineDevices }}</span>
+                                    {% else %}
+                                        <span class="green">{{ client.offlineDevices }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if client.alarmsOn %}#}
+                                        <span class="red">{{ client.alarmsOn }}</span>
+                                    {% else %}
+                                        <span class="green">{{ client.alarmsOn }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 100px">
+                                    <div style="height: 3px;">&nbsp;</div>
+                                    <div class="actionbar">
+                                        <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                            {% if style == 'odd' %}
+                                {% set style = 'even' %}
+                            {% else %}
+                                {% set style = 'odd' %}
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="clear"></div>
+                    <div class="data-table-bottom"></div>
+                    <div class="clear"></div>
+                </div><!-- Table Wrapper End -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

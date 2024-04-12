@@ -1,12 +1,4 @@
 {% extends 'base.html.twig' %}
-{% set client = app.user.client %}
-{% block title %}
-    {% if client is not null %}
-        {{ client.name }}
-    {% else %}
-        Administracija
-    {% endif %}
-{% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
@@ -33,7 +25,6 @@
         $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
 
         $('#device_add').click(function() { /* ADD DEVICE */
-          console.log('click');
           $('#add-form').dialog({
             autoOpen: true,
             show: {
@@ -88,7 +79,9 @@
 
         $('.radioui').buttonset();
 
-        var otable = $('#otable').dataTable({
+        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        var table = $('#table').dataTable({
           pageLength: 10,
           language: {
             search: "Pretraga",
@@ -106,7 +99,7 @@
 
         /* UPDATE TABLE */
         setInterval(function() {
-          otable.fnReloadAjax()
+          table.fnReloadAjax()
         },60000);
 
         var delete_parent, delete_id, delaction, delete_devnam = '';
@@ -200,136 +193,18 @@
 
     {% block navigation %}
         {% if app.user.permission == 4 %}
-            <li><a href="{{ path('app_device_list') }}" class="icon_square">Mjerni uređaji</a></li>
-            <li><a href="{{ path('app_icon_index') }}" class="icon_pictures">Uredi ikone</a></li>
-            <li><a href="{{ path('app_clientftp_read') }}" class="icon_bookmark">FTP podaci</a></li>
+            <li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
         {% endif %}
 
-        {% if app.user.permission >= 3 %}
-            <li><a href="{{ path('app_user_getusers') }}" class="icon_users">Korisnici</a></li>
-            <li><a href="{{ path('app_loginlog_getloginlogs') }}" class="icon_article">Dnevnik prijava</a></li>
+        {% if app.user.permission > 3 %}
+          <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_square">Mjerni uređaji</a></li>
+          <li><a href="{{ path('app_icon_index', {clientId: clientId}) }}" class="icon_pictures">Uredi ikone</a></li>
+          <li><a href="{{ path('app_clientftp_read', {clientId: clientId}) }}" class="icon_bookmark">FTP podaci</a></li>
+          <li><a href="{{ path('app_user_getusers', {clientId: clientId}) }}" class="icon_users">Korisnici</a></li>
+          <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_article">Dnevnik prijava</a></li>
         {% endif %}
         <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
     {% endblock %}
 
 {% block content %}
-    <div class="clear"></div>
-    <div id="body">
-        <div id="devdata" class="block big"><!-- Block Begin -->
-            {% if client.mapActive %}
-
-            <div class="titlebar">
-                <h3>Lokacije</h3>
-                <a href="#" class="toggle">&nbsp;</a>
-            </div>
-            <div class="block_cont" style="padding:4px;">
-                <div id="map_canvas" style="height: 600px;"></div>
-            </div>
-
-            {% elseif client.temperatureActive %}
-
-            <div class="titlebar">
-                <h3>Trenutni podaci</h3>
-                <a href="#" class="toggle">&nbsp;</a>
-            </div>
-            <div class="block_cont" style="padding:4px;">
-                <div style="margin-bottom:10px;">
-                    {% for device in devices_table %}
-                        <div class="dets" style="padding: 15px; margin-top: 10px; margin-left: 5px; font-size:11px;">
-                            <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.location }}<br>{{ device.name }}</span><br><span
-                                    style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }}
-                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
-                                    <br><span class="red">Uređaj offline {{ device.deviceDate|timeAgo }}</span>
-                                {% endif %}
-                            </span>
-                            <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
-                                <img alt="t1" src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}">
-                            </div>
-                            <span style="color: #515d6b;">Trenutna:</span> <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br><span
-                                    style="color: #515d6b;">Maksimalna:</span> <span style="float: right;"
-                                                                                     id="t1max_value">{{ device.temperatureMax}}</span><br><br><span
-                                    style="color: #515d6b;">Minimalna:</span> <span style="float: right;"
-                                                                                    id="t1min_value">{{ device.temperatureMin }}</span><br><br><span
-                                    style="color: #515d6b;">MKT:</span> <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br><span
-                                    style="color: #515d6b;">R. vlažnost:</span> <span style="float: right;"
-                                                                                      id="rh1_value">{{ device.relativeHumidity }}</span>
-                        </div>
-                    {% endfor %}
-                    <div class="clear"></div>
-                </div>
-            </div>
-
-            {% endif %}
-        </div><!-- Block End -->
-
-        <div class="block big"><!-- Block Begin -->
-            <div class="titlebar">
-                <h3>PREGLED MJERNIH MJESTA</h3>
-                <a href="#" class="toggle">&nbsp;</a>
-            </div>
-            <div class="block_cont" style="padding: 4px;">
-                <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
-                    <div class="data-table-top"></div>
-                    <div class="clear"></div>
-                        <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
-                            Obrađujem...
-                        </div>
-                        <table id="otable" class="display compact hover"><!-- Table Wrapper Begin -->
-                            <thead>
-                            <tr role="row">
-                                <th class="sorting_disabled">Br.</th>
-                                <th>Lokacija</th>
-                                <th>Naziv mjernog mjesta</th>
-                                <th>Status</th>
-                                <th>Alarm napajanja</th>
-                                <th class="sorting_disabled">Podaci</th>
-                            </tr>
-                            </thead>
-
-                            <tbody role="alert" aria-live="polite" aria-relevant="all">
-                            {% set style = 'odd' %}
-                            {% for device in devices_table %}
-                                <tr class="{{ style }}">
-                                    <td class=" sorting_1">{{ device.id }}</td>
-                                    <td class="">{{ device.location }}</td>
-                                    <td class="">{{ device.name }}</td>
-                                    <td class="">
-                                        {% if device.online %}
-                                            <span class="green">Online</span>
-                                        {% else %}
-                                            <span class="red">Offline</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="">
-                                        {% if device.alarm %}
-                                            <span class="red">Aktivan</span>
-                                        {% else %}
-                                            <span class="green">Nije aktivan</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="">
-                                        <div style="height: 3px;">&nbsp;</div>
-                                        <div id="{{ device.id }}" data-devnam="{{ device.name }}" class="actionbar">
-                                            <a href="{{ path('app_device_entry_show', {id: device.id, entry: device.entry }) }}"
-                                               class="action view">
-                                                <span>Pregled</span>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% if style == 'odd' %}
-                                    {% set style = 'even' %}
-                                {% else %}
-                                    {% set style = 'odd' %}
-                                {% endif %}
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    <div class="clear"></div>
-                    <div class="data-table-bottom"></div>
-                    <div class="clear"></div>
-                </div><!-- Table Wrapper End -->
-            </div>
-        </div><!-- Block End -->
-    </div>
 {% endblock %}

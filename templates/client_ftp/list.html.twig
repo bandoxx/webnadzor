@@ -2,7 +2,7 @@
 
 {% block navigation %}
     <li><a href="#" id="editinfo" class="icon_pen">Izmjeni podatke</a></li>
-    <li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block javascripts %}
@@ -59,7 +59,7 @@
                     username: $("#username").val()
                   },
                   success: function(result) {
-                    $(location).attr('href', "{{ path('app_clientftp_read') }}")
+                    $(location).attr('href', "{{ path('app_clientftp_read', clientId: clientId) }}")
                   },
                   error: function(result) {
                     alert('Greška! Molimo pokušajte ponovo');

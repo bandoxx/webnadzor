@@ -16,7 +16,7 @@ class Device
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'deviceConfigs')]
+    #[ORM\ManyToOne(inversedBy: 'device')]
     private ?Client $client = null;
 
     #[ORM\Column(length: 255)]

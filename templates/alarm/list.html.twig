@@ -13,17 +13,17 @@
         });
 
         $('#preview').click(function() { /* PREVIEW DATA */
-          $('#exportform').attr('action', "{{ path('app_alarm_export', {id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val())
+          $('#exportform').attr('action', "{{ path('app_alarm_export', {clientId: clientId, id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val())
             .submit();
         });
 
         $('#xls').click(function() { /* DOWNLOAD XLS */
-          $('#exportform').attr('action', "{{ path('app_alarm_export', {id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=xlsx")
+          $('#exportform').attr('action', "{{ path('app_alarm_export', {clientId: clientId, id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=xlsx")
             .submit();
         });
 
         $('#pdf').click(function() { /* DOWNLOAD XLS */
-          $('#exportform').attr('action', "{{ path('app_alarm_export', {id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=pdf")
+          $('#exportform').attr('action', "{{ path('app_alarm_export', {clientId: clientId, id: device.id}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=pdf")
             .submit();
         });
 

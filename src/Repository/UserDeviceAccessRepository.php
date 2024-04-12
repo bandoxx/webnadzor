@@ -22,6 +22,13 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
         parent::__construct($registry, UserDeviceAccess::class);
     }
 
+    public function deleteAccessesRelatedToDevice(int $deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            "DELETE FROM user_device_access WHERE device_id = $deviceId",
+        )->free();
+    }
+
     public function findAccessibleEntries(User $user): array
     {
         $accesses = $this->findBy(['user' => $user]);

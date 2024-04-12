@@ -42,10 +42,10 @@
               var error = 'Greška! Pokušajte ponovo.';
 
               $('#infomsg').hide().html(loading).fadeIn(1000, function() {
-                $.post("{{ path('app_device_edit', {id: device.id}) }}", form_data,
+                $.post("{{ path('app_device_edit', {clientId, clientId, id: device.id}) }}", form_data,
                   function(data, s, r) {
                     if (r.getResponseHeader('Requires-Auth') == 1) {
-                      $(location).attr('href', "{{ path('app_home_overview') }}");
+                      $(location).attr('href', "{{ path('client_overview', {clientId: clientId}) }}");
                       return false;
                     }
 
@@ -93,12 +93,12 @@
         <li><a href="#" id="apply" class="icon_check">Spremi promjene</a></li>
         {% if app.user.permission > 3 %}
             {% if device.parserActive %}
-                <li><a href="{{ path('app_device_toggledeviceparser', {id: device.id}) }}" class="icon_minus">Isključi parser</a></li>
+                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}" class="icon_minus">Isključi parser</a></li>
             {% else %}
-                <li><a href="{{ path('app_device_toggledeviceparser', {id: device.id}) }}" class="icon_plus">Uključi parser</a></li>
+                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}" class="icon_plus">Uključi parser</a></li>
             {% endif %}
         {% endif %}
-        <li><a href="{{ path('app_device_list') }}" class="icon_left">Povratak</a></li>
+        <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
     </ul>
 {% endblock %}
 
@@ -109,7 +109,7 @@
 {% endblock %}
 
 {% block content %}
-    <form id="settingsform" class="form" action="{{ path('app_device_edit', {id: device.id }) }}" method="POST">
+    <form id="settingsform" class="form" action="{{ path('app_device_edit', {clientId: clientId, id: device.id }) }}" method="POST">
         <div id="main" class="container_12"><!-- Body Wrapper Begin -->
             <div id="body">
                 <div class="block big"><!-- Block Begin -->

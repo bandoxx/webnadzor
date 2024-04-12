@@ -22,9 +22,9 @@ class DeviceRepository extends ServiceEntityRepository
         parent::__construct($registry, Device::class);
     }
 
-    public function findDevicesByClient(Client $client)
+    public function findDevicesByClient($clientId)
     {
-        return $this->findBy(['client' => $client]);
+        return $this->findBy(['client' => $clientId]);
     }
 
     public function doesMoreThenOneXmlNameExists(string $xmlName)

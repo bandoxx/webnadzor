@@ -22,6 +22,13 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceAlarm::class);
     }
 
+    public function deleteAlarmsRelatedToDevice(int $deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            "DELETE FROM device_alarm WHERE device_id = $deviceId",
+        )->free();
+    }
+
     public function findByDevice(Device $device): DeviceAlarm
     {
         return $this->findOneBy(['device' => $device], ['deviceDate' => 'DESC']);

@@ -14,20 +14,21 @@
     {% endif %}
 
     <div id="loginbox">
-        <form method="POST">
             <div id="loginform">
-                <div class="form-group">
-                    <input type="text" value="{{ last_username }}" class="form-control" name="username" id="username" aria-describedby="username" placeholder="Korisničko ime">
-                </div>
-                <div class="form-group">
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Zaporka">
-                </div>
-                <input type="hidden" name="_csrf_token"
-                       value="{{ csrf_token('authenticate') }}"
-                >
-                <div id="buttonline">
-                    <input type="submit" id="loginbutton" class="float_left width_4" value="Prijava" />
-                </div>
+                <form name="login" method="POST">
+                    <div id="username_field">
+                        <input type="text" value="{{ last_username }}" class="form-control" name="username" aria-describedby="username" placeholder="Korisničko ime">
+                    </div>
+                    <div id="password_field">
+                        <input type="password" class="form-control" name="password" placeholder="Zaporka">
+                    </div>
+                    <input type="hidden" name="_csrf_token"
+                           value="{{ csrf_token('authenticate') }}"
+                    >
+                    <div id="buttonline">
+                        <input type="submit" id="loginbutton" class="float_left width_4" value="Prijava" />
+                    </div>
+                </form>
             </div>
             {#            <div id="loginform">#}
             {#                <form method="post">#}
@@ -41,7 +42,6 @@
             {#                        <input type="submit" id="loginbutton" class="float_left width_4" value="Prijava" />#}
             {#                    </div>#}
             {#                    <div id="logininfo" style="display:none"></div>#}
-        </form>
     </div>
 {% endblock %}
 

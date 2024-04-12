@@ -29,7 +29,7 @@
           'bJQueryUI': true,
           'bPaginate': false,
           'bProcessing': true,
-          ajax: "{{ path('app_api_devicedataarchive_getdailydata', {id: device.id, entry: entry}) }}",
+          ajax: "{{ path('app_api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}",
           'bInfo': false,
           'bFilter': false,
           columnDefs: [
@@ -48,7 +48,7 @@
           if (!$(this).parent().hasClass('activepage')) {
             let table = $('#otable').DataTable();
 
-            table.ajax.url("{{ path('app_api_devicedataarchive_getdailydata', {id: device.id, entry: entry}) }}").load();
+            table.ajax.url("{{ path('app_api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}").load();
 
             $(this).parent().attr('class','activepage');
             $('#monthly').parent().attr('class','');
@@ -66,7 +66,7 @@
           if (!$(this).parent().hasClass('activepage')) {
             let table = $('#otable').DataTable();
 
-            table.ajax.url("{{ path('app_api_devicedataarchive_getmonthlydata', {id: device.id, entry: entry}) }}").load();
+            table.ajax.url("{{ path('app_api_devicedataarchive_getmonthlydata', {clientId: clientId, id: device.id, entry: entry}) }}").load();
             $(this).parent().attr('class','activepage');
             $('#daily').parent().attr('class','');
             $('#archive_typetitle').fadeOut(300, function() {
@@ -86,7 +86,7 @@
 {% block navigation %}
     <li class="activepage"><a href="#" id="daily" class="icon_down">Dnevna arhiva</a></li>
     <li><a href="#" id="monthly" class="icon_calendar">Mjesečna arhiva</a></li>
-    <li><a href="{{ path('app_device_entry_show', {id: device.id, entry: entry}) }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('app_device_entry_show', {clientId: clientId, id: device.id, entry: entry}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}

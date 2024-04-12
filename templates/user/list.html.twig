@@ -3,9 +3,9 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-      $(document).ready(function() {
+      $(document).ready(function () {
 
-        $('.toggle').click(function() { /* BLOCK TOGGLE */
+        $('.toggle').click(function () { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
           $(this).parent().parent().children('.block_cont').slideToggle(300);
           $(this).parent().toggleClass('show');
@@ -13,7 +13,7 @@
         });
 
         var delete_parent, delete_id, delete_username = '';
-        $('.delete').click(function() { /* DELETE USER */
+        $('.delete').click(function () { /* DELETE USER */
           delete_parent = $(this).parent();
           delete_id = $(delete_parent).attr('id');
 
@@ -32,26 +32,25 @@
             resizable: false,
             modal: true,
             buttons: {
-              'Obriši korisnika': function() {
-                $.post(page_url + 'users/delete', {user_id:delete_id,troll:Math.random()}, function(deldata, s, r) {
+              'Obriši korisnika': function () {
+                $.post(page_url + 'users/delete', {user_id: delete_id, troll: Math.random()}, function (deldata, s, r) {
                   if (r.getResponseHeader('Requires-Auth') == 1) {
                     $(location).attr('href', page_url);
                     return false;
                   }
                   if (deldata == 'ok') {
                     $(location).attr('href', page_url + 'users');
-                  }
-                  else {
+                  } else {
                     alert('Greška! Molimo pokušajte ponovo');
                     console.log('error data: ' + deldata);
                   }
                 });
               },
-              'Odustani': function() {
+              'Odustani': function () {
                 $(this).dialog('close');
               }
             },
-            close: function() {
+            close: function () {
               $('#del_username').html('');
               $(this).dialog('destroy');
             }
@@ -85,7 +84,7 @@
         // });/* VALIDATION ENGINE */
 
         var edit_parent, edit_id, edit_username, edit_permissions, edit_ad = '';
-        $('div.actionbar a.edit').click(function() { /* EDIT ICON */
+        $('div.actionbar a.edit').click(function () { /* EDIT ICON */
 
           edit_parent = $(this).parent();
 
@@ -100,46 +99,41 @@
             $('#r4').prop('checked', true).button('refresh');
 
             $('#newallowed_devices').multiselect('enable');
-            find('input[name="multiselect_newallowed_devices"]').each(function(){
-				$(this).prop('checked', true);
-                if ($.inArray($(this).val(), edit_ad)) {
-                    $(this).prop('checked', true);
-                }
+            $('input[name="multiselect_newallowed_devices"]').each(function () {
+              $(this).prop('checked', true);
+              if ($.inArray($(this).val(), edit_ad)) {
+                $(this).prop('checked', true);
+              }
             });
             $('#newallowed_devices').multiselect('refresh');//.multiselect('disable');
-          }
-          else if (edit_permissions == 2) {
+          } else if (edit_permissions == 2) {
             $('#r5').prop('checked', true).button('refresh');
-          }
-          else if (edit_permissions == 3) {
+          } else if (edit_permissions == 3) {
             $('#r6').prop('checked', true).button('refresh');
           }
 
-          $('#c1').click(function(){
+          $('#c1').click(function () {
             if ($('#c1').is(':checked')) {
               $('#editform input[type=password]').removeAttr('disabled');
-            }
-            else {
+            } else {
               $('#editform input[type=password]').attr('disabled', 'disabled');
             }
           });
-          $('#c2').click(function(){
+          $('#c2').click(function () {
             if ($('#c2').is(':checked')) {
               $('#editform input[type=radio]').button('enable');
               if (edit_permissions == 1) {
                 $widget.multiselect('enable');
               }
-            }
-            else {
+            } else {
               $('#editform input[type=radio]').button('disable');
               $widget.multiselect('disable');
             }
           });
-          $('#editform input[type=radio]').click(function(){
+          $('#editform input[type=radio]').click(function () {
             if ($('#r4').is(':checked')) {
               $widget.multiselect('enable');
-            }
-            else {
+            } else {
               $widget.multiselect('disable');
             }
           });
@@ -156,15 +150,15 @@
             resizable: false,
             modal: true,
             buttons: {
-              'Spremi promjene': function() {
+              'Spremi promjene': function () {
                 $('#editform').submit();
                 return false;
               },
-              'Odustani': function() {
+              'Odustani': function () {
                 $(this).dialog('close');
               }
             },
-            close: function() {
+            close: function () {
               $('#editform').validationEngine('hideAll');
               $('#editform input[type=password]').val('').attr('disabled', 'disabled');
               $('#editform label').removeClass('ui-state-active');
@@ -179,24 +173,18 @@
 
         var locations;
         $('#addform').validationEngine('attach', {
-          onValidationComplete: function(form, status){
+          onValidationComplete: function (form, status) {
             var form_data = $('#addform').serialize();
             if (status === true) {
               locations = [];
-              $('#allowed_devices').multiselect('getChecked').each(function() {
+              $('#allowed_devices').multiselect('getChecked').each(function () {
                 locations.push($(this).val());
               })
               locations = locations.join(',');
-              $.post("{{ path('app_user_createuser') }}", $.param({troll:Math.random(),locations:locations}) + "&" + form_data, function(data, s, r) {
-                console.log(r);
-                if (r.getResponseHeader('Requires-Auth') == 1) {
-                  $(location).attr('href', page_url);
-                  return false;
-                }
+              $.post("{{ path('app_user_createuser', {clientId: clientId}) }}", $.param({locations: locations}) + "&" + form_data, function (data, s, r) {
                 if (r.status === 201) {
-                  $(location).attr('href', "{{ path('app_user_getusers') }}");
-                }
-                else {
+                  $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}");
+                } else {
                   alert('Greška! Molimo pokušajte ponovo');
                   console.log('response data: ' + data);
                 }
@@ -206,12 +194,11 @@
           }
         });/* VALIDATION ENGINE */
 
-        $('#useradd').click(function() { /* ADD USER */
-          $('#addform input[type=radio]').click(function(){
+        $('#useradd').click(function () { /* ADD USER */
+          $('#addform input[type=radio]').click(function () {
             if ($('#r1').is(':checked')) {
               $widget.multiselect('enable');
-            }
-            else {
+            } else {
               $widget.multiselect('disable');
             }
           });
@@ -228,15 +215,15 @@
             resizable: false,
             modal: true,
             buttons: {
-              'Kreiraj korisnika': function() {
+              'Kreiraj korisnika': function () {
                 $('#addform').submit();
                 return false;
               },
-              'Odustani': function() {
+              'Odustani': function () {
                 $(this).dialog('close');
               }
             },
-            close: function() {
+            close: function () {
               $('#addform').validationEngine('hideAll');
               $('#addform input[type=text], input[type=password]').val('');
               $('#addform label').removeClass('ui-state-active');
@@ -277,10 +264,10 @@
           'aoColumnDefs': [{
             bSortable: false, aTargets: ['sorting_disabled']
           }],
-          'fnDrawCallback': function(oSettings) {
+          'fnDrawCallback': function (oSettings) {
             if (oSettings.bSorted || oSettings.bFiltered) {
               for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
-                $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i+1);
+                $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i + 1);
               }
             }
           }
@@ -291,8 +278,8 @@
 {% endblock %}
 
 {% block navigation %}
-<li><a href="#" id="useradd" class="icon_plus">Dodaj korisnika</a></li>
-<li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+    <li><a href="#" id="useradd" class="icon_plus">Dodaj korisnika</a></li>
+    <li><a href="{{ path('client_overview', {clientId: client.id}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
@@ -303,25 +290,34 @@
         </p>
     </div>
     <div id="add-form" title="Dodaj korisnika" style="display:none;">
-        <p style="border: 1px solid transparent; padding: 0.3em;">Username must be unique.</p>
-        <form id="addform" class="form" action="{{ path('app_user_createuser') }}" method="POST">
+        <p style="border: 1px solid transparent; padding: 0.3em;">Korisničko ime mora biti unikatno.</p>
+        <form id="addform" class="form" action="{{ path('app_user_createuser', {clientId: clientId}) }}" method="POST">
             <fieldset>
                 <div class="form_row">
                     <label for="username" style="display:block; margin-top:12px;">Korisničko ime</label>
-                    <input type="text" name="username" id="username" class="input validate[required,minSize[6],maxSize[18],ajax[ajax_username]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                    <input type="text" name="username" id="username"
+                           class="input validate[required,minSize[6],maxSize[18],ajax[ajax_username]] text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;"/>
                 </div>
                 <div class="form_row">
                     <label for="password" style="display:block; margin-top:12px;">Zaporka</label>
-                    <input type="password" name="password" id="password" class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                    <input type="password" name="password" id="password"
+                           class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;"/>
                 </div>
                 <div class="form_row">
                     <label for="password_again" style="display:block; margin-top:12px;">Zaporka (ponoviti)</label>
-                    <input type="password" name="password_again" id="password_again" class="input validate[required,equals[password]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                    <input type="password" name="password_again" id="password_again"
+                           class="input validate[required,equals[password]] text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;"/>
                 </div>
                 <div class="form_row radioui">
-                    <input type="radio" id="r1" name="permissions" class="radio validate[required]" value="1"/><label for="r1">Korisnik</label>
-                    <input type="radio" id="r2" name="permissions" class="radio validate[required]" value="2"/><label for="r2">Moderator</label>
-                    <input type="radio" id="r3" name="permissions" class="radio validate[required]" value="3"/><label for="r3">Admin</label>
+                    <input type="radio" id="r1" name="permissions" class="radio validate[required]" value="1"/><label
+                            for="r1">Korisnik</label>
+                    <input type="radio" id="r2" name="permissions" class="radio validate[required]" value="2"/><label
+                            for="r2">Moderator</label>
+                    <input type="radio" id="r3" name="permissions" class="radio validate[required]" value="3"/><label
+                            for="r3">Admin</label>
                 </div>
                 <div class="form_row">
                     <label for="allowed_devices">Dozvoljene lokacije</label>
@@ -335,26 +331,35 @@
         </form>
     </div>
     <div id="edit-form" title="" style="display:none;">
-        <form id="editform" class="form" action="{url}" method="POST">
+        <form id="editform" class="form" action="#" method="POST">
             <fieldset>
                 <div class="form_row radioui" style="margin-top:10px;">
-                    <input type="checkbox" id="c1" name="change_password" value="1"/><label for="c1">Promjeni zaporku</label>
+                    <input type="checkbox" id="c1" name="change_password" value="1"/><label for="c1">Promjeni
+                        zaporku</label>
                 </div>
                 <div class="form_row">
                     <label for="password" style="display:block; margin-top:12px;">Nova zaporka</label>
-                    <input type="password" name="password" id="newpassword" class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
+                    <input type="password" name="password" id="newpassword"
+                           class="input validate[required,minSize[8]] text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
                 </div>
                 <div class="form_row">
                     <label for="password_again" style="display:block; margin-top:12px;">Zaporka (ponoviti)</label>
-                    <input type="password" name="password_again" id="newpassword_again" class="input validate[required,equals[newpassword]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
+                    <input type="password" name="password_again" id="newpassword_again"
+                           class="input validate[required,equals[newpassword]] text ui-widget-content ui-corner-all"
+                           style="display:block; width:95%; padding: .4em;" disabled="disabled"/>
                 </div>
                 <div class="form_row radioui" style="margin-top:25px;">
-                    <input type="checkbox" id="c2" name="change_permissions" value="1"/><label for="c2">Promjeni dozvole</label>
+                    <input type="checkbox" id="c2" name="change_permissions" value="1"/><label for="c2">Promjeni
+                        dozvole</label>
                 </div>
                 <div class="form_row radioui">
-                    <input type="radio" id="r4" name="permissions" class="radio validate[required]" value="1" disabled="disabled"/><label for="r4">Korisnik</label>
-                    <input type="radio" id="r5" name="permissions" class="radio validate[required]" value="2" disabled="disabled"/><label for="r5">Moderator</label>
-                    <input type="radio" id="r6" name="permissions" class="radio validate[required]" value="3" disabled="disabled"/><label for="r6">Admin</label>
+                    <input type="radio" id="r4" name="permissions" class="radio validate[required]" value="1"
+                           disabled="disabled"/><label for="r4">Korisnik</label>
+                    <input type="radio" id="r5" name="permissions" class="radio validate[required]" value="2"
+                           disabled="disabled"/><label for="r5">Moderator</label>
+                    <input type="radio" id="r6" name="permissions" class="radio validate[required]" value="3"
+                           disabled="disabled"/><label for="r6">Admin</label>
                 </div>
                 <div class="form_row">
                     <label for="allowed_devices">Dozvoljene lokacije</label>
@@ -392,11 +397,11 @@
                         <td class="">{{ user.permissionName }}</td>
                         <td class="">
                             {% if user.permission == 1 %}
-                            <select class="select">
-                                {% for location in user.availableLocations %}
-                                    <option value="">{{ location.name }} - {{ location.location }}</option>
-                                {% endfor %}
-                            </select>
+                                <select class="select">
+                                    {% for location in user.availableLocations %}
+                                        <option value="">{{ location.name }} - {{ location.location }}</option>
+                                    {% endfor %}
+                                </select>
                             {% else %}
                                 Sve
                             {% endif %}

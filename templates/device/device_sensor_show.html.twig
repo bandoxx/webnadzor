@@ -4,18 +4,17 @@
 {{ parent() }}
     <script>
 
-      //
-      //   $('.toggle').click(function() { /* BLOCK TOGGLE */
-      //     $(this).toggleClass('show');
-      //     $(this).parent().parent().children('.block_cont').slideToggle(300);
-      //     $(this).parent().toggleClass('show');
-      //     return false;
-      //   });
-      //
-      //   $('.hide_btn').click(function() { /* ALERT HIDE */
-      //     $(this).parent().fadeOut(300);
-      //     return false;
-      //   });
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        $('.hide_btn').click(function() { /* ALERT HIDE */
+          $(this).parent().fadeOut(300);
+          return false;
+        });
       //
       //   setInterval(function() {
       //     /////////////////////////// DATA
@@ -203,7 +202,7 @@
 
                       let chart = $('#'+containerId).highcharts();
                       chart.showLoading('Učitavam...');
-                      $.getJSON("{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry }) }}?type=" + type + "&fromDate=" + min + "&toDate=" + max,
+                      $.getJSON("{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry }) }}?type=" + type + "&fromDate=" + min + "&toDate=" + max,
                         function(data) {
                           if (data.t) {
                             chart.series[0].setData(data.t);
@@ -278,10 +277,10 @@
 {% endblock %}
 
 {% block navigation %}
-    <li><a href="{{ path('app_devicedataarchive_read', {id: device.id, entry: entry}) }}" class="icon_save">Arhiva</a></li>
-    <li><a href="{{ path('app_device_export', {id: device.id, entry:entry }) }}" class="icon_xls">Izvoz podataka</a></li>
-    <li><a href="{{ path('app_alarm_list', {id: device.id}) }}" class="icon_time">Lista alarma</a></li>
-    <li><a href="{{ path('app_home_overview') }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('app_devicedataarchive_read', {clientId: clientId, id: device.id, entry: entry}) }}" class="icon_save">Arhiva</a></li>
+    <li><a href="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry }) }}" class="icon_xls">Izvoz podataka</a></li>
+    <li><a href="{{ path('app_alarm_list', {clientId: clientId, id: device.id}) }}" class="icon_time">Lista alarma</a></li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
@@ -297,7 +296,7 @@
                     <div class="dets" style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
                         <span style="display:table; margin:0 auto; text-transform: uppercase;">H Panas. IO48H</span>
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
-                            <img alt="t1" src="{{ path('app_image_getimage', {deviceId: device.id, entry: entry}) }}">
+                            <img alt="t1" src="{{ path('app_image_getimage', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <span style="color: #515d6b;">Trenutna</span>:<span style="float: right; display: block;" id="t1_value">4.77 °C</span>
                         <br><br>
@@ -309,7 +308,7 @@
                     </div>
                     <div class="dets" style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="rh1_image">
-                            <img alt="rh1" src="{{ path('app_image_rh', {deviceId: device.id, entry: entry}) }}">
+                            <img alt="rh1" src="{{ path('app_image_rh', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <br><br>
                         <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">83.31 %</span>

@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\FTP\API;
 
-use App\Entity\User;
 use App\Repository\ClientFtpRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,23 +9,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ClientFtpController extends AbstractController
+#[Route(path: '/api/ftp/{id}', methods: 'PATCH', name: 'app_clientftp_edit')]
+class FtpEditController extends AbstractController
 {
-
-    #[Route(path: '/ftp', methods: 'GET', name: 'app_clientftp_read')]
-    public function read(ClientFtpRepository $clientFtpRepository): Response
-    {
-        /** @var User $user */
-        $user = $this->getUser();
-        $client = $clientFtpRepository->findOneBy(['client' => $user->getClient()]);
-
-        return $this->render('client_ftp/list.html.twig', [
-            'client' => $client
-        ]);
-    }
-
-    #[Route(path: '/api/ftp/{id}', methods: 'PATCH', name: 'app_clientftp_edit')]
-    public function edit($id, Request $request, ClientFtpRepository $clientFtpRepository, EntityManagerInterface $entityManager): Response
+    public function __invoke($id, Request $request, ClientFtpRepository $clientFtpRepository, EntityManagerInterface $entityManager)
     {
         $ftp = $clientFtpRepository->find($id);
 

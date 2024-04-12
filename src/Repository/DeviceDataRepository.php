@@ -22,6 +22,13 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
+    public function removeDataForDevice($deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            "DELETE FROM device_data WHERE device_id = $deviceId",
+        )->free();
+    }
+
     public function getChartData($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
     {
         ## zadnji datum ubacit u js od grafova

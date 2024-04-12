@@ -1,8 +1,27 @@
+{% set user = app.user %}
+
+{% if user is not null %}
+    {% set client = user.client %}
+    {% if client %}
+        {% set clientId = client.id %}
+    {% else %}
+        {% set clientId = app.request.attributes.get('_route_params').clientId %}
+    {% endif %}
+{% endif %}
+
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>
+            {% block title %}
+                {% if client is not null %}
+                    {{ client.name }}
+                {% else %}
+                    Administracija
+                {% endif %}
+            {% endblock %}
+        </title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
         {% block javascripts %}
             <script type="text/javascript" src="{{ asset('assets/js/jquery-1.8.3.min.js') }}"></script>
@@ -21,36 +40,41 @@
         {% endblock %}
 
         {% block stylesheets %}
-            <link rel="stylesheet" href="{{ asset('assets/css/all.css') }}" type="text/css">
+            <link rel="stylesheet" href="{{ asset('assets/css/reset.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/css/grid.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/js/ui/admincp/jquery-ui-1.8.17.custom.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/js/tooltip/tipsy.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/js/fancybox/jquery.fancybox-1.3.4.css') }}" type="text/css" />
+            <link rel="stylesheet" href="{{ asset('assets/js/validation/validationEngine.jquery.css') }}" type="text/css" />
             <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
             <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/js/dataTables.editor.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/js/editor.dataTables.js"></script>
             <script src="https://editor.datatables.net/extensions/Editor/css/editor.dataTables.css"></script>
 
+{#            <style>#}
+{#                span {#}
+{#                    vertical-align: middle; !important#}
+{#                }#}
 
-            <style>
-                span {
-                    vertical-align: middle; !important
-                }
+{#                table.dataTable.compact tbody td {#}
+{#                    padding: 2px;#}
+{#                }#}
 
-                table.dataTable.compact tbody td {
-                    padding: 2px;
-                }
+{#                table.dataTable thead tr {#}
+{#                    background-color: #495362;#}
+{#                    color: #cfd7e4;#}
+{#                    text-shadow: 1px 1px 0px #000;#}
+{#                    text-align: left;#}
+{#                    text-transform: uppercase;#}
+{#                    line-height: 40px;#}
+{#                }#}
 
-                table.dataTable thead tr {
-                    background-color: #495362;
-                    color: #cfd7e4;
-                    text-shadow: 1px 1px 0px #000;
-                    text-align: left;
-                    text-transform: uppercase;
-                    line-height: 40px;
-                }
-
-                table.dataTable td.dt-type-numeric {
-                    text-align: center;
-                }
-            </style>
+{#                table.dataTable td.dt-type-numeric {#}
+{#                    text-align: center;#}
+{#                }#}
+{#            </style>#}
 {#            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">#}
 {#            <link rel="stylesheet" href="{{ asset("assets/css/grid.css") }}" type="text/css" />#}
 {#            <link rel="stylesheet" href="{{ asset("assets/css/style.css") }}" type="text/css" />#}
@@ -58,6 +82,7 @@
 
     </head>
     <body>
+        {% set user = app.user %}
         {% block body %}
         <div id="main" class="container_12"><!-- Body Wrapper Begin -->
             <div id="userbar">
@@ -76,9 +101,9 @@
             {% endblock %}
         </div>
         {% endblock %}
-        <div id="copyright"><!-- Copyright Begin -->
-            Copyright © {{ 'now' | date('Y') }} by <a href="http://www.intelteh.hr/" target="_BLANK">Intelteh d.o.o.</a>
-        </div>
+{#        <div id="copyright"><!-- Copyright Begin -->#}
+{#            Copyright © {{ 'now' | date('Y') }} by <a href="http://www.intelteh.hr/" target="_BLANK">Intelteh d.o.o.</a>#}
+{#        </div>#}
     </body>
 
     {% block bottom_javascripts %}
