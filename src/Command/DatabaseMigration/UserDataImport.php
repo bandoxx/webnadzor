@@ -30,7 +30,7 @@ class UserDataImport
             $username = $userData->username;
 
             if ($this->userRepository->findOneByUsername($username)) {
-                echo sprintf("Username %s already exists, wronly inserted for client: %s", $username, $client->getName());
+                echo sprintf("Username %s already exists, wronly inserted for client: %s \n", $username, $client->getName());
                 continue;
             }
 
@@ -54,7 +54,7 @@ class UserDataImport
             $permissions = $pdo->query($query)->fetchAll(\PDO::FETCH_OBJ);
 
             foreach ($permissions as $permissionData) {
-                $this->migrateUserDeviceAccess($user, $permissionData);
+                $this->migrateUserDeviceAccess($client, $user, $permissionData);
             }
         }
 
@@ -95,7 +95,12 @@ class UserDataImport
 
     private function migrateLoginLogArchive(\PDO $pdo, Client $client): void
     {
-        $logs = $pdo->query('SELECT * FROM `data_logarchive`')->fetchAll(\PDO::FETCH_OBJ);
+        try {
+            $logs = $pdo->query('SELECT * FROM `data_logarchive`')->fetchAll(\PDO::FETCH_OBJ);
+        } catch (\Throwable $exception) {
+            return;
+        }
+
         $bulk = 1_000;
         $i = 0;
 
@@ -117,9 +122,9 @@ class UserDataImport
         $this->entityManager->flush();
     }
 
-    private function migrateUserDeviceAccess($user, $permissionData)
+    private function migrateUserDeviceAccess(Client $client, $user, $permissionData)
     {
-        $device = $this->entityManager->getRepository(Device::class)->findOneBy(['oldId' => $permissionData->ldevice_id]);
+        $device = $this->entityManager->getRepository(Device::class)->findOneBy(['client' => $client, 'oldId' => $permissionData->ldevice_id]);
 
         if (!isset($permissionData->sensor)) {
             for ($i = 1; $i <= 2; $i++) {
