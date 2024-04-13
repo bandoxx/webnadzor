@@ -11,6 +11,7 @@ use App\Service\DeviceDataFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AlarmExportController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver)
+    public function __invoke($clientId, $id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver): StreamedResponse|Response
     {
         if ($request->get('date_from')) {
             $dateFrom = (new \DateTime($request->get('date_from')));

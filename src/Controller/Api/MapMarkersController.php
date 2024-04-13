@@ -8,11 +8,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/api/map/markers', name: 'map_markers')]
 class MapMarkersController extends AbstractController
 {
-
-    #[Route('/api/map/markers', name: 'map_markers')]
-    public function getMarkers(UserAccess $userAccess): JsonResponse
+    public function __invoke(UserAccess $userAccess): JsonResponse
     {
         $devices = $userAccess->getAccessibleDevices($this->getUser());
 

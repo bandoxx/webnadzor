@@ -6,15 +6,16 @@ use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\DeviceUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/device/{id}/edit', methods: 'GET|POST', name: 'app_device_edit')]
+#[Route(path: '/admin/{clientId}/device/{id}/edit', name: 'app_device_edit', methods: 'GET|POST')]
 class DeviceEditController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater)
+    public function __invoke($clientId, $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
     {
         $error = [];
         $device = $deviceRepository->find($id);

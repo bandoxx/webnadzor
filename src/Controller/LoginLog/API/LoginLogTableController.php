@@ -5,14 +5,15 @@ namespace App\Controller\LoginLog\API;
 use App\Repository\ClientRepository;
 use App\Repository\LoginLogArchiveRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/api/{clientId}/archive/daily', methods: 'GET', name:'api_login_log_archive_daily')]
+#[Route(path: '/api/{clientId}/archive/daily', name: 'api_login_log_archive_daily', methods: 'GET')]
 class LoginLogTableController extends AbstractController
 {
 
-    public function __invoke($clientId, ClientRepository $clientRepository, LoginLogArchiveRepository $loginLogArchiveRepository)
+    public function __invoke($clientId, ClientRepository $clientRepository, LoginLogArchiveRepository $loginLogArchiveRepository): JsonResponse
     {
         $archiveData = $loginLogArchiveRepository->findBy(['client' => $clientId]);
         $result = [];

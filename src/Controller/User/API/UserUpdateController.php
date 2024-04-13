@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/user/{userId}', methods: 'PATCH', name: 'api_user_update')]
+#[Route(path: '/admin/{clientId}/user/{userId}', name: 'api_user_update', methods: 'PATCH')]
 class UserUpdateController extends AbstractController
 {
 

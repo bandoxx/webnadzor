@@ -5,13 +5,14 @@ namespace App\Controller\Device;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/device/{id}/{entry}/show', methods: 'GET', name: 'app_device_entry_show')]
+#[Route(path: '/admin/{clientId}/device/{id}/{entry}/show', name: 'app_device_entry_show', methods: 'GET')]
 class DeviceShowByEntryController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository)
+    public function __invoke($clientId, $id, $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $device = $deviceRepository->find($id);
         $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);

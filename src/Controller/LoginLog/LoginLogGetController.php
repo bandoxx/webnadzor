@@ -4,14 +4,14 @@ namespace App\Controller\LoginLog;
 
 use App\Repository\LoginLogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/login-log', methods: 'GET', name: 'app_loginlog_getloginlogs')]
+#[Route(path: '/admin/{clientId}/login-log', name: 'app_loginlog_getloginlogs', methods: 'GET')]
 class LoginLogGetController extends AbstractController
 {
-    public function __invoke($clientId, LoginLogRepository $loginLogRepository)
+    public function __invoke($clientId, LoginLogRepository $loginLogRepository): Response
     {
-
         return $this->render('login_log/list.html.twig', [
             'logs' => $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC'])
         ]);

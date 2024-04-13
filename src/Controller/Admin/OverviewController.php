@@ -7,13 +7,14 @@ use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke(ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router)
+    public function __invoke(ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->getUser()->getPermission() !== 4) {
             return $this->redirectToRoute('client_overview', [

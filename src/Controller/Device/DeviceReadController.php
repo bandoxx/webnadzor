@@ -6,12 +6,13 @@ use App\Model\DeviceListModel;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(path: '/admin/{clientId}/devices', name: 'app_device_list')]
 class DeviceReadController extends AbstractController
 {
-    public function __invoke($clientId, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository)
+    public function __invoke($clientId, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $devices = $deviceRepository->findBy(['client' => $clientId]);
 

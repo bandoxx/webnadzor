@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/api/device/{id}/{entry}/archive/monthly', methods: 'GET', name:'app_api_devicedataarchive_getmonthlydata')]
+#[Route(path: '/api/device/{id}/{entry}/archive/monthly', name: 'app_api_devicedataarchive_getmonthlydata', methods: 'GET')]
 class DeviceDataMonthlyArchiveController extends AbstractController
 {
 

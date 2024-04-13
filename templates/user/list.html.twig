@@ -269,8 +269,8 @@
 
         $("a.fancy").fancybox(); /* FANCYBOX CLASS */
 
-        $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
-        $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('.data-table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('.data-table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
         $('.data-table').dataTable({
           'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
           'bJQueryUI': true,
@@ -408,7 +408,7 @@
                 {% set style = 'odd' %}
                 {% for user in users %}
                     <tr class="{{ style }}">
-                        <td class=" sorting_1">{{ user.id }}</td>
+                        <td class="">{{ user.id }}</td>
                         <td class="">{{ user.username }}</td>
                         <td class="">{{ user.permissionName }}</td>
                         <td class="">
@@ -423,6 +423,7 @@
                             {% endif %}
                         </td>
                         <td class="">
+                            {% if user.permission != 4 %}
                             <div style="height: 3px;">&nbsp;</div>
                             <div id="{{ user.id }}"
                                  data-username="{{ user.username }}"
@@ -431,6 +432,7 @@
                                 <a href="#" class="action edit"><span>Uredi</span></a>
                                 <a href="#" class="action delete"><span>Obriši</span></a>
                             </div>
+                            {% endif %}
                         </td>
                     </tr>
                     {% if style == 'odd' %}

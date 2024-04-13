@@ -8,15 +8,16 @@ use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/api/{clientId}/device', methods: 'POST', name: 'api_device_create')]
+#[Route(path: '/api/{clientId}/device', name: 'api_device_create', methods: 'POST')]
 class DeviceCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager)
+    public function __invoke($clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): JsonResponse
     {
         $xmlName = $request->request->getAlpha('xmlName');
         $deviceName = $request->request->getAlpha('deviceName');

@@ -5,6 +5,22 @@
   $.validationEngineLanguage = {
     newLang: function(){
       $.validationEngineLanguage.allRules = {
+        // "ajax_xmlname": {
+        //   "url": page_url + 'device_edit/xmlname_validate.json',
+        //   "extraData": device_id,
+        //   "alertText": "* Naziv XML datoteke je zauzet",
+        //   "alertTextLoad": "* Provjera naziva XML, molimo pričekajte"
+        // },
+        // "ajax_xmlnameadd": {
+        //   "url": page_url + 'device_edit/xmlname_validate.json',
+        //   "alertText": "* Naziv XML datoteke je zauzet",
+        //   "alertTextLoad": "* Provjera naziva XML, molimo pričekajte"
+        // },
+        "ajax_username": {
+          "url": '/api/username_checker',
+          "alertText": "* Korisničko ime je zauzeto",
+          "alertTextLoad": "* Provjera korisničkog imena, molimo pričekajte"
+        },
         "required": { // Add your regex rules here, you can take telephone as an example
           "regex": "none",
           "alertText": "* Ovo polje je obavezno",

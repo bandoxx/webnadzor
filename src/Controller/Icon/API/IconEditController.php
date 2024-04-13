@@ -6,6 +6,7 @@ use App\Entity\DeviceIcon;
 use App\Repository\DeviceIconRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconEditController extends AbstractController
 {
 
-    public function __invoke($id, Request $request, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager)
+    public function __invoke($id, Request $request, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         /** @var DeviceIcon $icon */
         $icon = $deviceIconRepository->find($id);

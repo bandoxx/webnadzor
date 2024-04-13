@@ -6,15 +6,16 @@ use App\Model\ChartType;
 use App\Repository\DeviceDataRepository;
 use App\Service\ChartHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route(path: '/api/chart/{deviceId}/{entry}', name: 'app_api_chart_getchartdata')]
 class ChartController extends AbstractController
 {
 
-    #[Route(path: '/api/chart/{deviceId}/{entry}', name: 'app_api_chart_getchartdata')]
-    public function getChartData($deviceId, $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler)
+    public function __invoke($deviceId, $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler): JsonResponse
     {
         if ($fromDate = $request->query->get('fromDate')) {
             $fromDate = (new \DateTime())->setTimestamp($fromDate);

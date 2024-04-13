@@ -6,6 +6,7 @@ use App\Repository\ClientRepository;
 use App\Service\Image\IconUploader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, ClientRepository $clientRepository, Request $request, IconUploader $iconUploader)
+    public function __invoke($clientId, ClientRepository $clientRepository, Request $request, IconUploader $iconUploader): RedirectResponse
     {
         $icon = $request->files->get('icon');
         $title = $request->request->get('icon_title');

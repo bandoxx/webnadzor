@@ -5,13 +5,14 @@ namespace App\Controller\Alarm;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/alarm/{id}/list', methods: 'GET', name: 'app_alarm_list')]
+#[Route(path: '/admin/{clientId}/alarm/{id}/list', name: 'app_alarm_list', methods: 'GET')]
 class AlarmListController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository)
+    public function __invoke($clientId, $id, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository): Response
     {
         $device = $deviceRepository->find($id);
 

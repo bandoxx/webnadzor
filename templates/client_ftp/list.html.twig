@@ -83,8 +83,8 @@
 
         $("a.fancy").fancybox(); /* FANCYBOX CLASS */
 
-        $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
-        $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('.data-table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('.data-table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
         $('.data-table').dataTable({
           'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
           'bJQueryUI': true,
@@ -132,7 +132,7 @@
             <a href="#" class="toggle">&nbsp;</a>
         </div>
         <div class="block_cont" style="padding: 4px;">
-            <table class="data-table"><!-- Table Wrapper Begin -->
+            <table class="data-table display compact hover"><!-- Table Wrapper Begin -->
                 <thead>
                 <tr>
                     <th class="sorting_disabled">Br.</th>
