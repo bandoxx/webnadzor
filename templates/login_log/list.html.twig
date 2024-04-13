@@ -26,7 +26,7 @@
     $(tableId).wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
     $(tableId +' tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
     $(tableId).dataTable({
-      pageLength: 50,
+      pageLength: 25,
       language: {
         search: "Pretraga",
         loading: "Ucitavanje...",
@@ -46,14 +46,14 @@
 {% endblock %}
 
 {% block navigation %}
-    <li><a href="{url}data_logarchive" class="icon_save">Arhiva</a></li>
+    <li><a href="{{ path('app_loginlog_loginlogsarchive', {clientId: clientId}) }}" class="icon_save">Arhiva</a></li>
     <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
   <div class="block big"><!-- Block Begin -->
     <div class="titlebar">
-      <h3>PREGLED MJERNIH MJESTA</h3>
+      <h3>ARHIVA DNEVNIKA PRIJAVA</h3>
       <a href="#" class="toggle">&nbsp;</a>
     </div>
     <div class="block_cont" style="padding: 4px;">

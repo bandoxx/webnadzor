@@ -29,7 +29,7 @@
           'bJQueryUI': true,
           'bPaginate': false,
           'bProcessing': true,
-          ajax: "{{ path('app_api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}",
+          ajax: "{{ path('api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}",
           'bInfo': false,
           'bFilter': false,
           columnDefs: [
@@ -48,7 +48,7 @@
           if (!$(this).parent().hasClass('activepage')) {
             let table = $('#otable').DataTable();
 
-            table.ajax.url("{{ path('app_api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}").load();
+            table.ajax.url("{{ path('api_devicedataarchive_getdailydata', {clientId: clientId, id: device.id, entry: entry}) }}").load();
 
             $(this).parent().attr('class','activepage');
             $('#monthly').parent().attr('class','');
