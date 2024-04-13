@@ -5,6 +5,7 @@ namespace App\Command\DatabaseMigration;
 use App\Entity\Client;
 use App\Entity\Device;
 use App\Entity\LoginLog;
+use App\Entity\LoginLogArchive;
 use App\Entity\User;
 use App\Factory\UserDeviceAccessFactory;
 use App\Repository\UserRepository;
@@ -58,6 +59,7 @@ class UserDataImport
         }
 
         $this->migrateLoginLogs($pdo, $client);
+        $this->migrateLoginLogArchive($pdo, $client);
     }
 
     private function migrateLoginLogs(\PDO $pdo, Client $client)
@@ -86,6 +88,30 @@ class UserDataImport
             ;
 
             $this->entityManager->persist($log);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    private function migrateLoginLogArchive(\PDO $pdo, Client $client): void
+    {
+        $logs = $pdo->query('SELECT * FROM `data_logarchive`')->fetchAll(\PDO::FETCH_OBJ);
+        $bulk = 1_000;
+        $i = 0;
+
+        foreach ($logs as $log) {
+            $i++;
+            $loginLogArchive = new LoginLogArchive();
+            $loginLogArchive->setClient($client)
+                ->setServerDate($log->server_date ? new \DateTime($log->server_date) : null)
+                ->setArchiveDate($log->archive_date ? new \DateTime($log->archive_date) : null)
+                ->setFilename($log->filename)
+            ;
+
+            $this->entityManager->persist($loginLogArchive);
+            if ($i % $bulk === 0) {
+                $this->entityManager->flush();
+            }
         }
 
         $this->entityManager->flush();
