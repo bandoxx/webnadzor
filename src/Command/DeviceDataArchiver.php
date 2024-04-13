@@ -7,8 +7,10 @@ use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
+use App\Service\Archiver\DeviceDataArchiverInterface;
 use App\Service\Archiver\PDFArchiver;
 use App\Service\Archiver\XLSXArchiver;
+use App\Service\Exception\ExceptionFormatter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -64,7 +66,7 @@ class DeviceDataArchiver extends Command
                     try {
                         $this->generateDailyReport($device, $data, $entry, $date);
                     } catch (\Throwable $e) {
-                        $output->writeln("Something went wrong");
+                        $output->writeln(ExceptionFormatter::string($e));
                         return Command::FAILURE;
                     }
                 }

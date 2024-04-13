@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
-use App\Service\Archiver\ArchiverInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

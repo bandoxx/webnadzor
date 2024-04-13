@@ -34,7 +34,7 @@ class DeviceEntryExportController extends AbstractController
             $dateTo = (new \DateTime());
         }
 
-        $dateTo->setTime(23, 59);
+        $dateTo->modify('+1 day')->setTime(0, 0);
 
         $device = $deviceRepository->find($id);
         $data = $deviceDataRepository->findByDeviceAndBetweenDates($device, $dateFrom, $dateTo);

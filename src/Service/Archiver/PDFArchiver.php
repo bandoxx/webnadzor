@@ -6,7 +6,7 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use TCPDF;
 
-class PDFArchiver implements ArchiverInterface
+class PDFArchiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {

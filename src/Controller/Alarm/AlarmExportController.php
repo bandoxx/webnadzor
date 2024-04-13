@@ -29,12 +29,12 @@ class AlarmExportController extends AbstractController
         $dateFrom->setTime(0, 0);
 
         if ($request->get('date_to')) {
-            $dateTo = (new \DateTime($request->get('date_to')));
+            $dateTo = (new \DateTime($request->get('date_to')))->modify('+1 day');
         } else {
-            $dateTo = (new \DateTime());
+            $dateTo = new \DateTime();
         }
 
-        $dateTo->setTime(23, 59);
+        $dateTo->setTime(0, 0);
 
         $device = $deviceRepository->find($id);
         $data = $deviceDataRepository->findByDeviceAndBetweenDates($device, $dateFrom, $dateTo);
