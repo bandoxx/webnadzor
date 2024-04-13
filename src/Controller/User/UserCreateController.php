@@ -2,10 +2,10 @@
 
 namespace App\Controller\User;
 
-use App\Factory\UserDeviceAccessFactory;
 use App\Factory\UserFactory;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceRepository;
+use App\Service\UserDeviceAccessUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, EntityManagerInterface $entityManager, DeviceRepository $deviceRepository, UserFactory $userFactory, UserDeviceAccessFactory $userDeviceAccessFactory, ClientRepository $clientRepository): JsonResponse
+    public function __invoke($clientId, Request $request, EntityManagerInterface $entityManager, UserFactory $userFactory, UserDeviceAccessUpdater $userDeviceAccessUpdater, ClientRepository $clientRepository): JsonResponse
     {
         $permission = $request->request->get('permissions');
 
@@ -33,19 +33,13 @@ class UserCreateController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        if ($permission == 1) {
-            $locations = explode(',', $request->request->get('locations'));
+        $userDeviceAccessUpdater->update(
+            $user,
+            $request->get('locations'),
+            $permission
+        );
 
-            foreach ($locations as $location) {
-                [$deviceId, $sensor] = explode('-', $location);
-                $device = $deviceRepository->find($deviceId);
 
-                $userDeviceAccess = $userDeviceAccessFactory->create($device, $user, $sensor);
-
-                $entityManager->persist($userDeviceAccess);
-                $entityManager->flush();
-            }
-        }
 
         return $this->json(true, Response::HTTP_CREATED);
 

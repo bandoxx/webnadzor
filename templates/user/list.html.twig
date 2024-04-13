@@ -67,17 +67,30 @@
               $('#newallowed_devices').multiselect('getChecked').each(function() {
                 adedit.push($(this).val());
               })
-              adedit = adedit.join(',');
-              $.post(page_url + 'users/edit', $.param({troll:Math.random(),
-                user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
-                if (data == 'ok') {
-                  $(location).attr('href', page_url + 'users');
-                }
-                else {
+
+              $.ajax({
+                url: '/admin/{{ clientId }}/user/' + edit_id,
+                type: 'PATCH',
+                data: $.param({locations: adedit}) + "&" + form_data,
+                dataType: 'json',
+                success: function() {
+                  $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}")
+                },
+                error: function() {
                   alert('Greška! Molimo pokušajte ponovo');
-                  console.log('response data: ' + data);
                 }
               });
+
+              // $.post(page_url + 'users/edit', $.param({troll:Math.random(),
+              //   user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
+              //   if (data == 'ok') {
+              //     $(location).attr('href', page_url + 'users');
+              //   }
+              //   else {
+              //     alert('Greška! Molimo pokušajte ponovo');
+              //     console.log('response data: ' + data);
+              //   }
+              // });
 
             }
           }
@@ -180,16 +193,19 @@
               $('#allowed_devices').multiselect('getChecked').each(function () {
                 locations.push($(this).val());
               })
-              locations = locations.join(',');
-              $.post("{{ path('app_user_createuser', {clientId: clientId}) }}", $.param({locations: locations}) + "&" + form_data, function (data, s, r) {
-                if (r.status === 201) {
-                  $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}");
-                } else {
+
+              $.ajax({
+                url: "{{ path('app_user_createuser', {clientId: clientId}) }}",
+                type: 'POST',
+                data: $.param({locations: locations}) + "&" + form_data,
+                dataType: 'json',
+                success: function () {
+                  $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}")
+                },
+                error: function () {
                   alert('Greška! Molimo pokušajte ponovo');
-                  console.log('response data: ' + data);
                 }
               });
-
             }
           }
         });/* VALIDATION ENGINE */
@@ -362,7 +378,7 @@
                            disabled="disabled"/><label for="r6">Admin</label>
                 </div>
                 <div class="form_row">
-                    <label for="allowed_devices">Dozvoljene lokacije</label>
+                    <label for="newallowed_devices">Dozvoljene lokacije</label>
                     <select id="newallowed_devices" name="" class="multiselect" style="width: 270px;">
                         {% for key, location in client_locations %}
                             <option value="{{ key }}">{{ location.name }} - {{ location.location }}</option>
