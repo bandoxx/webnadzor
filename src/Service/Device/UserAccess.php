@@ -23,12 +23,12 @@ class UserAccess
      * @param User $user
      * @return array<Device>
      */
-    public function getAccessibleDevices(User $user): array
+    public function getAccessibleDevices(Client $client, User $user): array
     {
         // TODO: Ako user nema attachovanog klijenta
 
         if ($user->getPermission() > 2) {
-            $devices = $this->deviceRepository->findDevicesByClient($user->getClient()->getId());
+            $devices = $this->deviceRepository->findDevicesByClient($client);
         } else {
             $accesses = $this->deviceAccessRepository->findAccessibleEntries($user);
             $devices = [];

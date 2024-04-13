@@ -1,11 +1,153 @@
-{% extends 'overview/overview.html.twig' %}
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+      function edit_client(client_id) {
+
+        let selector = $("#" + client_id);
+
+        $('#client_name').val(selector.data('name'));
+        $('#main_logo').val(selector.data('pdfLogo'));
+        $('#pdf_logo').val(selector.data('mainLogo'));
+        $('#map_marker_icon').val(selector.data('mapIcon'));
+
+        let overviewShow = selector.data('overview');
+
+        if (overviewShow == '1') {
+          $("#map").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").show();
+        } else if (overviewShow == '2') {
+          $("#thermometer").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").hide();
+        }
+
+        $('#edit-form').attr('title', 'Menjanje podesavanja za klijenta');
+
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#editform').attr('action', '/api/client/' + client_id);
+              $('#editform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $("#map_marker_icon_div").hide();
+            $("#map").prop('checked', false).button('refresh');
+            $("#thermometer").prop('checked', false).button('refresh');
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
+      $(document).ready(function() {
+
+        $('input[name="overview_view"]').on('change', function() {
+          let option = $('input[name="overview_view"]:checked').val();
+
+          if (option === '1') {
+            $("#map_marker_icon_div").show();
+          } else {
+            $("#map_marker_icon_div").hide();
+          }
+        });
+
+        $('div.actionbar a.edit').click(function() { /* EDIT ICON */
+          edit_client($(this).parent().attr('id'));
+          return false;
+        });
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $('.radioui').buttonset();
+
+        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        var table = $('#table').dataTable({
+          pageLength: 10,
+          language: {
+            search: "Pretraga",
+            loading: "Ucitavanje...",
+            lengthMenu: '_MENU_ broj prikaza',
+            emptyTable: 'Prazna tablica',
+            info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+            infoEmpty: '',
+            infoFiltered: '(filtrirano od _MAX_ rezultata)',
+          },
+          columnDefs: [
+            { className: 'dt-center', targets: '_all' }
+          ],
+        }); /* DATA TABLES */
+    });
+    </script>
+{% endblock %}
 
 {% block navigation %}
-<li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
-<li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
+    <li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
+    <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
 {% endblock %}
 
 {% block content %}
+    <div id="edit-form" title="Dodaj novu ikonu" style="display:none;">
+        <form id="editform" class="form" action="#" method="POST" enctype="multipart/form-data">
+            <fieldset>
+                <label for="client_name" style="display:block; margin-top:12px;">Naziv klijenta</label>
+                <input type="text" name="name" id="client_name" class="input validate[required,maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="main_logo" style="display:block; margin-top:12px;">Logo za website</label>
+                <input id="main_logo" type="file" name="main_logo">
+
+                <label for="pdf_logo" style="display:block; margin-top:12px;">Logo za dokumente</label>
+                <input id="pdf_logo" type="file" name="pdf_logo">
+
+                <label style="display:block; margin-top:12px;">Prikaz na pocetnoj stranici korisnicima</label>
+                <div class="form_row radioui">
+                    <label for="map">Mapa</label>
+                    <input type="radio" id="map" name="overview_view" class="radio validate[required]"
+                           value="1"/>
+                    <label for="thermometer">Termometri</label>
+                    <input type="radio" id="thermometer" name="overview_view" class="radio validate[required]"
+                           value="2"/>
+                </div>
+
+                <div id="map_marker_icon_div" style="display: none;">
+                    <label for="map_marker_icon" style="display:block; margin-top:12px;">Ikonica na mapi</label>
+                    <input id="map_marker_icon" type="file" name="map_marker_icon">
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
     <div class="clear"></div>
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
@@ -24,7 +166,7 @@
                             <th>Online uredjaja</th>
                             <th>Offline uredjaja</th>
                             <th>Broj aktivnih alarma</th>
-                            <th>Detalji</th>
+                            <th>Opcije</th>
                         </tr>
                         </thead>
 
@@ -51,8 +193,16 @@
                                 </td>
                                 <td style="width: 100px">
                                     <div style="height: 3px;">&nbsp;</div>
-                                    <div class="actionbar">
+                                    <div id="{{ client.id }}" class="actionbar"
+                                         data-id="{{ client.id }}"
+                                         data-name="{{ client.name }}"
+                                         data-pdfLogo="{{ client.pdfLogo }}"
+                                         data-mainLogo="{{ client.mainLogo }}"
+                                         data-mapIcon="{{ client.mapIcon }}"
+                                         data-overview="{{ client.overview }}"
+                                    >
                                         <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>
+                                        <a href="#" class="action edit"><span>Uredi</span></a>
                                     </div>
                                 </td>
 

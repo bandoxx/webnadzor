@@ -10,6 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
+    public const OVERVIEW_EMPTY = 0;
+    public const OVERVIEW_MAP = 1;
+    public const OVERVIEW_THERMOMETER = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -37,13 +41,16 @@ class Client
     private Collection $loginLogs;
 
     #[ORM\Column]
-    private bool $mapActive = false;
+    private int $overviewViews = 0;
 
-    #[ORM\Column]
-    private bool $temperatureActive = false;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mainLogo = null;
 
-    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
-    private ?ClientImage $clientImage = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $pdfLogo = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $mapMarkerIcon = null;
 
     public function __construct()
     {
@@ -252,44 +259,45 @@ class Client
         return $this;
     }
 
-    public function isMapActive(): ?bool
+    public function getOverviewViews(): int
     {
-        return $this->mapActive;
+        return $this->overviewViews;
     }
 
-    public function setMapActive(bool $mapActive): static
+    public function setOverviewViews(int $overviewViews): static
     {
-        $this->mapActive = $mapActive;
+        $this->overviewViews = $overviewViews;
 
         return $this;
     }
 
-    public function isTemperatureActive(): ?bool
+    public function getMainLogo(): ?string
     {
-        return $this->temperatureActive;
+        return $this->mainLogo;
     }
 
-    public function setTemperatureActive(bool $temperatureActive): static
+    public function setMainLogo(?string $mainLogo): void
     {
-        $this->temperatureActive = $temperatureActive;
-
-        return $this;
+        $this->mainLogo = $mainLogo;
     }
 
-    public function getClientImage(): ?ClientImage
+    public function getPdfLogo(): ?string
     {
-        return $this->clientImage;
+        return $this->pdfLogo;
     }
 
-    public function setClientImage(ClientImage $clientImage): static
+    public function setPdfLogo(?string $pdfLogo): void
     {
-        // set the owning side of the relation if necessary
-        if ($clientImage->getClient() !== $this) {
-            $clientImage->setClient($this);
-        }
+        $this->pdfLogo = $pdfLogo;
+    }
 
-        $this->clientImage = $clientImage;
+    public function getMapMarkerIcon(): ?string
+    {
+        return $this->mapMarkerIcon;
+    }
 
-        return $this;
+    public function setMapMarkerIcon(?string $mapMarkerIcon): void
+    {
+        $this->mapMarkerIcon = $mapMarkerIcon;
     }
 }

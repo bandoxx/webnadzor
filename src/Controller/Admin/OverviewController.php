@@ -35,7 +35,11 @@ class OverviewController extends AbstractController
                 'numberOfDevices' => 0,
                 'onlineDevices' => 0,
                 'offlineDevices' => 0,
-                'alarmsOn' => 0
+                'alarmsOn' => 0,
+                'overview' => $client->getOverviewViews(),
+                'pdfLogo' => $client->getPdfLogo(),
+                'mainLogo' => $client->getMainLogo(),
+                'mapIcon' => $client->getMapMarkerIcon()
             ];
 
             $totalDevices = count($devices);

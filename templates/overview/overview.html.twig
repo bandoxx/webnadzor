@@ -98,9 +98,9 @@
         }); /* DATA TABLES */
 
         /* UPDATE TABLE */
-        setInterval(function() {
-          table.fnReloadAjax()
-        },60000);
+        // setInterval(function() {
+        //   table.ajax.reload()
+        // },60000);
 
         var delete_parent, delete_id, delaction, delete_devnam = '';
         $('.delete').live('click', function(e) { /* DELETE DEVICE */
@@ -157,7 +157,7 @@
           attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        $.getJSON("{{ path('map_markers') }}", function(data) {
+        $.getJSON("{{ path('api_map_markers', {clientId: clientId}) }}", function(data) {
           var bounds = new L.LatLngBounds();
           $.each(data.places, function(i, item) {
 
@@ -190,21 +190,6 @@
         </form>
     </div>
 {% endblock %}
-
-    {% block navigation %}
-        {% if app.user.permission == 4 %}
-            <li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
-        {% endif %}
-
-        {% if app.user.permission > 3 %}
-          <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_square">Mjerni uređaji</a></li>
-          <li><a href="{{ path('app_icon_index', {clientId: clientId}) }}" class="icon_pictures">Uredi ikone</a></li>
-          <li><a href="{{ path('app_clientftp_read', {clientId: clientId}) }}" class="icon_bookmark">FTP podaci</a></li>
-          <li><a href="{{ path('app_user_getusers', {clientId: clientId}) }}" class="icon_users">Korisnici</a></li>
-          <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_article">Dnevnik prijava</a></li>
-        {% endif %}
-        <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
-    {% endblock %}
 
 {% block content %}
 {% endblock %}

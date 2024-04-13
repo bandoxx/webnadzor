@@ -18,7 +18,7 @@
     <div class="clear"></div>
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
-            {% if client.mapActive %}
+            {% if client.overviewViews == 1 %}
 
                 <div class="titlebar">
                     <h3>Lokacije</h3>
@@ -28,7 +28,7 @@
                     <div id="map_canvas" style="height: 600px;"></div>
                 </div>
 
-            {% elseif client.temperatureActive %}
+            {% elseif client.overviewViews == 2 %}
 
                 <div class="titlebar">
                     <h3>Trenutni podaci</h3>

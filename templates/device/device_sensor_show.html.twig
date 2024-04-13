@@ -152,10 +152,11 @@
               };
               series = [{
                 name: 'Temperatura',
-                data: data.t
+                data: data.t,
               }, {
                 name: 'MKT',
-                data: data.mkt
+                data: data.mkt,
+                color: "#e20074"
               }];
 
               yAxisText = "{{ device.getEntryData(entry).t_unit }}"
