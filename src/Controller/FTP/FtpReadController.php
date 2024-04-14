@@ -15,7 +15,7 @@ class FtpReadController extends AbstractController
         $client = $clientFtpRepository->findOneBy(['client' => $clientId]);
 
         return $this->render('client_ftp/list.html.twig', [
-            'client' => $client
+            'client_ftp' => $client
         ]);
     }
 

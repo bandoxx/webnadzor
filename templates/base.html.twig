@@ -1,4 +1,5 @@
 {% set user = app.user %}
+{% set client = null %}
 
 {% if user is not null %}
     {% if user.client is not null %}
@@ -8,13 +9,16 @@
     {% endif %}
 {% endif %}
 
+{% if clientId is not null %}
+    {% set client = global_variables.getClient(clientId) %}
+{% endif %}
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
         <title>
             {% block title %}
-                {% if user.client is not null %}
+                {% if client is not null %}
                     {{ client.name }}
                 {% else %}
                     Administracija
@@ -64,7 +68,11 @@
         <div id="main" class="container_12"><!-- Body Wrapper Begin -->
             <div id="userbar">
                 <div id="logoarea">
-                    <a href="/"><div id="logo"></div></a>
+                    {% if client is not null %}
+                        <a href="/"><div id="logo" style="background: url({{ asset('/assets/images/logo.png') }}) center no-repeat;"></div></a>
+                    {% else %}
+                        <a href="/"><div id="logo"></div></a>
+                    {% endif %}
                 </div>
                 <ul id="navigation">
                 {% block navigation %}

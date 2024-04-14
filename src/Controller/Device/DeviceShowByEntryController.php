@@ -2,6 +2,7 @@
 
 namespace App\Controller\Device;
 
+use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,15 +13,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceShowByEntryController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
+    public function __invoke($clientId, $id, $entry, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $device = $deviceRepository->find($id);
+
         $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
 
         return $this->render('device/device_sensor_show.html.twig', [
             'device' => $device,
             'device_data' => $deviceData,
-            'entry' => $entry
+            'entry' => $entry,
         ]);
     }
 

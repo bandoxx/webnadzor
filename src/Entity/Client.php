@@ -14,6 +14,9 @@ class Client
     public const OVERVIEW_MAP = 1;
     public const OVERVIEW_THERMOMETER = 2;
 
+    public const DEVICE_OVERVIEW_ICON = 1;
+    public const DEVICE_OVERVIEW_DYNAMIC = 2;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,6 +54,12 @@ class Client
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mapMarkerIcon = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $oldDatabaseName = null;
+
+    #[ORM\Column]
+    private ?int $devicePageView = null;
 
     public function __construct()
     {
@@ -299,5 +308,29 @@ class Client
     public function setMapMarkerIcon(?string $mapMarkerIcon): void
     {
         $this->mapMarkerIcon = $mapMarkerIcon;
+    }
+
+    public function getOldDatabaseName(): ?string
+    {
+        return $this->oldDatabaseName;
+    }
+
+    public function setOldDatabaseName(?string $oldDatabaseName): static
+    {
+        $this->oldDatabaseName = $oldDatabaseName;
+
+        return $this;
+    }
+
+    public function getDevicePageView(): ?int
+    {
+        return $this->devicePageView;
+    }
+
+    public function setDevicePageView(int $devicePageView): static
+    {
+        $this->devicePageView = $devicePageView;
+
+        return $this;
     }
 }

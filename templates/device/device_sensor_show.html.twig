@@ -1,20 +1,20 @@
 {% extends 'base.html.twig' %}
 
 {% block javascripts %}
-{{ parent() }}
+    {{ parent() }}
     <script>
 
-        $('.toggle').click(function() { /* BLOCK TOGGLE */
-          $(this).toggleClass('show');
-          $(this).parent().parent().children('.block_cont').slideToggle(300);
-          $(this).parent().toggleClass('show');
-          return false;
-        });
+      $('.toggle').click(function () { /* BLOCK TOGGLE */
+        $(this).toggleClass('show');
+        $(this).parent().parent().children('.block_cont').slideToggle(300);
+        $(this).parent().toggleClass('show');
+        return false;
+      });
 
-        $('.hide_btn').click(function() { /* ALERT HIDE */
-          $(this).parent().fadeOut(300);
-          return false;
-        });
+      $('.hide_btn').click(function () { /* ALERT HIDE */
+        $(this).parent().fadeOut(300);
+        return false;
+      });
       //
       //   setInterval(function() {
       //     /////////////////////////// DATA
@@ -109,7 +109,7 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script>
-      $(document).ready(function() {
+      $(document).ready(function () {
         const rangeSelector = {
           buttons: [{
             type: 'day',
@@ -197,14 +197,14 @@
               xAxis: {
                 events: {
                   afterSetExtremes:
-                    function(e) {
+                    function (e) {
                       let min = Math.floor(e.min / 1000);
                       let max = Math.floor(e.max / 1000);
 
-                      let chart = $('#'+containerId).highcharts();
+                      let chart = $('#' + containerId).highcharts();
                       chart.showLoading('Učitavam...');
                       $.getJSON("{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry }) }}?type=" + type + "&fromDate=" + min + "&toDate=" + max,
-                        function(data) {
+                        function (data) {
                           if (data.t) {
                             chart.series[0].setData(data.t);
                             chart.series[1].setData(data.mkt);
@@ -278,9 +278,12 @@
 {% endblock %}
 
 {% block navigation %}
-    <li><a href="{{ path('app_devicedataarchive_read', {clientId: clientId, id: device.id, entry: entry}) }}" class="icon_save">Arhiva</a></li>
-    <li><a href="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry }) }}" class="icon_xls">Izvoz podataka</a></li>
-    <li><a href="{{ path('app_alarm_list', {clientId: clientId, id: device.id}) }}" class="icon_time">Lista alarma</a></li>
+    <li><a href="{{ path('app_devicedataarchive_read', {clientId: clientId, id: device.id, entry: entry}) }}"
+           class="icon_save">Arhiva</a></li>
+    <li><a href="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry }) }}" class="icon_xls">Izvoz
+            podataka</a></li>
+    <li><a href="{{ path('app_alarm_list', {clientId: clientId, id: device.id}) }}" class="icon_time">Lista alarma</a>
+    </li>
     <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
@@ -289,64 +292,87 @@
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
             <div class="titlebar">
-                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></span></h3>
+                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }} - <span
+                            id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
                 <a href="#" class="toggle">&nbsp;</a>
             </div>
             <div class="block_cont" style="padding:4px;">
                 <div style="margin-bottom:10px;">
-                    <div class="dets" style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
-                        <span style="display:table; margin:0 auto; text-transform: uppercase;">H Panas. IO48H</span>
+                {% if client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') %}
+                    <div class="dets-100" style="margin-left: 20px;">
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.getEntryData(entry).t_name }}</span><br><br>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device_data.getT(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device_data.getTAvrg(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device_data.getTMax(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device_data.getTMin(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device_data.getRh(entry) }} {{ device.getEntryData(entry).rh_unit }}</span>
+                    </div>
+                    <div style="margin-right: 80px;" class="dets-100">
+                        <div style="min-height:50px;" id="t1_image">
+                            <img alt="t1" src="{{ asset('assets/images/frizider.png') }}">
+                        </div>
+                    </div>
+                {% elseif client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') %}
+                    <div class="dets-100"
+                         style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.getEntryData(entry).t_name }}</span>
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
                             <img alt="t1" src="{{ path('app_image_getimage', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
-                        <span style="color: #515d6b;">Trenutna</span>:<span style="float: right; display: block;" id="t1_value">4.77 °C</span>
-                        <br><br>
-                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right; display: block;" id="t1max_value">5.62 °C</span>
-                        <br><br>
-                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right; display: block;" id="t1min_value">4.68 °C</span>
-                        <br><br>
-                        <span style="color: #515d6b;">MKT</span>: <span style="float: right; display: block;" id="mkt1_value">5.26 °C</span>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; display: block;" id="t1_value">{{ device_data.getT(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right; display: block;" id="t1_value">{{ device.getTAvrg(entry) }} {{ device_data.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right; display: block;" id="t1max_value">{{ device_data.getTMax(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right; display: block;" id="t1min_value">{{ device_data.getTMin(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right; display: block;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span>
                     </div>
-                    <div class="dets" style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
+                    <div class="dets"
+                         style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="rh1_image">
-                            <img alt="rh1" src="{{ path('app_image_rh', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
+                            <img alt="rh1"
+                                 src="{{ path('app_image_rh', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <br><br>
-                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">83.31 %</span>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">{{ device_data.getRh(entry) }} {{ device.getEntryData(entry).rh_unit }}</span>
                     </div>
+                {% endif %}
                     <div class="clear"></div>
                 </div>
             </div>
         </div>
 
         {% if device.entryData(entry).t_show_chart %}
-        <div id="devdata" class="block big"><!-- Block Begin -->
-            <div class="titlebar">
-                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
-                <a href="#" class="toggle">&nbsp;</a>
-            </div>
-
-            <div class="block_cont" style="padding:4px;">
-                <div style="margin-bottom:10px;">
-                    <div id="container_t"></div>
+            <div id="devdata" class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno
+                        mjesto {{ device.getEntryData(entry).t_name }} - <span
+                                id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                    <a href="#" class="toggle">&nbsp;</a>
                 </div>
-            </div>
-        </div><!-- Block End -->
+
+                <div class="block_cont" style="padding:4px;">
+                    <div style="margin-bottom:10px;">
+                        <div id="container_t"></div>
+                    </div>
+                </div>
+            </div><!-- Block End -->
         {% endif %}
 
         {% if device.entryData(entry).rh_show_chart %}
-        <div id="devdata" class="block big"><!-- Block Begin -->
-            <div class="titlebar">
-                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }} - <span id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
-                <a href="#" class="toggle">&nbsp;</a>
-            </div>
-
-            <div class="block_cont" style="padding:4px;">
-                <div style="margin-bottom:10px;">
-                    <div id="container_rh"></div>
+            <div id="devdata" class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno
+                        mjesto {{ device.getEntryData(entry).t_name }} - <span
+                                id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                    <a href="#" class="toggle">&nbsp;</a>
                 </div>
-            </div>
-        </div><!-- Block End -->
+
+                <div class="block_cont" style="padding:4px;">
+                    <div style="margin-bottom:10px;">
+                        <div id="container_rh"></div>
+                    </div>
+                </div>
+            </div><!-- Block End -->
         {% endif %}
 
 

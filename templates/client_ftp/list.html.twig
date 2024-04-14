@@ -111,7 +111,7 @@
     <div class="clear"></div>
     <div id="body">
     <div id="edit-form" title="Izmjeni podatke" style="display:none;"
-         data-host="{{ client.host }}" data-username="{{ client.username }}" data-password="{{ client.password }}" data-id="{{ client.id }}">
+         data-host="{{ client_ftp.host }}" data-username="{{ client_ftp.username }}" data-password="{{ client_ftp.password }}" data-id="{{ client_ftp.id }}">
         <form id="editform" class="form" action="" method="POST">
             <fieldset>
                 <p style="margin-top:12px; border: 1px solid transparent; padding: 0.3em; font-weight:bold;">Podaci za prijavu loggera na FTP poslužitelj</p>
@@ -143,10 +143,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td class="">{{ client.id }}</td>
-                    <td class="">{{ client.host }}</td>
-                    <td class="">{{ client.username }}</td>
-                    <td class="">{{ client.password }}</td>
+                    <td class="">{{ client_ftp.id }}</td>
+                    <td class="">{{ client_ftp.host }}</td>
+                    <td class="">{{ client_ftp.username }}</td>
+                    <td class="">{{ client_ftp.password }}</td>
                 </tr>
                 </tbody>
             </table><!-- Table Wrapper End -->

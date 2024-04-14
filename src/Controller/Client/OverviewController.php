@@ -22,7 +22,6 @@ class OverviewController extends AbstractController
 
         return $this->render('overview/user.html.twig', [
             'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($this->getUser(), $client),
-            'client' => $client
         ]);
     }
 
