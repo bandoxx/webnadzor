@@ -55,6 +55,9 @@ class Device
     #[ORM\OneToMany(targetEntity: DeviceDataArchive::class, mappedBy: 'device')]
     private Collection $deviceDataArchives;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $alarmEmail = null;
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -312,6 +315,18 @@ class Device
         $setter = "setEntry$entry";
 
         $this->$setter($data);
+
+        return $this;
+    }
+
+    public function getAlarmEmail(): ?array
+    {
+        return $this->alarmEmail;
+    }
+
+    public function setAlarmEmail(?array $alarmEmail): static
+    {
+        $this->alarmEmail = $alarmEmail;
 
         return $this;
     }

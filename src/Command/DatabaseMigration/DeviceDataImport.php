@@ -29,6 +29,10 @@ class DeviceDataImport
             $client = $this->entityManager->getRepository(Client::class)->find($client->getId());
             $alarmData = $pdo->query(sprintf("SELECT * FROM `config_idevices` WHERE id = %s", $deviceData->id))->fetch(\PDO::FETCH_OBJ);
 
+            if (!$alarmData) {
+                $alarmData = [];
+            }
+
             $device = $this->importDevice($deviceData, $client, $alarmData);
 
             $this->importDeviceData($pdo, $device->getId());
@@ -50,14 +54,32 @@ class DeviceDataImport
             ->setOldId($deviceData->id)
         ;
 
+        $a1l = null;
+        $a2l = null;
+        $a1h = null;
+        $a2h = null;
+        $smtp1 = null;
+        $smtp2 = null;
+        $smtp3 = null;
+
+        if ($alarmData) {
+            $a1l = $alarmData->A1L ? ($alarmData->A1L - 1) / 100 : null;
+            $a2l = $alarmData->A2L ? ($alarmData->A2L - 1) / 100 : null;
+            $a1h = $alarmData->A1H ? ($alarmData->A1H - 1) / 100 : null;
+            $a2h = $alarmData->A2H ? ($alarmData->A2H - 1) / 100 : null;
+            $smtp1 = $alarmData->SmtpT1 ?: null;
+            $smtp2 = $alarmData->SmtpT2 ?: null;
+            $smtp3 = $alarmData->SmtpT3 ?: null;
+        }
+
         $device->setEntry1([
             't_location' => $deviceData->t1_location ?? $deviceData->device_name ?? null,
             't_name' => $deviceData->t1_name,
             't_unit' => $deviceData->t1_unit,
             't_image' => $deviceData->t1_image,
             't_show_chart' => $deviceData->t1_show_chart,
-            't_min' => $deviceData->t1_min ?? $alarmData->A1L ? ($alarmData->A1L - 1) / 100 : null,
-            't_max' => $deviceData->t1_max ?? $alarmData->A1H ? ($alarmData->A1H - 1) / 100 : null,
+            't_min' => $deviceData->t1_min ?? $a1l,
+            't_max' => $deviceData->t1_max ?? $a1h,
             'rh_name' => $deviceData->rh1_name,
             'rh_unit' => $deviceData->rh1_unit,
             'rh_image' => $deviceData->rh1_image,
@@ -80,8 +102,8 @@ class DeviceDataImport
             't_unit' => $deviceData->t2_unit,
             't_image' => $deviceData->t2_image,
             't_show_chart' => $deviceData->t2_show_chart,
-            't_min' => $deviceData->t2_min ?? $alarmData->A2L ? ($alarmData->A2L - 1) / 100 : null,
-            't_max' => $deviceData->t2_max ?? $alarmData->A2H ? ($alarmData->A2H - 1) / 100 : null,
+            't_min' => $deviceData->t2_min ?? $a2l,
+            't_max' => $deviceData->t2_max ?? $a2h,
             'rh_name' => $deviceData->rh2_name,
             'rh_unit' => $deviceData->rh2_unit,
             'rh_image' => $deviceData->rh2_image,
@@ -96,6 +118,12 @@ class DeviceDataImport
             't_use' => $deviceData->t2_use,
             'rh_use' => $deviceData->rh2_use,
             'd_use' => $deviceData->d2_use
+        ]);
+
+        $device->setAlarmEmail([
+            'smtp1' => $smtp1,
+            'smtp2' => $smtp2,
+            'smtp3' => $smtp3
         ]);
 
         $this->entityManager->persist($device);

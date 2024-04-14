@@ -26,7 +26,6 @@ class DeviceUpdater
 
     public function update(Device $device, array $data)
     {
-        dump($device);
         /** @var User $user */
         $user = $this->security->getUser();
 
@@ -181,6 +180,12 @@ class DeviceUpdater
             ## USE DIGITAL
             $device->setEntryData($entry, 'd_use', (empty($data['d' . $entry . '_use'])) ? '0' : '1');
             ##
+
+            $device->setAlarmEmail([
+                'smtp1' => $data['smtp1'] ?: null,
+                'smtp2' => $data['smtp2'] ?: null,
+                'smtp3' => $data['smtp3'] ?: null
+            ]);
         }
 
         if ($this->error) {

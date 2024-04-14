@@ -14,13 +14,14 @@ class MapMarkersController extends AbstractController
 {
     public function __invoke($clientId, ClientRepository $clientRepository, UserAccess $userAccess): JsonResponse
     {
-        $client = $this->getUser()->getClient();
+        $user = $this->getUser();
+        $client = $user->getClient();
 
         if (!$client) {
             $client = $clientRepository->find($clientId);
         }
 
-        $devices = $userAccess->getAccessibleDevices($client, $this->getUser());
+        $devices = $userAccess->getAccessibleDevices($client, $user);
 
         $markers['places'] = [];
         $counter = [];
