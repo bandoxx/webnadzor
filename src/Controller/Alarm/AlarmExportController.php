@@ -21,12 +21,7 @@ class AlarmExportController extends AbstractController
 
     public function __invoke($clientId, $id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver): StreamedResponse|Response
     {
-        if ($request->get('date_from')) {
-            $dateFrom = (new \DateTime($request->get('date_from')));
-        } else {
-            $dateFrom = (new \DateTime());
-        }
-
+        $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);
 
         if ($request->get('date_to')) {

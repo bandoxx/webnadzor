@@ -2,13 +2,11 @@
 
 namespace App\Controller\Device;
 
-use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\PDFArchiver;
 use App\Service\Archiver\XLSXArchiver;
 use App\Service\DeviceDataFormatter;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,25 +14,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET')]
+#[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET|POST')]
 class DeviceEntryExportController extends AbstractController
 {
     public function __invoke($clientId, $id, $entry, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver): StreamedResponse|Response
     {
-        if ($request->get('date_from')) {
-            $dateFrom = (new \DateTime($request->get('date_from')));
-        } else {
-            $dateFrom = (new \DateTime());
-        }
-
+        $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);
 
-        if ($request->get('date_to')) {
-            $dateTo = (new \DateTime($request->get('date_to')));
-        } else {
-            $dateTo = (new \DateTime());
-        }
-
+        $dateTo = (new \DateTime($request->get('date_to')));
         $dateTo->modify('+1 day')->setTime(0, 0);
 
         $device = $deviceRepository->find($id);
