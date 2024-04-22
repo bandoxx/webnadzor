@@ -21,7 +21,6 @@ final class Version20240327121738 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE device_alarm_config (id INT AUTO_INCREMENT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('DROP INDEX device_date ON device_data');
         $this->addSql('ALTER TABLE user_device_access ADD sensor INT DEFAULT NULL');
     }
 
@@ -29,7 +28,6 @@ final class Version20240327121738 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('DROP TABLE device_alarm_config');
-        $this->addSql('CREATE INDEX device_date ON device_data (device_id, device_date)');
         $this->addSql('ALTER TABLE user_device_access DROP sensor');
     }
 }

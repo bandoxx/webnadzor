@@ -21,13 +21,11 @@ final class Version20240408134854 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE device_alarm ADD is_notified TINYINT(1) NOT NULL');
-        $this->addSql('DROP INDEX device_id ON device_data');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE device_alarm DROP is_notified');
-        $this->addSql('CREATE INDEX device_id ON device_data (device_id, device_date)');
     }
 }
