@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class DeviceDataImport
 {
-    private MultipleInsertExecutor $deviceExecutor;
     private MultipleInsertExecutor $deviceDataExecutor;
     private MultipleInsertExecutor $deviceDataArchiveExecutor;
 
@@ -23,7 +22,6 @@ class DeviceDataImport
         private EntityManagerInterface $entityManager,
         Connection $connection
     ) {
-        $this->deviceExecutor = new MultipleInsertExecutor($connection, 'device');
         $this->deviceDataExecutor = new MultipleInsertExecutor($connection, 'device_data');
         $this->deviceDataArchiveExecutor = new MultipleInsertExecutor($connection, 'device_data_archive');
     }
@@ -54,6 +52,10 @@ class DeviceDataImport
 
     private function importDevice($deviceData, $client, $alarmData)
     {
+        if ($device = $this->entityManager->getRepository(Device::class)->findOneBy(['client' => $client, 'oldId' => $deviceData->id])) {
+            return $device;
+        }
+
         $device = new Device();
         $device->setName($deviceData->device_name)
             ->setLatitude($deviceData->lat)
@@ -144,14 +146,28 @@ class DeviceDataImport
 
     private function importDeviceData(\PDO $pdo, $deviceId): void
     {
+        $deviceDataRepository = $this->entityManager->getRepository(DeviceData::class);
+
         $newDevice = $this->entityManager->getRepository(Device::class)->find($deviceId);
         $query = sprintf("SELECT * FROM data_lunit_%d", $newDevice->getOldId());
+
+        $firstRecord = $deviceDataRepository->getFirstRecord($newDevice->getId());
+        $lastRecord = $deviceDataRepository->getLastRecord($newDevice->getId());
+
         $limit = 20_000;
 
         $stmt = $pdo->query($query);
 
         $i = 0;
         while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
+            $deviceDate = new \DateTime($data->device_date);
+
+            if ($firstRecord || $lastRecord) {
+                if ($deviceDate < $lastRecord->getDeviceDate() && $deviceDate > $firstRecord->getDeviceDate()) {
+                    continue;
+                }
+            }
+
             $i++;
 
             $this->deviceDataExecutor->enqueueData([
@@ -266,13 +282,17 @@ class DeviceDataImport
         $this->entityManager->clear();
     }
 
-    private function importDeviceIcons(\PDO $pdo, Client $client)
+    private function importDeviceIcons(\PDO $pdo, Client $client): void
     {
         $query = sprintf("SELECT * FROM `config_icons`");
 
         $stmt = $pdo->query($query);
 
         while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
+            if ($this->entityManager->getRepository(DeviceIcon::class)->findOneBy(['client' => $client, 'title' => $data->title, 'filename' => $data->filename])) {
+                continue;
+            }
+
             $icon = new DeviceIcon();
 
             $icon->setFilename($data->filename)

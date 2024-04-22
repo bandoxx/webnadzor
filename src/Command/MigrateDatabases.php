@@ -11,6 +11,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
     name: 'app:database-migrate',
@@ -25,7 +26,8 @@ class MigrateDatabases extends Command
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DeviceDataImport $deviceDataImport,
-        private UserDataImport $userDataImport
+        private UserDataImport $userDataImport,
+        private ParameterBagInterface $parameterBag,
     )
     {
         parent::__construct();
@@ -35,11 +37,12 @@ class MigrateDatabases extends Command
     {
         $output->writeln("Script started: " . (new \DateTime())->format('Y-m-d H:i:s'));
 
-        $databases = ['nadzor-old', 'cedevita-old', 'atlantic', 'cakovec', 'drogakolinska', 'arnika'];
-        //$databases = ['nadzor-old'];
+        $databases = ['arnika_app', 'atlantictskoplje_app', 'cedevita_app', 'chevap_app', 'dcosijek_app', 'dcrijeka_app', 'dcsplit_app', 'drogakolinska_app', 'ecodies_app', 'ekovent_app', 'ekovent_app2', 'farmacia_webapp', 'hipp_app', 'inteltehwnadzo_app', 'kbcsm_app', 'korcula_app', 'ldcvukovina_app', 'ljekarnacakovec_app', 'ljekarnerajic_app', 'ljekarnesibalic_app', 'medilabone_app', 'montana_app', 'primapharme_app', 'stark_app', 'vikdental_app'];
+        $username = $this->parameterBag->get('database_username');
+        $password = $this->parameterBag->get('database_password');
 
         foreach ($databases as $databaseName) {
-            $pdo = new \PDO("mysql:host=nadzor_mysql;dbname=$databaseName", 'root', 'root');
+            $pdo = new \PDO("mysql:host=localhost;dbname=$databaseName", $username, $password);
             $pdo->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
             $pdo->setAttribute(\PDO::ATTR_PERSISTENT, false);
 
