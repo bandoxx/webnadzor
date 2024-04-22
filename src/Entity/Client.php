@@ -44,7 +44,7 @@ class Client
     private Collection $loginLogs;
 
     #[ORM\Column]
-    private int $overviewViews = 0;
+    private int $overviewViews = self::DEVICE_OVERVIEW_ICON;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $mainLogo = null;
@@ -59,7 +59,7 @@ class Client
     private ?string $oldDatabaseName = null;
 
     #[ORM\Column]
-    private ?int $devicePageView = null;
+    private int $devicePageView = self::OVERVIEW_MAP;
 
     public function __construct()
     {

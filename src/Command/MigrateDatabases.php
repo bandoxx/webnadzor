@@ -13,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:migrate-database',
+    name: 'app:database-migrate',
     description: 'Add a short description for your command',
 )]
 class MigrateDatabases extends Command
@@ -33,8 +33,10 @@ class MigrateDatabases extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        //$databases = ['nadzor-old', 'cedevita-old'];
-        $databases = ['nadzor-old'];
+        $output->writeln("Script started: " . (new \DateTime())->format('Y-m-d H:i:s'));
+
+        $databases = ['nadzor-old', 'cedevita-old', 'atlantic', 'cakovec', 'drogakolinska', 'arnika'];
+        //$databases = ['nadzor-old'];
 
         foreach ($databases as $databaseName) {
             $pdo = new \PDO("mysql:host=nadzor_mysql;dbname=$databaseName", 'root', 'root');
@@ -42,6 +44,9 @@ class MigrateDatabases extends Command
             $pdo->setAttribute(\PDO::ATTR_PERSISTENT, false);
 
             $client = $this->migrateClient($pdo, $databaseName);
+
+            $output->writeln(sprintf("Migrating database - %s", $client->getName()));
+
             $clientId = $client->getId();
 
             $this->deviceDataImport->import($pdo, $client);
@@ -50,6 +55,8 @@ class MigrateDatabases extends Command
 
             $this->userDataImport->import($pdo, $client);
         }
+
+        $output->writeln("Script ended: " . (new \DateTime())->format('Y-m-d H:i:s'));
 
         return Command::SUCCESS;
     }

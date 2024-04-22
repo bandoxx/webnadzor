@@ -2,6 +2,7 @@
 
 namespace App\Command\DatabaseMigration;
 
+use App\Dbal\MultipleInsertExecutor;
 use App\Entity\Client;
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
@@ -9,13 +10,23 @@ use App\Entity\DeviceData;
 use App\Entity\DeviceDataArchive;
 use App\Entity\DeviceIcon;
 use App\Model\AlarmType;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DeviceDataImport
 {
+    private MultipleInsertExecutor $deviceExecutor;
+    private MultipleInsertExecutor $deviceDataExecutor;
+    private MultipleInsertExecutor $deviceDataArchiveExecutor;
+
     public function __construct(
-        private EntityManagerInterface $entityManager
-    ) {}
+        private EntityManagerInterface $entityManager,
+        Connection $connection
+    ) {
+        $this->deviceExecutor = new MultipleInsertExecutor($connection, 'device');
+        $this->deviceDataExecutor = new MultipleInsertExecutor($connection, 'device_data');
+        $this->deviceDataArchiveExecutor = new MultipleInsertExecutor($connection, 'device_data_archive');
+    }
 
     public function import(\PDO $pdo, Client $client): void
     {
@@ -36,8 +47,7 @@ class DeviceDataImport
             $device = $this->importDevice($deviceData, $client, $alarmData);
 
             $this->importDeviceData($pdo, $device->getId());
-            $this->importArchiveDaily($pdo, $device->getId());
-            $this->importArchiveMonthly($pdo, $device->getId());
+            $this->importArchive($pdo, $device->getId());
             $this->importAlarms($pdo, $device->getId());
         }
     }
@@ -136,137 +146,97 @@ class DeviceDataImport
     {
         $newDevice = $this->entityManager->getRepository(Device::class)->find($deviceId);
         $query = sprintf("SELECT * FROM data_lunit_%d", $newDevice->getOldId());
-        $limit = 10_000;
+        $limit = 20_000;
 
         $stmt = $pdo->query($query);
 
         $i = 0;
         while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
             $i++;
-            $newDeviceData = new DeviceData();
 
-            $newDeviceData->setDevice($newDevice)
-                ->setVbat($data->vbat)
-                ->setSupply((bool) $data->supply)
-                ->setGsmSignal($data->s)
-                ->setBattery($data->batchrg)
-                ->setDeviceDate(new \DateTime($data->device_date))
-                ->setServerDate(new \DateTime($data->server_date))
-                ->setD1($data->d1)
-                ->setT1($data->t1)
-                ->setRh1($data->rh1)
-                ->setMkt1($data->mkt1)
-                ->setTMax1($data->t1max)
-                ->setTMin1($data->t1min)
-                ->setTAvrg1($data->t1avrg)
-                ->setNote1($data->note1 ?? null)
-                ->setD2($data->d2)
-                ->setT2($data->t2)
-                ->setRh2($data->rh2)
-                ->setMkt2($data->mkt2)
-                ->setTMax2($data->t2max)
-                ->setTMin2($data->t2min)
-                ->setTAvrg2($data->t2avrg)
-                ->setNote2($data->note2 ?? null)
-            ;
-
-            $this->entityManager->persist($newDeviceData);
+            $this->deviceDataExecutor->enqueueData([
+                'device_id' => $deviceId,
+                'supply' => $data->supply,
+                'gsm_signal' => $data->s,
+                'vbat' => $data->vbat,
+                'battery' => $data->batchrg,
+                'device_date' => $data->device_date,
+                'server_date' => $data->server_date,
+                'd1' => $data->d1,
+                't1' => $data->t1,
+                'rh1' => $data->rh1,
+                'mkt1' => $data->mkt1,
+                't_max1' => $data->t1max,
+                't_min1' => $data->t1min,
+                't_avrg1' => $data->t1avrg,
+                'note1' => $data->note1 ?? null,
+                'd2' => $data->d2,
+                't2' => $data->t2,
+                'rh2' => $data->rh2,
+                'mkt2' => $data->mkt2,
+                't_max2' => $data->t2max,
+                't_min2' => $data->t2min,
+                't_avrg2' => $data->t2avrg,
+                'note2' => $data->note2 ?? null,
+            ]);
 
             if ($i % $limit === 0) {
+                $this->deviceDataExecutor->execute();
                 $i = 0;
-                $this->entityManager->flush();
                 $this->entityManager->getConnection()->getConfiguration()->setMiddlewares([new \Doctrine\DBAL\Logging\Middleware(new \Psr\Log\NullLogger())]);
                 $this->entityManager->clear();
                 gc_collect_cycles();
-                $newDevice = $this->entityManager->getRepository(Device::class)->find($deviceId);
             }
         }
 
-        $this->entityManager->flush();
+        $this->deviceDataExecutor->execute();
         $this->entityManager->clear();
     }
 
-    private function importArchiveDaily(\PDO $pdo, $deviceId): void
+    private function importArchive(\PDO $pdo, $deviceId)
     {
         $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
-        $query = sprintf("SELECT * FROM data_darchive WHERE ldevice_id = %d", $device->getOldId());
+
+        $queries = [
+            DeviceDataArchive::PERIOD_DAY => sprintf("SELECT * FROM data_darchive WHERE ldevice_id = %d", $device->getOldId()),
+            DeviceDataArchive::PERIOD_MONTH => sprintf("SELECT * FROM data_marchive WHERE ldevice_id = %d", $device->getOldId())
+        ];
+
         $limit = 10_000;
-
-        $stmt = $pdo->query($query);
-
         $i = 0;
-        while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
-            $i++;
-            if (str_contains($data->filename, '_t1_')) {
-                $entries = [1];
-            } elseif (str_contains($data->filename, '_t2_')) {
-                $entries = [2];
-            } else {
-                $entries = [1, 2];
-            }
+        foreach ($queries as $period => $query) {
+            $stmt = $pdo->query($query);
 
-            foreach ($entries as $entry) {
-                $deviceArchive = new DeviceDataArchive();
-                $deviceArchive->setDevice($device)
-                    ->setServerDate(new \DateTime($data->server_date))
-                    ->setArchiveDate(new \DateTime($data->archive_date))
-                    ->setFilename($data->filename)
-                    ->setPeriod(DeviceDataArchive::PERIOD_DAY)
-                    ->setEntry($entry)
-                ;
+            while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
+                $i++;
+                if (str_contains($data->filename, '_t1_')) {
+                    $entries = [1];
+                } elseif (str_contains($data->filename, '_t2_')) {
+                    $entries = [2];
+                } else {
+                    $entries = [1, 2];
+                }
 
-                $this->entityManager->persist($deviceArchive);
-            }
+                foreach ($entries as $entry) {
+                    $this->deviceDataArchiveExecutor->enqueueData([
+                        'device_id' => $deviceId,
+                        'server_date' => $data->server_date,
+                        'archive_date' => $data->archive_date,
+                        'filename' => $data->filename,
+                        'period' => $period,
+                        'entry' => $entry
+                    ]);
+                }
 
-            if ($i % $limit === 0) {
-                $i = 0;
-                $this->entityManager->flush();
+                if ($i % $limit === 0) {
+                    $i = 0;
+                    $this->deviceDataArchiveExecutor->execute();
+                    $this->entityManager->clear();
+                }
             }
         }
 
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-    }
-
-    private function importArchiveMonthly(\PDO $pdo, $deviceId): void
-    {
-        $device = $this->entityManager->getRepository(Device::class)->find($deviceId);
-        $query = sprintf("SELECT * FROM data_marchive WHERE ldevice_id = %d", $device->getOldId());
-        $limit = 10_000;
-
-        $stmt = $pdo->query($query);
-
-        $i = 0;
-        while ($data = $stmt->fetch(\PDO::FETCH_OBJ)) {
-            $i++;
-            if (str_contains($data->filename, '_t1_')) {
-                $entries = [1];
-            } elseif (str_contains($data->filename, '_t2_')) {
-                $entries = [2];
-            } else {
-                $entries = [1, 2];
-            }
-
-            foreach ($entries as $entry) {
-                $deviceArchive = new DeviceDataArchive();
-                $deviceArchive->setDevice($device)
-                    ->setServerDate(new \DateTime($data->server_date))
-                    ->setArchiveDate(new \DateTime($data->archive_date))
-                    ->setFilename($data->filename)
-                    ->setPeriod(DeviceDataArchive::PERIOD_MONTH)
-                    ->setEntry($entry)
-                ;
-
-                $this->entityManager->persist($deviceArchive);
-            }
-
-            if ($i % $limit === 0) {
-                $i = 0;
-                $this->entityManager->flush();
-            }
-        }
-
-        $this->entityManager->flush();
+        $this->deviceDataArchiveExecutor->execute();
         $this->entityManager->clear();
     }
 

@@ -22,6 +22,18 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
+    public function getLastRecords($oldDeviceId, \DateTime $fromDate): array
+    {
+        return $this->createQueryBuilder('dd')
+            ->where('dd.oldId = :old_id')
+            ->andWhere('dd.deviceDate >= :from_date')
+            ->setParameter('old_id', $oldDeviceId)
+            ->setParameter('from_date', $fromDate)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function removeDataForDevice($deviceId): void
     {
         $this->getEntityManager()->getConnection()->executeQuery(
