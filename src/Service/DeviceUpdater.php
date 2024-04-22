@@ -7,8 +7,8 @@ use App\Entity\User;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Symfony\Component\Security\Core\Security;
 
 class DeviceUpdater
 {
@@ -197,7 +197,7 @@ class DeviceUpdater
         return $device;
     }
 
-    private function setImage(Device $device, $entry, $field, $imageId)
+    private function setImage(Device $device, $entry, $field, $imageId): Device
     {
         if (empty($imageId)) {
             $device->setEntryData($entry, $field, null);
@@ -212,7 +212,8 @@ class DeviceUpdater
         return $device;
     }
 
-    private function length($string, $max = 1, $min = 1) {
+    private function length($string, $max = 1, $min = 1): bool
+    {
         $string = strlen(utf8_decode($string));
 
         return $string >= (int)@$min && $string <= (int)@$max;

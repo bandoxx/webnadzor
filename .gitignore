@@ -21,3 +21,4 @@
 
 *.xlsx
 /.idea/
+deploy.php
