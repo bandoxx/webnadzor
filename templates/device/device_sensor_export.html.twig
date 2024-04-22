@@ -3,6 +3,56 @@
 {% block javascripts %}
 {{ parent() }}
     <script>
+      function edit_note(record_id) {
+
+        let selector = $("#" + record_id);
+        let entry = selector.data('entry');
+        let note = selector.data('note');
+
+        $('#note').val(note);
+
+        $('#edit-form').attr('title', 'Izmena napomene');
+
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $.ajax({
+                url: '/api/device/data/' + record_id + '/' + entry,
+                type: 'PATCH',
+                data: {
+                  note: $('#note').val()
+                },
+                dataType: 'json',
+                success: function() {
+                  $('#edit-form').dialog('close');
+                  location.reload()
+                },
+                error: function() {
+                  alert('Greška! Molimo pokušajte ponovo');
+                }
+              })
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $(this).dialog('destroy');
+          }
+        });
+      }
       $(document).ready(function() {
 
         $('.toggle').click(function() { /* BLOCK TOGGLE */
@@ -44,7 +94,7 @@
 
         $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        var oTable = $('#table').dataTable({
+        $('#table').dataTable({
           pageLength: 10,
           ordering: false,
           language: {
@@ -61,26 +111,10 @@
           ],
         }); /* DATA TABLES */
 
-        var editor = new DataTable.Editor({
-          ajax: '/something',
-          fields: [
-            {
-              label: 'Note',
-              name: 'note'
-            }
-          ],
-          table: '#table'
+        $('div.actionbar a.edit').click(function() { /* EDIT ICON */
+          edit_note($(this).parent().attr('id'));
+          return false;
         });
-
-        $('#table').on('click', '.note', function (e) {
-          editor.inline(this);
-        });
-        // oTable.makeEditable({
-        //   sUpdateURL: page_url + 'data_export/logger_' + device_id + '/' + sensor + '/note',
-        //   fnShowError: function (message, a) {alert(message);},
-        //   sReadOnlyCellClass: 'read_only'
-        // });
-
       });
     </script>
 {% endblock %}
@@ -112,6 +146,15 @@
 </div><!-- Infoarea End -->
 {% endblock %}
 {% block content %}
+    <div id="edit-form" title="Promeni napomenu" style="display:none;">
+        <form id="editform" class="form" action="#" method="POST">
+            <fieldset>
+                <label for="note" style="display:block; margin-top:12px;">Napomena</label>
+                <input type="text" name="note" id="note" class="input validate[required,maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+            </fieldset>
+        </form>
+    </div>
+
     <div id="body">
         <div class="block big"><!-- Block Begin -->
             <div class="titlebar">
@@ -124,6 +167,7 @@
                         <tr>
                             <th></th>
                             <th></th>
+                            <th></th>
                             <th colspan="5">{{ device.getEntryData(entry).t_name }}</th>
                         </tr>
                         <tr>
@@ -134,6 +178,7 @@
                             <th>MIN.</th>
                             <th>MKT</th>
                             <th>VL.</th>
+                            <th>Opcije</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -146,6 +191,11 @@
                             <td>{{ data.min }}</td>
                             <td>{{ data.avrg }}</td>
                             <td>{{ data.rh }}</td>
+                            <td>
+                                <div id="{{ data.id }}" class="actionbar" data-note="{{ data.note }}" data-entry="{{ data.entry }}">
+                                    <a href="#" class="action edit"><span>Napomena</span></a>
+                                </div>
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>

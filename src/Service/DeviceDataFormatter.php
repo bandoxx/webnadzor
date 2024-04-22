@@ -22,11 +22,12 @@ class DeviceDataFormatter
 
         $tUnit = $deviceEntryData['t_unit'];
         $rhUnit = $deviceEntryData['rh_unit'];
-        $i = 0;
+
         foreach ($deviceData as $data) {
 
             $table[] = [
-                'br' => ++$i,
+                'id' => $data->getId(),
+                'entry' => $entry,
                 'date' => $data->getDeviceDate()->format('d.m.Y H:i:s'),
                 'note' => $data->getNote($entry),
                 'temp' => sprintf("%s %s", $data->getT($entry), $tUnit),

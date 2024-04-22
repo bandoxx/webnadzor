@@ -275,6 +275,13 @@ class DeviceData
         return $this->$getter();
     }
 
+    public function setNote($entry, $note): static
+    {
+        $setter = "setNote$entry";
+
+        return $this->$setter($note);
+    }
+
     public function isD1(): bool
     {
         return $this->d1;
