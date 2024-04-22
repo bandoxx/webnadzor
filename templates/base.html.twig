@@ -1,5 +1,8 @@
 {% set user = app.user %}
 {% set client = null %}
+{% if clientId is not defined %}
+    {% set clientId = null %}
+{% endif %}
 
 {% if user is not null %}
     {% if user.client is not null %}
