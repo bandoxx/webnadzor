@@ -15,6 +15,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
         "donatj/phpuseragentparser": "^1.8",
+        "intervention/image": "^3.6",
         "mpdf/mpdf": "^8.2",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpoffice/phpspreadsheet": "^2.0",
@@ -50,8 +51,7 @@
         "symfony/yaml": "6.4.*",
         "tecnick.com/tcpdf": "^6.7",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0",
-        "ext-ssh2": "*"
+        "twig/twig": "^2.12|^3.0"
     },
     "require-dev": {
         "deployer/deployer": "^7.4",

@@ -3,6 +3,40 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
+      function new_client() {
+        $('#edit-form').attr('title', 'Unošenje novog klijenta');
+
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#editform').attr('action', '/api/client');
+              $('#editform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $("#map_marker_icon_div").hide();
+            $("#map").prop('checked', false).button('refresh');
+            $("#thermometer").prop('checked', false).button('refresh');
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
       function edit_client(client_id) {
 
         let selector = $("#" + client_id);
@@ -69,14 +103,16 @@
 
         $('div.actionbar a.edit').click(function() { /* EDIT ICON */
           edit_client($(this).parent().attr('id'));
-          return false;
         });
+
+        $("#client_add").click(function() {
+          new_client();
+        })
 
         $('.toggle').click(function() { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
           $(this).parent().parent().children('.block_cont').slideToggle(300);
           $(this).parent().toggleClass('show');
-          return false;
         });
 
         $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
@@ -91,9 +127,11 @@
 
         $('.radioui').buttonset();
 
-        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        const table = $('#table');
+
+        table.wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        var table = $('#table').dataTable({
+        table.dataTable({
           pageLength: 10,
           language: {
             search: "Pretraga",
@@ -114,11 +152,12 @@
 
 {% block navigation %}
     <li><a href="{{ path('admin_overview') }}" class="icon_square">Klijenti</a></li>
+    <li><a href="#" id="client_add" class="icon_plus">Dodaj klijenta</a></li>
     <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
 {% endblock %}
 
 {% block content %}
-    <div id="edit-form" title="Dodaj novu ikonu" style="display:none;">
+    <div id="edit-form" title="" style="display:none;">
         <form id="editform" class="form" action="#" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <label for="client_name" style="display:block; margin-top:12px;">Naziv klijenta</label>

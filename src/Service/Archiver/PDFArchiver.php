@@ -50,7 +50,8 @@ class PDFArchiver implements DeviceDataArchiverInterface
         $headerData .= 'Cedevita webnadzor';
 
         # ../../../ is because constant cannot be changed, and it's reading from vendor root
-        $pdf->SetHeaderData('../../../../../public/assets/images/pdflogo.png', 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
+        $logo = $device->getClient()->getPdfLogo();
+        $pdf->SetHeaderData("../../../../../public/assets/images/logo/$logo", 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont(['dejavusanscondensed', '', 8]);

@@ -3,8 +3,10 @@
 namespace App\Service\Image;
 
 use App\Entity\Client;
+use BenMajor\ImageResize\Image;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -12,7 +14,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class LogoUploader
 {
 
-    public function __construct(private SluggerInterface $slugger, private ParameterBagInterface $parameterBag, private EntityManagerInterface $entityManager) {}
+    public function __construct(private SluggerInterface $slugger, private string $logoPath, private EntityManagerInterface $entityManager) {}
 
     public function uploadAndSaveMainLogo(UploadedFile $uploadedFile, Client $client): void
     {
@@ -33,21 +35,30 @@ class LogoUploader
 
         $this->save($uploadedFile, $newFilename);
 
-        $client->setMainLogo($newFilename);
+        $client->setPdfLogo($newFilename);
 
         $this->entityManager->flush();
     }
 
-    private function save(UploadedFile $uploadedFile, $fileName)
+    private function save(UploadedFile $uploadedFile, $fileName): void
     {
         try {
-            $uploadedFile->move(
-                $this->parameterBag->get('logo_directory_full_path'),
-                $fileName
-            );
+            $uploadedFile->move($this->logoPath, $fileName);
+            $this->resize(sprintf("%s/%s", $this->logoPath, $fileName));
         } catch (FileException $e) {
             return;
         }
+    }
+
+    private function resize($filePath): void
+    {
+        $manager = new ImageManager(
+            new Driver()
+        );
+
+        $image = $manager->read($filePath);
+        $image->scale(180, 65);
+        $image->save($filePath);
     }
 
 }
