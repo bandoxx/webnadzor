@@ -57,7 +57,7 @@ class DatabaseDownloadCommand extends Command
         foreach ($databases as $database) {
             $filePath = sprintf('./db-backup/%s.sql', $database);
             ssh2_exec($session, sprintf('mysqldump %s > %s', $database, $filePath));
-            ssh2_scp_recv($session, $filePath, sprintf('./%s.sql', $database);
+            ssh2_scp_recv($session, $filePath, sprintf('./%s.sql', $database));
         }
 
         ssh2_disconnect($session);
