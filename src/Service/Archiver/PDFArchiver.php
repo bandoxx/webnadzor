@@ -10,7 +10,6 @@ class PDFArchiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
-        $toDate->modify('+1 day')->setTime(0, 0);
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
 

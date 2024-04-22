@@ -12,7 +12,6 @@ class XLSXArchiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null)
     {
-        $toDate->modify('+1 day')->setTime(0, 0);
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
