@@ -21,5 +21,6 @@
 
 *.xlsx
 /.idea/
+/data/
 deploy.php
 /public/assets/images/logo/
