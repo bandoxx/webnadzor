@@ -49,7 +49,7 @@
                       return false;
                     }
 
-                    if (r.status == 202) {
+                    if (r.status == 200) {
                       $('#infomsg').fadeOut(1000).hide(0, function() {
                         $(this).html(ok).fadeIn(1000, function() {
                           setTimeout(function() {
@@ -59,9 +59,8 @@
                           }, 4000);
                         });
                       });
-                    }
-
-                    else if (r.status !== 202) {
+                    } else {
+                      console.log('response data: ' + data);
                       $('#infomsg').fadeOut(1000).hide(0, function() {
                         $(this).html(error).fadeIn(1000, function() {
                           setTimeout(function() {
@@ -71,10 +70,6 @@
                           }, 4000);
                         });
                       });
-                    }
-
-                    else {
-                      console.log('response data: ' + data);
                     }
                   });
               });
@@ -393,35 +388,6 @@
                         <div class="clear"></div>
                     </div>
                 </div><!-- Block End -->
-{#                <div class="block big"><!-- Block Begin -->#}
-{#                    <div class="titlebar">#}
-{#                        <h3>Vrijednosti alarma</h3>#}
-{#                        <a href="#" class="toggle">&nbsp;</a>#}
-{#                    </div>#}
-{#                    <div class="block_cont">#}
-{#                        <div class="grid_4 alpha">#}
-{#                            <div class="form_row">#}
-{#                                <label>Alarm ulaz 1, prekoračena temperatura</label>#}
-{#                                <input value="{A1H}" class="input validate[optional,custom[alarm_value],max[99.98]] tipRight" type="text" style="width: 290px;" name="A1H" id="A1H" placeholder="Unesite vrijednost" original-title="Temperatura u opsegu 00.00 do 99.98°C, 0 za isključeno" />#}
-{#                            </div>#}
-{#                            <div class="form_row">#}
-{#                                <label>Alarm ulaz 1, niska temperatura</label>#}
-{#                                <input value="{A1L}" class="input validate[optional,custom[alarm_value],max[99.98]] tipRight" type="text" style="width: 290px;" name="A1L" id="A1L" placeholder="Unesite vrijednost" original-title="Temperatura u opsegu 00.00 do 99.98°C, 0 za isključeno" />#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="grid_4 push_1 omega">#}
-{#                            <div class="form_row">#}
-{#                                <label>Alarm ulaz 2, prekoračena temperatura</label>#}
-{#                                <input value="{A2H}" class="input validate[optional,custom[alarm_value],max[99.98]] tipRight" type="text" style="width: 290px;" name="A2H" id="A2H" placeholder="Unesite vrijednost" original-title="Temperatura u opsegu 00.00 do 99.98°C, 0 za isključeno" />#}
-{#                            </div>#}
-{#                            <div class="form_row">#}
-{#                                <label>Alarm ulaz 2, niska temperatura</label>#}
-{#                                <input value="{A2L}" class="input validate[optional,custom[alarm_value],max[99.98]] tipRight" type="text" style="width: 290px;" name="A2L" id="A2L" placeholder="Unesite vrijednost" original-title="Temperatura u opsegu 00.00 do 99.98°C, 0 za isključeno" />#}
-{#                            </div>#}
-{#                        </div>#}
-{#                        <div class="clear"></div>#}
-{#                    </div>#}
-{#                </div><!-- Block End -->#}
             </div>
         </div><!-- Body Wrapper End -->
     </form>
