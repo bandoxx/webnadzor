@@ -27,6 +27,7 @@
     $(tableId +' tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
     $(tableId).dataTable({
       pageLength: 25,
+      order: [[0, 'desc']],
       language: {
         search: "Pretraga",
         loading: "Ucitavanje...",
@@ -79,7 +80,7 @@
           {% set style = 'odd' %}
           {% for log in logs %}
             <tr class="{{ style }}">
-              <td class="">{{ log.serverDate|date('d.m.Y H:i:s') }}</td>
+              <td class="" data-sort="{{ log.serverDate|date('YmdHis') }}">{{ log.serverDate|date('d.m.Y H:i:s') }}</td>
               <td class="">
                 {% if log.status == 1%}
                   <span class="green">PR. OK</span>

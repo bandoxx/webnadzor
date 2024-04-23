@@ -133,6 +133,7 @@
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
         table.dataTable({
           pageLength: 10,
+          order: [[4, 'desc'], [1, 'desc']],
           language: {
             search: "Pretraga",
             loading: "Ucitavanje...",
