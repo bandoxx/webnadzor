@@ -53,38 +53,35 @@ class DeviceDataRepository extends ServiceEntityRepository
         )->free();
     }
 
+    public function getNumberOfRecords($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
+    {
+        $builder = $this->createQueryBuilder('dd');
+        $builder->select('COUNT(dd.id) as count');
+        if ($fromDate && $toDate) {
+            $builder->where('dd.deviceDate BETWEEN :fromDate AND :toDate')
+                ->setParameter('fromDate', $fromDate)
+                ->setParameter('toDate', $toDate)
+            ;
+        }
+
+        return $builder->andWhere('dd.device = :device_id')
+            ->setParameter('device_id', $deviceId)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
     public function getChartData($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
     {
-        ## zadnji datum ubacit u js od grafova
-        // 2 days or 288 points - all data
-        //if ($this->countData() > 288 AND $range > 2 * 24 * 3600) {
-        //
-        //    // 15 days - hourly data
-        //    if ($range < 15 * 24 * 3600) {
-        //        $groupby = 'GROUP BY DATE(device_date), HOUR(device_date)';
-        //    }
-        //
-        //    // ~two years - daily data
-        //    elseif ($range < 2 * 355 * 24 * 3600) {
-        //        $groupby = 'GROUP BY DATE(device_date)';
-        //    }
-        //
-        //    // more than two years - weekly data
-        //    else {
-        //        $groupby = 'GROUP BY YEAR(device_date), WEEK(device_date)';
-        //    }
-        //
-        //}
-        //else {
-        //    $groupby = '';
-        //}
+        $numberOfRecords = $this->getNumberOfRecords($deviceId, $fromDate, $toDate);
 
         $builder = $this->createQueryBuilder('dd')
-            //->select("DATE(dd.deviceDate) as d_date, HOUR(dd.deviceDate) as hour", "dd.deviceDate", "dd.entry1", "dd.entry2")
             ->select("DATE(dd.deviceDate) as date", "YEAR(dd.deviceDate) as year", "HOUR(dd.deviceDate) as hour", "WEEK(dd.deviceDate) as week", "dd")
             ->where("dd.device = :device_id")
             ->setParameter('device_id', $deviceId)
         ;
+
+        $daysDiff = 0;
 
         if ($fromDate && $toDate) {
             $builder->andWhere('dd.deviceDate >= :from_date')
@@ -94,16 +91,16 @@ class DeviceDataRepository extends ServiceEntityRepository
             ;
 
             $daysDiff = $toDate->diff($fromDate)->format("%a");
+        }
 
-            if ($daysDiff < 15) {
+        if ($numberOfRecords > 288) {
+            if ($daysDiff < 15 && $daysDiff !== 0) {
                 $builder->groupBy('date', 'hour');
-            } else if ($daysDiff < 365 * 2) {
+            } elseif ($daysDiff < 365 && $daysDiff !== 0) {
                 $builder->groupBy('date');
             } else {
                 $builder->groupBy('year', 'week');
             }
-        } else {
-            $builder->groupBy('date');
         }
 
         return $builder

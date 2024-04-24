@@ -138,6 +138,118 @@
           selected: 5
         };
 
+        Highcharts.setOptions({
+          title: {
+            style: {
+              color: '#cccccc'
+            }
+          },
+          chart: {
+            backgroundColor: '#202d3b'
+          },
+          navigation: {
+            buttonOptions: {
+              theme: {
+                fill: '#333333',
+                'stroke-width': 0
+              }
+            }
+          },
+          navigator: {
+            maskInside: false,
+            maskFill: '#eeeeee44',
+            xAxis: {
+              gridLineWidth: 0,
+              labels: {
+                style: {
+                  color: '#c5c7c9',
+                  opacity: 1,
+                  textOutline: 0
+                }
+              }
+            },
+          },
+          plotOptions: {
+            series: {
+              lastPrice: {
+                color: '#c0c0c0',
+                enabled: true,
+                label: {
+                  backgroundColor: '#fbfbfb',
+                  borderRadius: 0,
+                  enabled: true,
+                  padding: 3,
+                  style: {
+                    color: '#000'
+                  }
+                }
+              }
+            }
+          },
+          rangeSelector: {
+            buttonTheme: {
+              fill: '#333333',
+              padding: 1,
+              r: 2,
+              states: {
+                hover: {
+                  style: {
+                    color: '#333333'
+                  }
+                }
+              },
+              style: {
+                color: '#c5c7c9'
+              }
+            },
+            inputStyle: {
+              color: '#c5c7c9'
+            },
+            labelStyle: {
+              color: '#c5c7c9'
+            }
+          },
+          tooltip: {
+            backgroundColor: '#fbfbfb',
+            borderRadius: 0,
+            borderWidth: 0,
+            padding: 3
+          },
+          xAxis: {
+            gridLineColor: '#2b3648',
+            gridLineWidth: 1,
+            lineColor: '#999999',
+            tickColor: '#999999',
+            tickLength: 5,
+            labels: {
+              style: {
+                color: '#c5c7c9'
+              }
+            }
+          },
+          yAxis: {
+            crosshair: {
+              label: {
+                backgroundColor: '#fbfbfb',
+                borderRadius: 0,
+                enabled: true,
+                padding: 3,
+                style: {
+                  color: '#000'
+                }
+              }
+            },
+            gridLineColor: '#21323f',
+            lineColor: '#999999',
+            lineWidth: 1,
+            labels: {
+              style: {
+                color: '#9d9da2'
+              }
+            }
+          }
+        });
+
         function render(containerId, type, title) {
           (async () => {
             let navigationSeries;
@@ -184,11 +296,6 @@
               rangeSelector: rangeSelector,
               title: {
                 text: title,
-                align: 'left'
-              },
-              subtitle: {
-                text: document.ontouchstart === undefined ?
-                  'Click and drag in the plot area to zoom in' : 'Pinch the chart to zoom in',
                 align: 'left'
               },
               scrollbar: {
@@ -352,7 +459,7 @@
 
                 <div class="block_cont" style="padding:4px;">
                     <div style="margin-bottom:10px;">
-                        <div id="container_t"></div>
+                        <div id="container_t" class="highcharts-dark"></div>
                     </div>
                 </div>
             </div><!-- Block End -->
@@ -369,7 +476,7 @@
 
                 <div class="block_cont" style="padding:4px;">
                     <div style="margin-bottom:10px;">
-                        <div id="container_rh"></div>
+                        <div id="container_rh" class="highcharts-dark"></div>
                     </div>
                 </div>
             </div><!-- Block End -->
