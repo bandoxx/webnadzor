@@ -12,54 +12,38 @@ class LoginLogFactory
 
     public function badLogin(Request $request, ?User $user = null): LoginLog
     {
-        $loginLog = new LoginLog();
-        $parser = new UserAgentParser();
-
-        $remoteAddress = $request->server->get('REMOTE_ADDR');
-        $userAgent = $request->server->get('HTTP_USER_AGENT');
-        $parserData = $parser->parse($userAgent);
-
         if ($user) {
-            $loginLog->setUser($user);
-            $loginLog->setClient($user->getClient());
-            $loginLog->setUsername($user->getUsername());
-            $loginLog->setStatus(LoginLog::STATUS_WRONG_PASSWORD);
+            $status = LoginLog::STATUS_WRONG_PASSWORD;
         } else {
-            $loginLog->setUsername($request->request->get('username'));
-            $loginLog->setStatus(LoginLog::STATUS_WRONG_USERNAME);
+            $status = LoginLog::STATUS_WRONG_USERNAME;
         }
 
-        $loginLog->setUser($user)
-            ->setPassword($request->request->get('password'))
-            ->setIp(ip2long($remoteAddress))
-            ->setServerDate(new \DateTime())
-            ->setUserAgent($userAgent)
-            ->setHost(gethostbyaddr($remoteAddress))
-            ->setBrowser($parserData->browser())
-            ->setOs($parserData->platform())
-        ;
-
-        return $loginLog;
+        return $this->create($status, $request, $user);
     }
 
-    public function create(Request $request, User $user): LoginLog
+    public function goodLogin(Request $request, User $user): LoginLog
+    {
+        return $this->create(LoginLog::STATUS_OK, $request, $user);
+    }
+
+    public function create($status, Request $request, ?User $user = null): LoginLog
     {
         $loginLog = new LoginLog();
         $parser = new UserAgentParser();
 
-        $remoteAddress = $request->server->get('REMOTE_ADDR');
+        $remoteAddress = $request->getClientIp();
         $userAgent = $request->server->get('HTTP_USER_AGENT');
         $parserData = $parser->parse($userAgent);
 
         $loginLog->setUser($user)
-            ->setClient($user->getClient())
+            ->setClient($user?->getClient())
             ->setUsername($request->request->get('username'))
-            ->setPassword($request->request->get('password'))
+            ->setPassword(!$user ? $request->request->get('password') : null)
             ->setIp(ip2long($remoteAddress))
             ->setServerDate(new \DateTime())
             ->setUserAgent($userAgent)
             ->setHost(gethostbyaddr($remoteAddress))
-            ->setStatus(LoginLog::STATUS_OK)
+            ->setStatus($status)
             ->setBrowser($parserData->browser())
             ->setOs($parserData->platform())
         ;

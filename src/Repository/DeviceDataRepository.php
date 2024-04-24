@@ -195,37 +195,4 @@ class DeviceDataRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-
-    public function getMaxRangeForDevice(Device $device)
-    {
-        return $this->getEntityManager()
-            ->getConnection()
-            ->executeQuery(sprintf("SELECT TIMESTAMPDIFF(SECOND, MIN(device_date), MAX(device_date)) as max_range FROM device_data WHERE device_id = %d", $device->getId()))
-            ->fetchOne();
-    }
-
-//    /**
-//     * @return DeviceData[] Returns an array of DeviceData objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?DeviceData
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

@@ -22,7 +22,7 @@ class LoginTracker
         if (!$user || !$successfulLogin) {
             $log = $this->loginLogFactory->badLogin($request, $user);
         } else {
-            $log = $this->loginLogFactory->create($request, $user);
+            $log = $this->loginLogFactory->goodLogin($request, $user);
         }
 
         $this->entityManager->persist($log);
