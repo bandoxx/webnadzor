@@ -4,13 +4,14 @@ namespace App\Factory;
 
 use App\Entity\Client;
 use App\Entity\User;
+use App\Service\User\UserPasswordSetter;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFactory
 {
 
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordSetter $passwordSetter
     )
     {}
 
@@ -23,7 +24,7 @@ class UserFactory
             ->setUsername($username)
         ;
 
-        $user->setPassword($this->passwordHasher->hashPassword($user, $password));
+        $this->passwordSetter->setPassword($user, $password);
 
         return $user;
     }

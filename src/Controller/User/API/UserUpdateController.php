@@ -3,6 +3,7 @@
 namespace App\Controller\User\API;
 
 use App\Repository\UserRepository;
+use App\Service\User\UserPasswordSetter;
 use App\Service\UserDeviceAccessUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,9 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserUpdateController extends AbstractController
 {
 
-    public function __invoke($clientId, $userId, Request $request, UserRepository $userRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
+    public function __invoke($clientId, $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
     {
         $user = $userRepository->find($userId);
+
+        $password = $request->request->get('password');
+        $passwordConfirm = $request->request->get('password_again');
+
+        if ($password !== null && $passwordConfirm !== null && $password === $passwordConfirm) {
+            $passwordSetter->setPassword($user, $password);
+        }
 
         $userDeviceAccessUpdater->update(
             $user,
