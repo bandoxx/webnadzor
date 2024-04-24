@@ -35,15 +35,17 @@ class ParseXmlsCommand extends Command
         $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
 
         foreach ($xmls as $fileName) {
+            $name = rtrim($fileName, '.xml');
             $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
-
-            $device = $this->deviceRepository->findOneBy(['xmlName' => $fileName]);
+            $device = $this->deviceRepository->findOneBy(['xmlName' => $name]);
 
             if (!$device) {
-                // xml doesn't exist in our database
+                $output->writeln(sprintf("Client with file name %s doesn't exist!", $name));
+                continue;
             }
 
             if ($device->isParserActive() === false) {
+                $output->writeln(sprintf("Client with file name %s is not currently active!", $name));
                 continue;
             }
 
@@ -52,7 +54,6 @@ class ParseXmlsCommand extends Command
             $this->entityManager->persist($deviceData);
             $this->entityManager->flush();
         }
-
 
         return Command::SUCCESS;
     }
