@@ -252,7 +252,10 @@
 
         function render(containerId, type, title) {
           (async () => {
-            let navigationSeries;
+            let navigationSeries = {};
+            let series = [];
+            let yAxisText = '';
+
             const data = await fetch(
               '{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry}) }}?type=' + type
             ).then(response => response.json());
@@ -262,6 +265,7 @@
                 data: data.t,
                 name: 'Temperatura'
               };
+
               series = [{
                 name: 'Temperatura',
                 data: data.t,
@@ -277,6 +281,7 @@
                 name: 'Vlaznost',
                 data: data.rh
               };
+
               series = [{
                 name: 'Vlaznost',
                 data: data.rh
@@ -326,7 +331,8 @@
               },
               yAxis: {
                 title: {
-                  text: yAxisText
+                  text: yAxisText,
+                  rotation: 0
                 }
               },
               legend: {
