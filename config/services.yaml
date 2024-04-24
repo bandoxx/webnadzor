@@ -10,7 +10,7 @@ parameters:
     map_marker_directory_full_path: '%kernel.project_dir%/public/%map_marker_directory%'
     logo_directory: 'assets/images/logo'
     logo_directory_full_path: '%kernel.project_dir%/public/%logo_directory%'
-    xml_directory: '%kernel.project_dir%/../data'
+    xml_directory: '%kernel.project_dir%/data'
     database_username: '%env(DATABASE_NAME)%'
     database_password: '%env(DATABASE_PASSWORD)%'
 services:
