@@ -23,7 +23,8 @@ class ParseXmlsCommand extends Command
     public function __construct(
         private DeviceDataFactory $deviceDataFactory,
         private DeviceRepository $deviceRepository,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface $entityManager,
+        private string $xmlDirectory
     )
     {
         parent::__construct();
@@ -31,11 +32,10 @@ class ParseXmlsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $xmlDirectoryPath = sprintf("%s/../../data", __DIR__);
-        $xmls = array_diff(scandir($xmlDirectoryPath), ['.', '..']);
+        $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
 
         foreach ($xmls as $fileName) {
-            $xmlPath = sprintf("%s/%s", $xmlDirectoryPath, $fileName);
+            $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
 
             $device = $this->deviceRepository->findOneBy(['xmlFile' => $fileName]);
 

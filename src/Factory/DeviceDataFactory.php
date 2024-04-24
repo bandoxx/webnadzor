@@ -14,7 +14,7 @@ class DeviceDataFactory
 
         if ($xml = @simplexml_load_string($xmlData)) {
 
-            //unlink($filePath); remove a file
+            unlink($filePath);
 
             $created = @$xml->Created;
             $status = @$xml->Status;
