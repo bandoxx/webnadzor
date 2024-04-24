@@ -32,6 +32,8 @@ class ParseXmlsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
 
         foreach ($xmls as $fileName) {
@@ -54,6 +56,8 @@ class ParseXmlsCommand extends Command
             $this->entityManager->persist($deviceData);
             $this->entityManager->flush();
         }
+
+        $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         return Command::SUCCESS;
     }

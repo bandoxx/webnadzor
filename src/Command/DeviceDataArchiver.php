@@ -45,6 +45,8 @@ class DeviceDataArchiver extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $date = (new \DateTime('-1 day'))->setTime(0, 0, 0);
 
         $daily = $input->getOption('daily');
@@ -81,13 +83,14 @@ class DeviceDataArchiver extends Command
                     try {
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     } catch (\Throwable $e) {
-                        $output->writeln("Something went wrong");
+                        $output->writeln(ExceptionFormatter::string($e));
                         return Command::FAILURE;
                     }
                 }
             }
         }
 
+        $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
         return Command::SUCCESS;
     }
 

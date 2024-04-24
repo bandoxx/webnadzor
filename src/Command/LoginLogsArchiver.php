@@ -14,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -41,6 +40,8 @@ class LoginLogsArchiver extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $date = (new \DateTime('-1 day'))->setTime(0, 0, 0);
 
         $clients = $this->clientRepository->findAll();
@@ -55,6 +56,8 @@ class LoginLogsArchiver extends Command
                 return Command::FAILURE;
             }
         }
+
+        $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         return Command::SUCCESS;
     }
