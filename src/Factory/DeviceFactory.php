@@ -14,7 +14,6 @@ class DeviceFactory
         $device->setName($deviceName)
             ->setClient($client)
             ->setXmlName($xmlName)
-            ->setParserActive(false)
         ;
 
         $emptyEntry = [

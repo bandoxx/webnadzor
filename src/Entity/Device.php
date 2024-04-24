@@ -23,7 +23,7 @@ class Device
     private ?string $xmlName = null;
 
     #[ORM\Column]
-    private ?bool $parserActive = null;
+    private ?bool $parserActive = true;
 
     #[ORM\Column(length: 255)]
     private ?string $name = null;
