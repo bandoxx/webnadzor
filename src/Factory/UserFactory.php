@@ -23,7 +23,7 @@ class UserFactory
             ->setUsername($username)
         ;
 
-        $user->setPassword($this->passwordHasher->hashPassword($user, sha1($password)));
+        $user->setPassword($this->passwordHasher->hashPassword($user, $password));
 
         return $user;
     }
