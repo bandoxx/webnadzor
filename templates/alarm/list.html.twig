@@ -44,8 +44,8 @@
 
         $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        var oTable = $('#table').dataTable({
-          pageLength: 10,
+        $('#table').dataTable({
+          pageLength: 25,
           language: {
             search: "Pretraga",
             loading: "Ucitavanje...",
@@ -80,17 +80,6 @@
             { className: 'dt-center', targets: '_all' }
           ],
         }); /* DATA TABLES */
-
-        var editor = new DataTable.Editor({
-          ajax: '/something',
-          fields: [
-            {
-              label: 'Note',
-              name: 'note'
-            }
-          ],
-          table: '#table'
-        });
 
         $('#table').on('click', '.note', function (e) {
           editor.inline(this);

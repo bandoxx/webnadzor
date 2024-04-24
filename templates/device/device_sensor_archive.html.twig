@@ -24,7 +24,7 @@
 
         $('.table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('.table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        var otable = $('#otable').dataTable({
+        $('#otable').dataTable({
           'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
           'bJQueryUI': true,
           'bPaginate': false,

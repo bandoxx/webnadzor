@@ -81,8 +81,8 @@
 
         $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        var table = $('#table').dataTable({
-          pageLength: 10,
+        $('#table').dataTable({
+          pageLength: 25,
           language: {
             search: "Pretraga",
             loading: "Ucitavanje...",
