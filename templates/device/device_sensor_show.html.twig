@@ -23,7 +23,7 @@
         setInterval(function() {
             render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}");
             render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).rh_name }}");
-          }, 60000);
+        }, 60000);
 
         $('.toggle').click(function () { /* BLOCK TOGGLE */
           $(this).toggleClass('show');

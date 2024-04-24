@@ -23,7 +23,6 @@
         $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
 
         $('#device_add').click(function() { /* ADD DEVICE */
-          console.log('click');
           $('#add-form').dialog({
             autoOpen: true,
             show: {
@@ -89,6 +88,7 @@
             infoFiltered: '(filtrirano od _MAX_ rezultata)',
           },
           columnDefs: [
+            { orderable: false, targets: 7 },
             { className: 'dt-center', targets: '_all' }
           ],
         }); /* DATA TABLES */

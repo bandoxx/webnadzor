@@ -7,6 +7,10 @@
     <script>
       $(document).ready(function() {
 
+        setInterval(function() {
+          window.location.reload();
+        }, 5 * 60 * 1000);
+
         $('.toggle').click(function() { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
           $(this).parent().parent().children('.block_cont').slideToggle(300);
@@ -93,6 +97,7 @@
             infoFiltered: '(filtrirano od _MAX_ rezultata)',
           },
           columnDefs: [
+            { orderable: false, targets: 4 },
             { className: 'dt-center', targets: '_all' }
           ],
         }); /* DATA TABLES */

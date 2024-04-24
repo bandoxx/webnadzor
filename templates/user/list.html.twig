@@ -33,16 +33,14 @@
             modal: true,
             buttons: {
               'Obriši korisnika': function () {
-                $.post(page_url + 'users/delete', {user_id: delete_id, troll: Math.random()}, function (deldata, s, r) {
-                  if (r.getResponseHeader('Requires-Auth') == 1) {
-                    $(location).attr('href', page_url);
-                    return false;
-                  }
-                  if (deldata == 'ok') {
-                    $(location).attr('href', page_url + 'users');
-                  } else {
+                $.ajax({
+                  url: '/api/user/' + delete_id,
+                  type: 'DELETE',
+                  success: function() {
+                    window.location.reload();
+                  },
+                  error: function() {
                     alert('Greška! Molimo pokušajte ponovo');
-                    console.log('error data: ' + deldata);
                   }
                 });
               },
@@ -80,18 +78,6 @@
                   alert('Greška! Molimo pokušajte ponovo');
                 }
               });
-
-              // $.post(page_url + 'users/edit', $.param({troll:Math.random(),
-              //   user_id:edit_id,ad:adedit}) + "&" + form_data, function(data) {
-              //   if (data == 'ok') {
-              //     $(location).attr('href', page_url + 'users');
-              //   }
-              //   else {
-              //     alert('Greška! Molimo pokušajte ponovo');
-              //     console.log('response data: ' + data);
-              //   }
-              // });
-
             }
           }
         });/* VALIDATION ENGINE */
@@ -277,9 +263,13 @@
           'bPaginate': false,
           'bInfo': false,
           'bFilter': false,
-          'aoColumnDefs': [{
-            bSortable: false, aTargets: ['sorting_disabled']
-          }],
+          columnDefs: [
+            { orderable: false, targets: 0 },
+            { orderable: false, targets: 2 },
+            { orderable: false, targets: 3 },
+            { orderable: false, targets: 4 },
+            { className: 'dt-center', targets: '_all' }
+          ],
           'fnDrawCallback': function (oSettings) {
             if (oSettings.bSorted || oSettings.bFiltered) {
               for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
