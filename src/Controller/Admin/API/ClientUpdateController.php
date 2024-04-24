@@ -22,16 +22,16 @@ class ClientUpdateController extends AbstractController
             return $this->json(null, Response::HTTP_BAD_REQUEST);
         }
 
-        $mainLogo = $request->files->get('main_logo');
-
-        if ($mainLogo) {
+        if ($mainLogo = $request->files->get('main_logo')) {
             $logoUploader->uploadAndSaveMainLogo($mainLogo, $client);
         }
 
-        $pdfLogo = $request->files->get('pdf_logo');
-
-        if ($pdfLogo) {
+        if ($pdfLogo = $request->files->get('pdf_logo')) {
             $logoUploader->uploadAndSavePDFLogo($pdfLogo, $client);
+        }
+
+        if ($mapIcon = $request->files->get('map_marker_icon')) {
+            $logoUploader->uploadAndSaveMapMarkerIcon($mapIcon, $client);
         }
 
         $client->setOverviewViews($request->request->getInt('overview_view'));

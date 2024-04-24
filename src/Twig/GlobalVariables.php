@@ -7,7 +7,7 @@ use App\Repository\ClientRepository;
 class GlobalVariables
 {
 
-    public function __construct(private ClientRepository $clientRepository)
+    public function __construct(private ClientRepository $clientRepository, private $mapMarkerDirectory)
     {
 
     }
@@ -15,6 +15,11 @@ class GlobalVariables
     public function getClient($clientId)
     {
         return $this->clientRepository->find($clientId);
+    }
+
+    public function getMapMarkerDirectory()
+    {
+        return $this->mapMarkerDirectory;
     }
 
 }

@@ -3,25 +3,35 @@
 namespace App\Service\Image;
 
 use App\Entity\Client;
-use BenMajor\ImageResize\Image;
 use Doctrine\ORM\EntityManagerInterface;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class LogoUploader
 {
 
-    public function __construct(private SluggerInterface $slugger, private string $logoPath, private EntityManagerInterface $entityManager) {}
+    public const LOGO_HEIGHT = 65;
+    public const LOGO_WIDTH = 180;
+    public const ICON_HEIGHT = 32;
+    public const ICON_WIDTH = 32;
+
+    public function __construct(
+        private SluggerInterface $slugger,
+        private EntityManagerInterface $entityManager,
+        private string $logoPath,
+        private string $mapMarkerPath
+    ) {}
 
     public function uploadAndSaveMainLogo(UploadedFile $uploadedFile, Client $client): void
     {
-        $safeFilename = $this->slugger->slug(sprintf("%s-main-logo", $client->getId()));
-        $newFilename = sprintf("%s.%s", $safeFilename, $uploadedFile->guessExtension());
+        $fileName = $this->slugger->slug(sprintf("%s-main-logo", $client->getId()));
+        $newFilename = $this->save($uploadedFile, $this->logoPath, $fileName, self::LOGO_WIDTH, self::LOGO_HEIGHT);
 
-        $this->save($uploadedFile, $newFilename);
+        if (!$newFilename) {
+            return;
+        }
 
         $client->setMainLogo($newFilename);
 
@@ -30,35 +40,47 @@ class LogoUploader
 
     public function uploadAndSavePDFLogo(UploadedFile $uploadedFile, Client $client): void
     {
-        $safeFilename = $this->slugger->slug(sprintf("%s-pdf-logo", $client->getId()));
-        $newFilename = sprintf("%s.%s", $safeFilename, $uploadedFile->guessExtension());
+        $fileName = $this->slugger->slug(sprintf("%s-pdf-logo", $client->getId()));
+        $newFilename = $this->save($uploadedFile, $this->logoPath, $fileName, self::LOGO_WIDTH, self::LOGO_HEIGHT);
 
-        $this->save($uploadedFile, $newFilename);
+        if (!$newFilename) {
+            return;
+        }
 
         $client->setPdfLogo($newFilename);
-
         $this->entityManager->flush();
     }
 
-    private function save(UploadedFile $uploadedFile, $fileName): void
+    public function uploadAndSaveMapMarkerIcon(UploadedFile $uploadedFile, Client $client): void
     {
-        try {
-            $uploadedFile->move($this->logoPath, $fileName);
-            $this->resize(sprintf("%s/%s", $this->logoPath, $fileName));
-        } catch (FileException $e) {
+        $fileName = $this->slugger->slug(sprintf("%s-map-marker", $client->getId()));
+
+        $newFilename = $this->save($uploadedFile, $this->mapMarkerPath, $fileName, self::ICON_WIDTH, self::ICON_HEIGHT);
+
+        if (!$newFilename) {
             return;
         }
+
+        $client->setMapMarkerIcon($newFilename);
+        $this->entityManager->flush();
     }
 
-    private function resize($filePath): void
+    private function save(UploadedFile $uploadedFile, $path, $fileName, $width, $height): ?string
+    {
+        $newFileName = sprintf("%s.%s", $fileName, $uploadedFile->guessExtension());
+        $uploadedFile->move($path, $newFileName);
+        $this->resize(sprintf("%s/%s", $path, $newFileName), $width, $height);
+        return $newFileName;
+    }
+
+    private function resize($filePath, $width, $height): void
     {
         $manager = new ImageManager(
             new Driver()
         );
 
         $image = $manager->read($filePath);
-        $image->scale(180, 65);
+        $image->scale($width, $height);
         $image->save($filePath);
     }
-
 }

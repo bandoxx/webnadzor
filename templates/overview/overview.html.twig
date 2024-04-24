@@ -147,9 +147,15 @@
           return false;
         });
 
-        var iconljekarna = L.icon({
-          iconUrl: "{{ asset('assets/images/mojaljekarna.png') }}"
-        });
+        let markerIcon = null;
+
+        {% if client.mapMarkerIcon is not null %}
+          markerIcon = L.icon({
+            iconUrl: "{{ asset(global_variables.getMapMarkerDirectory() ~ '/' ~ client.mapMarkerIcon) }}"
+          });
+
+          console.log(markerIcon);
+        {% endif %}
 
         var map = L.map('map_canvas');
 
@@ -161,8 +167,11 @@
           var bounds = new L.LatLngBounds();
           $.each(data.places, function(i, item) {
 
-            L.marker([item.lat, item.lng], {icon: iconljekarna}).addTo(map)
-              .bindPopup(item.name);
+            if (markerIcon) {
+              L.marker([item.lat, item.lng], {icon: markerIcon}).addTo(map).bindPopup(item.name);
+            } else {
+              L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name);
+            }
 
             bounds.extend([item.lat, item.lng]);
 

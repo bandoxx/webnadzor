@@ -6,6 +6,8 @@
 parameters:
     icon_directory: 'assets/images/details_icons'
     icon_directory_full_path: '%kernel.project_dir%/public/%icon_directory%'
+    map_marker_directory: 'assets/images/map-icon'
+    map_marker_directory_full_path: '%kernel.project_dir%/public/%map_marker_directory%'
     logo_directory: 'assets/images/logo'
     logo_directory_full_path: '%kernel.project_dir%/public/%logo_directory%'
     database_username: '%env(DATABASE_NAME)%'
@@ -15,7 +17,9 @@ services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
+        bind:
+            $mapMarkerDirectory: '%map_marker_directory%'
+            $mapMarkerFullPathDirectory: '%map_marker_directory_full_path%'
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -27,3 +31,4 @@ services:
 
     App\Service\Image\LogoUploader:
         $logoPath: '%logo_directory_full_path%'
+        $mapMarkerPath: '%map_marker_directory_full_path%'

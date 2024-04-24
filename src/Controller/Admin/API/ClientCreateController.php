@@ -24,17 +24,19 @@ class ClientCreateController extends AbstractController
         $entityManager->persist($client);
         $entityManager->flush();
 
-        $mainLogo = $request->files->get('main_logo');
-
-        if ($mainLogo) {
+        if ($mainLogo = $request->files->get('main_logo')) {
             $logoUploader->uploadAndSaveMainLogo($mainLogo, $client);
         }
 
-        $pdfLogo = $request->files->get('pdf_logo');
-
-        if ($pdfLogo) {
+        if ($pdfLogo = $request->files->get('pdf_logo')) {
             $logoUploader->uploadAndSavePDFLogo($pdfLogo, $client);
         }
+
+        if ($mapIcon = $request->files->get('map_marker_icon')) {
+            $logoUploader->uploadAndSaveMapMarkerIcon($mapIcon, $client);
+        }
+
+        $entityManager->flush();
 
         return $this->redirectToRoute('admin_overview');
     }
