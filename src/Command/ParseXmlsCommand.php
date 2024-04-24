@@ -37,7 +37,7 @@ class ParseXmlsCommand extends Command
         foreach ($xmls as $fileName) {
             $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
 
-            $device = $this->deviceRepository->findOneBy(['xmlFile' => $fileName]);
+            $device = $this->deviceRepository->findOneBy(['xmlName' => $fileName]);
 
             if (!$device) {
                 // xml doesn't exist in our database
