@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserDeviceAccess;
 use App\Model\DeviceOverviewModel;
 use App\Repository\ClientRepository;
+use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Device\UserAccess;
@@ -18,7 +19,7 @@ class DeviceLocationHandler
     public function __construct(
         private DeviceRepository $deviceRepository,
         private DeviceDataRepository $deviceDataRepository,
-        private ClientRepository $clientRepository,
+        private DeviceAlarmRepository $deviceAlarmRepository,
         private UserAccess $userAccess
     ) {}
 
@@ -70,6 +71,7 @@ class DeviceLocationHandler
             $entryN = $entry['entry'];
 
             $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entryN);
+            $numberOfAlarms = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
 
             if (!$data) {
                 continue;
@@ -92,7 +94,7 @@ class DeviceLocationHandler
                 ->setName($deviceEntryData['t_name'] ?? null)
                 ->setLocation($deviceEntryData['t_location'] ?? null)
                 ->setOnline($online)
-                ->setAlarm(false)
+                ->setAlarm($numberOfAlarms === 0)
                 ->setTemperature(sprintf("%s %s", $data->getT($entryN), $temperatureUnit))
                 ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entryN), $temperatureUnit))
                 ->setTemperatureMax(sprintf("%s %s", $data->getTMax($entryN), $temperatureUnit))
