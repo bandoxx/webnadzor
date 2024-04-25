@@ -123,7 +123,7 @@
                         <tr>
                             <td></td>
                             <td>{{ alarm.date|date('d.m.Y H:i:s') }}</td>
-                            <td>{{ alarm.end_date|date('d.m.Y H:i:s') }}</td>
+                            <td>{% if alarm.end_date is not null %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% endif %}</td>
                             <td>
                                  {% if alarm.active %}
                                      <span class="green">Ne</span>

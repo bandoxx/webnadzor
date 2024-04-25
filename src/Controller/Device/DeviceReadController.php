@@ -33,7 +33,7 @@ class DeviceReadController extends AbstractController
                 ->setXml($device->getXmlName())
                 ->setName($device->getName())
                 ->setOnline($online)
-                ->setAlarm($numberOfAlarms === 0)
+                ->setAlarm($numberOfAlarms > 0)
                 ->setSignal($data?->getGsmSignal())
                 ->setPower(number_format($data?->getVbat(), 1))
                 ->setBattery($data?->getBattery())

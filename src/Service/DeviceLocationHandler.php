@@ -94,7 +94,7 @@ class DeviceLocationHandler
                 ->setName($deviceEntryData['t_name'] ?? null)
                 ->setLocation($deviceEntryData['t_location'] ?? null)
                 ->setOnline($online)
-                ->setAlarm($numberOfAlarms === 0)
+                ->setAlarm($numberOfAlarms > 0)
                 ->setTemperature(sprintf("%s %s", $data->getT($entryN), $temperatureUnit))
                 ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entryN), $temperatureUnit))
                 ->setTemperatureMax(sprintf("%s %s", $data->getTMax($entryN), $temperatureUnit))
