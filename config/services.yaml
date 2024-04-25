@@ -24,6 +24,9 @@ services:
             $mapMarkerFullPathDirectory: '%map_marker_directory_full_path%'
             $xmlDirectory: '%xml_directory%'
             $archiveDirectory: '%archive_directory%'
+    _instanceof:
+        App\Service\Alarm\AlarmHandlerInterface:
+            tags: [ 'app.alarm.validator' ]
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -32,6 +35,10 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+
+    App\Service\Alarm\ValidatorCollection:
+        arguments:
+            $validators: !tagged_iterator app.alarm.validator
 
     App\Service\Image\LogoUploader:
         $logoPath: '%logo_directory_full_path%'

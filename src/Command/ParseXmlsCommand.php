@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Factory\DeviceDataFactory;
 use App\Repository\DeviceRepository;
+use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,10 +22,11 @@ class ParseXmlsCommand extends Command
     }
 
     public function __construct(
-        private DeviceDataFactory $deviceDataFactory,
-        private DeviceRepository $deviceRepository,
+        private DeviceDataFactory      $deviceDataFactory,
+        private DeviceRepository       $deviceRepository,
         private EntityManagerInterface $entityManager,
-        private string $xmlDirectory
+        private ValidatorCollection    $alarmValidator,
+        private string                 $xmlDirectory
     )
     {
         parent::__construct();
@@ -55,6 +57,8 @@ class ParseXmlsCommand extends Command
 
             $this->entityManager->persist($deviceData);
             $this->entityManager->flush();
+
+            $this->alarmValidator->validate($deviceData);
         }
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));

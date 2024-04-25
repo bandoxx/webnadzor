@@ -34,13 +34,14 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         return $this->findOneBy(['device' => $device], ['deviceDate' => 'DESC']);
     }
 
-    public function findActiveAlarms(Device $device)
+    public function findActiveAlarm(Device $device, $type)
     {
         return $this->createQueryBuilder('a')
-            ->where('a.device = :device AND a.endDeviceDate IS NULL')
+            ->where('a.device = :device AND a.endDeviceDate IS NULL AND a.type = :type')
             ->setParameter('device', $device->getId())
+            ->setParameter('type', $type)
             ->getQuery()
-            ->getResult()
+            ->getOneOrNullResult()
         ;
     }
 
