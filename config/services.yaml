@@ -11,6 +11,10 @@ parameters:
     logo_directory: 'assets/images/logo'
     logo_directory_full_path: '%kernel.project_dir%/public/%logo_directory%'
     xml_directory: '%kernel.project_dir%/data'
+    archive_directory: '%kernel.project_dir%/archive'
+    daily_archive_directory: '%archive_directory%/daily'
+    monthly_archive_directory: '%archive_directory%/monthly'
+    login_log_archive_directory: '%archive_directory%/login_log'
     database_username: '%env(DATABASE_NAME)%'
     database_password: '%env(DATABASE_PASSWORD)%'
 services:
