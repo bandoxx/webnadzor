@@ -7,12 +7,13 @@ use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 #[Route(path: '/api/device/{id}/{entry}/archive/daily', name: 'api_devicedataarchive_getdailydata', methods: 'GET')]
 class DeviceDataDailyArchiveController extends AbstractController
 {
 
-    public function __invoke($id, $entry, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
+    public function __invoke($id, $entry, RouterInterface $router, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
     {
         $device = $deviceRepository->find($id);
         $archiveData = $deviceDataArchiveRepository->getDailyArchives($device, $entry);
@@ -23,8 +24,18 @@ class DeviceDataDailyArchiveController extends AbstractController
                 ++$i,
                 $data->getArchiveDate()->format('d.m.Y.'),
                 $data->getServerDate()->format('d.m.Y. H:i:s'),
-                sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s.xlsx" class="action view"><span>Excel</span></a></div>', $data->getFilename()),
-                sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s.pdf" class="action view"><span>PDF</span></a></div>', $data->getFilename())
+                sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s" class="action view"><span>Excel</span></a></div>',
+                    $router->generate('api_device_archive_download', [
+                        'id' => $data->getId(),
+                        'type' => 'xlsx'
+                    ])
+                ),
+                sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s" class="action view"><span>PDF</span></a></div>',
+                    $router->generate('api_device_archive_download', [
+                        'id' => $data->getId(),
+                        'type' => 'pdf'
+                    ])
+                )
             ];
         }
 
