@@ -119,20 +119,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for record in table %}
+                    {% for alarm in alarms %}
                         <tr>
                             <td></td>
-                            <td>{{ record.date|date('d.m.Y H:i:s') }}</td>
-                            <td>{{ record.end_date|date('d.m.Y H:i:s') }}</td>
+                            <td>{{ alarm.date|date('d.m.Y H:i:s') }}</td>
+                            <td>{{ alarm.end_date|date('d.m.Y H:i:s') }}</td>
                             <td>
-                                 {% if record.active %}
+                                 {% if alarm.active %}
                                      <span class="green">Ne</span>
                                  {% else %}
                                      <span class="red">Da</span>
                                  {% endif %}
                             </td>
-                            <td>{{ record.place }}</td>
-                            <td>{{ record.type }}</td>
+                            <td>{{ alarm.place }}</td>
+                            <td>{{ alarm.type }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
