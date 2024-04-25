@@ -29,9 +29,9 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         )->free();
     }
 
-    public function findByDevice(Device $device): DeviceAlarm
+    public function findByDevice(Device $device): array
     {
-        return $this->findOneBy(['device' => $device], ['deviceDate' => 'DESC']);
+        return $this->findBy(['device' => $device], ['deviceDate' => 'DESC']);
     }
 
     public function findActiveAlarm(Device $device, $type)
