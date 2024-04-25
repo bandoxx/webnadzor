@@ -11,22 +11,24 @@ class DataHandler extends BaseAlarmHandler implements AlarmHandlerInterface
     public function validate(DeviceData $deviceData): void
     {
         $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::SENSOR_ERROR);
+        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::NO_DATA);
 
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
-            if (
-                ($device->getEntryData($entry)['t_use'] xor is_numeric($deviceData->getT($entry)))
-                ||
-                ($device->getEntryData($entry)['rh_use'] xor is_numeric($deviceData->getRh($entry)))
-            ) {
+            if ($device->getEntryData($entry)['t_use'] == true && !is_numeric($deviceData->getT($entry))) {
                 $this->alarmShouldBeOn = true;
+            }
+
+            if ($device->getEntryData($entry)['rh_use'] == true && !is_numeric($deviceData->getRH($entry))) {
+                $this->alarmShouldBeOn = true;
+            }
+
+            if ($this->alarmShouldBeOn) {
                 break;
             }
         }
 
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::BATTERY_LEVEL);
+        $this->finish($alarm, $deviceData, AlarmHandlerInterface::NO_DATA);
     }
-
 }

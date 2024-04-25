@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Device;
 use App\Repository\ClientRepository;
+use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke(ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router): RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->getUser()->getPermission() !== 4) {
             return $this->redirectToRoute('client_overview', [
@@ -44,6 +45,7 @@ class OverviewController extends AbstractController
 
             $totalDevices = count($devices);
             $onlineDevices = 0;
+            $activeAlarms = 0;
 
             foreach ($devices as $device) {
                 $deviceData = $deviceDataRepository->findLastRecordForDevice($device);
@@ -55,12 +57,14 @@ class OverviewController extends AbstractController
                 if (time() - @strtotime($deviceData->getDeviceDate()->format('Y-m-d H:i:s')) < 4200) {
                     $onlineDevices++;
                 }
+
+                $activeAlarms += $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
             }
 
             $data[$clientId]['numberOfDevices'] = $totalDevices;
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
-            $data[$clientId]['alarmsOn'] = 0;
+            $data[$clientId]['alarmsOn'] = $activeAlarms;
         }
 
         return $this->render('overview/admin.html.twig', [
