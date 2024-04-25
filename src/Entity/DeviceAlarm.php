@@ -139,4 +139,9 @@ class DeviceAlarm
 
         return $this;
     }
+
+    public function isActive(): bool
+    {
+        return (bool) $this->getEndDeviceDate();
+    }
 }
