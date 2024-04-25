@@ -7,7 +7,6 @@ use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
-use App\Service\Archiver\DeviceDataArchiverInterface;
 use App\Service\Archiver\PDFArchiver;
 use App\Service\Archiver\XLSXArchiver;
 use App\Service\Exception\ExceptionFormatter;
@@ -97,7 +96,8 @@ class DeviceDataArchiver extends Command
     private function generateDailyReport($device, $data, $entry, $date): void
     {
         $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
-        $this->XLSXArchiver->saveDaily($device,  $data, $entry, $date, $fileName);
+
+        $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);

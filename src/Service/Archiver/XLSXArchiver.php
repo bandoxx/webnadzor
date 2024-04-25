@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class XLSXArchiver implements DeviceDataArchiverInterface
+class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null)
     {
@@ -22,16 +22,22 @@ class XLSXArchiver implements DeviceDataArchiverInterface
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
+        $client = $device->getClient();
 
-        $this->save($xlsx, $fileName);
+        $fileName = sprintf("%s.xlsx", $fileName);
+        $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
+        $this->save($xlsx, $path, $fileName);
     }
 
     public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null)
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
+        $client = $device->getClient();
 
-        $this->save($xlsx, $fileName);
+        $fileName = sprintf("%s.xlsx", $fileName);
+        $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
+        $this->save($xlsx, $path, $fileName);
     }
 
     private function generateBody(Device $device, array $deviceData, $entry, $subtitle): Spreadsheet
@@ -123,12 +129,16 @@ class XLSXArchiver implements DeviceDataArchiverInterface
         return $objPHPExcel;
     }
 
-    private function save(Spreadsheet $spreadsheet, $fileName = null)
+    private function save(Spreadsheet $spreadsheet, $path = null, $fileName = null)
     {
         $objWriter = IOFactory::createWriter($spreadsheet, IOFactory::WRITER_XLSX);
 
-        if ($fileName) {
-            $objWriter->save("$fileName.xlsx");
+        if ($path && $fileName) {
+            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+                throw new \Exception("Cannot make archive directory $path");
+            }
+
+            $objWriter->save($path.$fileName);
         } else {
             $objWriter->save('php://output');
         }

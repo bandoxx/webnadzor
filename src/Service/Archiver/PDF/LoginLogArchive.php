@@ -4,10 +4,11 @@ namespace App\Service\Archiver\PDF;
 
 use App\Entity\Client;
 use App\Entity\LoginLog;
+use App\Service\Archiver\Archiver;
 use App\Service\Archiver\ArchiverInterface;
 use TCPDF;
 
-class LoginLogArchive implements ArchiverInterface
+class LoginLogArchive extends Archiver implements ArchiverInterface
 {
     /**
      * @param Client $client
@@ -21,7 +22,9 @@ class LoginLogArchive implements ArchiverInterface
         $subtitle = sprintf("Podaci za %s - Log prijava", $archiveDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($client, $loginLogs, $subtitle);
 
-        $this->save($pdf, $fileName);
+        $fileName = sprintf("%s.pdf", $fileName);
+        $path = sprintf('%s/%s/login_log/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
+        $this->save($pdf, $path, $fileName);
     }
 
     /**
@@ -42,7 +45,7 @@ class LoginLogArchive implements ArchiverInterface
         // set default header data
         $headerData = $subtitle . "\n";
 
-        $pdf->SetHeaderData('../../../../../public/assets/images/pdflogo.png', 30, $client->getName(), $headerData);
+        $pdf->SetHeaderData('../../../../../public/assets/images/%s', 30, $client->getPdfLogo(), $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
@@ -130,10 +133,14 @@ class LoginLogArchive implements ArchiverInterface
         return $pdf;
     }
 
-    private function save(TCPDF $pdf, $fileName)
+    private function save(TCPDF $pdf, $path = null, $fileName = null)
     {
-        if ($fileName) {
-            $pdf->Output(sprintf("%s/%s.pdf", __DIR__, $fileName), 'F');
+        if ($path && $fileName) {
+            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+                throw new \Exception("Cannot make archive directory $path");
+            }
+
+            $pdf->Output($path.$fileName, 'F');
         } else {
             $pdf->Output('php://output');
         }

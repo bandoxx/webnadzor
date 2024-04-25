@@ -6,52 +6,62 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use TCPDF;
 
-class PDFArchiver implements DeviceDataArchiverInterface
+class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
-        $this->save($pdf, $fileName);
+        $this->save($pdf);
     }
 
     public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, string $fileName): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
+        $client = $device->getClient();
 
-        $this->save($pdf, $fileName);
+        $fileName = sprintf("%s.pdf", $fileName);
+        $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
+        $this->save($pdf, $path, $fileName);
     }
 
     public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, $fileName): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
+        $client = $device->getClient();
 
-        $this->save($pdf, $fileName);
+        $fileName = sprintf("%s.xlsx", $fileName);
+        $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
+        $this->save($pdf, $path, $fileName);
     }
+
     private function generateBody(Device $device, array $deviceData, $entry, $subtitle): TCPDF
     {
         $deviceEntryData = $device->getEntryData($entry);
         $tUnit = $deviceEntryData['t_unit'];
         $rhUnit = $deviceEntryData['rh_unit'];
+        $client = $device->getClient();
 
         // create new PDF document
         $pdf = new TCPDF();
 
         // set document information
         $pdf->SetCreator('Intelteh d.o.o.');
-        $pdf->SetAuthor('TCPDF');
-        $pdf->SetTitle('TCPDF');
+        $pdf->SetAuthor('Intelteh d.o.o.');
+        $pdf->SetTitle('Intelteh d.o.o.');
 
         // set default header data
         $headerData = $subtitle . "\n";
-        $headerData .= 'Cedevita webnadzor';
+        $headerData .= $client?->getName();
 
         # ../../../ is because constant cannot be changed, and it's reading from vendor root
-        $logo = $device->getClient()->getPdfLogo();
-        $pdf->SetHeaderData("../../../../../public/assets/images/logo/$logo", 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
+        $logo = $client?->getPdfLogo();
+        if ($logo) {
+            $pdf->SetHeaderData("../../../../../public/assets/images/logo/$logo", 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
+        }
 
         // set header and footer fonts
         $pdf->setHeaderFont(['dejavusanscondensed', '', 8]);
@@ -136,10 +146,14 @@ class PDFArchiver implements DeviceDataArchiverInterface
         return $pdf;
     }
 
-    private function save(TCPDF $pdf, $fileName)
+    private function save(TCPDF $pdf, $path = null, $fileName = null)
     {
-        if ($fileName) {
-            $pdf->Output(sprintf("%s/%s.pdf", __DIR__, $fileName), 'F');
+        if ($path && $fileName) {
+            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+                throw new \Exception("Cannot make archive directory $path");
+            }
+
+            $pdf->Output($path.$fileName, 'F');
         } else {
             $pdf->Output('php://output');
         }
