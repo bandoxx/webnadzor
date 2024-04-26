@@ -9,12 +9,14 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
 {
     public function validate(DeviceData $deviceData): void
     {
+        $device = $deviceData->getDevice();
+
         foreach (range(1, 2) as $entry) {
             $this->alarmShouldBeOn = false;
 
-            $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::TEMPERATURE_OFFSET, $entry);
+            $alarm = $this->findAlarm($device, AlarmHandlerInterface::TEMPERATURE_OFFSET, $entry);
 
-            if ($deviceData->isTemperatureOutOfRange($entry)) {
+            if ((bool) $device->getEntryData($entry)['t_use'] === true && $deviceData->isTemperatureOutOfRange($entry)) {
                 $this->alarmShouldBeOn = true;
             }
 
