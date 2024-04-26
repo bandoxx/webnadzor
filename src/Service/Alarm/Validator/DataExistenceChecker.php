@@ -5,9 +5,8 @@ namespace App\Service\Alarm\Validator;
 use App\Entity\DeviceData;
 use App\Service\Alarm\AlarmHandlerInterface;
 
-class DataHandler extends BaseAlarmHandler implements AlarmHandlerInterface
+class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInterface
 {
-
     public function validate(DeviceData $deviceData): void
     {
         $this->alarmShouldBeOn = false;
