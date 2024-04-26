@@ -39,7 +39,7 @@ class DownloadAlarmArchiveController extends AbstractController
         });
 
         $response->headers->set('Content-Type', 'application/vnd.ms-excel');
-        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s.xlsx"', sha1(random_int(0, 10))));
+        $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s-%s.xlsx"', $device->getName(), (new \DateTime())->format('d-m-Y')));
 
         return $response;
     }

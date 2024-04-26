@@ -125,9 +125,9 @@
                             <td>{% if alarm.end_date is not null %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% endif %}</td>
                             <td>
                                  {% if alarm.active %}
-                                     <span class="green">Ne</span>
-                                 {% else %}
                                      <span class="red">Da</span>
+                                 {% else %}
+                                     <span class="green">Ne</span>
                                  {% endif %}
                             </td>
                             <td>{{ alarm.place }}</td>
