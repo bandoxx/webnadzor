@@ -47,7 +47,7 @@ class DeviceRepository extends ServiceEntityRepository
 
     public function doesMoreThenOneXmlNameExists(string $xmlName)
     {
-        $devices = $this->binaryFindByName($xmlName);
+        $devices = $this->findBy(['xmlName' => $xmlName]);
 
         return count($devices) > 1; // more than one, because if xml is not changed, current one has already that name
     }
