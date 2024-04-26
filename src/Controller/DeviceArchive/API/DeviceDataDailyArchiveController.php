@@ -25,13 +25,13 @@ class DeviceDataDailyArchiveController extends AbstractController
                 $data->getArchiveDate()->format('d.m.Y.'),
                 $data->getServerDate()->format('d.m.Y. H:i:s'),
                 sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s" class="action view"><span>Excel</span></a></div>',
-                    $router->generate('api_device_archive_download', [
+                    $router->generate('api_device_data_archive_download', [
                         'id' => $data->getId(),
                         'type' => 'xlsx'
                     ])
                 ),
                 sprintf('<div style="height: 3px;">&nbsp;</div><div class="actionbar"><a href="%s" class="action view"><span>PDF</span></a></div>',
-                    $router->generate('api_device_archive_download', [
+                    $router->generate('api_device_data_archive_download', [
                         'id' => $data->getId(),
                         'type' => 'pdf'
                     ])

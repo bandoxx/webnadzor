@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/device/archive/{id}/{type}', name: 'api_device_archive_download')]
+#[Route('/api/device/archive/{id}/{type}', name: 'api_device_data_archive_download')]
 class DownloadDeviceArchiveController extends AbstractController
 {
 

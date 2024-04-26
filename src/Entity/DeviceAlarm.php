@@ -140,8 +140,17 @@ class DeviceAlarm
         return $this;
     }
 
+    public function getLocation()
+    {
+        if ($this->getSensor()) {
+            return $this->getDevice()->getEntryData($this->getSensor())['t_name'];
+        }
+
+        return 'Nema';
+    }
+
     public function isActive(): bool
     {
-        return (bool) $this->getEndDeviceDate();
+        return !((bool) $this->getEndDeviceDate());
     }
 }

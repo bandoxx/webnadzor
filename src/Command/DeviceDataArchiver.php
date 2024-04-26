@@ -7,8 +7,8 @@ use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
-use App\Service\Archiver\PDFArchiver;
-use App\Service\Archiver\XLSXArchiver;
+use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
+use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\Exception\ExceptionFormatter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,12 +24,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeviceDataArchiver extends Command
 {
     public function __construct(
-        private XLSXArchiver $XLSXArchiver,
-        private PDFArchiver $PDFArchiver,
-        private DeviceRepository $deviceRepository,
-        private DeviceDataRepository $deviceDataRepository,
+        private DeviceDataXLSXArchiver   $XLSXArchiver,
+        private DeviceDataPDFArchiver    $PDFArchiver,
+        private DeviceRepository         $deviceRepository,
+        private DeviceDataRepository     $deviceDataRepository,
         private DeviceDataArchiveFactory $deviceDataArchiveFactory,
-        private EntityManagerInterface $entityManager
+        private EntityManagerInterface   $entityManager
     )
     {
         parent::__construct();

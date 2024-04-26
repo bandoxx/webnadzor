@@ -3,12 +3,10 @@
 namespace App\Command;
 
 use App\Entity\Client;
-use App\Entity\DeviceDataArchive;
-use App\Factory\DeviceDataArchiveFactory;
 use App\Factory\LoginLogArchiveFactory;
 use App\Repository\ClientRepository;
 use App\Repository\LoginLogRepository;
-use App\Service\Archiver\PDF\LoginLogArchive;
+use App\Service\Archiver\LoginLog\LoginLogPDFArchiver;
 use App\Service\Exception\ExceptionFormatter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -24,12 +22,12 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class LoginLogsArchiver extends Command
 {
     public function __construct(
-        private LoginLogArchive $loginLogArchive,
-        private LoginLogRepository $loginLogRepository,
-        private ClientRepository $clientRepository,
+        private LoginLogPDFArchiver    $loginLogArchive,
+        private LoginLogRepository     $loginLogRepository,
+        private ClientRepository       $clientRepository,
         private EntityManagerInterface $entityManager,
         private LoginLogArchiveFactory $loginLogArchiveFactory,
-        private SluggerInterface $slugger
+        private SluggerInterface       $slugger
     )
     {
         parent::__construct();

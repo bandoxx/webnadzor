@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Archiver\PDF;
+namespace App\Service\Archiver\LoginLog;
 
 use App\Entity\Client;
 use App\Entity\LoginLog;
@@ -8,7 +8,7 @@ use App\Service\Archiver\Archiver;
 use App\Service\Archiver\ArchiverInterface;
 use TCPDF;
 
-class LoginLogArchive extends Archiver implements ArchiverInterface
+class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
 {
     /**
      * @param Client $client
@@ -24,7 +24,7 @@ class LoginLogArchive extends Archiver implements ArchiverInterface
 
         $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/login_log/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->save($pdf, $path, $fileName);
+        $this->savePDF($pdf, $path, $fileName);
     }
 
     /**
@@ -34,13 +34,7 @@ class LoginLogArchive extends Archiver implements ArchiverInterface
      */
     private function generateBody(Client $client, array $loginLogs, $subtitle) {
 
-        // create new PDF document
-        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
-        // set document information
-        $pdf->SetCreator(PDF_CREATOR);
-        $pdf->SetAuthor(PDF_AUTHOR);
-        $pdf->SetTitle(PDF_HEADER_TITLE);
+        $pdf = $this->preparePDF();
 
         // set default header data
         $headerData = $subtitle . "\n";
@@ -131,18 +125,5 @@ class LoginLogArchive extends Archiver implements ArchiverInterface
         }
 
         return $pdf;
-    }
-
-    private function save(TCPDF $pdf, $path = null, $fileName = null)
-    {
-        if ($path && $fileName) {
-            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
-                throw new \Exception("Cannot make archive directory $path");
-            }
-
-            $pdf->Output($path.$fileName, 'F');
-        } else {
-            $pdf->Output('php://output');
-        }
     }
 }

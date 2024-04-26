@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Service\Archiver;
+namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use App\Service\Archiver\Archiver;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
+class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null)
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
-        $this->save($xlsx, $fileName);
+        $this->saveXLSX($xlsx, $fileName);
     }
 
     public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null)
@@ -26,7 +26,7 @@ class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
 
         $fileName = sprintf("%s.xlsx", $fileName);
         $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->save($xlsx, $path, $fileName);
+        $this->saveXLSX($xlsx, $path, $fileName);
     }
 
     public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null)
@@ -37,7 +37,7 @@ class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
 
         $fileName = sprintf("%s.xlsx", $fileName);
         $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->save($xlsx, $path, $fileName);
+        $this->saveXLSX($xlsx, $path, $fileName);
     }
 
     private function generateBody(Device $device, array $deviceData, $entry, $subtitle): Spreadsheet
@@ -46,10 +46,7 @@ class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
         $tUnit = $deviceEntryData['t_unit'];
         $rhUnit = $deviceEntryData['rh_unit'];
 
-        $objPHPExcel = new Spreadsheet();
-        $objPHPExcel->getProperties()->setCreator('Intelteh d.o.o.')
-            ->setLastModifiedBy('Intelteh d.o.o. f1st')
-            ->setTitle('Web data export');
+        $objPHPExcel = $this->prepareXLSX();
 
         $objPHPExcel->setActiveSheetIndex(0);
         $objPHPExcel->getActiveSheet()->setTitle('Arhiva podataka');
@@ -127,20 +124,5 @@ class XLSXArchiver extends Archiver implements DeviceDataArchiverInterface
         $objPHPExcel->setActiveSheetIndex(0);
 
         return $objPHPExcel;
-    }
-
-    private function save(Spreadsheet $spreadsheet, $path = null, $fileName = null)
-    {
-        $objWriter = IOFactory::createWriter($spreadsheet, IOFactory::WRITER_XLSX);
-
-        if ($path && $fileName) {
-            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
-                throw new \Exception("Cannot make archive directory $path");
-            }
-
-            $objWriter->save($path.$fileName);
-        } else {
-            $objWriter->save('php://output');
-        }
     }
 }

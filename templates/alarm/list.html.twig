@@ -94,9 +94,8 @@
 {% endblock %}
 
 {% block navigation %}
-    <li><a href="#" id="xls" class="icon_xls">Preuzmi excel</a></li>
-    <li><a href="#" id="pdf" class="icon_pdf">Preuzmi PDF</a></li>
-{#    <li><a href="{{ path('app_device_entry_show', {id: device.id, entry:entry}) }}" class="icon_left">Povratak</a></li>#}
+    <li><a href="{{ path('api_device_alarm_archive_download', {id: device.id, type: 'xlsx'}) }}" target="_blank" id="xls" class="icon_xls">Preuzmi excel</a></li>
+    <li><a href="{{ path('api_device_alarm_archive_download', {id: device.id, type: 'pdf'}) }}" target="_blank" id="pdf" class="icon_pdf">Preuzmi PDF</a></li>
 {% endblock %}
 
 {% block content %}

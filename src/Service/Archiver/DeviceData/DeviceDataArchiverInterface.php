@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service\Archiver;
+namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
+use App\Service\Archiver\ArchiverInterface;
 
 interface DeviceDataArchiverInterface extends ArchiverInterface
 {

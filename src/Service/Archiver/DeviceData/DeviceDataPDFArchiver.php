@@ -1,19 +1,20 @@
 <?php
 
-namespace App\Service\Archiver;
+namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
+use App\Service\Archiver\Archiver;
 use TCPDF;
 
-class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
+class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
-        $this->save($pdf);
+        $this->savePDF($pdf);
     }
 
     public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, string $fileName): void
@@ -24,7 +25,7 @@ class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
 
         $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->save($pdf, $path, $fileName);
+        $this->savePDF($pdf, $path, $fileName);
     }
 
     public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, $fileName): void
@@ -35,7 +36,7 @@ class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
 
         $fileName = sprintf("%s.xlsx", $fileName);
         $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->save($pdf, $path, $fileName);
+        $this->savePDF($pdf, $path, $fileName);
     }
 
     private function generateBody(Device $device, array $deviceData, $entry, $subtitle): TCPDF
@@ -45,13 +46,7 @@ class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
         $rhUnit = $deviceEntryData['rh_unit'];
         $client = $device->getClient();
 
-        // create new PDF document
-        $pdf = new TCPDF();
-
-        // set document information
-        $pdf->SetCreator('Intelteh d.o.o.');
-        $pdf->SetAuthor('Intelteh d.o.o.');
-        $pdf->SetTitle('Intelteh d.o.o.');
+        $pdf = $this->preparePDF();
 
         // set default header data
         $headerData = $subtitle . "\n";
@@ -119,9 +114,11 @@ class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
             $pdf->Cell($pdf->pixelsToUnits(30), 4, ++$row, 1, 0, 'L', $fill);
             $pdf->Cell($pdf->pixelsToUnits(105), 4, $data->getDeviceDate()->format('d.m.Y. H:i:s'), 1, 0, 'L', $fill);
             $pdf->Cell($pdf->pixelsToUnits(245), 4, $data->getNote($entry), 1, 0, 'L', $fill);
+
             if ($data->isTemperatureOutOfRange($entry)) {
                 $pdf->SetTextColor(255, 0, 0);
             }
+
             $pdf->Cell($pdf->pixelsToUnits(56), 4, sprintf('%s %s', $data->getT($entry), $tUnit), 1, 0, 'L', $fill);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell($pdf->pixelsToUnits(56), 4, sprintf('%s %s', $data->getTMax($entry), $tUnit), 1, 0, 'L', $fill);
@@ -145,19 +142,4 @@ class PDFArchiver extends Archiver implements DeviceDataArchiverInterface
 
         return $pdf;
     }
-
-    private function save(TCPDF $pdf, $path = null, $fileName = null)
-    {
-        if ($path && $fileName) {
-            if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
-                throw new \Exception("Cannot make archive directory $path");
-            }
-
-            $pdf->Output($path.$fileName, 'F');
-        } else {
-            $pdf->Output('php://output');
-        }
-    }
-
-
 }

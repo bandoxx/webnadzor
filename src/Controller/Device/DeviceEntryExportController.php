@@ -5,8 +5,8 @@ namespace App\Controller\Device;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
-use App\Service\Archiver\PDFArchiver;
-use App\Service\Archiver\XLSXArchiver;
+use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
+use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\DeviceDataFormatter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -19,7 +19,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET|POST')]
 class DeviceEntryExportController extends AbstractController
 {
-    public function __invoke($clientId, $id, $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, PDFArchiver $PDFArchiver, XLSXArchiver $XLSXArchiver): StreamedResponse|Response
+    public function __invoke($clientId, $id, $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, DeviceDataPDFArchiver $PDFArchiver, DeviceDataXLSXArchiver $XLSXArchiver): StreamedResponse|Response
     {
         $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);
@@ -52,14 +52,9 @@ class DeviceEntryExportController extends AbstractController
                         $PDFArchiver->saveCustom($device, $data, $entry, $dateFrom, $dateTo);
                     }
                 );
-
-                $response->headers->set('Content-Type', 'application/pdf');
-                $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s.pdf"', $fileName));
             } else {
                 throw new BadRequestException("Export type doesn't exists!");
             }
-
-            $response->headers->set('Cache-Control','max-age=0');
 
             return $response;
         }
