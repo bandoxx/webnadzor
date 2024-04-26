@@ -41,7 +41,7 @@ class ParseXmlsCommand extends Command
         foreach ($xmls as $fileName) {
             $name = rtrim($fileName, '.xml');
             $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
-            $device = $this->deviceRepository->findOneBy(['xmlName' => $name]);
+            $device = $this->deviceRepository->binaryFindOneByName($name);
 
             if (!$device) {
                 $output->writeln(sprintf("Client with file name %s doesn't exist!", $name));
@@ -54,9 +54,10 @@ class ParseXmlsCommand extends Command
             }
 
             $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
-
             $this->entityManager->persist($deviceData);
             $this->entityManager->flush();
+
+            unlink($xmlPath);
 
             $this->alarmValidator->validate($deviceData);
         }

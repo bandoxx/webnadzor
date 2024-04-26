@@ -24,6 +24,7 @@ doctrine:
                 HOUR: DoctrineExtensions\Query\Mysql\Hour
                 DAY: DoctrineExtensions\Query\Mysql\Day
                 DATE: DoctrineExtensions\Query\Mysql\Date
+                BINARY: DoctrineExtensions\Query\Mysql\Binary
 when@test:
     doctrine:
         dbal:

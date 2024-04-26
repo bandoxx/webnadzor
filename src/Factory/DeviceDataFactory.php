@@ -13,9 +13,6 @@ class DeviceDataFactory
         $xmlData = @file_get_contents($filePath);
 
         if ($xml = @simplexml_load_string($xmlData)) {
-
-            unlink($filePath);
-
             $created = @$xml->Created;
             $status = @$xml->Status;
 

@@ -19,8 +19,8 @@ class DeviceCreateController extends AbstractController
 
     public function __invoke($clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): JsonResponse
     {
-        $xmlName = $request->request->getAlpha('xmlName');
-        $deviceName = $request->request->getAlpha('deviceName');
+        $xmlName = $request->request->get('xmlName');
+        $deviceName = $request->request->get('deviceName');
 
         if ($deviceRepository->doesMoreThenOneXmlNameExists($request->request->get('xmlName', ''))) {
             throw new BadRequestException();
