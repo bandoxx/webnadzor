@@ -15,6 +15,10 @@ class HumidityChecker extends BaseAlarmHandler implements AlarmHandlerInterface
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
+            if (!$device->getEntryData($entry)['rh_use']) {
+                return;
+            }
+
             $max = $device->getEntryData($entry)['rh_max'];
             $min = $device->getEntryData($entry)['rh_min'];
 

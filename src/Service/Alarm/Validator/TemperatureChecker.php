@@ -15,6 +15,10 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
+            if (!$device->getEntryData($entry)['t_use']) {
+                return;
+            }
+
             $max = $device->getEntryData($entry)['t_max'];
             $min = $device->getEntryData($entry)['t_min'];
 
