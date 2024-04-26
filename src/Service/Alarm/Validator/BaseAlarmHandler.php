@@ -19,9 +19,9 @@ class BaseAlarmHandler
         $this->alarmShouldBeOn = false;
     }
 
-    public function findAlarm(Device $device, $type): ?DeviceAlarm
+    public function findAlarm(Device $device, $type, $sensor = null): ?DeviceAlarm
     {
-        return $this->deviceAlarmRepository->findActiveAlarm($device, $type);
+        return $this->deviceAlarmRepository->findActiveAlarm($device, $type, $sensor);
     }
 
     public function finish(?DeviceAlarm $alarm, DeviceData $deviceData, $type, $sensor = null): void
