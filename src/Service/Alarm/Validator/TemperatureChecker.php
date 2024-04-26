@@ -10,8 +10,9 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
     public function validate(DeviceData $deviceData): void
     {
         $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::TEMPERATURE_OFFSET);
+        $sensor = null;
 
+        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::TEMPERATURE_OFFSET);
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
@@ -27,6 +28,7 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
             if (is_numeric($min)) {
                 if (!$t || $t < $min) {
                     $this->alarmShouldBeOn = true;
+                    $sensor = $entry;
                     break;
                 }
 
@@ -35,12 +37,13 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
             if (is_numeric($max)) {
                 if (!$t || $t > $max) {
                     $this->alarmShouldBeOn = true;
+                    $sensor = $entry;
                     break;
                 }
             }
         }
 
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::TEMPERATURE_OFFSET);
+        $this->finish($alarm, $deviceData, AlarmHandlerInterface::TEMPERATURE_OFFSET, $sensor);
     }
 
 }

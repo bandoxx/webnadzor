@@ -10,8 +10,9 @@ class HumidityChecker extends BaseAlarmHandler implements AlarmHandlerInterface
     public function validate(DeviceData $deviceData): void
     {
         $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::HUMIDITY_OFFSET);
+        $sensor = null;
 
+        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::HUMIDITY_OFFSET);
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
@@ -27,6 +28,7 @@ class HumidityChecker extends BaseAlarmHandler implements AlarmHandlerInterface
             if (is_numeric($min)) {
                 if (!$rh || $rh < $min) {
                     $this->alarmShouldBeOn = true;
+                    $sensor = $entry;
                     break;
                 }
 
@@ -35,12 +37,13 @@ class HumidityChecker extends BaseAlarmHandler implements AlarmHandlerInterface
             if (is_numeric($max)) {
                 if (!$rh || $rh > $max) {
                     $this->alarmShouldBeOn = true;
+                    $sensor = $entry;
                     break;
                 }
             }
         }
 
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::HUMIDITY_OFFSET);
+        $this->finish($alarm, $deviceData, AlarmHandlerInterface::HUMIDITY_OFFSET, $sensor);
     }
 
 }

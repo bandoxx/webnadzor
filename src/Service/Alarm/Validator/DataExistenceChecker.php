@@ -10,24 +10,27 @@ class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInter
     public function validate(DeviceData $deviceData): void
     {
         $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::NO_DATA);
+        $sensor = null;
 
+        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::NO_DATA);
         $device = $deviceData->getDevice();
 
         foreach (range(1, 2) as $entry) {
             if ($device->getEntryData($entry)['t_use'] == true && !is_numeric($deviceData->getT($entry))) {
                 $this->alarmShouldBeOn = true;
+                $sensor = $entry;
+
+                break;
             }
 
             if ($device->getEntryData($entry)['rh_use'] == true && !is_numeric($deviceData->getRH($entry))) {
                 $this->alarmShouldBeOn = true;
-            }
+                $sensor = $entry;
 
-            if ($this->alarmShouldBeOn) {
                 break;
             }
         }
 
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::NO_DATA);
+        $this->finish($alarm, $deviceData, AlarmHandlerInterface::NO_DATA, $sensor);
     }
 }

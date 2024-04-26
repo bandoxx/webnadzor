@@ -24,11 +24,17 @@ class AlarmListController extends AbstractController
         $table = [];
 
         foreach ($alarms as $alarm) {
+            $place = 'Nema';
+
+            if ($alarm->getSensor()) {
+                $place = $device->getEntryData($alarm->getSensor())['t_name'];
+            }
+
             $table[] = [
                 'date' => $alarm->getDeviceDate(),
                 'end_date' => $alarm->getEndDeviceDate(),
                 'active' => $alarm->isActive(),
-                'place' => $alarm->getDevice()->getName(),
+                'place' => $place,
                 'type' => $alarm->getType()
             ];
         }
