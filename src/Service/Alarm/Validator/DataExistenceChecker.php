@@ -31,6 +31,9 @@ class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInter
                 $this->finish($alarm, $deviceData, AlarmHandlerInterface::SENSOR_ERROR, $entry);
                 break;
             }
+
+            $this->finish($alarm, $deviceData, AlarmHandlerInterface::SENSOR_ERROR, $entry);
         }
+
     }
 }
