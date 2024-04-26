@@ -30,7 +30,6 @@ class DeviceDeleteController extends AbstractController
 
         $action = $request->request->get('del_action', '');
 
-        dump($action);
         if (!in_array($action, ['delete_device', 'empty_data'], true)) {
             return $this->json("Bad request", Response::HTTP_BAD_REQUEST);
         }
@@ -41,8 +40,7 @@ class DeviceDeleteController extends AbstractController
             $purgeDeviceData->removeDeviceData($deviceId);
         }
 
-        return $this->json(true, Response::HTTP_CREATED);
-
+        return $this->json(true, Response::HTTP_OK);
     }
 
 }

@@ -40,6 +40,13 @@ class DeviceRepository extends ServiceEntityRepository
         ;
     }
 
+    public function deleteDevice(int $deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            "DELETE FROM device WHERE id = $deviceId",
+        )->free();
+    }
+
     public function findDevicesByClient($clientId)
     {
         return $this->findBy(['client' => $clientId]);

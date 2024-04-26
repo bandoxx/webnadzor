@@ -49,6 +49,13 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
             ->orderBy('dda.archiveDate', 'DESC')
             ->getQuery()
             ->getResult()
-            ;
+        ;
+    }
+
+    public function deleteArchiveRelatedToDevice(int $deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            "DELETE FROM device_data_archive WHERE device_id = $deviceId",
+        )->free();
     }
 }

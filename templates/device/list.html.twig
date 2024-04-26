@@ -145,6 +145,7 @@
                   type: 'POST',
                   success: function() {
                     $('#delete-confirm').dialog('close');
+                    window.location.reload();
                   },
                   error: function() {
                     alert('Greška! Molimo pokušajte ponovo');
@@ -174,7 +175,7 @@
             izbrisani.</p>
         <p style="border: 1px solid transparent; padding: 0.3em;"><strong>Lokacija:</strong> <span
                     id="del_device_name"></span></p>
-        <form id="delform" class="form" action="{{ app.request.getBaseURL() }}" method="POST">
+        <form id="delform" class="form" action="#" method="POST">
             <fieldset>
                 <div class="form_row radioui">
                     <label style="display:block; margin-top:12px;">Odaberite opciju</label>
