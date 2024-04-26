@@ -12,7 +12,7 @@ class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
         foreach (range(1, 2) as $entry) {
             $this->alarmShouldBeOn = false;
 
-            $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::TEMPERATURE_OFFSET);
+            $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::TEMPERATURE_OFFSET, $entry);
 
             if ($deviceData->isTemperatureOutOfRange($entry)) {
                 $this->alarmShouldBeOn = true;

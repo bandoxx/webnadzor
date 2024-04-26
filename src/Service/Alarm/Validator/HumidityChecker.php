@@ -12,7 +12,7 @@ class HumidityChecker extends BaseAlarmHandler implements AlarmHandlerInterface
         foreach (range(1, 2) as $entry) {
             $this->alarmShouldBeOn = false;
 
-            $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::HUMIDITY_OFFSET);
+            $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::HUMIDITY_OFFSET, $entry);
 
             if ($deviceData->isHumidityOutOfRange($entry)) {
                 $this->alarmShouldBeOn = true;
