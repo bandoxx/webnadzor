@@ -9,7 +9,7 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceData;
 use App\Entity\DeviceDataArchive;
 use App\Entity\DeviceIcon;
-use App\Model\AlarmType;
+use App\Service\Alarm\AlarmHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -271,7 +271,7 @@ class DeviceDataImport
                 ->setServerDate(new \DateTime($data->server_date))
                 ->setEndServerDate($data->end_server_date ? new \DateTime($data->end_server_date) : null)
                 ->setEndDeviceDate($data->end_device_date ? new \DateTime($data->end_device_date) : null)
-                ->setType($data->type === 'p' ? AlarmType::BATTERY_LEVEL : $data->type)
+                ->setType($data->type === 'p' ? AlarmHandlerInterface::BATTERY_LEVEL : $data->type)
                 ->setIsNotified(true)
             ;
 
