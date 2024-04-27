@@ -39,7 +39,8 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
         // set default header data
         $headerData = $subtitle . "\n";
 
-        $pdf->SetHeaderData('../../../../../public/assets/images/%s', 30, $client->getPdfLogo(), $headerData);
+        $logo = $client->getPdfLogo();
+        $pdf->SetHeaderData($logo ? "../../../../../public/assets/images/$logo" : 'Arhiva logovanja korisnika', 30, null, $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
@@ -73,7 +74,7 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
         $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', 1);
         $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', 1);
         $pdf->Cell($pdf->pixelsToUnits(150), 4, 'Status', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Korisnicko ime', 1, 0, 'L', 1);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Korisničko ime', 1, 0, 'L', 1);
         $pdf->Cell($pdf->pixelsToUnits(105), 4, 'IP adresa', 1, 0, 'L', 1);
         $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Preglednik', 1, 0, 'L', 1);
         $pdf->Cell($pdf->pixelsToUnits(80), 4, 'OS', 1, 0, 'L', 1);

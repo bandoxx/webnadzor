@@ -52,11 +52,8 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $headerData = $subtitle . "\n";
         $headerData .= $client?->getName();
 
-        # ../../../ is because constant cannot be changed, and it's reading from vendor root
         $logo = $client?->getPdfLogo();
-        if ($logo) {
-            $pdf->SetHeaderData("../../../../../public/assets/images/logo/$logo", 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
-        }
+        $pdf->SetHeaderData($logo ? "../../../../../public/assets/images/logo/$logo" : '', 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont(['dejavusanscondensed', '', 8]);

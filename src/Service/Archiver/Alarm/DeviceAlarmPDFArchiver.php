@@ -17,11 +17,8 @@ class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInte
         $headerData = sprintf('Datoteka generirana %s', (new \DateTime())->format('d.m.Y H:i:s')) . "\n";
         $headerData .= $client?->getName();
 
-        # ../../../ is because constant cannot be changed, and it's reading from vendor root
         $logo = $client?->getPdfLogo();
-        if ($logo) {
-            $pdf->SetHeaderData("../../../../../public/assets/images/logo/$logo", 30, sprintf('Lista alarma za mjerni uređaj %s', $device->getName()), $headerData);
-        }
+        $pdf->SetHeaderData($logo ? "../../../../../public/assets/images/logo/$logo" : '', 30, sprintf('Lista alarma za mjerni uređaj %s', $device->getName()), $headerData);
 
         // set header and footer fonts
         $pdf->setHeaderFont(['dejavusanscondensed', '', 8]);
