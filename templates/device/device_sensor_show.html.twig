@@ -298,11 +298,11 @@
         }
 
         if (document.getElementById('container_t')) {
-          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}");
+          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }} - {{ device.getEntryData(entry).t_name }}");
         }
 
         if (document.getElementById('container_rh')) {
-          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }}, mjerno mjesto {{ device.getEntryData(entry).rh_name }}");
+          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }} - {{ device.getEntryData(entry).rh_name }}");
         }
       })
 

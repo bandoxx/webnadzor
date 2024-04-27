@@ -655,7 +655,6 @@ div.information .hide_btn:hover {
 }
 
 .table-wrap {
-    border: 1px solid #2b323b;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     border-radius: 5px;
@@ -683,6 +682,10 @@ div.information .hide_btn:hover {
     cursor: pointer;
 }
 
+.data-table-border {
+    border: 1px solid #2b323b;
+}
+
 .data-table th span {
     display: inline !important;
     padding: 0 8px;
@@ -691,7 +694,7 @@ div.information .hide_btn:hover {
 
 .data-table-top {
     overflow: hidden;
-    margin: 0;
+    margin: 5px 0;
 }
 
 .data-table-search {
@@ -738,7 +741,7 @@ div.information .hide_btn:hover {
 
 .data-table-bottom {
     overflow: hidden;
-    margin: 0;
+    margin: 5px 0;
 }
 
 .table-wrap tr{

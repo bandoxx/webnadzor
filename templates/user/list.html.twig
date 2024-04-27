@@ -384,7 +384,7 @@
             <a href="#" class="toggle">&nbsp;</a>
         </div>
         <div class="block_cont" style="padding: 4px;">
-            <table class="data-table stripe compact hover"><!-- Table Wrapper Begin -->
+            <table class="data-table data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
                 <thead>
                 <tr>
                     <th width="40" class="sorting_disabled">Br.</th>
@@ -395,9 +395,8 @@
                 </tr>
                 </thead>
                 <tbody role="alert" aria-live="polite" aria-relevant="all">
-                {% set style = 'odd' %}
                 {% for user in users %}
-                    <tr class="{{ style }}">
+                    <tr>
                         <td class="">{{ user.id }}</td>
                         <td class="">{{ user.username }}</td>
                         <td class="">{{ user.permissionName }}</td>
@@ -414,7 +413,6 @@
                         </td>
                         <td class="">
                             {% if user.permission != 4 %}
-                            <div style="height: 3px;">&nbsp;</div>
                             <div id="{{ user.id }}"
                                  data-username="{{ user.username }}"
                                  data-permissions="{{ user.permission }}"
@@ -425,11 +423,6 @@
                             {% endif %}
                         </td>
                     </tr>
-                    {% if style == 'odd' %}
-                        {% set style = 'even' %}
-                    {% else %}
-                        {% set style = 'odd' %}
-                    {% endif %}
                 {% endfor %}
                 </tbody>
             </table><!-- Table Wrapper End -->

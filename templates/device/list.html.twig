@@ -226,12 +226,11 @@
             </div>
             <div class="block_cont" style="padding: 4px;">
                 <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
-                    <div class="data-table-top"></div>
                     <div class="clear"></div>
                         <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
                             Obrađujem...
                         </div>
-                        <table id="otable" class="stripe compact hover"><!-- Table Wrapper Begin -->
+                        <table id="otable" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
                             <thead>
                             <tr role="row">
                                 <th>XML</th>
@@ -245,9 +244,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {% set style = 'odd' %}
                             {% for device in devices_table %}
-                                <tr class="{{ style }}">
+                                <tr>
                                     <td>{{ device.xml }}</td>
                                     <td>{{ device.name }}</td>
                                     <td>
@@ -268,7 +266,6 @@
                                     <td><span class="{% if device.power < 2.7 %}red{% else %}green{% endif %}">{{ device.power }}V</span></td>
                                     <td><span class="{% if device.battery < 30 %}red{% else %}green{% endif %}">{{ device.battery }}%</span></td>
                                     <td>
-                                        <div style="height: 3px;">&nbsp;</div>
                                         <div id="{{ device.id }}" data-devnam="{{ device.name }}" class="actionbar">
                                             <a href="{{ path('app_device_edit', {clientId: clientId, id: device.id}) }}" class="action edit">
                                                 <span>Uredi</span>
@@ -277,11 +274,6 @@
                                         </div>
                                     </td>
                                 </tr>
-                                {% if style == 'odd' %}
-                                    {% set style = 'even' %}
-                                {% else %}
-                                    {% set style = 'odd' %}
-                                {% endif %}
                             {% endfor %}
                             </tbody>
                         </table>
