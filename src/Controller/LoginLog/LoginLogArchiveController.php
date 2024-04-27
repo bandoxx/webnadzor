@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class LoginLogArchiveController extends AbstractController
 {
 
-    public function __invoke($clientId, LoginLogArchiveRepository $loginLogArchiveRepository): Response
+    public function __invoke(int $clientId, LoginLogArchiveRepository $loginLogArchiveRepository): Response
     {
         return $this->render('login_log/archive.html.twig', [
             'logs' => $loginLogArchiveRepository->findBy(['client' => $clientId], ['id' => 'DESC'])

@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceShowByEntryController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, $entry, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
+    public function __invoke(int $clientId, int $id, int $entry, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $device = $deviceRepository->find($id);
 

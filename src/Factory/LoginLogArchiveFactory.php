@@ -8,7 +8,7 @@ use App\Entity\LoginLogArchive;
 class LoginLogArchiveFactory
 {
 
-    public function create(Client $client, \DateTime $archiveDate, $filename): LoginLogArchive
+    public function create(Client $client, \DateTime $archiveDate, string $filename): LoginLogArchive
     {
         $archive = new LoginLogArchive();
 

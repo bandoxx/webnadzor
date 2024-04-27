@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class FtpReadController extends AbstractController
 {
 
-    public function __invoke($clientId, ClientFtpRepository $clientFtpRepository)
+    public function __invoke(int $clientId, ClientFtpRepository $clientFtpRepository): \Symfony\Component\HttpFoundation\Response
     {
         $client = $clientFtpRepository->findOneBy(['client' => $clientId]);
 

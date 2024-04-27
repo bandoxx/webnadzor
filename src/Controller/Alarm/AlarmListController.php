@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class AlarmListController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository): Response
+    public function __invoke(int $clientId, int $id, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository): Response
     {
         $device = $deviceRepository->find($id);
 

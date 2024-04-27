@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceDataMonthlyArchiveController extends AbstractController
 {
 
-    public function __invoke($id, $entry, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
+    public function __invoke(int $id, int $entry, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
     {
         $device = $deviceRepository->find($id);
         $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry);

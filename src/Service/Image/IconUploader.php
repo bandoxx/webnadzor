@@ -13,9 +13,13 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class IconUploader
 {
 
-    public function __construct(private SluggerInterface $slugger, private ParameterBagInterface $parameterBag, private EntityManagerInterface $entityManager) {}
+    public function __construct(
+        private readonly SluggerInterface      $slugger,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly EntityManagerInterface $entityManager
+    ) {}
 
-    public function uploadAndSave(UploadedFile $uploadedFile, Client $client, $title): void
+    public function uploadAndSave(UploadedFile $uploadedFile, Client $client, string $title): void
     {
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         // this is needed to safely include the file name as part of the URL

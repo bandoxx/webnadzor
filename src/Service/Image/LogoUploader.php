@@ -18,10 +18,10 @@ class LogoUploader
     public const ICON_WIDTH = 32;
 
     public function __construct(
-        private SluggerInterface $slugger,
-        private EntityManagerInterface $entityManager,
-        private string $logoPath,
-        private string $mapMarkerPath
+        private readonly SluggerInterface       $slugger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly string                 $logoPath,
+        private readonly string $mapMarkerPath
     ) {}
 
     public function uploadAndSaveMainLogo(UploadedFile $uploadedFile, Client $client): void
@@ -65,15 +65,16 @@ class LogoUploader
         $this->entityManager->flush();
     }
 
-    private function save(UploadedFile $uploadedFile, $path, $fileName, $width, $height): ?string
+    private function save(UploadedFile $uploadedFile, string $path, string $fileName, int $width, int $height): string
     {
         $newFileName = sprintf("%s.%s", $fileName, $uploadedFile->guessExtension());
         $uploadedFile->move($path, $newFileName);
         $this->resize(sprintf("%s/%s", $path, $newFileName), $width, $height);
+
         return $newFileName;
     }
 
-    private function resize($filePath, $width, $height): void
+    private function resize(string $filePath, int $width, int $height): void
     {
         $manager = new ImageManager(
             new Driver()

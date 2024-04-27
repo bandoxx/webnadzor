@@ -47,12 +47,12 @@ class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInte
         $pdf->SetDrawColor(0, 0, 0);
         $pdf->SetLineWidth(0.25);
 
-        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Završni datum', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(60), 4, 'Aktivan', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(100), 4, 'Mjerno mjesto', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(100), 4, 'Vrsta alarma', 1, 0, 'L', 1);
+        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Završni datum', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(60), 4, 'Aktivan', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(100), 4, 'Mjerno mjesto', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(100), 4, 'Vrsta alarma', 1, 0, 'L', true);
         $pdf->Ln();
 
         $i = 1;
@@ -76,7 +76,7 @@ class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInte
         }
 
         if ($i == 1) {
-            $pdf->Cell($pdf->pixelsToUnits(30 + 105 * 2 + 60 + 100 * 2), 6, 'Nema podataka!', 1, 0, 'L', 0);
+            $pdf->Cell($pdf->pixelsToUnits(30 + 105 * 2 + 60 + 100 * 2), 6, 'Nema podataka!', 1, 0, 'L', false);
         }
 
         $this->savePDF($pdf);

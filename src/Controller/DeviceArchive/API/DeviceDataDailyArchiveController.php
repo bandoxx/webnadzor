@@ -13,7 +13,7 @@ use Symfony\Component\Routing\RouterInterface;
 class DeviceDataDailyArchiveController extends AbstractController
 {
 
-    public function __invoke($id, $entry, RouterInterface $router, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
+    public function __invoke(int $id, int $entry, RouterInterface $router, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository): Response
     {
         $device = $deviceRepository->find($id);
         $archiveData = $deviceDataArchiveRepository->getDailyArchives($device, $entry);

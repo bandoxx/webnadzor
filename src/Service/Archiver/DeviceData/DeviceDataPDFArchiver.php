@@ -17,7 +17,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $this->savePDF($pdf);
     }
 
-    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, string $fileName): void
+    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -28,7 +28,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $this->savePDF($pdf, $path, $fileName);
     }
 
-    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, $fileName): void
+    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -39,7 +39,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $this->savePDF($pdf, $path, $fileName);
     }
 
-    private function generateBody(Device $device, array $deviceData, $entry, $subtitle): TCPDF
+    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): TCPDF
     {
         $deviceEntryData = $device->getEntryData($entry);
         $tUnit = $deviceEntryData['t_unit'];
@@ -83,17 +83,17 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $pdf->SetLineWidth(0.25);
 
         // Header
-        $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', 1);
-        $pdf->Cell($pdf->pixelsToUnits(280), 4, $deviceEntryData['t_name'], 1, 0, 'C', 1);
+        $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
+        $pdf->Cell($pdf->pixelsToUnits(280), 4, $deviceEntryData['t_name'], 1, 0, 'C', true);
         $pdf->Ln();
-        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(245), 4, 'Napomena', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Tren', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Max', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Min', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'MKT', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'R. vlažnost', 1, 0, 'L', 1);
+        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(245), 4, 'Napomena', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Tren', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Max', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'Min', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'MKT', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(56), 4, 'R. vlažnost', 1, 0, 'L', true);
         $pdf->Ln();
 
         $i = 1;
@@ -133,8 +133,8 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
             $pdf->Ln();
         }
 
-        if ($i == 1) {
-            $pdf->Cell($pdf->pixelsToUnits(135 + 245 + 56 * 5 /** inputs */), 6, 'Nema podataka!', 1, 0, 'L', 0);
+        if ($i === 1) {
+            $pdf->Cell($pdf->pixelsToUnits(135 + 245 + 56 * 5 /** inputs */), 6, 'Nema podataka!', 1, 0, 'L', false);
         }
 
         return $pdf;

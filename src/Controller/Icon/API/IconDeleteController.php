@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconDeleteController extends AbstractController
 {
 
-    public function __invoke($id, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $id, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $icon = $deviceIconRepository->find($id);
 

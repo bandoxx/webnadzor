@@ -22,7 +22,7 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceDataArchive::class);
     }
 
-    public function getDailyArchives(Device $device, $entry)
+    public function getDailyArchives(Device $device, int $entry): array
     {
         return $this->createQueryBuilder('dda')
             ->where('dda.device = :device_id')
@@ -37,7 +37,7 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getMonthlyArchives(?Device $device, $entry)
+    public function getMonthlyArchives(?Device $device, int $entry): array
     {
         return $this->createQueryBuilder('dda')
             ->where('dda.device = :device_id')

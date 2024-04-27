@@ -11,12 +11,12 @@ class UserDeviceAccessUpdater
 {
 
     public function __construct(
-        private DeviceRepository $deviceRepository,
-        private UserDeviceAccessFactory $userDeviceAccessFactory,
-        private EntityManagerInterface $entityManager
+        private readonly DeviceRepository        $deviceRepository,
+        private readonly UserDeviceAccessFactory $userDeviceAccessFactory,
+        private readonly EntityManagerInterface $entityManager
     ) {}
 
-    public function update(User $user, $locations, $permission)
+    public function update(User $user, array $locations, int $permission): void
     {
         $accesses = $user->getUserDeviceAccesses()->toArray();
 
@@ -27,7 +27,7 @@ class UserDeviceAccessUpdater
         $this->entityManager->flush();
 
 
-        if ($permission == 1 || empty($permission)) {
+        if ($permission === 1 || empty($permission)) {
             if (!$locations) {
                 return;
             }

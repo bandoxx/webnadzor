@@ -19,7 +19,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET|POST')]
 class DeviceEntryExportController extends AbstractController
 {
-    public function __invoke($clientId, $id, $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, DeviceDataPDFArchiver $PDFArchiver, DeviceDataXLSXArchiver $XLSXArchiver): StreamedResponse|Response
+    public function __invoke(int $clientId, int $id, int $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, DeviceDataPDFArchiver $PDFArchiver, DeviceDataXLSXArchiver $XLSXArchiver): StreamedResponse|Response
     {
         $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);

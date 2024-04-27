@@ -10,13 +10,7 @@ use TCPDF;
 
 class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
 {
-    /**
-     * @param Client $client
-     * @param LoginLog[] $loginLogs
-     * @param \DateTime $archiveDate
-     * @param string $fileName
-     * @return void
-     */
+
     public function saveDaily(Client $client, array $loginLogs, \DateTime $archiveDate, string $fileName): void
     {
         $subtitle = sprintf("Podaci za %s - Log prijava", $archiveDate->format(self::DAILY_FORMAT));
@@ -27,12 +21,8 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
         $this->savePDF($pdf, $path, $fileName);
     }
 
-    /**
-     * @param Client $client
-     * @param LoginLog[] $loginLogs
-     * @return TCPDF
-     */
-    private function generateBody(Client $client, array $loginLogs, $subtitle) {
+    private function generateBody(Client $client, array $loginLogs, string $subtitle): TCPDF
+    {
 
         $pdf = $this->preparePDF();
 
@@ -71,13 +61,13 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
         $pdf->SetLineWidth(0.25);
 
         // Header
-        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(150), 4, 'Status', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Korisničko ime', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'IP adresa', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Preglednik', 1, 0, 'L', 1);
-        $pdf->Cell($pdf->pixelsToUnits(80), 4, 'OS', 1, 0, 'L', 1);
+        $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(150), 4, 'Status', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Korisničko ime', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'IP adresa', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Preglednik', 1, 0, 'L', true);
+        $pdf->Cell($pdf->pixelsToUnits(80), 4, 'OS', 1, 0, 'L', true);
         $pdf->Ln();
 
         $i = 1;
@@ -121,8 +111,8 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
             $i++;
         }
 
-        if ($i == 1) {
-            $pdf->Cell($pdf->pixelsToUnits(680), 6, 'Nema podataka!', 1, 0, 'L', 0);
+        if ($i === 1) {
+            $pdf->Cell($pdf->pixelsToUnits(680), 6, 'Nema podataka!', 1, 0, 'L', false);
         }
 
         return $pdf;

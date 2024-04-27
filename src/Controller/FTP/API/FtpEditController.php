@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/api/ftp/{id}', name: 'app_clientftp_edit', methods: 'PATCH')]
 class FtpEditController extends AbstractController
 {
-    public function __invoke($id, Request $request, ClientFtpRepository $clientFtpRepository, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $id, Request $request, ClientFtpRepository $clientFtpRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $ftp = $clientFtpRepository->find($id);
 

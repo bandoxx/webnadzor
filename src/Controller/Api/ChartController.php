@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChartController extends AbstractController
 {
 
-    public function __invoke($deviceId, $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler): JsonResponse
+    public function __invoke(int $deviceId, int $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler): JsonResponse
     {
         if ($fromDate = $request->query->get('fromDate')) {
             $fromDate = (new \DateTime())->setTimestamp($fromDate);

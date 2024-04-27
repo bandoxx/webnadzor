@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/admin/{clientId}/login-log', name: 'app_loginlog_getloginlogs', methods: 'GET')]
 class LoginLogGetController extends AbstractController
 {
-    public function __invoke($clientId, LoginLogRepository $loginLogRepository): Response
+    public function __invoke(int $clientId, LoginLogRepository $loginLogRepository): Response
     {
         return $this->render('login_log/list.html.twig', [
             'logs' => $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC'])

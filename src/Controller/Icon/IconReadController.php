@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconReadController extends AbstractController
 {
 
-    public function __invoke($clientId, DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
+    public function __invoke(int $clientId, DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
     {
         $icons = $deviceIconRepository->findBy(['client' => $clientId]);
 

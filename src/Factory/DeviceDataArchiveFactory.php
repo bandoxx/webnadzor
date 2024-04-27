@@ -8,7 +8,7 @@ use App\Entity\DeviceDataArchive;
 class DeviceDataArchiveFactory
 {
 
-    public function create(Device $device, \DateTime $serverDate, $entry, $fileName, $period): DeviceDataArchive
+    public function create(Device $device, \DateTime $serverDate, int $entry, string $fileName, string $period): DeviceDataArchive
     {
         $archive = new DeviceDataArchive();
 

@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceDeleteController extends AbstractController
 {
 
-    public function __invoke($clientId, $deviceId, Request $request, DeviceRepository $deviceRepository, PurgeDeviceData $purgeDeviceData, UserPasswordHasherInterface $userPasswordChecker): JsonResponse
+    public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, PurgeDeviceData $purgeDeviceData, UserPasswordHasherInterface $userPasswordChecker): JsonResponse
     {
         $user = $this->getUser();
 

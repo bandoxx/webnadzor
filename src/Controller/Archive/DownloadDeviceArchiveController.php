@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DownloadDeviceArchiveController extends AbstractController
 {
 
-    public function __invoke($id, $type, $archiveDirectory, DeviceDataArchiveRepository $archiveRepository): \Symfony\Component\HttpFoundation\BinaryFileResponse|BadRequestHttpException
+    public function __invoke(int $id, string $type, string $archiveDirectory, DeviceDataArchiveRepository $archiveRepository): \Symfony\Component\HttpFoundation\BinaryFileResponse|BadRequestHttpException
     {
         if (!in_array($type, ['xlsx', 'pdf'])) {
             return new BadRequestHttpException();

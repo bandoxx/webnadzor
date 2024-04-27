@@ -8,7 +8,7 @@ use App\Entity\DeviceData;
 class DeviceAlarmFactory
 {
 
-    public function create(DeviceData $deviceData, $alarmType, $sensor = null): DeviceAlarm
+    public function create(DeviceData $deviceData, string $alarmType, ?int $sensor = null): DeviceAlarm
     {
         $alarm = new DeviceAlarm();
 

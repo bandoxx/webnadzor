@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserUpdateController extends AbstractController
 {
 
-    public function __invoke($clientId, $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
+    public function __invoke(int $clientId, int $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
     {
         $user = $userRepository->find($userId);
 

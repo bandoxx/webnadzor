@@ -36,7 +36,7 @@ class Archiver
         return $objPHPExcel;
     }
 
-    public function saveXLSX(Spreadsheet $spreadsheet, $path = null, $fileName = null): void
+    public function saveXLSX(Spreadsheet $spreadsheet, ?string $path = null, ?string $fileName = null): void
     {
         $objWriter = IOFactory::createWriter($spreadsheet, IOFactory::WRITER_XLSX);
 
@@ -51,7 +51,7 @@ class Archiver
         }
     }
 
-    public function savePDF(TCPDF $pdf, $path = null, $fileName = null): void
+    public function savePDF(TCPDF $pdf, ?string $path = null, ?string $fileName = null): void
     {
         if ($path && $fileName) {
             if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {

@@ -13,7 +13,7 @@ class DeviceController extends AbstractController
 {
 
     #[Route(path: '/api/device/data/{id}', methods: 'GET')]
-    public function read($id, DeviceDataRepository $deviceDataRepository): JsonResponse
+    public function read(int $id, DeviceDataRepository $deviceDataRepository): JsonResponse
     {
         return $this->json($deviceDataRepository->find($id), Response::HTTP_OK, [], ['groups' => 'device_read']);
     }

@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserRemoveController extends AbstractController
 {
 
-    public function __invoke($userId, UserRepository $userRepository, UserRemover $userRemover): JsonResponse
+    public function __invoke(int $userId, UserRepository $userRepository, UserRemover $userRemover): JsonResponse
     {
         $user = $userRepository->find($userId);
 

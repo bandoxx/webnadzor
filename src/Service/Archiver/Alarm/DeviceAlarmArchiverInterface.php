@@ -7,5 +7,5 @@ use App\Service\Archiver\ArchiverInterface;
 
 interface DeviceAlarmArchiverInterface extends ArchiverInterface
 {
-    public function generate(Device $device, $data);
+    public function generate(Device $device, array $data): void;
 }

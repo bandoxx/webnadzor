@@ -15,17 +15,20 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceEditController extends AbstractController
 {
 
-    public function __invoke($clientId, $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
+    public function __invoke(int $clientId, int $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
     {
         $error = [];
         $device = $deviceRepository->find($id);
 
         $icons = $deviceIconRepository->findBy(['client' => $clientId]);
         if ($request->getMethod() === 'POST') {
+            // TODO: Permissions
             try {
-                $device = $deviceUpdater->update($device, $request->request->all());
+                if ($this->getUser()->getPermission() <= 3) {
+                    $device = $deviceUpdater->update($device, $request->request->all());
 
-                return $this->json(true, Response::HTTP_ACCEPTED);
+                    return $this->json(true, Response::HTTP_ACCEPTED);
+                }
             } catch (\Throwable $e) {
                 $error = [$e->getMessage()];
             }

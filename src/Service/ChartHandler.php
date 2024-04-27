@@ -10,7 +10,7 @@ class ChartHandler
     public const TEMPERATURE = 'temperature';
     public const HUMIDITY = 'humidity';
 
-    public function createChart($type, $data, $entry)
+    public function createChart(string $type, array $data, int $entry): ?array
     {
         if ($type === self::TEMPERATURE) {
             return $this->createTemperatureChart($data, $entry);
@@ -23,7 +23,7 @@ class ChartHandler
         return null;
     }
 
-    private function createTemperatureChart($data, $entry)
+    private function createTemperatureChart(array $data, int $entry): array
     {
         $result = [
             't' => [],
@@ -42,7 +42,7 @@ class ChartHandler
         return $result;
     }
 
-    private function createHumidityChart($data, $entry)
+    private function createHumidityChart(array $data, int $entry): array
     {
         $result = [
             'rh' => [],
@@ -59,7 +59,7 @@ class ChartHandler
         return $result;
     }
 
-    private static function convertDateTimeToChartStamp(\DateTime $dateTime)
+    private static function convertDateTimeToChartStamp(\DateTimeInterface $dateTime): float
     {
         return floor($dateTime->getTimestamp() * 1000);
     }

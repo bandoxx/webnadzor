@@ -34,7 +34,7 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         return $this->findBy(['device' => $device], ['deviceDate' => 'DESC']);
     }
 
-    public function findActiveAlarm(Device $device, $type, $sensor = null)
+    public function findActiveAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
     {
         $builder = $this->createQueryBuilder('a');
 
@@ -67,7 +67,7 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findOlderThen($months)
+    public function findOlderThen(int $months): array
     {
         return $this->createQueryBuilder('da')
             ->where('da.deviceDate < :date AND da.endDeviceDate IS NOT NULL')
@@ -76,29 +76,4 @@ class DeviceAlarmRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-//    /**
-//     * @return DeviceAlarm[] Returns an array of DeviceAlarm objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?DeviceAlarm
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
-
 }

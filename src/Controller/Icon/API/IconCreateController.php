@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, ClientRepository $clientRepository, Request $request, IconUploader $iconUploader): RedirectResponse
+    public function __invoke(int $clientId, ClientRepository $clientRepository, Request $request, IconUploader $iconUploader): RedirectResponse
     {
         $icon = $request->files->get('icon');
         $title = $request->request->get('icon_title');

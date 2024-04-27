@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/admin/{clientId}/overview', name: 'client_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke($clientId, ClientRepository $clientRepository, DeviceLocationHandler $deviceLocationHandler): Response
+    public function __invoke(int $clientId, ClientRepository $clientRepository, DeviceLocationHandler $deviceLocationHandler): Response
     {
         $client = $clientRepository->find($clientId);
 

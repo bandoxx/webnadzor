@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/admin/{clientId}/devices', name: 'app_device_list')]
 class DeviceReadController extends AbstractController
 {
-    public function __invoke($clientId, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceDataRepository $deviceDataRepository): Response
+    public function __invoke(int $clientId, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $devices = $deviceRepository->findBy(['client' => $clientId]);
 

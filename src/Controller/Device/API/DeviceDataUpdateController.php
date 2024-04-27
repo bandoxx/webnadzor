@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceDataUpdateController extends AbstractController
 {
 
-    public function __invoke($id, $entry, Request $request, DeviceDataRepository $deviceDataRepository, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $id, int $entry, Request $request, DeviceDataRepository $deviceDataRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         $note = $request->get('note');
 

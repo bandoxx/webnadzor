@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/archive', name: 'app_devicedataarchive_read', methods: 'GET')]
 class DeviceEntryArchiveController extends AbstractController
 {
-    public function __invoke($clientId, $id, $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
+    public function __invoke(int $clientId, int $id, int $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
     {
         $device = $deviceRepository->find($id);
         $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);

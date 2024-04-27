@@ -9,7 +9,7 @@ use App\Entity\UserDeviceAccess;
 class UserDeviceAccessFactory
 {
 
-    public function create(Device $device, User $user, $sensor): UserDeviceAccess
+    public function create(Device $device, User $user, int $sensor): UserDeviceAccess
     {
         $access = new UserDeviceAccess();
 

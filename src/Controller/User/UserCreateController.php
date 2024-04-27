@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserFactory $userFactory, UserDeviceAccessUpdater $userDeviceAccessUpdater, ClientRepository $clientRepository): JsonResponse
+    public function __invoke(int $clientId, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserFactory $userFactory, UserDeviceAccessUpdater $userDeviceAccessUpdater, ClientRepository $clientRepository): JsonResponse
     {
         $permission = $request->request->get('permissions');
 

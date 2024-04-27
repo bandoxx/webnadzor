@@ -10,7 +10,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class DeviceAlarmXLSXArchiver extends Archiver implements DeviceAlarmArchiverInterface
 {
-    public function generate(Device $device, $data)
+    public function generate(Device $device, array $data): void
     {
         $xlsx = $this->generateBody($device, $data);
         $this->saveXLSX($xlsx);

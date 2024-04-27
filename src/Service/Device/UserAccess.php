@@ -12,12 +12,10 @@ class UserAccess
 {
 
     public function __construct(
-        private DeviceRepository $deviceRepository,
-        private UserDeviceAccessRepository $deviceAccessRepository
+        private readonly DeviceRepository  $deviceRepository,
+        private readonly UserDeviceAccessRepository $deviceAccessRepository
     )
-    {
-
-    }
+    {}
 
     /**
      * @param User $user

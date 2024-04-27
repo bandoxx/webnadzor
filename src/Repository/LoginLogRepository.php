@@ -22,7 +22,7 @@ class LoginLogRepository extends ServiceEntityRepository
         parent::__construct($registry, LoginLog::class);
     }
 
-    public function findByClientAndForDay(Client $client, \DateTime $dateTime)
+    public function findByClientAndForDay(Client $client, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->setTime(0, 0);
         $end = (clone ($dateTime))->setTime(23, 59);
@@ -39,7 +39,7 @@ class LoginLogRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findOlderThen($months)
+    public function findOlderThen(int $months): array
     {
         return $this->createQueryBuilder('ll')
             ->where('ll.serverDate < :date')
@@ -48,29 +48,4 @@ class LoginLogRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
-
-//    /**
-//     * @return LoginLog[] Returns an array of LoginLog objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('l.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?LoginLog
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

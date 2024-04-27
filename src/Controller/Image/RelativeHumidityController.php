@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class RelativeHumidityController extends AbstractController
 {
 
-    public function __invoke($deviceId, $entry, ImageGenerator $imageGenerator): StreamedResponse
+    public function __invoke(int $deviceId, int $entry, ImageGenerator $imageGenerator): StreamedResponse
     {
         $response = new StreamedResponse(
             function () use ($imageGenerator, $deviceId, $entry) {
@@ -21,7 +21,6 @@ class RelativeHumidityController extends AbstractController
 
         $response->headers->set('Content-Type', 'image/png');
         $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-        $response->headers->set('Expires', 'Thu, 19 Nov 1981 08:52:00 GMT');
         $response->setSharedMaxAge(60);
 
         return $response;

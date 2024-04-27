@@ -19,12 +19,12 @@ class BaseAlarmHandler
         $this->alarmShouldBeOn = false;
     }
 
-    public function findAlarm(Device $device, $type, $sensor = null): ?DeviceAlarm
+    public function findAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
     {
         return $this->deviceAlarmRepository->findActiveAlarm($device, $type, $sensor);
     }
 
-    public function finish(?DeviceAlarm $alarm, DeviceData $deviceData, $type, $sensor = null): void
+    public function finish(?DeviceAlarm $alarm, DeviceData $deviceData, string $type, ?int $sensor = null): void
     {
         if (!($alarm xor $this->alarmShouldBeOn)) {
             return;
@@ -45,7 +45,7 @@ class BaseAlarmHandler
         $this->entityManager->flush();
     }
 
-    public function createAlarm(DeviceData $deviceData, $type, $sensor = null): void
+    public function createAlarm(DeviceData $deviceData, string $type, ?int $sensor = null): void
     {
         $alarm = $this->alarmFactory->create($deviceData, $type, $sensor);
         $this->entityManager->persist($alarm);

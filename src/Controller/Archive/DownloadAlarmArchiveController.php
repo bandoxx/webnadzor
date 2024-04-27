@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class DownloadAlarmArchiveController extends AbstractController
 {
 
-    public function __invoke($id, $type, $archiveDirectory, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceAlarmPDFArchiver $deviceAlarmPDFArchiver, DeviceAlarmXLSXArchiver $deviceAlarmXLSXArchiver): StreamedResponse|BadRequestHttpException
+    public function __invoke(int $id, string $type, string $archiveDirectory, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceAlarmPDFArchiver $deviceAlarmPDFArchiver, DeviceAlarmXLSXArchiver $deviceAlarmXLSXArchiver): StreamedResponse|BadRequestHttpException
     {
         if (!in_array($type, ['xlsx', 'pdf'])) {
             return new BadRequestHttpException();

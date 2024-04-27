@@ -14,9 +14,9 @@ class TimeAgoExtension extends AbstractExtension
         );
     }
 
-    public function timeAgo($date): string
+    public function timeAgo(string $fromDate): string
     {
-        $date = new \DateTime($date);
+        $date = new \DateTime($fromDate);
         $second = 1;
         $minute = 60 * $second;
         $hour = 60 * $minute;

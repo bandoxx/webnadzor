@@ -14,7 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
 class LoginLogTableController extends AbstractController
 {
 
-    public function __invoke($clientId, RouterInterface $router, ClientRepository $clientRepository, LoginLogArchiveRepository $loginLogArchiveRepository): JsonResponse
+    public function __invoke(int $clientId, RouterInterface $router, ClientRepository $clientRepository, LoginLogArchiveRepository $loginLogArchiveRepository): JsonResponse
     {
         $archiveData = $loginLogArchiveRepository->findBy(['client' => $clientId]);
         $result = [];

@@ -14,7 +14,7 @@ class Long2IpExtension extends AbstractExtension
         );
     }
 
-    public function long2ip($intIp): string
+    public function long2ip(int $intIp): string
     {
         return long2ip($intIp);
     }

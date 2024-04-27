@@ -11,10 +11,10 @@ class DeviceDataFormatter
     /**
      * @param Device $device
      * @param array<DeviceData> $deviceData
-     * @param $entry
+     * @param int $entry
      * @return array
      */
-    public function getTable(Device $device, array $deviceData, $entry): array
+    public function getTable(Device $device, array $deviceData, int $entry): array
     {
         $table = [];
 

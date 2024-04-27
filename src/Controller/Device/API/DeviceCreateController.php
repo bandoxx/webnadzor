@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DeviceCreateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): JsonResponse
     {
         $xmlName = $request->request->get('xmlName');
         $deviceName = $request->request->get('deviceName');

@@ -10,7 +10,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInterface
 {
-    public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null)
+    public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -18,7 +18,7 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
         $this->saveXLSX($xlsx, $fileName);
     }
 
-    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null)
+    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -29,7 +29,7 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
         $this->saveXLSX($xlsx, $path, $fileName);
     }
 
-    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null)
+    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -40,7 +40,7 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
         $this->saveXLSX($xlsx, $path, $fileName);
     }
 
-    private function generateBody(Device $device, array $deviceData, $entry, $subtitle): Spreadsheet
+    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): Spreadsheet
     {
         $deviceEntryData = $device->getEntryData($entry);
         $tUnit = $deviceEntryData['t_unit'];

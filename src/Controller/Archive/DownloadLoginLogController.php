@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/login-log/archive/{id}', name: 'api_login_log_archive_download')]
 class DownloadLoginLogController extends AbstractController
 {
-    public function __invoke($id, $archiveDirectory, LoginLogArchiveRepository $loginLogRepository): \Symfony\Component\HttpFoundation\BinaryFileResponse|BadRequestHttpException
+    public function __invoke(int $id, string $archiveDirectory, LoginLogArchiveRepository $loginLogRepository): \Symfony\Component\HttpFoundation\BinaryFileResponse|BadRequestHttpException
     {
         $archive = $loginLogRepository->find($id);
 

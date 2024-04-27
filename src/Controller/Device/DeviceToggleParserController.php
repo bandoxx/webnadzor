@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route(path: '/admin/{clientId}/device/{deviceId}/toggle-parser', name: 'app_device_toggledeviceparser', methods: 'GET')]
 class DeviceToggleParserController extends AbstractController
 {
-    public function __invoke($clientId, $deviceId, ClientRepository $clientRepository, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager): RedirectResponse
+    public function __invoke(int $clientId, int $deviceId, ClientRepository $clientRepository, DeviceRepository $deviceRepository, EntityManagerInterface $entityManager): RedirectResponse
     {
         $device = $deviceRepository->find($deviceId);
 

@@ -15,7 +15,7 @@ interface AlarmHandlerInterface
     public const SIGNAL_LEVEL = 'signal-level';
     public const SENSOR_ERROR = 'sensor-error';
 
-    public function validate(DeviceData $deviceData);
+    public function validate(DeviceData $deviceData): void;
 
 
 }

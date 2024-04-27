@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class IconEditController extends AbstractController
 {
 
-    public function __invoke($id, Request $request, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $id, Request $request, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): JsonResponse
     {
         /** @var DeviceIcon $icon */
         $icon = $deviceIconRepository->find($id);

@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ClientUpdateController extends AbstractController
 {
 
-    public function __invoke($clientId, Request $request, LogoUploader $logoUploader, ClientRepository $clientRepository, EntityManagerInterface $entityManager): RedirectResponse|\Symfony\Component\HttpFoundation\JsonResponse
+    public function __invoke(int $clientId, Request $request, LogoUploader $logoUploader, ClientRepository $clientRepository, EntityManagerInterface $entityManager): RedirectResponse|\Symfony\Component\HttpFoundation\JsonResponse
     {
         $client = $clientRepository->find($clientId);
         if (!$client) {

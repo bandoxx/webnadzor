@@ -22,7 +22,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
-    public function getFirstRecord($deviceId): ?DeviceData
+    public function getFirstRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.id = :id')
@@ -34,7 +34,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getLastRecord($deviceId): ?DeviceData
+    public function getLastRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.id = :id')
@@ -46,14 +46,14 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function removeDataForDevice($deviceId): void
+    public function removeDataForDevice(int $deviceId): void
     {
         $this->getEntityManager()->getConnection()->executeQuery(
             "DELETE FROM device_data WHERE device_id = $deviceId",
         )->free();
     }
 
-    public function getNumberOfRecords($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
+    public function getNumberOfRecords(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): int
     {
         $builder = $this->createQueryBuilder('dd');
         $builder->select('COUNT(dd.id) as count');
@@ -71,7 +71,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getDateDifferenceBetweenFirstAndLastRecord($deviceId)
+    public function getDateDifferenceBetweenFirstAndLastRecord(int $deviceId): int
     {
         return abs($this->createQueryBuilder('d')
             ->select('DATEDIFF(MIN(d.deviceDate), MAX(d.deviceDate))')
@@ -81,7 +81,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getChartData($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
+    public function getChartData(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): array
     {
         $numberOfRecords = $this->getNumberOfRecords($deviceId, $fromDate, $toDate);
 
@@ -145,7 +145,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findLastRecordForDeviceId($deviceId, $entry): ?DeviceData
+    public function findLastRecordForDeviceId(int $deviceId, int $entry): ?DeviceData
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :device_id')
@@ -158,7 +158,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findByDeviceAndForDay(Device $device, \DateTime $dateTime)
+    public function findByDeviceAndForDay(Device $device, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->setTime(0, 0);
         $end = (clone ($dateTime))->setTime(23, 59);
@@ -175,7 +175,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findByDeviceAndBetweenDates(Device $device, \DateTime $fromDate, \DateTime $toDate)
+    public function findByDeviceAndBetweenDates(Device $device, \DateTime $fromDate, \DateTime $toDate): array
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :device_id')
@@ -189,7 +189,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findByDeviceAndForMonth(Device $device, \DateTime $dateTime)
+    public function findByDeviceAndForMonth(Device $device, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->modify('first day of this month')->setTime(0, 0);
         $end = (clone ($dateTime))->modify('last day of this month')->setTime(23, 59);

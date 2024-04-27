@@ -14,25 +14,17 @@ class DeviceUpdater
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DeviceRepository $deviceRepository,
-        private Security $security,
-        private DeviceIconRepository $deviceIconRepository,
-        private array $image = [],
-        private array $error = []
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DeviceRepository       $deviceRepository,
+        private readonly DeviceIconRepository   $deviceIconRepository,
+        private readonly array                  $image = [],
+        private array                           $error = []
     )
     {
     }
 
-    public function update(Device $device, array $data)
+    public function update(Device $device, array $data): Device
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-
-        if ($user->getPermission() <= 3) {
-            return false;
-        }
-
         ####### DEVICE NAME
         $deviceName = trim($data['device_name']);
         if ($this->length($deviceName, 40)) {
@@ -197,7 +189,7 @@ class DeviceUpdater
         return $device;
     }
 
-    private function setImage(Device $device, $entry, $field, $imageId): Device
+    private function setImage(Device $device, int $entry, string $field, int $imageId): Device
     {
         if (empty($imageId)) {
             $device->setEntryData($entry, $field, null);
@@ -212,10 +204,10 @@ class DeviceUpdater
         return $device;
     }
 
-    private function length($string, $max = 1, $min = 1): bool
+    private function length(string $string, int $max = 1, int $min = 1): bool
     {
-        $string = strlen(utf8_decode($string));
+        $length = strlen(utf8_decode($string));
 
-        return $string >= (int)@$min && $string <= (int)@$max;
+        return $length >= $min && $length <= $max;
     }
 }

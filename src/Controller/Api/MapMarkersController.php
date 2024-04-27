@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/api/map/markers/{clientId}', name: 'api_map_markers')]
 class MapMarkersController extends AbstractController
 {
-    public function __invoke($clientId, ClientRepository $clientRepository, UserAccess $userAccess): JsonResponse
+    public function __invoke(int $clientId, ClientRepository $clientRepository, UserAccess $userAccess): JsonResponse
     {
         $user = $this->getUser();
         $client = $user->getClient();

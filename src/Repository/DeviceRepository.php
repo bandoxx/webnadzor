@@ -22,21 +22,12 @@ class DeviceRepository extends ServiceEntityRepository
         parent::__construct($registry, Device::class);
     }
 
-    public function binaryFindOneByName(string $xmlName)
+    public function binaryFindOneByName(string $xmlName): ?Device
     {
         return $this->createQueryBuilder('d')
             ->where('BINARY(d.xmlName) = :xmlName')->setParameter('xmlName', $xmlName)
             ->getQuery()
             ->getOneOrNullResult()
-        ;
-    }
-
-    public function binaryFindByName(string $xmlName)
-    {
-        return $this->createQueryBuilder('d')
-            ->where('BINARY(d.xmlName) = :xmlName')->setParameter('xmlName', $xmlName)
-            ->getQuery()
-            ->getResult()
         ;
     }
 
@@ -47,40 +38,20 @@ class DeviceRepository extends ServiceEntityRepository
         )->free();
     }
 
-    public function findDevicesByClient($clientId)
+    public function findDevicesByClient(int $clientId): array
     {
         return $this->findBy(['client' => $clientId]);
     }
 
-    public function doesMoreThenOneXmlNameExists(string $xmlName)
+    public function doesMoreThenOneXmlNameExists(string $xmlName): int
     {
-        $devices = $this->findBy(['xmlName' => $xmlName]);
+        $numberOfDevicesWithName = $this->createQueryBuilder('d')
+            ->select('COUNT(d)')
+            ->where('d.xmlName = :name')->setParameter('name', $xmlName)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
 
-        return count($devices) > 1; // more than one, because if xml is not changed, current one has already that name
+        return $numberOfDevicesWithName > 1;
     }
-
-//    /**
-//     * @return DeviceConfig[] Returns an array of DeviceConfig objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('d.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?DeviceConfig
-//    {
-//        return $this->createQueryBuilder('d')
-//            ->andWhere('d.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }

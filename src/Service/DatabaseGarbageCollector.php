@@ -10,9 +10,9 @@ class DatabaseGarbageCollector
 {
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private LoginLogRepository $loginLogRepository,
-        private DeviceAlarmRepository $deviceAlarmRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoginLogRepository     $loginLogRepository,
+        private readonly DeviceAlarmRepository $deviceAlarmRepository
     )
     {}
 
@@ -36,7 +36,7 @@ class DatabaseGarbageCollector
         $this->remove($records);
     }
 
-    private function remove($records): void
+    private function remove(array $records): void
     {
         $bulk = 500;
         $i = 0;

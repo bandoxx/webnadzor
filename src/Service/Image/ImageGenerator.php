@@ -11,12 +11,15 @@ class ImageGenerator
     private string $publicDir;
     private array $data = [];
 
-    public function __construct(private DeviceDataRepository $deviceDataRepository, private KernelInterface $kernel)
+    public function __construct(
+        private readonly DeviceDataRepository $deviceDataRepository,
+        private readonly KernelInterface      $kernel
+    )
     {
         $this->publicDir = $this->kernel->getProjectDir() . '/public';
     }
 
-    public function generateTermometer($deviceId, $entry): void
+    public function generateThermometer(int $deviceId, int $entry): void
     {
         $data = $this->getDeviceData($deviceId, $entry);
 
@@ -47,7 +50,7 @@ class ImageGenerator
         ImageDestroy($im);
     }
 
-    public function generateRelativyHumidity($deviceId, $entry)
+    public function generateRelativyHumidity(int $deviceId, int $entry): void
     {
         $data = $this->getDeviceData($deviceId, $entry);
 
@@ -119,7 +122,7 @@ class ImageGenerator
         ImageDestroy($im);
     }
 
-    private function getDeviceData($deviceId, $entry)
+    private function getDeviceData(int $deviceId, int $entry)
     {
         $key = sprintf("%s-%s", $deviceId, $entry);
 

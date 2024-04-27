@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class UsersGetController extends AbstractController
 {
 
-    public function __invoke($clientId, UserRepository $userRepository, DeviceLocationHandler $deviceLocationHandler): Response
+    public function __invoke(int $clientId, UserRepository $userRepository, DeviceLocationHandler $deviceLocationHandler): Response
     {
         $users = $userRepository->findUsersByClientAndSuperAdmin($clientId);
 
