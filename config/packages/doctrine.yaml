@@ -25,6 +25,7 @@ doctrine:
                 DAY: DoctrineExtensions\Query\Mysql\Day
                 DATE: DoctrineExtensions\Query\Mysql\Date
                 BINARY: DoctrineExtensions\Query\Mysql\Binary
+                DATEDIFF: DoctrineExtensions\Query\Mysql\DateDiff
 when@test:
     doctrine:
         dbal:

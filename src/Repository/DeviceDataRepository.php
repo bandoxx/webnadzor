@@ -71,6 +71,16 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    public function getDateDifferenceBetweenFirstAndLastRecord($deviceId)
+    {
+        return abs($this->createQueryBuilder('d')
+            ->select('DATEDIFF(MIN(d.deviceDate), MAX(d.deviceDate))')
+            ->where('d.device = :device')->setParameter('device', $deviceId)
+            ->getQuery()
+            ->getSingleScalarResult())
+        ;
+    }
+
     public function getChartData($deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null)
     {
         $numberOfRecords = $this->getNumberOfRecords($deviceId, $fromDate, $toDate);
@@ -81,8 +91,6 @@ class DeviceDataRepository extends ServiceEntityRepository
             ->setParameter('device_id', $deviceId)
         ;
 
-        $daysDiff = 0;
-
         if ($fromDate && $toDate) {
             $builder->andWhere('dd.deviceDate >= :from_date')
                 ->andWhere('dd.deviceDate <= :to_date')
@@ -91,12 +99,14 @@ class DeviceDataRepository extends ServiceEntityRepository
             ;
 
             $daysDiff = $toDate->diff($fromDate)->format("%a");
+        } else {
+            $daysDiff = $this->getDateDifferenceBetweenFirstAndLastRecord($deviceId);
         }
 
-        if ($numberOfRecords > 288) {
-            if ($daysDiff < 15 && $daysDiff !== 0) {
+        if ($numberOfRecords > 288 && $daysDiff > 2) {
+            if ($daysDiff < 15) {
                 $builder->groupBy('date', 'hour');
-            } elseif ($daysDiff < 365 && $daysDiff !== 0) {
+            } elseif ($daysDiff < 365 * 2) {
                 $builder->groupBy('date');
             } else {
                 $builder->groupBy('year', 'week');
