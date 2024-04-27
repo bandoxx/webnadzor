@@ -40,7 +40,7 @@ class MapMarkersController extends AbstractController
             }
 
             if ($counter[$locationHash] > 1) {
-                $markers['places'][$locationHash]['name'] = sprintf("%s uredjaja", $counter[$locationHash]);
+                $markers['places'][$locationHash]['name'] = sprintf("%s uređaja", $counter[$locationHash]);
             }
         }
 
