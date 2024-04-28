@@ -46,6 +46,7 @@
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
         $('#table').dataTable({
           pageLength: 25,
+          order: [[0, 'desc']],
           language: {
             search: "Pretraga",
             loading: "Ucitavanje...",
@@ -55,27 +56,6 @@
             infoEmpty: '',
             infoFiltered: '(filtrirano od _MAX_ rezultata)',
           },
-          columns: [
-            {
-              data: 'id',
-              orderable: false
-            }, {
-              data: 'date',
-              orderable: false
-            }, {
-              data: 'note',
-              orderable: false
-            }, {
-              data: 'temp',
-              orderable: false
-            }, {
-              data: 'max',
-              orderable: false
-            }, {
-              data: 'min',
-              orderable: false
-            }
-          ],
           columnDefs: [
             { className: 'dt-center', targets: '_all' }
           ],
@@ -109,7 +89,6 @@
                 <table id="table" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
                     <thead>
                         <tr>
-                            <th>BR.</th>
                             <th>DATUM</th>
                             <th>DATUM PRESTANKA</th>
                             <th>AKTIVAN</th>
@@ -120,9 +99,8 @@
                     <tbody>
                     {% for alarm in alarms %}
                         <tr>
-                            <td></td>
-                            <td>{{ alarm.date|date('d.m.Y H:i:s') }}</td>
-                            <td>{% if alarm.end_date is not null %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% endif %}</td>
+                            <td data-sort="{{ alarm.date|date('U') }}">{{ alarm.date|date('d.m.Y H:i:s') }}</td>
+                            <td data-sort="{{ alarm.end_date|date('U') }}">{% if alarm.end_date is not null %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% endif %}</td>
                             <td>
                                  {% if alarm.active %}
                                      <span class="red">Da</span>

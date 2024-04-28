@@ -26,7 +26,7 @@ class UserAccess
         // TODO: Ako user nema attachovanog klijenta
 
         if ($user->getPermission() > 2) {
-            $devices = $this->deviceRepository->findDevicesByClient($client);
+            $devices = $this->deviceRepository->findDevicesByClient($client->getId());
         } else {
             $accesses = $this->deviceAccessRepository->findAccessibleEntries($user);
             $devices = [];
