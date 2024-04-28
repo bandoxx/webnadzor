@@ -37,7 +37,7 @@ class MigrateDatabases extends Command
     {
         $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
-        $databases = ['arnika_app', 'atlantictskoplje_app', 'cedevita_app', 'chevap_app', 'dcosijek_app', 'dcrijeka_app', 'dcsplit_app', 'drogakolinska_app', 'ecodies_app', 'ekovent_app', 'ekovent_app2', 'farmacia_webapp', 'hipp_app', 'inteltehwnadzo_app', 'kbcsm_app', 'korcula_app', 'ldcvukovina_app', 'ljekarnacakovec_app', 'ljekarnerajic_app', 'ljekarnesibalic_app', 'medilabone_app', 'montana_app', 'primapharme_app', 'stark_app', 'vikdental_app'];
+        $databases = ['arnika_app', 'atlantictskoplje_app', 'cedevita_app', 'chevap_app', 'dcosijek_app', 'dcrijeka_app', 'dcsplit_app', 'drogakolinska_app', 'ekovent_app', 'ekovent_app2', 'farmacia_webapp', 'hipp_app', 'inteltehwnadzo_app', 'kbcsm_app', 'korcula_app', 'ldcvukovina_app', 'ljekarnacakovec_app', 'ljekarnerajic_app', 'ljekarnesibalic_app', 'medilabone_app', 'montana_app', 'primapharme_app', 'stark_app', 'vikdental_app'];
         $username = $this->parameterBag->get('database_username');
         $password = $this->parameterBag->get('database_password');
 

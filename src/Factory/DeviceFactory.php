@@ -8,10 +8,10 @@ use App\Entity\Device;
 class DeviceFactory
 {
 
-    public function create(Client $client, string $deviceName, string $xmlName): Device
+    public function create(Client $client, string $xmlName): Device
     {
         $device = new Device();
-        $device->setName($deviceName)
+        $device
             ->setClient($client)
             ->setXmlName($xmlName)
         ;
