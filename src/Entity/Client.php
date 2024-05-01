@@ -61,6 +61,12 @@ class Client
     #[ORM\Column]
     private int $devicePageView = self::OVERVIEW_MAP;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $address = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $OIB = null;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -332,5 +338,48 @@ class Client
         $this->devicePageView = $devicePageView;
 
         return $this;
+    }
+
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(?string $address): static
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getOIB(): ?string
+    {
+        return $this->OIB;
+    }
+
+    public function setOIB(?string $OIB): static
+    {
+        $this->OIB = $OIB;
+
+        return $this;
+    }
+
+    public function getHeader(): string
+    {
+        $parts = [];
+
+        if ($this->getName()) {
+            $parts[] = $this->getName();
+        }
+
+        if ($this->getAddress()) {
+            $parts[] = $this->getAddress();
+        }
+
+        if ($this->getOIB()) {
+            $parts[] = sprintf("OIB: %s", $this->getOIB());
+        }
+
+        return implode(', ', $parts);
     }
 }

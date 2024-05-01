@@ -36,6 +36,8 @@ class ClientUpdateController extends AbstractController
 
         $client->setOverviewViews($request->request->getInt('overview_view'));
         $client->setName($request->request->get('name'));
+        $client->setAddress($request->request->get('address'));
+        $client->setOIB($request->request->get('oib'));
 
         $entityManager->flush();
 

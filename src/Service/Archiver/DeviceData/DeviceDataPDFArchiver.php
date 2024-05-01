@@ -50,7 +50,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
 
         // set default header data
         $headerData = $subtitle . "\n";
-        $headerData .= $client?->getName();
+        $headerData .= $client->getHeader();
 
         $logo = $client?->getPdfLogo();
         $pdf->SetHeaderData($logo ? "../../../../../public/assets/images/logo/$logo" : '', 30, sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name']), $headerData);

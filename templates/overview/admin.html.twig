@@ -56,7 +56,7 @@
           $("#map_marker_icon_div").hide();
         }
 
-        $('#edit-form').attr('title', 'Menjanje podesavanja za klijenta');
+        $('#edit-form').attr('title', 'Postavke klijenta');
 
         $('#edit-form').dialog({
           autoOpen: true,
@@ -162,8 +162,14 @@
     <div id="edit-form" title="" style="display:none;">
         <form id="editform" class="form" action="#" method="POST" enctype="multipart/form-data">
             <fieldset>
-                <label for="client_name" style="display:block; margin-top:12px;">Naziv klijenta</label>
-                <input type="text" name="name" id="client_name" class="input validate[required,maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                <label for="client_name" style="display:block; margin-top:12px;">Naziv</label>
+                <input type="text" name="name" id="client_name" placeholder="Intelteh d.o.o" class="input validate[required,maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="client_address" style="display:block; margin-top:12px;">Adresa</label>
+                <input type="text" name="address" id="client_address" placeholder="Božidara Magovca 87, Zagreb" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="client_oib" style="display:block; margin-top:12px;">OIB</label>
+                <input type="text" name="oib" id="client_oib" placeholder="80595701131" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
 
                 <label for="main_logo" style="display:block; margin-top:12px;">Logo za website</label>
                 <input id="main_logo" type="file" name="main_logo">

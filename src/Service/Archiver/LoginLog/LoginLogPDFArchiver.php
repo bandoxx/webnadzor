@@ -28,6 +28,7 @@ class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
 
         // set default header data
         $headerData = $subtitle . "\n";
+        $headerData .= $client->getHeader();
 
         $logo = $client->getPdfLogo();
         $pdf->SetHeaderData($logo ? "../../../../../public/assets/images/$logo" : 'Arhiva logovanja korisnika', 30, null, $headerData);

@@ -5,7 +5,7 @@
         {% endif %}
 
         {% if app.user.permission >= 3 %}
-            <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_square">Mjerni uređaji</a></li>
+            <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_monitor">Mjerni uređaji</a></li>
             <li><a href="{{ path('app_icon_index', {clientId: clientId}) }}" class="icon_pictures">Uredi ikone</a></li>
             <li><a href="{{ path('app_clientftp_read', {clientId: clientId}) }}" class="icon_bookmark">FTP podaci</a></li>
             <li><a href="{{ path('app_user_getusers', {clientId: clientId}) }}" class="icon_users">Korisnici</a></li>
