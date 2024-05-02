@@ -76,6 +76,7 @@
 {% block navigation %}
     <li><a href="{{ path('api_device_alarm_archive_download', {id: device.id, type: 'xlsx'}) }}" target="_blank" id="xls" class="icon_xls">Preuzmi excel</a></li>
     <li><a href="{{ path('api_device_alarm_archive_download', {id: device.id, type: 'pdf'}) }}" target="_blank" id="pdf" class="icon_pdf">Preuzmi PDF</a></li>
+    <li><a href="{{ app.request.headers.get('referer') ?? path('app_device_entry_show', {clientId: clientId, id: device.id, entry: entry}) }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
