@@ -70,7 +70,7 @@ class OverviewController extends AbstractController
 
                     foreach ($activeAlarm as $alarm) {
                         $data[$client->getId()]['alarms'][] =
-                            sprintf("%s - Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
+                            sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
                                 $device->getName(),
                                 $alarm->getLocation(),
                                 $alarm->getType(),
@@ -84,7 +84,7 @@ class OverviewController extends AbstractController
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
             $data[$clientId]['alarmsOn'] = $activeAlarms;
-            $data[$clientId]['alarms'] = implode("\n", $data[$clientId]['alarms']);
+            $data[$clientId]['alarms'] = implode("<br>", $data[$clientId]['alarms']);
         }
 
         return $this->render('overview/admin.html.twig', [

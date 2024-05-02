@@ -153,6 +153,21 @@
           ],
         }); /* DATA TABLES */
 
+        function format(text) {
+          text = text.replace(/&lt;/g,"<");
+          text = text.replace(/&gt;/g,">");
+
+          let parts = text.split('<br>');
+
+          let returnText = '<ul>';
+          parts.forEach(function (element) {
+            returnText += '<li>' + element + '</li>';
+          });
+
+          returnText += '</ul>';
+          return (returnText);
+        }
+
         $('#table tbody').on('click', 'td.dt-control', function () {
           var tr = $(this).closest('tr');
           var row = dataTable.row(tr);
@@ -164,7 +179,7 @@
             let text = 'Nema aktivnih alarma';
 
             if (row.data()[7]) {
-              text = row.data()[7];
+              text = format(row.data()[7]);
             }
 
             row.child(text).show();
