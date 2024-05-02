@@ -34,6 +34,19 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         return $this->findBy(['device' => $device], ['deviceDate' => 'DESC']);
     }
 
+    /**
+     * @return DeviceAlarm[]
+     */
+    public function findActiveAlarms(Device $device): array
+    {
+        return $this->createQueryBuilder('a')
+            ->where('a.device = :device AND a.endDeviceDate IS NULL')
+            ->setParameter('device', $device)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function findActiveAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
     {
         $builder = $this->createQueryBuilder('a');

@@ -42,7 +42,8 @@ class OverviewController extends AbstractController
                 'overview' => $client->getOverviewViews(),
                 'pdfLogo' => $client->getPdfLogo(),
                 'mainLogo' => $client->getMainLogo(),
-                'mapIcon' => $client->getMapMarkerIcon()
+                'mapIcon' => $client->getMapMarkerIcon(),
+                'alarms' => []
             ];
 
             $totalDevices = count($devices);
@@ -60,13 +61,30 @@ class OverviewController extends AbstractController
                     $onlineDevices++;
                 }
 
-                $activeAlarms += $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+                $alarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+
+                $activeAlarms += $alarms;
+
+                if ($alarms) {
+                    $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
+
+                    foreach ($activeAlarm as $alarm) {
+                        $data[$client->getId()]['alarms'][] =
+                            sprintf("%s - Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
+                                $device->getName(),
+                                $alarm->getLocation(),
+                                $alarm->getType(),
+                                $alarm->getDeviceDate()->format('d.m.Y H:i:s')
+                            );
+                    }
+                }
             }
 
             $data[$clientId]['numberOfDevices'] = $totalDevices;
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
             $data[$clientId]['alarmsOn'] = $activeAlarms;
+            $data[$clientId]['alarms'] = implode("\n", $data[$clientId]['alarms']);
         }
 
         return $this->render('overview/admin.html.twig', [

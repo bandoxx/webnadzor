@@ -133,7 +133,7 @@
 
         table.wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
         $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
-        table.dataTable({
+        var dataTable = table.DataTable({
           pageLength: 25,
           order: [[4, 'desc'], [1, 'desc']],
           language: {
@@ -146,10 +146,30 @@
             infoFiltered: '(filtrirano od _MAX_ rezultata)',
           },
           columnDefs: [
-            { orderable: false, targets: 5 },
+            { className: 'dt-control', targets: 0},
+            { orderable: false, targets: 6 },
+            { visible: false, targets: 7 },
             { className: 'dt-center', targets: '_all' }
           ],
         }); /* DATA TABLES */
+
+        $('#table tbody').on('click', 'td.dt-control', function () {
+          var tr = $(this).closest('tr');
+          var row = dataTable.row(tr);
+
+          if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+          } else {
+            let text = 'Nema aktivnih alarma';
+
+            if (row.data()[7]) {
+              text = row.data()[7];
+            }
+
+            row.child(text).show();
+          }
+        });
     });
     </script>
 {% endblock %}
@@ -213,18 +233,21 @@
                     <table id="table" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
                         <thead>
                         <tr role="row">
+                            <th></th>
                             <th>Klijent</th>
                             <th>Broj uređaja</th>
                             <th>Online uređaja</th>
                             <th>Offline uređaja</th>
                             <th>Broj aktivnih alarma</th>
                             <th>Opcije</th>
+                            <th>Sakriveno</th>
                         </tr>
                         </thead>
 
                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                         {% for client in clients %}
                             <tr>
+                                <td></td>
                                 <td class=" sorting_1">{{ client.name }}</td>
                                 <td class="">{{ client.numberOfDevices }}</td>
                                 <td class="">{{ client.onlineDevices }}</td>
@@ -257,7 +280,7 @@
                                         <a href="#" class="action edit"><span>Uredi</span></a>
                                     </div>
                                 </td>
-
+                                <td>{{ client.alarms }}</td>
                             </tr>
                         {% endfor %}
                         </tbody>
