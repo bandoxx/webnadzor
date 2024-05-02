@@ -33,6 +33,8 @@ class OverviewController extends AbstractController
             $data[$client->getId()] = [
                 'id' => $clientId,
                 'name' => $client->getName(),
+                'address' => $client->getAddress(),
+                'oib' => $client->getOIB(),
                 'numberOfDevices' => 0,
                 'onlineDevices' => 0,
                 'offlineDevices' => 0,

@@ -42,6 +42,8 @@
         let selector = $("#" + client_id);
 
         $('#client_name').val(selector.data('name'));
+        $('#client_address').val(selector.data('address'));
+        $('#client_oib').val(selector.data('oib'));
         $('#main_logo').val(selector.data('pdfLogo'));
         $('#pdf_logo').val(selector.data('mainLogo'));
         $('#map_marker_icon').val(selector.data('mapIcon'));
@@ -244,6 +246,8 @@
                                     <div id="{{ client.id }}" class="actionbar"
                                          data-id="{{ client.id }}"
                                          data-name="{{ client.name }}"
+                                         data-address="{{ client.address }}"
+                                         data-oib="{{ client.oib }}"
                                          data-pdfLogo="{{ client.pdfLogo }}"
                                          data-mainLogo="{{ client.mainLogo }}"
                                          data-mapIcon="{{ client.mapIcon }}"
