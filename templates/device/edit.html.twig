@@ -2,13 +2,16 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="">
-    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css"
+          integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
+          crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js"
+            integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q=="
+            crossorigin=""></script>
     <link rel="stylesheet" href="{{ asset('assets/css/leaflet-locationpicker.css') }}">
     <script type="text/javascript" src="{{ asset('assets/js/leaflet-locationpicker.js') }}"></script>
     <script>
-      $(document).ready(function() {
-
+      $(document).ready(function () {
         $('.toggle').click(function () { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
           $(this).parent().parent().children('.block_cont').slideToggle(300);
@@ -33,7 +36,7 @@
         $('#location').leafletLocationPicker();
 
         $('#settingsform').validationEngine('attach', {
-          onValidationComplete: function(form, status){
+          onValidationComplete: function (form, status) {
             var form_data = $('#settingsform').serialize();
             if (status === true) {
 
@@ -41,19 +44,19 @@
               var ok = 'Promjene spremljene!';
               var error = 'Greška! Pokušajte ponovo.';
 
-              $('#infomsg').hide().html(loading).fadeIn(1000, function() {
+              $('#infomsg').hide().html(loading).fadeIn(1000, function () {
                 $.post("{{ path('app_device_edit', {clientId, clientId, id: device.id}) }}", form_data,
-                  function(data, s, r) {
+                  function (data, s, r) {
                     if (r.getResponseHeader('Requires-Auth') == 1) {
                       $(location).attr('href', "{{ path('client_overview', {clientId: clientId}) }}");
                       return false;
                     }
 
                     if (r.status == 202) {
-                      $('#infomsg').fadeOut(1000).hide(0, function() {
-                        $(this).html(ok).fadeIn(1000, function() {
-                          setTimeout(function() {
-                            $('#infomsg').fadeOut(1000, function() {
+                      $('#infomsg').fadeOut(1000).hide(0, function () {
+                        $(this).html(ok).fadeIn(1000, function () {
+                          setTimeout(function () {
+                            $('#infomsg').fadeOut(1000, function () {
                               $(this).hide();
                             });
                           }, 4000);
@@ -61,10 +64,10 @@
                       });
                     } else {
                       console.log('response data: ' + data);
-                      $('#infomsg').fadeOut(1000).hide(0, function() {
-                        $(this).html(error).fadeIn(1000, function() {
-                          setTimeout(function() {
-                            $('#infomsg').fadeOut(1000, function() {
+                      $('#infomsg').fadeOut(1000).hide(0, function () {
+                        $(this).html(error).fadeIn(1000, function () {
+                          setTimeout(function () {
+                            $('#infomsg').fadeOut(1000, function () {
                               $(this).hide();
                             });
                           }, 4000);
@@ -80,6 +83,37 @@
         $('#apply').click(function () {
           $('#settingsform').submit();
         });
+
+        let elements = ['t1', 't2', 'rh1', 'rh2', 'd1', 'd2'];
+
+        elements.forEach(function (element) {
+          let name = $("#" + element + "_name");
+          let input = $("#" + element + "_input");
+
+          if ($('#' + element + "_use").attr('checked') === 'checked') {
+            $(input).show();
+            name.addClass('validate[required,maxSize[16]]');
+          } else {
+            $(input).hide();
+            name.removeClass('validate[required,maxSize[16]]');
+          }
+        });
+
+        elements.forEach(function (element) {
+          $("#" + element + "_use").click(function () {
+            let name = $("#" + element + "_name");
+            let input = $("#" + element + "_input");
+
+            if ($('#' + this.id).attr('checked') === 'checked') {
+              $(input).show();
+              name.addClass('validate[required,maxSize[16]]');
+            } else {
+              $(input).hide();
+              name.removeClass('validate[required,maxSize[16]]');
+            }
+          });
+        });
+
       });
     </script>
 {% endblock %}
@@ -88,9 +122,11 @@
         <li><a href="#" id="apply" class="icon_check">Spremi promjene</a></li>
         {% if app.user.permission > 3 %}
             {% if device.parserActive %}
-                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}" class="icon_minus">Isključi parser</a></li>
+                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}"
+                       class="icon_minus">Isključi parser</a></li>
             {% else %}
-                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}" class="icon_plus">Uključi parser</a></li>
+                <li><a href="{{ path('app_device_toggledeviceparser', {clientId: clientId, deviceId: device.id}) }}"
+                       class="icon_plus">Uključi parser</a></li>
             {% endif %}
         {% endif %}
         <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
@@ -98,212 +134,326 @@
 {% endblock %}
 
 {% block userbar %}
-<div id="infoarea"><!-- Infoarea Begin -->
-    <div id="infomsg" style="display:none;"></div>
-</div><!-- Infoarea End -->
+    <div id="infoarea"><!-- Infoarea Begin -->
+        <div id="infomsg" style="display:none;"></div>
+    </div><!-- Infoarea End -->
 {% endblock %}
 
 {% block content %}
-    <form id="settingsform" class="form" action="{{ path('app_device_edit', {clientId: clientId, id: device.id }) }}" method="POST">
-        <div id="main" class="container_12"><!-- Body Wrapper Begin -->
-            <div id="body">
-                <div class="block big"><!-- Block Begin -->
-                    <div class="titlebar">
-                        <h3>Osnovne postavke</h3>
-                        <a href="#" class="toggle">&nbsp;</a>
-                    </div>
-                    <div class="block_cont">
-                        <div class="grid_4 alpha">
-                            <div class="form_row">
-                                <label>Naziv lokacije</label>
-                                <input value="{{ device.name }}" class="input validate[required,maxSize[40]] tipRight" type="text" style="width: 290px;" name="device_name" id="device_name" placeholder="Unesite naziv lokacije" original-title="Naziv lokacije, maksimalno 40 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Naziv XML datoteke</label>
-                                <input value="{{ device.xmlName }}" class="input validate[required,maxSize[18]] tipRight" type="text" style="width: 290px;" name="xml_name" id="xml_name" placeholder="Unesite XML naziv" original-title="XML naziv, maksimalno 18 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Google mapa - lokacija</label>
-                                <input value="{{ device.latitude }},{{ device.longitude }}" class="input" type="text" style="width: 220px;" name="location" id="location" placeholder="Unesite koordinate" original-title="Koordinate" />
-                            </div>
+    <div id="body">
+        <form id="settingsform" class="form"
+              action="{{ path('app_device_edit', {clientId: clientId, id: device.id }) }}" method="POST">
+            <div class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Osnovne postavke</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont">
+                    <div class="grid_4 alpha">
+                        <div class="form_row">
+                            <label>Naziv lokacije</label>
+                            <input value="{{ device.name }}" class="input validate[required,maxSize[40]] tipRight"
+                                   type="text" style="width: 290px;" name="device_name" id="device_name"
+                                   placeholder="Unesite naziv lokacije"
+                                   original-title="Naziv lokacije, maksimalno 40 znakova"/>
                         </div>
-                        <div class="grid_4 push_1 omega">
-                            <div class="form_row">
-                                <label>Lokacija senzora 1</label>
-                                <input value="{{ device.entry1.t_location }}" class="input validate[required,maxSize[20]] tipRight" type="text" style="width: 290px;" name="t1_location" id="t1_location" placeholder="Unesite lokaciju senzora 1" original-title="Lokacija senzor 1, maksimalno 16 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Lokacija senzora 2</label>
-                                <input value="{{ device.entry2.t_location }}" class="input validate[required,maxSize[20]] tipRight" type="text" style="width: 290px;" name="t2_location" id="t2_location" placeholder="Unesite lokaciju senzora 2" original-title="Lokacija senzor 2, maksimalno 16 znakova" />
-                            </div>
+                        <div class="form_row">
+                            <label>Naziv XML datoteke</label>
+                            <input value="{{ device.xmlName }}" class="input validate[required,maxSize[18]] tipRight"
+                                   type="text" style="width: 290px;" name="xml_name" id="xml_name"
+                                   placeholder="Unesite XML naziv" original-title="XML naziv, maksimalno 18 znakova"/>
                         </div>
-                        <div class="clear"></div>
+                        <div class="form_row">
+                            <label>Google mapa - lokacija</label>
+                            <input value="{{ device.latitude }},{{ device.longitude }}" class="input" type="text"
+                                   style="width: 220px;" name="location" id="location" placeholder="Unesite koordinate"
+                                   original-title="Koordinate"/>
+                        </div>
                     </div>
-                </div><!-- Block End -->
-                <div class="block big"><!-- Block Begin -->
-                    <div class="titlebar">
-                        <h3>Postavke senzora temperature</h3>
-                        <a href="#" class="toggle">&nbsp;</a>
+                    <div class="grid_4 push_1 omega">
+                        <div class="form_row">
+                            <label>Lokacija senzora 1</label>
+                            <input value="{{ device.entry1.t_location }}"
+                                   class="input validate[required,maxSize[20]] tipRight" type="text"
+                                   style="width: 290px;" name="t1_location" id="t1_location"
+                                   placeholder="Unesite lokaciju senzora 1"
+                                   original-title="Lokacija senzor 1, maksimalno 16 znakova"/>
+                        </div>
+                        <div class="form_row">
+                            <label>Lokacija senzora 2</label>
+                            <input value="{{ device.entry2.t_location }}"
+                                   class="input validate[required,maxSize[20]] tipRight" type="text"
+                                   style="width: 290px;" name="t2_location" id="t2_location"
+                                   placeholder="Unesite lokaciju senzora 2"
+                                   original-title="Lokacija senzor 2, maksimalno 16 znakova"/>
+                        </div>
                     </div>
-                    <div class="block_cont">
-                        <div class="grid_4 alpha">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="t1_use" name="t1_use" value="1" {% if device.entry1.t_use %} checked="checked"{% endif %}><label for="t1_use">Koristi ulaz &quot;Temperatura 1&quot;</label>
-                                <input type="checkbox" id="t1_show_chart" name="t1_show_chart" value="1" {% if device.entry1.t_show_chart %} checked="checked"{% endif %}><label for="t1_show_chart">Prikaži graf</label>
-                            </div>
+                    <div class="clear"></div>
+                </div>
+            </div><!-- Block End -->
+            <div class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Postavke senzora temperature</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont">
+                    <div class="grid_4 alpha">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="t1_use" name="t1_use"
+                                   value="1" {% if device.entry1.t_use %} checked="checked"{% endif %}><label
+                                    for="t1_use">Koristi ulaz &quot;Temperatura 1&quot;</label>
+                            <input type="checkbox" id="t1_show_chart" name="t1_show_chart"
+                                   value="1" {% if device.entry1.t_show_chart %} checked="checked"{% endif %}><label
+                                    for="t1_show_chart">Prikaži graf</label>
+                        </div>
+                        <div id="t1_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry1.t_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="t1_name" id="t1_name" placeholder="Unesite &quot;Temperatura 1&quot; naziv" original-title="Naziv za &quot;Temperatura 1&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry1.t_name }}" class="input tipRight" type="text"
+                                       style="width: 290px;" name="t1_name" id="t1_name"
+                                       placeholder="Unesite &quot;Temperatura 1&quot; naziv"
+                                       original-title="Naziv za &quot;Temperatura 1&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
                                 <select name="t1_image" class="select" style="width: 300px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry1.t_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry1.t_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry1.t_unit }}" class="input validate[optional,maxSize[8]] tipRight" type="text" style="width: 290px;" name="t1_unit" id="t1_unit" placeholder="Unesite mjernu jedinicu" original-title="Mjerna jedinica za ulaz &quot;Temperatura 1&quot; (°C, °F). Maksimalno 8 znakova." />
+                                <input value="{{ device.entry1.t_unit }}"
+                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="t1_unit" id="t1_unit"
+                                       placeholder="Unesite mjernu jedinicu"
+                                       original-title="Mjerna jedinica za ulaz &quot;Temperatura 1&quot; (°C, °F). Maksimalno 8 znakova."/>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
-                                <input value="{{ device.entry1.t_min ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="t1_min" id="t1_min" placeholder="Unesite minimalnu vrijednost" original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry1.t_min ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="t1_min" id="t1_min"
+                                       placeholder="Unesite minimalnu vrijednost"
+                                       original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                             <div class="form_row">
                                 <label>Maksimalna vrijednost</label>
-                                <input value="{{ device.entry1.t_max ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="t1_max" id="t1_max" placeholder="Unesite maksimalnu vrijednost" original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry1.t_max ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="t1_max" id="t1_max"
+                                       placeholder="Unesite maksimalnu vrijednost"
+                                       original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                         </div>
-                        <div class="grid_4 push_1 omega">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="t2_use" name="t2_use" value="1"{% if device.entry2.t_use %} checked="checked"{% endif %}><label for="t2_use">Koristi ulaz &quot;Temperatura 2&quot;</label>
-                                <input type="checkbox" id="t2_show_chart" name="t2_show_chart" value="1"{% if device.entry2.t_show_chart %} checked="checked"{% endif %}><label for="t2_show_chart">Prikaži graf</label>
-                            </div>
+                    </div>
+                    <div class="grid_4 push_1 omega">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="t2_use" name="t2_use"
+                                   value="1"{% if device.entry2.t_use %} checked="checked"{% endif %}><label
+                                    for="t2_use">Koristi ulaz &quot;Temperatura 2&quot;</label>
+                            <input type="checkbox" id="t2_show_chart" name="t2_show_chart"
+                                   value="1"{% if device.entry2.t_show_chart %} checked="checked"{% endif %}><label
+                                    for="t2_show_chart">Prikaži graf</label>
+                        </div>
+                        <div id="t2_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry2.t_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="t2_name" id="t2_name" placeholder="Unesite &quot;Temperatura 2&quot; naziv" original-title="Naziv za &quot;Temperatura 2&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry2.t_name }}"
+                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       style="width: 290px;" name="t2_name" id="t2_name"
+                                       placeholder="Unesite &quot;Temperatura 2&quot; naziv"
+                                       original-title="Naziv za &quot;Temperatura 2&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
                                 <select name="t2_image" class="select" style="width: 300px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry2.t_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry2.t_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry2.t_unit }}" class="input validate[optional,maxSize[8]] tipRight" type="text" style="width: 290px;" name="t2_unit" id="t2_unit" placeholder="Unesite mjernu jedinicu" original-title="Mjerna jedinica za ulaz &quot;Temperatura 2&quot; (°C, °F). Maksimalno 8 znakova." />
+                                <input value="{{ device.entry2.t_unit }}"
+                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="t2_unit" id="t2_unit"
+                                       placeholder="Unesite mjernu jedinicu"
+                                       original-title="Mjerna jedinica za ulaz &quot;Temperatura 2&quot; (°C, °F). Maksimalno 8 znakova."/>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
-                                <input value="{{ device.entry2.t_min ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="t2_min" id="t2_min" placeholder="Unesite minimalnu vrijednost" original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry2.t_min ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="t2_min" id="t2_min"
+                                       placeholder="Unesite minimalnu vrijednost"
+                                       original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                             <div class="form_row">
                                 <label>Maksimalna vrijednost</label>
-                                <input value="{{ device.entry2.t_max ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="t2_max" id="t2_max" placeholder="Unesite maksimalnu vrijednost" original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry2.t_max ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="t2_max" id="t2_max"
+                                       placeholder="Unesite maksimalnu vrijednost"
+                                       original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                         </div>
-                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
 
-                    </div>
-                </div><!-- Block End -->
-                <div class="block big"><!-- Block Begin -->
-                    <div class="titlebar">
-                        <h3>Postavke senzora relativne vlažnosti</h3>
-                        <a href="#" class="toggle">&nbsp;</a>
-                    </div>
-                    <div class="block_cont">
-                        <div class="grid_4 alpha">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="rh1_use" name="rh1_use" value="1"{% if device.entry1.rh_use %} checked="checked"{% endif %}><label for="rh1_use">Koristi ulaz &quot;R. vlaga 1&quot;</label>
-                                <input type="checkbox" id="rh1_show_chart" name="rh1_show_chart" value="1"{% if device.entry1.rh_show_chart %} checked="checked"{% endif %}><label for="rh1_show_chart">Prikaži graf</label>
-                            </div>
+                </div>
+            </div><!-- Block End -->
+            <div class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Postavke senzora relativne vlažnosti</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont">
+                    <div class="grid_4 alpha">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="rh1_use" name="rh1_use"
+                                   value="1"{% if device.entry1.rh_use %} checked="checked"{% endif %}><label
+                                    for="rh1_use">Koristi ulaz &quot;R. vlaga 1&quot;</label>
+                            <input type="checkbox" id="rh1_show_chart" name="rh1_show_chart"
+                                   value="1"{% if device.entry1.rh_show_chart %} checked="checked"{% endif %}><label
+                                    for="rh1_show_chart">Prikaži graf</label>
+                        </div>
+                        <div id="rh1_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry1.rh_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="rh1_name" id="rh1_name" placeholder="Unesite &quot;R. vlaga 1&quot; naziv" original-title="Naziv za &quot;R. vlaga 1&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry1.rh_name }}"
+                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       style="width: 290px;" name="rh1_name" id="rh1_name"
+                                       placeholder="Unesite &quot;R. vlaga 1&quot; naziv"
+                                       original-title="Naziv za &quot;R. vlaga 1&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
                                 <select name="rh1_image" class="select" style="width: 300px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry1.rh_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry1.rh_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry1.rh_unit }}" class="input validate[optional,maxSize[8]] tipRight" type="text" style="width: 290px;" name="rh1_unit" id="rh1_unit" placeholder="Unesite mjernu jedinicu" original-title="Mjerna jedinica za ulaz &quot;R. vlaga 1&quot; (%). Maksimalno 8 znakova." />
+                                <input value="{{ device.entry1.rh_unit }}"
+                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="rh1_unit" id="rh1_unit"
+                                       placeholder="Unesite mjernu jedinicu"
+                                       original-title="Mjerna jedinica za ulaz &quot;R. vlaga 1&quot; (%). Maksimalno 8 znakova."/>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
-                                <input value="{{ device.entry1.rh_min ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="rh1_min" id="rh1_min" placeholder="Unesite minimalnu vrijednost" original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry1.rh_min ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="rh1_min" id="rh1_min"
+                                       placeholder="Unesite minimalnu vrijednost"
+                                       original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                             <div class="form_row">
                                 <label>Maksimalna vrijednost</label>
-                                <input value="{{ device.entry1.rh_max ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="rh1_max" id="rh1_max" placeholder="Unesite maksimalnu vrijednost" original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry1.rh_max ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="rh1_max" id="rh1_max"
+                                       placeholder="Unesite maksimalnu vrijednost"
+                                       original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                         </div>
-                        <div class="grid_4 push_1 omega">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="rh2_use" name="rh2_use" value="1"{% if device.entry2.rh_use %} checked="checked"{% endif %}><label for="rh2_use">Koristi ulaz &quot;R. vlaga 2&quot;</label>
-                                <input type="checkbox" id="rh2_show_chart" name="rh2_show_chart" value="1"{% if device.entry2.rh_show_chart %} checked="checked"{% endif %}><label for="rh2_show_chart">Prikaži graf</label>
-                            </div>
+                    </div>
+                    <div class="grid_4 push_1 omega">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="rh2_use" name="rh2_use"
+                                   value="1"{% if device.entry2.rh_use %} checked="checked"{% endif %}><label
+                                    for="rh2_use">Koristi ulaz &quot;R. vlaga 2&quot;</label>
+                            <input type="checkbox" id="rh2_show_chart" name="rh2_show_chart"
+                                   value="1"{% if device.entry2.rh_show_chart %} checked="checked"{% endif %}><label
+                                    for="rh2_show_chart">Prikaži graf</label>
+                        </div>
+                        <div id="rh2_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry2.rh_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="rh2_name" id="rh2_name" placeholder="Unesite &quot;R. vlaga 2&quot; naziv" original-title="Naziv za &quot;R. vlaga 2&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry2.rh_name }}"
+                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       style="width: 290px;" name="rh2_name" id="rh2_name"
+                                       placeholder="Unesite &quot;R. vlaga 2&quot; naziv"
+                                       original-title="Naziv za &quot;R. vlaga 2&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
                                 <select name="rh2_image" class="select" style="width: 300px;">
                                     <option value="0" selected="selected">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry1.rh_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry1.rh_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry2.rh_unit }}" class="input validate[optional,maxSize[8]] tipRight" type="text" style="width: 290px;" name="rh2_unit" id="rh2_unit" placeholder="Unesite mjernu jedinicu" original-title="Mjerna jedinica za ulaz &quot;R. vlaga 2&quot; (%). Maksimalno 8 znakova." />
+                                <input value="{{ device.entry2.rh_unit }}"
+                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="rh2_unit" id="rh2_unit"
+                                       placeholder="Unesite mjernu jedinicu"
+                                       original-title="Mjerna jedinica za ulaz &quot;R. vlaga 2&quot; (%). Maksimalno 8 znakova."/>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
-                                <input value="{{ device.entry2.rh_min ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="rh2_min" id="rh2_min" placeholder="Unesite minimalnu vrijednost" original-title="Minimalna vr. za ulaz &quot;Temperatura 2&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry2.rh_min ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="rh2_min" id="rh2_min"
+                                       placeholder="Unesite minimalnu vrijednost"
+                                       original-title="Minimalna vr. za ulaz &quot;Temperatura 2&quot; (-99.99 do 99.99)"/>
                             </div>
                             <div class="form_row">
                                 <label>Maksimalna vrijednost</label>
-                                <input value="{{ device.entry2.rh_max ?? ''}}" class="input validate[optional,custom[t_minmax]] tipRight" type="text" style="width: 290px;" name="rh2_max" id="rh2_max" placeholder="Unesite maksimalnu vrijednost" original-title="Maksimalna vr. za ulaz &quot;Temperatura 2&quot; (-99.99 do 99.99)" />
+                                <input value="{{ device.entry2.rh_max ?? '' }}"
+                                       class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                       style="width: 290px;" name="rh2_max" id="rh2_max"
+                                       placeholder="Unesite maksimalnu vrijednost"
+                                       original-title="Maksimalna vr. za ulaz &quot;Temperatura 2&quot; (-99.99 do 99.99)"/>
                             </div>
                         </div>
-                        <div class="clear"></div>
+                    </div>
+                    <div class="clear"></div>
 
-                    </div>
-                </div><!-- Block End -->
-                <div class="block big"><!-- Block Begin -->
-                    <div class="titlebar">
-                        <h3>Postavke digitalnih ulaza</h3>
-                        <a href="#" class="toggle">&nbsp;</a>
-                    </div>
-                    <div class="block_cont">
-                        <div class="grid_4 alpha">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="d1_use" name="d1_use" value="1"{% if device.entry1.d_use %} checked="checked"{% endif %}><label for="d1_use">Koristi ulaz &quot;D1&quot;</label>
-                            </div>
+                </div>
+            </div><!-- Block End -->
+            <div class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Postavke digitalnih ulaza</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont">
+                    <div class="grid_4 alpha">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="d1_use" name="d1_use"
+                                   value="1"{% if device.entry1.d_use %} checked="checked"{% endif %}><label
+                                    for="d1_use">Koristi ulaz &quot;D1&quot;</label>
+                        </div>
+                        <div id="d1_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry1.d_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="d1_name" id="d1_name" placeholder="Unesite &quot;D1&quot; naziv" original-title="Naziv za &quot;D1&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry1.d_name }}"
+                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       style="width: 290px;" name="d1_name" id="d1_name"
+                                       placeholder="Unesite &quot;D1&quot; naziv"
+                                       original-title="Naziv za &quot;D1&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
                                 <select name="d1_off_image" class="select" style="width: 300px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry1.d_off_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry1.d_off_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -312,34 +462,52 @@
                                 <select name="d1_on_image" class="select" style="width: 300px; display: none;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry1.d_on_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry1.d_on_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Naziv za vrijednost 0</label>
-                                <input value="{{ device.entry1.d_off_name }}" class="input validate[required,maxSize[8]] tipRight" type="text" style="width: 290px;" name="d1_off_name" id="d1_off_name" placeholder="Unesite naziv za vr. 0" original-title="Naziv za &quot;D1&quot; ulaz vr. 0, maksimalno 8 znakova" />
+                                <input value="{{ device.entry1.d_off_name }}"
+                                       class="input validate[required,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="d1_off_name" id="d1_off_name"
+                                       placeholder="Unesite naziv za vr. 0"
+                                       original-title="Naziv za &quot;D1&quot; ulaz vr. 0, maksimalno 8 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Naziv za vrijednost 1</label>
-                                <input value="{{ device.entry1.d_on_name }}" class="input validate[required,maxSize[8]] tipRight" type="text" style="width: 290px;" name="d1_on_name" id="d1_on_name" placeholder="Unesite naziv za vr. 1" original-title="Naziv za &quot;D1&quot; ulaz vr. 1, maksimalno 8 znakova" />
+                                <input value="{{ device.entry1.d_on_name }}"
+                                       class="input validate[required,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="d1_on_name" id="d1_on_name"
+                                       placeholder="Unesite naziv za vr. 1"
+                                       original-title="Naziv za &quot;D1&quot; ulaz vr. 1, maksimalno 8 znakova"/>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="grid_4 push_1 omega">
-                            <div class="form_row checkboxui">
-                                <input type="checkbox" id="d2_use" name="d2_use" value="1"{% if device.entry2.d_use %} checked="checked"{% endif %}><label for="d2_use">Koristi ulaz &quot;D2&quot;</label>
-                            </div>
+                    <div class="grid_4 push_1 omega">
+                        <div class="form_row checkboxui">
+                            <input type="checkbox" id="d2_use" name="d2_use"
+                                   value="1"{% if device.entry2.d_use %} checked="checked"{% endif %}><label
+                                    for="d2_use">Koristi ulaz &quot;D2&quot;</label>
+                        </div>
+                        <div id="d2_input">
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
-                                <input value="{{ device.entry2.d_name }}" class="input validate[required,maxSize[16]] tipRight" type="text" style="width: 290px;" name="d2_name" id="d2_name" placeholder="Unesite &quot;D2&quot; naziv" original-title="Naziv za &quot;D2&quot; ulaz, maksimalno 16 znakova" />
+                                <input value="{{ device.entry2.d_name }}"
+                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       style="width: 290px;" name="d2_name" id="d2_name"
+                                       placeholder="Unesite &quot;D2&quot; naziv"
+                                       original-title="Naziv za &quot;D2&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
                                 <select name="d2_off_image" class="select" style="width: 300px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry2.d_off_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry2.d_off_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -348,48 +516,66 @@
                                 <select name="d2_on_image" class="select" style="width: 300px;">
                                     <option value="0" selected="selected">Isključeno</option>
                                     {% for icon in icons %}
-                                        <option value="{{ icon.id }}" {% if device.entry2.d_on_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
+                                        <option value="{{ icon.id }}"
+                                                {% if device.entry2.d_on_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="form_row">
                                 <label>Naziv za vrijednost 0</label>
-                                <input value="{{ device.entry2.d_off_name }}" class="input validate[required,maxSize[8]] tipRight" type="text" style="width: 290px;" name="d2_off_name" id="d2_off_name" placeholder="Unesite naziv za vr. 0" original-title="Naziv za &quot;D2&quot; ulaz vr. 0, maksimalno 8 znakova" />
+                                <input value="{{ device.entry2.d_off_name }}"
+                                       class="input validate[required,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="d2_off_name" id="d2_off_name"
+                                       placeholder="Unesite naziv za vr. 0"
+                                       original-title="Naziv za &quot;D2&quot; ulaz vr. 0, maksimalno 8 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Naziv za vrijednost 1</label>
-                                <input value="{{ device.entry2.d_on_name }}" class="input validate[required,maxSize[8]] tipRight" type="text" style="width: 290px;" name="d2_on_name" id="d2_on_name" placeholder="Unesite naziv za vr. 1" original-title="Naziv za &quot;D2&quot; ulaz vr. 1, maksimalno 8 znakova" />
+                                <input value="{{ device.entry2.d_on_name }}"
+                                       class="input validate[required,maxSize[8]] tipRight" type="text"
+                                       style="width: 290px;" name="d2_on_name" id="d2_on_name"
+                                       placeholder="Unesite naziv za vr. 1"
+                                       original-title="Naziv za &quot;D2&quot; ulaz vr. 1, maksimalno 8 znakova"/>
                             </div>
                         </div>
-                        <div class="clear"></div>
                     </div>
-                </div><!-- Block End -->
+                    <div class="clear"></div>
+                </div>
+            </div><!-- Block End -->
 
-                <div class="block big"><!-- Block Begin -->
-                    <div class="titlebar">
-                        <h3>Dojava alarma - lokacija {{ device.name }}</h3>
-                        <a href="#" class="toggle">&nbsp;</a>
-                    </div>
-                    <div class="block_cont">
-                        <div class="grid_4 alpha">
-                            <div class="form_row">
-                                <label>Email 1</label>
-                                <input value="{{ device.alarmEmail.smtp1 }}" class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text" style="width: 290px;" name="smtp1" id="SmtpT1" placeholder="Unesite email 1" original-title="E-mail adresa za alarme, maksimalno 40 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Email 2</label>
-                                <input value="{{ device.alarmEmail.smtp2 }}" class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text" style="width: 290px;" name="smtp2" id="SmtpT2" placeholder="Unesite email 2" original-title="E-mail adresa za alarme, maksimalno 40 znakova" />
-                            </div>
-                            <div class="form_row">
-                                <label>Email 3</label>
-                                <input value="{{ device.alarmEmail.smtp3 }}" class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text" style="width: 290px;" name="smtp3" id="SmtpT3" placeholder="Unesite email 3" original-title="E-mail adresa za alarme, maksimalno 40 znakova" />
-                            </div>
+            <div class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Dojava alarma - lokacija {{ device.name }}</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont">
+                    <div class="grid_4 alpha">
+                        <div class="form_row">
+                            <label>Email 1</label>
+                            <input value="{{ device.alarmEmail.smtp1 }}"
+                                   class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
+                                   style="width: 290px;" name="smtp1" id="SmtpT1" placeholder="Unesite email 1"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
                         </div>
-                        <div class="clear"></div>
+                        <div class="form_row">
+                            <label>Email 2</label>
+                            <input value="{{ device.alarmEmail.smtp2 }}"
+                                   class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
+                                   style="width: 290px;" name="smtp2" id="SmtpT2" placeholder="Unesite email 2"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
+                        </div>
+                        <div class="form_row">
+                            <label>Email 3</label>
+                            <input value="{{ device.alarmEmail.smtp3 }}"
+                                   class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
+                                   style="width: 290px;" name="smtp3" id="SmtpT3" placeholder="Unesite email 3"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
+                        </div>
                     </div>
-                </div><!-- Block End -->
-            </div>
-        </div><!-- Body Wrapper End -->
-    </form>
+                    <div class="clear"></div>
+                </div>
+            </div><!-- Block End -->
+        </form>
+    </div>
 
 {% endblock %}

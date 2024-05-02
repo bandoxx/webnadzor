@@ -28,9 +28,9 @@ class DeviceEditController extends AbstractController
                     $device = $deviceUpdater->update($device, $request->request->all());
 
                     return $this->json(true, Response::HTTP_ACCEPTED);
-                } else {
-                    return $this->json(false, Response::HTTP_UNAUTHORIZED);
                 }
+
+                return $this->json(false, Response::HTTP_UNAUTHORIZED);
             } catch (\Throwable $e) {
                 $error = [$e->getMessage()];
             }
