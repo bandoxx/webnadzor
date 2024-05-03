@@ -341,7 +341,7 @@
                         <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
                         <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device_data.getRh(entry) }} {{ device.getEntryData(entry).rh_unit }}</span>
                     </div>
-                    <div style="margin-right: 80px;" class="dets-100">
+                    <div style="margin-left: 10px;" class="dets-100">
                         <div style="min-height:50px;" id="t1_image">
                             <img alt="t1" src="{{ asset('assets/images/frizider.png') }}">
                         </div>
@@ -354,7 +354,7 @@
                             <img alt="t1" src="{{ path('app_image_getimage', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; display: block;" id="t1_value">{{ device_data.getT(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right; display: block;" id="t1_value">{{ device.getTAvrg(entry) }} {{ device_data.getEntryData(entry).t_unit }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right; display: block;" id="t1_value">{{ device_data.getTAvrg(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
                         <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right; display: block;" id="t1max_value">{{ device_data.getTMax(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
                         <span style="color: #515d6b;">Minimalna</span>: <span style="float: right; display: block;" id="t1min_value">{{ device_data.getTMin(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
                         <span style="color: #515d6b;">MKT</span>: <span style="float: right; display: block;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span>
