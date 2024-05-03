@@ -362,9 +362,18 @@ div.information .hide_btn:hover {
 }
 
 #logoarea {
-        width: 180px;
+    width: 180px;
     height: 65px;
     background: url('/assets/images/userbar_bg.png') 65px repeat-x;
+    -webkit-border-radius: 5px 0 0 0;
+    -moz-border-radius: 5px 0 0 0;
+        border-radius: 5px 0 0 0;
+    float: left;
+}
+
+#logoarea-no-bg {
+    width: 180px;
+    height: 65px;
     -webkit-border-radius: 5px 0 0 0;
     -moz-border-radius: 5px 0 0 0;
         border-radius: 5px 0 0 0;

@@ -71,7 +71,7 @@
         {% block body %}
         <div id="main" class="container_12"><!-- Body Wrapper Begin -->
             <div id="userbar">
-                <div id="logoarea">
+                <div id="logoarea{% if client is not null and client.mainLogo is not empty %}-no-bg{% endif %}">
                     {% if client is not null %}
                         <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
                     {% else %}
