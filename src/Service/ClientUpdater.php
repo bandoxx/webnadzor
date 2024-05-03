@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Service;
+
+use App\Entity\Client;
+use App\Service\Image\LogoUploader;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+
+class ClientUpdater
+{
+
+    public function __construct(private LogoUploader $logoUploader, private EntityManagerInterface $entityManager) {}
+
+    public function updateByRequest(Request $request, Client $client): void
+    {
+        $client->setOverviewViews($request->request->getInt('overview_view'));
+        $client->setName($request->request->get('name'));
+        $client->setAddress($request->request->get('address'));
+        $client->setOIB($request->request->get('oib'));
+
+        if (!$client->getId()) {
+            $this->entityManager->persist($client);
+            $this->entityManager->flush();
+        }
+
+        if ($mainLogo = $request->files->get('main_logo')) {
+            $this->logoUploader->uploadAndSaveMainLogo($mainLogo, $client);
+        }
+
+        if ($pdfLogo = $request->files->get('pdf_logo')) {
+            $this->logoUploader->uploadAndSavePDFLogo($pdfLogo, $client);
+        }
+
+        if ($mapIcon = $request->files->get('map_marker_icon')) {
+            $this->logoUploader->uploadAndSaveMapMarkerIcon($mapIcon, $client);
+        }
+
+        $this->entityManager->flush();
+    }
+}
