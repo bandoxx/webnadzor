@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Archiver;
 
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Archiver;
 
 use App\Entity\Client;
 use App\Factory\LoginLogArchiveFactory;

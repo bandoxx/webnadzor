@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\DatabaseMigration;
 
-use App\Command\DatabaseMigration\DeviceDataImport;
-use App\Command\DatabaseMigration\UserDataImport;
+use App\Command\DatabaseMigration\Import\DeviceDataImport;
+use App\Command\DatabaseMigration\Import\UserDataImport;
 use App\Entity\Client;
 use App\Entity\ClientFtp;
 use Doctrine\ORM\EntityManagerInterface;

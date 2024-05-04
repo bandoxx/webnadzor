@@ -45,6 +45,7 @@ class ParseXmlsCommand extends Command
 
             if (!$device) {
                 $output->writeln(sprintf("Client with file name %s doesn't exist!", $name));
+                unlink($xmlPath);
                 continue;
             }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command\DatabaseMigration;
+namespace App\Command\DatabaseMigration\Import;
 
 use App\Entity\Client;
 use App\Entity\Device;
