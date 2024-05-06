@@ -72,16 +72,15 @@ class DeviceUpdater
 
     private function updateTemperature(Device $device, int $entry, array $data): void
     {
-        $tUse = (empty($data['t' . $entry . '_use'])) ? '0' : '1';
-        $device->setEntryData($entry, 't_show_chart', (empty($data['t' . $entry . '_show_chart'])) ? '0' : '1');
+        $tUse = (empty($data['t' . $entry . '_use'])) ? '0' : $data['t' . $entry . '_use'];
+        $device->setEntryData($entry, 't_use', $tUse);
+        $device->setEntryData($entry, 't_show_chart', (empty($data['t' . $entry . '_show_chart'])) ? '0' : $data['t' . $entry . '_show_chart']);
+        $tLocation = trim($data['t' . $entry . '_location']);
 
         if ($tUse === '0') {
-            $device->setEntryData($entry, 't_use', $tUse);
-
             return;
         }
 
-        $tLocation = trim($data['t' . $entry . '_location']);
         $tName = trim($data['t' . $entry . '_name']);
         $tUnit = trim($data['t' . $entry . '_unit']);
 
@@ -117,12 +116,11 @@ class DeviceUpdater
 
     private function updateHumidity(Device $device, int $entry, array $data): void
     {
-        $rhUse = (empty($data['rh' . $entry . '_use'])) ? '0' : '1';
-        $device->setEntryData($entry, 'rh_show_chart', (empty($data['rh' . $entry . '_show_chart'])) ? '0' : '1');
+        $rhUse = (empty($data['rh' . $entry . '_use'])) ? '0' : $data['rh' . $entry . '_use'];
+        $device->setEntryData($entry, 'rh_show_chart', (empty($data['rh' . $entry . '_show_chart'])) ? '0' : $data['rh' . $entry . '_show_chart']);
+        $device->setEntryData($entry, 'rh_use', $rhUse);
 
         if ($rhUse === '0') {
-            $device->setEntryData($entry, 'rh_use', $rhUse);
-
             return;
         }
 
@@ -155,11 +153,10 @@ class DeviceUpdater
 
     private function updateDigital(Device $device, int $entry, array $data): void
     {
-        $dUse = (empty($data['d' . $entry . '_use'])) ? '0' : '1';
+        $dUse = (empty($data['d' . $entry . '_use'])) ? '0' : $data['d' . $entry . '_use'];
+        $device->setEntryData($entry, 'd_use', $dUse);
 
         if ($dUse === '0') {
-            $device->setEntryData($entry, 'd_use', $dUse);
-
             return;
         }
 
