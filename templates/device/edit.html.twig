@@ -216,7 +216,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
-                                <select name="t1_image" class="select" style="width: 300px;">
+                                <select name="t1_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -226,11 +226,14 @@
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry1.t_unit }}"
-                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
-                                       style="width: 290px;" name="t1_unit" id="t1_unit"
-                                       placeholder="Unesite mjernu jedinicu"
-                                       original-title="Mjerna jedinica za ulaz &quot;Temperatura 1&quot; (°C, °F). Maksimalno 8 znakova."/>
+                                <select value="{{ device.entry1.t_unit }}"
+                                        class="select" style="width: 290px;" name="t1_unit" id="t1_unit"
+                                        original-title="Mjerna jedinica za ulaz &quot;Temperatura 2&quot; (°C, °F).">
+                                    {% for temperature in temperature_type %}
+                                        <option value="{{ temperature }}"
+                                                {% if device.entry1.t_unit == temperature %}selected="selected"{% endif %}>{{ temperature }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
@@ -270,7 +273,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
-                                <select name="t2_image" class="select" style="width: 300px;">
+                                <select name="t2_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -280,11 +283,14 @@
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry2.t_unit }}"
-                                       class="input validate[optional,maxSize[8]] tipRight" type="text"
-                                       style="width: 290px;" name="t2_unit" id="t2_unit"
-                                       placeholder="Unesite mjernu jedinicu"
-                                       original-title="Mjerna jedinica za ulaz &quot;Temperatura 2&quot; (°C, °F). Maksimalno 8 znakova."/>
+                                <select value="{{ device.entry2.t_unit }}"
+                                       class="select" style="width: 290px;" name="t2_unit" id="t2_unit"
+                                       original-title="Mjerna jedinica za ulaz &quot;Temperatura 2&quot; (°C, °F).">
+                                    {% for temperature in temperature_type %}
+                                        <option value="{{ temperature }}"
+                                                {% if device.entry2.t_unit == temperature %}selected="selected"{% endif %}>{{ temperature }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="form_row">
                                 <label>Minimalna vrijednost</label>
@@ -334,7 +340,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
-                                <select name="rh1_image" class="select" style="width: 300px;">
+                                <select name="rh1_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -344,7 +350,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry1.rh_unit }}"
+                                <input value="{{ device.entry1.rh_unit ?? '%'}}"
                                        class="input validate[optional,maxSize[8]] tipRight" type="text"
                                        style="width: 290px;" name="rh1_unit" id="rh1_unit"
                                        placeholder="Unesite mjernu jedinicu"
@@ -388,7 +394,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
-                                <select name="rh2_image" class="select" style="width: 300px;">
+                                <select name="rh2_image" class="select" style="width: 290px;">
                                     <option value="0" selected="selected">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -398,7 +404,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Mjerna jedinica</label>
-                                <input value="{{ device.entry2.rh_unit }}"
+                                <input value="{{ device.entry2.rh_unit ?? '%'}}"
                                        class="input validate[optional,maxSize[8]] tipRight" type="text"
                                        style="width: 290px;" name="rh2_unit" id="rh2_unit"
                                        placeholder="Unesite mjernu jedinicu"
@@ -449,7 +455,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
-                                <select name="d1_off_image" class="select" style="width: 300px;">
+                                <select name="d1_off_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -459,7 +465,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 1</label>
-                                <select name="d1_on_image" class="select" style="width: 300px; display: none;">
+                                <select name="d1_on_image" class="select" style="width: 290px; display: none;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -503,7 +509,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
-                                <select name="d2_off_image" class="select" style="width: 300px;">
+                                <select name="d2_off_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"
@@ -513,7 +519,7 @@
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 1</label>
-                                <select name="d2_on_image" class="select" style="width: 300px;">
+                                <select name="d2_on_image" class="select" style="width: 290px;">
                                     <option value="0" selected="selected">Isključeno</option>
                                     {% for icon in icons %}
                                         <option value="{{ icon.id }}"

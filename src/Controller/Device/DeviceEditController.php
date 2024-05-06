@@ -2,6 +2,7 @@
 
 namespace App\Controller\Device;
 
+use App\Model\TemperatureType;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\DeviceUpdater;
@@ -40,7 +41,8 @@ class DeviceEditController extends AbstractController
             'device' => $device,
             'icons' => $icons,
             'clientId' => $clientId,
-            'errors' => $error
+            'errors' => $error,
+            'temperature_type' => TemperatureType::getTypes()
         ]);
 
     }
