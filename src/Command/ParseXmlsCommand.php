@@ -10,6 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 #[AsCommand(
     name: 'app:parse-xmls',
@@ -51,10 +52,17 @@ class ParseXmlsCommand extends Command
 
             if ($device->isParserActive() === false) {
                 $output->writeln(sprintf("Client with file name %s is not currently active!", $name));
+                unlink($xmlPath);
+
                 continue;
             }
 
             $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
+
+            if (!$deviceData) {
+                throw new BadRequestException(sprintf("XML Parser failed for %s", $xmlPath));
+            }
+
             $this->entityManager->persist($deviceData);
             $this->entityManager->flush();
 
