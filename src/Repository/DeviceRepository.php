@@ -47,7 +47,7 @@ class DeviceRepository extends ServiceEntityRepository
     {
         $numberOfDevicesWithName = $this->createQueryBuilder('d')
             ->select('COUNT(d)')
-            ->where('d.xmlName = :name')->setParameter('name', $xmlName)
+            ->where('BINARY(d.xmlName) = :name')->setParameter('name', $xmlName)
             ->getQuery()
             ->getSingleScalarResult()
         ;

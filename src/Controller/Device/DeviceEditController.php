@@ -26,7 +26,7 @@ class DeviceEditController extends AbstractController
             // TODO: Permissions
             try {
                 if ($this->getUser()->getPermission() >= 3) {
-                    $device = $deviceUpdater->update($device, $request->request->all());
+                    $deviceUpdater->update($device, $request->request->all());
 
                     return $this->json(true, Response::HTTP_ACCEPTED);
                 }
@@ -34,6 +34,8 @@ class DeviceEditController extends AbstractController
                 return $this->json(false, Response::HTTP_UNAUTHORIZED);
             } catch (\Throwable $e) {
                 $error = [$e->getMessage()];
+
+                return $this->json($error, Response::HTTP_BAD_REQUEST);
             }
         }
 

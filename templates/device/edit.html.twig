@@ -92,10 +92,10 @@
 
           if ($('#' + element + "_use").attr('checked') === 'checked') {
             $(input).show();
-            name.addClass('validate[required,maxSize[16]]');
+            name.addClass('validate[required,maxSize[50]]');
           } else {
             $(input).hide();
-            name.removeClass('validate[required,maxSize[16]]');
+            name.removeClass('validate[required,maxSize[50]]');
           }
         });
 
@@ -106,10 +106,10 @@
 
             if ($('#' + this.id).attr('checked') === 'checked') {
               $(input).show();
-              name.addClass('validate[required,maxSize[16]]');
+              name.addClass('validate[required,maxSize[50]]');
             } else {
               $(input).hide();
-              name.removeClass('validate[required,maxSize[16]]');
+              name.removeClass('validate[required,maxSize[50]]');
             }
           });
         });
@@ -174,18 +174,18 @@
                         <div class="form_row">
                             <label>Lokacija senzora 1</label>
                             <input value="{{ device.entry1.t_location }}"
-                                   class="input validate[required,maxSize[20]] tipRight" type="text"
+                                   class="input validate[required,maxSize[50]] tipRight" type="text"
                                    style="width: 290px;" name="t1_location" id="t1_location"
                                    placeholder="Unesite lokaciju senzora 1"
-                                   original-title="Lokacija senzor 1, maksimalno 16 znakova"/>
+                                   original-title="Lokacija senzor 1, maksimalno 50 znakova"/>
                         </div>
                         <div class="form_row">
                             <label>Lokacija senzora 2</label>
                             <input value="{{ device.entry2.t_location }}"
-                                   class="input validate[required,maxSize[20]] tipRight" type="text"
+                                   class="input validate[required,maxSize[50]] tipRight" type="text"
                                    style="width: 290px;" name="t2_location" id="t2_location"
                                    placeholder="Unesite lokaciju senzora 2"
-                                   original-title="Lokacija senzor 2, maksimalno 16 znakova"/>
+                                   original-title="Lokacija senzor 2, maksimalno 50 znakova"/>
                         </div>
                     </div>
                     <div class="clear"></div>
@@ -266,10 +266,10 @@
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
                                 <input value="{{ device.entry2.t_name }}"
-                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       class="input validate[required,maxSize[50]] tipRight" type="text"
                                        style="width: 290px;" name="t2_name" id="t2_name"
                                        placeholder="Unesite &quot;Temperatura 2&quot; naziv"
-                                       original-title="Naziv za &quot;Temperatura 2&quot; ulaz, maksimalno 16 znakova"/>
+                                       original-title="Naziv za &quot;Temperatura 2&quot; ulaz, maksimalno 50 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
@@ -333,10 +333,10 @@
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
                                 <input value="{{ device.entry1.rh_name }}"
-                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       class="input validate[required,maxSize[50]] tipRight" type="text"
                                        style="width: 290px;" name="rh1_name" id="rh1_name"
                                        placeholder="Unesite &quot;R. vlaga 1&quot; naziv"
-                                       original-title="Naziv za &quot;R. vlaga 1&quot; ulaz, maksimalno 16 znakova"/>
+                                       original-title="Naziv za &quot;R. vlaga 1&quot; ulaz, maksimalno 50 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
@@ -387,10 +387,10 @@
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
                                 <input value="{{ device.entry2.rh_name }}"
-                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       class="input validate[required,maxSize[50]] tipRight" type="text"
                                        style="width: 290px;" name="rh2_name" id="rh2_name"
                                        placeholder="Unesite &quot;R. vlaga 2&quot; naziv"
-                                       original-title="Naziv za &quot;R. vlaga 2&quot; ulaz, maksimalno 16 znakova"/>
+                                       original-title="Naziv za &quot;R. vlaga 2&quot; ulaz, maksimalno 50 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>
@@ -448,10 +448,10 @@
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
                                 <input value="{{ device.entry1.d_name }}"
-                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       class="input validate[required,maxSize[50]] tipRight" type="text"
                                        style="width: 290px;" name="d1_name" id="d1_name"
                                        placeholder="Unesite &quot;D1&quot; naziv"
-                                       original-title="Naziv za &quot;D1&quot; ulaz, maksimalno 16 znakova"/>
+                                       original-title="Naziv za &quot;D1&quot; ulaz, maksimalno 50 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
@@ -502,10 +502,10 @@
                             <div class="form_row">
                                 <label>Naziv ulaza</label>
                                 <input value="{{ device.entry2.d_name }}"
-                                       class="input validate[required,maxSize[16]] tipRight" type="text"
+                                       class="input validate[required,maxSize[50]] tipRight" type="text"
                                        style="width: 290px;" name="d2_name" id="d2_name"
                                        placeholder="Unesite &quot;D2&quot; naziv"
-                                       original-title="Naziv za &quot;D2&quot; ulaz, maksimalno 16 znakova"/>
+                                       original-title="Naziv za &quot;D2&quot; ulaz, maksimalno 50 znakova"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona za vrijednost 0</label>
