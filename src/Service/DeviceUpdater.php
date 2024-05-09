@@ -73,7 +73,14 @@ class DeviceUpdater
         $tUse = (empty($data['t' . $entry . '_use'])) ? '0' : $data['t' . $entry . '_use'];
         $device->setEntryData($entry, 't_use', $tUse);
         $device->setEntryData($entry, 't_show_chart', (empty($data['t' . $entry . '_show_chart'])) ? '0' : $data['t' . $entry . '_show_chart']);
+
         $tLocation = trim($data['t' . $entry . '_location']);
+
+        if ($this->length($tLocation, 50)) {
+            $device->setEntryData($entry, 't_location', $tLocation);
+        } else {
+            $this->error[] = 'T location size.';
+        }
 
         if ($tUse === '0') {
             return;
@@ -82,11 +89,7 @@ class DeviceUpdater
         $tName = trim($data['t' . $entry . '_name']);
         $tUnit = trim($data['t' . $entry . '_unit']);
 
-        if ($this->length($tLocation, 50)) {
-            $device->setEntryData($entry, 't_location', $tLocation);
-        } else {
-            $this->error[] = 'T location size.';
-        }
+
 
         if ($this->length($tName, 50)) {
             $device->setEntryData($entry, 't_name', $tName);
