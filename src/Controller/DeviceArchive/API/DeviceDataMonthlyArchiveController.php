@@ -6,7 +6,7 @@ use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/api/device/{id}/{entry}/archive/monthly', name: 'app_api_devicedataarchive_getmonthlydata', methods: 'GET')]
 class DeviceDataMonthlyArchiveController extends AbstractController

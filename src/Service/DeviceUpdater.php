@@ -3,11 +3,9 @@
 namespace App\Service;
 
 use App\Entity\Device;
-use App\Entity\User;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class DeviceUpdater

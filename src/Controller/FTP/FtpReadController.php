@@ -4,7 +4,7 @@ namespace App\Controller\FTP;
 
 use App\Repository\ClientFtpRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/ftp', name: 'app_clientftp_read', methods: 'GET')]
 class FtpReadController extends AbstractController

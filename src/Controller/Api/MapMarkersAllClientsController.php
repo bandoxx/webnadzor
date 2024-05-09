@@ -7,7 +7,7 @@ use App\Service\Device\UserAccess;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/map/markers', name: 'api_map_markers_all_clients')]
 class MapMarkersAllClientsController extends AbstractController

@@ -5,7 +5,7 @@ namespace App\Controller\LoginLog;
 use App\Repository\LoginLogArchiveRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/login-log-archive', name: 'app_loginlog_loginlogsarchive', methods: 'GET')]
 class LoginLogArchiveController extends AbstractController

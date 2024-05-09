@@ -3,7 +3,7 @@
 namespace App\Controller\Security;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/logout', name: 'app_logout')]
 class LogoutController extends AbstractController

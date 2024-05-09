@@ -7,7 +7,7 @@ use App\Service\DeviceLocationHandler;
 use App\Service\PermissionChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/overview', name: 'client_overview')]
 class OverviewController extends AbstractController

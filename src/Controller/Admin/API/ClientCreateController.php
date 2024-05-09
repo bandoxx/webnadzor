@@ -7,7 +7,7 @@ use App\Service\ClientUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/api/client', name: 'api_client_create', methods: 'POST')]
 class ClientCreateController extends AbstractController

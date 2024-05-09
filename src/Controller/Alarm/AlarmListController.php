@@ -6,7 +6,7 @@ use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/alarm/{id}/list', name: 'app_alarm_list', methods: 'GET')]
 class AlarmListController extends AbstractController

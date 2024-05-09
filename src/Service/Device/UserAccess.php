@@ -51,14 +51,29 @@ class UserAccess
             $devices = $this->deviceRepository->findDevicesByClient($client->getId());
             foreach ($devices as $device) {
                 for ($entry = 1; $entry <= 2; $entry++) {
-                    $entries[] = [
-                        'entry' => $entry,
-                        'device' => $device
-                    ];
+                    $data = $device->getEntryData($entry);
+                    if ($data['t_use']) {
+                        $entries[] = [
+                            'entry' => $entry,
+                            'device' => $device
+                        ];
+                    }
                 }
             }
         } else {
-            $entries = $this->deviceAccessRepository->findAccessibleEntries($user);
+            $accesses = $this->deviceAccessRepository->findAccessibleEntries($user);
+            foreach ($accesses as $access) {
+                $device = $access->getDevice();
+                $deviceData = $device->getEntryData($access->getSensor());
+
+                if ($deviceData['t_use']) {
+                    $entries[] = [
+                        'entry' => $access->getSensor(),
+                        'device' => $access->getDevice()
+                    ];
+                }
+            }
+
         }
 
         return $entries;

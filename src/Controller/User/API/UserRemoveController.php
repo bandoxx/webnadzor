@@ -4,12 +4,10 @@ namespace App\Controller\User\API;
 
 use App\Repository\UserRepository;
 use App\Service\User\UserRemover;
-use App\Service\UserDeviceAccessUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/api/user/{userId}', name: 'api_user_delete', methods: 'DELETE')]
 class UserRemoveController extends AbstractController

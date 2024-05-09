@@ -5,7 +5,7 @@ namespace App\Controller\LoginLog;
 use App\Repository\LoginLogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/login-log', name: 'app_loginlog_getloginlogs', methods: 'GET')]
 class LoginLogGetController extends AbstractController

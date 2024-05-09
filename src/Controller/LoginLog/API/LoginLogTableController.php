@@ -7,7 +7,7 @@ use App\Repository\LoginLogArchiveRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Route(path: '/api/{clientId}/archive/daily', name: 'api_login_log_archive_daily', methods: 'GET')]

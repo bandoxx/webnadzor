@@ -6,7 +6,7 @@ use App\Repository\UserRepository;
 use App\Service\DeviceLocationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/users', name: 'app_user_getusers', methods: 'GET')]
 class UsersGetController extends AbstractController

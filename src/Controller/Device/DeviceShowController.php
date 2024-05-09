@@ -5,7 +5,7 @@ namespace App\Controller\Device;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/device/{deviceId}/show', name: 'app_device_show', methods: 'GET')]
 class DeviceShowController extends AbstractController
