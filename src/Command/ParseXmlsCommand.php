@@ -40,6 +40,10 @@ class ParseXmlsCommand extends Command
         $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
 
         foreach ($xmls as $fileName) {
+            if (str_contains($fileName, '-Settings')) {
+                continue;
+            }
+
             $name = rtrim($fileName, '.xml');
             $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
             $device = $this->deviceRepository->binaryFindOneByName($name);
