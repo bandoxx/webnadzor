@@ -67,7 +67,7 @@ class DeviceUpdater
             throw new BadRequestException(json_encode($this->error));
         }
 
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
 
         return $device;
