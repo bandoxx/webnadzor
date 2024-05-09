@@ -4,7 +4,6 @@ namespace App\Controller\User;
 
 use App\Factory\UserFactory;
 use App\Repository\ClientRepository;
-use App\Repository\DeviceRepository;
 use App\Repository\UserRepository;
 use App\Service\UserDeviceAccessUpdater;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/users', name: 'app_user_createuser', methods: 'POST')]
 class UserCreateController extends AbstractController

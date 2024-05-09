@@ -31,17 +31,6 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
 
     public function findAccessibleEntries(User $user): array
     {
-        $accesses = $this->findBy(['user' => $user]);
-
-        $data = [];
-
-        foreach ($accesses as $access) {
-            $data[] = [
-                'entry' => $access->getSensor(),
-                'device' => $access->getDevice()
-            ];
-        }
-
-        return $data;
+        return $this->findBy(['user' => $user]);
     }
 }
