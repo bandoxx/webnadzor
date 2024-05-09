@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\Device;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
+use App\Service\XmlParser\DeviceSettingsMaker;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -15,6 +16,7 @@ class DeviceUpdater
         private readonly EntityManagerInterface $entityManager,
         private readonly DeviceRepository       $deviceRepository,
         private readonly DeviceIconRepository   $deviceIconRepository,
+        private readonly DeviceSettingsMaker    $deviceSettingsMaker,
         private readonly array                  $image = [],
         private array                           $error = []
     )
@@ -23,6 +25,8 @@ class DeviceUpdater
 
     public function update(Device $device, array $data): Device
     {
+        $oldDevice = clone $device;
+
         ####### DEVICE NAME
         $deviceName = trim($data['device_name']);
         if ($this->length($deviceName, 40)) {
@@ -63,6 +67,7 @@ class DeviceUpdater
             throw new BadRequestException(json_encode($this->error));
         }
 
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
 
         return $device;
@@ -88,8 +93,6 @@ class DeviceUpdater
 
         $tName = trim($data['t' . $entry . '_name']);
         $tUnit = trim($data['t' . $entry . '_unit']);
-
-
 
         if ($this->length($tName, 50)) {
             $device->setEntryData($entry, 't_name', $tName);
