@@ -84,13 +84,13 @@ class DeviceUpdater
         $tName = trim($data['t' . $entry . '_name']);
         $tUnit = trim($data['t' . $entry . '_unit']);
 
-        if ($this->length($tLocation, 16)) {
+        if ($this->length($tLocation, 50)) {
             $device->setEntryData($entry, 't_location', $tLocation);
         } else {
             $this->error[] = 'T location size.';
         }
 
-        if ($this->length($tName, 30)) {
+        if ($this->length($tName, 50)) {
             $device->setEntryData($entry, 't_name', $tName);
         } else {
             $this->error[] = 'T name size';
@@ -127,7 +127,7 @@ class DeviceUpdater
         $thName = trim($data['rh' . $entry . '_name']);
         $rhUnit = trim($data['rh' . $entry . '_unit']);
 
-        if ($this->length($thName, 24)) {
+        if ($this->length($thName, 50)) {
             $device->setEntryData($entry, 'rh_name', $thName);
         } else {
             $this->error[] = 'RH name error';
@@ -164,7 +164,7 @@ class DeviceUpdater
         $dOffName = trim($data['d' . $entry . '_off_name']);
         $dOnName = trim($data['d' . $entry . '_on_name']);
 
-        if ($this->length($dName, 24)) {
+        if ($this->length($dName, 50)) {
             $device->setEntryData($entry, 'd_name', $dName);
         } else {
             $this->error[] = 'D Error';
