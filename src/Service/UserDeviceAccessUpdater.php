@@ -16,7 +16,7 @@ class UserDeviceAccessUpdater
         private readonly EntityManagerInterface $entityManager
     ) {}
 
-    public function update(User $user, array $locations, int $permission): void
+    public function update(User $user, ?array $locations): void
     {
         $accesses = $user->getUserDeviceAccesses()->toArray();
 
@@ -26,8 +26,7 @@ class UserDeviceAccessUpdater
 
         $this->entityManager->flush();
 
-
-        if ($permission === 1 || empty($permission)) {
+        if ($user->getPermission() === 1 || empty($user->getPermission())) {
             if (!$locations) {
                 return;
             }

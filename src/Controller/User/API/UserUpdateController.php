@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/user/{userId}', name: 'api_user_update', methods: 'PATCH')]
@@ -19,6 +20,10 @@ class UserUpdateController extends AbstractController
     {
         $user = $userRepository->find($userId);
 
+        if (!$user) {
+            throw new BadRequestHttpException('User doesnt exist');
+        }
+
         $password = $request->request->get('password');
         $passwordConfirm = $request->request->get('password_again');
 
@@ -26,10 +31,17 @@ class UserUpdateController extends AbstractController
             $passwordSetter->setPassword($user, $password);
         }
 
+        $overviewViews = $request->request->get('overview_views');
+
+        $user->setOverviewViews(is_numeric($overviewViews) ? $overviewViews : null);
+
+        if ($permission = $request->request->get('permissions')) {
+            $user->setPermission($request->request->get($permission));
+        }
+
         $userDeviceAccessUpdater->update(
             $user,
-            $request->get('locations'),
-            $request->request->get('permissions')
+            $request->get('locations')
         );
 
         return $this->json(true, Response::HTTP_ACCEPTED);

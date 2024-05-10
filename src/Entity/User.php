@@ -61,6 +61,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?array $availableLocations = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $overviewViews = null;
+
     public function __construct()
     {
         $this->loginLogs = new ArrayCollection();
@@ -274,6 +277,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setAvailableLocations(?array $availableLocations): self
     {
         $this->availableLocations = $availableLocations;
+
+        return $this;
+    }
+
+    public function getOverviewViews(): ?int
+    {
+        return $this->overviewViews;
+    }
+
+    public function setOverviewViews(?int $overviewViews): static
+    {
+        $this->overviewViews = $overviewViews;
 
         return $this;
     }

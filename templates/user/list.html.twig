@@ -90,7 +90,18 @@
           edit_id = $(edit_parent).attr('id');
           edit_username = $(edit_parent).data('username');
           edit_permissions = $(edit_parent).data('permissions');
+          edit_overview_views = $(edit_parent).data('overviews');
           edit_ad = $(edit_parent).data('ad').split(',');
+
+          if (edit_overview_views == 1) {
+            $('#map2').prop('checked', true).button('refresh');
+          } else if (edit_overview_views == 2) {
+            $('#thermometer2').prop('checked', true).button('refresh');
+          } else if (edit_overview_views == 3) {
+            $('#fridge2').prop('checked', true).button('refresh');
+          } else {
+            $('#default2').prop('checked', true).button('refresh');
+          }
 
           $('#edit-form').attr('title', 'Editing user - "' + edit_username + '"');
 
@@ -161,7 +172,7 @@
               $('#editform').validationEngine('hideAll');
               $('#editform input[type=password]').val('').attr('disabled', 'disabled');
               $('#editform label').removeClass('ui-state-active');
-              $('#editform input[type=radio]').button('disable');
+              $('#editform input[name=radioui-disable]').button('disable');
               $widget.multiselect('uncheckAll');
               $widget.multiselect('disable')
               $(this).dialog('destroy');
@@ -317,13 +328,32 @@
                            class="input validate[required,equals[password]] text ui-widget-content ui-corner-all"
                            style="display:block; width:95%; padding: .4em;"/>
                 </div>
-                <div class="form_row radioui">
+                <div class="form_row radioui radioui-disable">
                     <input type="radio" id="r1" name="permissions" class="radio validate[required]" value="1"/><label
                             for="r1">Korisnik</label>
                     <input type="radio" id="r2" name="permissions" class="radio validate[required]" value="2"/><label
                             for="r2">Moderator</label>
                     <input type="radio" id="r3" name="permissions" class="radio validate[required]" value="3"/><label
                             for="r3">Admin</label>
+                </div>
+                <div class="form_row radioui">
+                    <div class="form_row radioui">
+                        <label for="overviewselect">Prikaz na početnoj stranici</label>
+                        <div id="overviewselect">
+                            <label for="default">Poništi</label>
+                            <input type="radio" id="default" name="overview_views" class="radio validate[required]"
+                                   value=""/>
+                            <label for="map">Mapa</label>
+                            <input type="radio" id="map" name="overview_views" class="radio validate[required]"
+                                   value="{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}"/>
+                            <label for="thermometer">Termometri</label>
+                            <input type="radio" id="thermometer" name="overview_views" class="radio validate[required]"
+                                   value="{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}"/>
+                            <label for="fridge">Hladnjak</label>
+                            <input type="radio" id="fridge" name="overview_views" class="radio validate[required]"
+                                   value="{{ constant('App\\Entity\\Client::OVERVIEW_FRIDGE') }}"/>
+                        </div>
+                    </div>
                 </div>
                 <div class="form_row">
                     <label for="allowed_devices">Dozvoljene lokacije</label>
@@ -359,13 +389,30 @@
                     <input type="checkbox" id="c2" name="change_permissions" value="1"/><label for="c2">Promjeni
                         dozvole</label>
                 </div>
-                <div class="form_row radioui">
+                <div class="form_row radioui radioui-disable">
                     <input type="radio" id="r4" name="permissions" class="radio validate[required]" value="1"
                            disabled="disabled"/><label for="r4">Korisnik</label>
                     <input type="radio" id="r5" name="permissions" class="radio validate[required]" value="2"
                            disabled="disabled"/><label for="r5">Moderator</label>
                     <input type="radio" id="r6" name="permissions" class="radio validate[required]" value="3"
                            disabled="disabled"/><label for="r6">Admin</label>
+                </div>
+                <div class="form_row radioui">
+                    <label for="overviewselect">Prikaz na početnoj stranici</label>
+                    <div id="overviewselect">
+                        <label for="default2">Poništi</label>
+                        <input type="radio" id="default2" name="overview_views" class="radio validate[required]"
+                               value="" />
+                        <label for="map2">Mapa</label>
+                        <input type="radio" id="map2" name="overview_views" class="radio validate[required]"
+                               value="{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}" />
+                        <label for="thermometer2">Termometri</label>
+                        <input type="radio" id="thermometer2" name="overview_views" class="radio validate[required]"
+                               value="{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}" />
+                        <label for="fridge2">Hladnjak</label>
+                        <input type="radio" id="fridge2" name="overview_views" class="radio validate[required]"
+                               value="{{ constant('App\\Entity\\Client::OVERVIEW_FRIDGE') }}" />
+                    </div>
                 </div>
                 <div class="form_row">
                     <label for="newallowed_devices">Dozvoljene lokacije</label>
@@ -416,6 +463,7 @@
                             <div id="{{ user.id }}"
                                  data-username="{{ user.username }}"
                                  data-permissions="{{ user.permission }}"
+                                 data-overviews="{{ user.overviewViews }}"
                                  data-ad="" class="actionbar">
                                 <a href="#" class="action edit"><span>Uredi</span></a>
                                 <a href="#" class="action delete"><span>Obriši</span></a>

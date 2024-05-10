@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 class Client
 {
-    public const OVERVIEW_EMPTY = 0;
     public const OVERVIEW_MAP = 1;
     public const OVERVIEW_THERMOMETER = 2;
+    public const OVERVIEW_FRIDGE = 3;
 
     public const DEVICE_OVERVIEW_ICON = 1;
     public const DEVICE_OVERVIEW_DYNAMIC = 2;

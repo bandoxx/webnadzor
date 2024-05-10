@@ -18,8 +18,13 @@
     <div class="clear"></div>
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
-            {% if client.overviewViews == 1 %}
+            {% if user.overviewViews is not null %}
+                {% set overviewType = user.overviewViews %}
+            {% else %}
+                {% set overviewType = client.overviewViews %}
+            {% endif %}
 
+            {% if overviewType == constant('App\\Entity\\Client::OVERVIEW_MAP') %}
                 <div class="titlebar">
                     <h3>Lokacije</h3>
                     <a href="#" class="toggle">&nbsp;</a>
@@ -27,9 +32,7 @@
                 <div class="block_cont" style="padding:4px;">
                     <div id="map_canvas" style="height: 600px;"></div>
                 </div>
-
-            {% elseif client.overviewViews == 2 %}
-
+            {% elseif overviewType == constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') %}
                 <div class="titlebar">
                     <h3>Trenutni podaci</h3>
                     <a href="#" class="toggle">&nbsp;</a>
@@ -63,7 +66,32 @@
                         <div class="clear"></div>
                     </div>
                 </div>
-
+            {% elseif overviewType == constant('App\\Entity\\Client::OVERVIEW_FRIDGE') %}
+                <div class="titlebar">
+                    <h3>Trenutni podaci</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+                <div class="block_cont" style="padding:4px;">
+                    <div style="margin-bottom:10px;">
+                        {% for device in devices_table %}
+                            <div class="dets-100-225">
+                                <div style="margin-left: 10px;" class="dets-100">
+                                    <div style="min-height:50px;" id="t1_image">
+                                        <img alt="t1" src="{{ asset('assets/images/frizider.png') }}">
+                                    </div>
+                                </div>
+                                <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.name }}</span><br><br>
+                                <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br>
+                                <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureAverage }}</span><br><br>
+                                <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br>
+                                <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
+                                <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
+                                <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device.relativeHumidity }}</span>
+                            </div>
+                        {% endfor %}
+                        <div class="clear"></div>
+                    </div>
+                </div>
             {% endif %}
         </div><!-- Block End -->
 
