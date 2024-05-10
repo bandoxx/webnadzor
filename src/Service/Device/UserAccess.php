@@ -32,7 +32,7 @@ class UserAccess
             $devices = [];
 
             foreach ($accesses as $access) {
-                $device = $access['device'];
+                $device = $access->getDevice();
                 if (array_key_exists($device->getId(), $devices)) {
                     continue;
                 }

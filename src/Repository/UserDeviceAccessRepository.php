@@ -29,6 +29,9 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
         )->free();
     }
 
+    /**
+     * @return UserDeviceAccess[]
+     */
     public function findAccessibleEntries(User $user): array
     {
         return $this->findBy(['user' => $user]);
