@@ -208,13 +208,13 @@ class DeviceData
 
         $deviceEntrySettings = $this->getDevice()->getEntryData($entry);
 
-        $minimum = $deviceEntrySettings['rh_min'];
+        $minimum = $deviceEntrySettings['rh_min'] ?? null;
 
         if ($minimum && $minimum > $humidity) {
             return true;
         }
 
-        $maximum = $deviceEntrySettings['rh_max'];
+        $maximum = $deviceEntrySettings['rh_max'] ?? null;
 
         return $maximum && $maximum < $humidity;
     }
