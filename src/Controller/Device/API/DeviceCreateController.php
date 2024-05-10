@@ -31,7 +31,7 @@ class DeviceCreateController extends AbstractController
         $entityManager->persist($device);
         $entityManager->flush();
 
-        return $this->json(true, Response::HTTP_CREATED);
+        return $this->json($device->getId(), Response::HTTP_CREATED);
 
     }
 

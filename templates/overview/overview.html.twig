@@ -56,29 +56,6 @@
               $(this).dialog('destroy');
             }
           });
-          $('#addform').validationEngine('attach', {
-            onValidationComplete: function(form, status){
-              var form_data = $('#addform').serialize();
-              if (status === true) {
-
-                $.post(page_url + 'device_edit/device_add', $.param({troll:Math.random()}) + "&" + form_data, function(data, s, r) {
-                  if (r.getResponseHeader('Requires-Auth') == 1) {
-                    $(location).attr('href', page_url);
-                    return false;
-                  }
-                  if (!isNaN(data)) {
-                    $(location).attr('href', page_url + 'device_edit/' + data);
-                  }
-                  else {
-                    alert('Greška! Molimo pokušajte ponovo');
-                    console.log('response data: ' + data);
-                  }
-                });
-
-              }
-            }
-          });/* VALIDATION ENGINE */
-          return false;
         });
 
         $('.radioui').buttonset();
@@ -166,6 +143,9 @@
         $.getJSON("{{ path('api_map_markers', {clientId: clientId}) }}", function(data) {
           var bounds = new L.LatLngBounds();
           $.each(data.places, function(i, item) {
+            if (item.lat === null || item.lng === null) {
+              return;
+            }
 
             if (markerIcon) {
               L.marker([item.lat, item.lng], {icon: markerIcon}).addTo(map).bindPopup(item.name);
@@ -174,8 +154,8 @@
             }
 
             bounds.extend([item.lat, item.lng]);
-
           });
+
           map.fitBounds(bounds, {padding: [50,50]});
         });
       });

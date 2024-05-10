@@ -45,7 +45,7 @@
               var error = 'Greška! Pokušajte ponovo.';
 
               $('#infomsg').hide().html(loading).fadeIn(1000, function () {
-                $.post("{{ path('app_device_edit', {clientId, clientId, id: device.id}) }}", form_data,
+                $.post("{{ path('app_device_edit', {clientId, clientId, deviceId: device.id}) }}", form_data,
                   function (data, s, r) {
                     if (r.getResponseHeader('Requires-Auth') == 1) {
                       $(location).attr('href', "{{ path('client_overview', {clientId: clientId}) }}");
@@ -142,7 +142,7 @@
 {% block content %}
     <div id="body">
         <form id="settingsform" class="form"
-              action="{{ path('app_device_edit', {clientId: clientId, id: device.id }) }}" method="POST">
+              action="{{ path('app_device_edit', {clientId: clientId, deviceId: device.id }) }}" method="POST">
             <div class="block big"><!-- Block Begin -->
                 <div class="titlebar">
                     <h3>Osnovne postavke</h3>

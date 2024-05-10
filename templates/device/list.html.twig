@@ -59,8 +59,8 @@
                   data: form_data,
                   dataType: 'json',
                   type: 'POST',
-                  success: function() {
-                    $(location).attr('href', "{{ path('app_device_list', {clientId: clientId}) }}")
+                  success: function(response) {
+                    $(location).attr('href', "/admin/" + {{ clientId }} + "/device/" + response + "/edit")
                   },
                   error: function() {
                     alert('Greška! Molimo pokušajte ponovo');
@@ -267,7 +267,7 @@
                                     <td><span class="{% if device.battery < 30 %}red{% else %}green{% endif %}">{{ device.battery }}%</span></td>
                                     <td>
                                         <div id="{{ device.id }}" data-devnam="{{ device.name }}" class="actionbar">
-                                            <a href="{{ path('app_device_edit', {clientId: clientId, id: device.id}) }}" class="action edit">
+                                            <a href="{{ path('app_device_edit', {clientId: clientId, deviceId: device.id}) }}" class="action edit">
                                                 <span>Uredi</span>
                                             </a>
                                             <a href="#" class="action delete"><span>Obriši</span></a>

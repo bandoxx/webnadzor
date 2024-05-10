@@ -12,14 +12,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/admin/{clientId}/device/{id}/edit', name: 'app_device_edit', methods: 'GET|POST')]
+#[Route(path: '/admin/{clientId}/device/{deviceId}/edit', name: 'app_device_edit', methods: 'GET|POST')]
 class DeviceEditController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $id, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
+    public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
     {
         $error = [];
-        $device = $deviceRepository->find($id);
+        $device = $deviceRepository->find($deviceId);
 
         $icons = $deviceIconRepository->findBy(['client' => $clientId]);
         if ($request->getMethod() === 'POST') {

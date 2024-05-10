@@ -25,7 +25,7 @@ class DeviceToggleParserController extends AbstractController
 
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'id' => $device->getId()]);
+        return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'deviceId' => $device->getId()]);
     }
 
 }
