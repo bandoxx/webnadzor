@@ -87,14 +87,14 @@ class DeviceAlarmRepository extends ServiceEntityRepository
     {
         $builder = $this->createQueryBuilder('a')
             ->select('COUNT(a)')
-            ->where('a.device = :device AND a.endDeviceDate IS NULL')
+            ->where('a.device = :device AND a.endDeviceDate IS NULL')->setParameter('device', $device->getId())
         ;
 
         if ($entry) {
             $builder->andWhere('a.entry = :entry')->setParameter('entry', $entry);
         }
 
-        return $builder->setParameter('device', $device->getId())
+        return $builder
             ->getQuery()
             ->getSingleScalarResult()
         ;
