@@ -83,12 +83,18 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findNumberOfActiveAlarmsForDevice(Device $device): int
+    public function findNumberOfActiveAlarmsForDevice(Device $device, ?int $entry = null): int
     {
-        return $this->createQueryBuilder('a')
+        $builder = $this->createQueryBuilder('a')
             ->select('COUNT(a)')
             ->where('a.device = :device AND a.endDeviceDate IS NULL')
-            ->setParameter('device', $device->getId())
+        ;
+
+        if ($entry) {
+            $builder->andWhere('a.entry = :entry')->setParameter('entry', $entry);
+        }
+
+        return $builder->setParameter('device', $device->getId())
             ->getQuery()
             ->getSingleScalarResult()
         ;
