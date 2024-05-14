@@ -71,7 +71,7 @@ class DeviceLocationHandler
             $entryN = $entry['entry'];
 
             $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entryN);
-            $numberOfAlarms = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device, $entry);
+            $numberOfAlarms = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device, $entryN);
 
             if (!$data) {
                 continue;
