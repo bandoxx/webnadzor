@@ -91,7 +91,7 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         ;
 
         if ($entry) {
-            $builder->andWhere('a.entry = :entry')->setParameter('entry', $entry);
+            $builder->andWhere('a.sensor = :sensor')->setParameter('sensor', $entry);
         }
 
         return $builder
