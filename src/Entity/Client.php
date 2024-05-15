@@ -12,7 +12,7 @@ class Client
 {
     public const OVERVIEW_MAP = 1;
     public const OVERVIEW_THERMOMETER = 2;
-    public const OVERVIEW_FRIDGE = 3;
+    public const OVERVIEW_ICONS = 3;
 
     public const DEVICE_OVERVIEW_ICON = 1;
     public const DEVICE_OVERVIEW_DYNAMIC = 2;

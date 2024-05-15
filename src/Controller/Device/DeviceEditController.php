@@ -21,7 +21,12 @@ class DeviceEditController extends AbstractController
         $error = [];
         $device = $deviceRepository->find($deviceId);
 
+        if (!$device) {
+            return $this->json(null, Response::HTTP_NOT_FOUND);
+        }
+
         $icons = $deviceIconRepository->findBy(['client' => $clientId]);
+
         if ($request->getMethod() === 'POST') {
             // TODO: Permissions
             try {

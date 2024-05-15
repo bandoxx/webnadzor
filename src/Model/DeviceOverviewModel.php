@@ -7,16 +7,25 @@ class DeviceOverviewModel
     private ?int $id = null;
     private ?int $entry = null;
     private ?string $location = null;
+    private ?string $temperatureLocation = null;
+    private ?string $relativeHumidityLocation = null;
     private ?string $name = null;
+    private ?string $temperatureName = null;
+    private ?string $relativeHumidityName = null;
     private ?bool $online = null;
     private ?bool $alarm = null;
+    private ?bool $showTemperature = null;
+    private ?bool $showHumidity = null;
+    private ?string $temperatureUnit = null;
     private ?string $temperature = null;
     private ?string $temperatureMax = null;
     private ?string $temperatureMin = null;
     private ?string $temperatureAverage = null;
+    private ?string $relativeHumidityUnit = null;
     private ?string $relativeHumidity = null;
     private ?string $meanKineticTemperature = null;
-    private ?string $deviceDate = null;
+    private ?\DateTime $deviceDate = null;
+    private ?string $temperatureImage = null;
 
     public function getId(): ?int
     {
@@ -35,9 +44,33 @@ class DeviceOverviewModel
         return $this->name;
     }
 
+    public function getTemperatureName(): ?string
+    {
+        return $this->temperatureName;
+    }
+
+    public function setTemperatureName(?string $temperatureName): static
+    {
+        $this->temperatureName = $temperatureName;
+
+        return $this;
+    }
+
     public function setName(?string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getRelativeHumidityName(): ?string
+    {
+        return $this->relativeHumidityName;
+    }
+
+    public function setRelativeHumidityName(?string $relativeHumidityName): static
+    {
+        $this->relativeHumidityName = $relativeHumidityName;
 
         return $this;
     }
@@ -162,16 +195,99 @@ class DeviceOverviewModel
         return $this;
     }
 
-    public function getDeviceDate(): ?string
+    public function getDeviceDate(): ?\DateTime
     {
         return $this->deviceDate;
     }
 
-    public function setDeviceDate(?string $deviceDate): static
+    public function setDeviceDate(?\DateTime $deviceDate): static
     {
         $this->deviceDate = $deviceDate;
 
         return $this;
     }
 
+    public function getTemperatureImage(): ?string
+    {
+        return $this->temperatureImage;
+    }
+
+    public function setTemperatureImage(?string $temperatureImage): static
+    {
+        $this->temperatureImage = $temperatureImage;
+
+        return $this;
+    }
+
+    public function getShowTemperature(): ?bool
+    {
+        return $this->showTemperature;
+    }
+
+    public function setShowTemperature(?bool $showTemperature): static
+    {
+        $this->showTemperature = $showTemperature;
+
+        return $this;
+    }
+
+    public function getShowHumidity(): ?bool
+    {
+        return $this->showHumidity;
+    }
+
+    public function setShowHumidity(?bool $showHumidity): static
+    {
+        $this->showHumidity = $showHumidity;
+
+        return $this;
+    }
+
+    public function getTemperatureUnit(): ?string
+    {
+        return $this->temperatureUnit;
+    }
+
+    public function setTemperatureUnit(?string $temperatureUnit): static
+    {
+        $this->temperatureUnit = $temperatureUnit;
+
+        return $this;
+    }
+
+    public function getRelativeHumidityUnit(): ?string
+    {
+        return $this->relativeHumidityUnit;
+    }
+
+    public function setRelativeHumidityUnit(?string $relativeHumidityUnit): static
+    {
+        $this->relativeHumidityUnit = $relativeHumidityUnit;
+
+        return $this;
+    }
+
+    public function getTemperatureLocation(): ?string
+    {
+        return $this->temperatureLocation;
+    }
+
+    public function setTemperatureLocation(?string $temperatureLocation): static
+    {
+        $this->temperatureLocation = $temperatureLocation;
+
+        return $this;
+    }
+
+    public function getRelativeHumidityLocation(): ?string
+    {
+        return $this->relativeHumidityLocation;
+    }
+
+    public function setRelativeHumidityLocation(?string $relativeHumidityLocation): static
+    {
+        $this->relativeHumidityLocation = $relativeHumidityLocation;
+
+        return $this;
+    }
 }

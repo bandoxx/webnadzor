@@ -192,7 +192,7 @@
                 color: "#e20074"
               }];
 
-              yAxisText = "{{ device.getEntryData(entry).t_unit }}"
+              yAxisText = "{{ device.temperatureUnit }}"
             } else {
               navigationSeries = {
                 name: 'Vlaznost',
@@ -204,7 +204,7 @@
                 data: data.rh
               }]
 
-              yAxisText = "{{ device.getEntryData(entry).rh_unit }}"
+              yAxisText = "{{ device.relativeHumidityUnit }}"
             }
 
             Highcharts.stockChart(containerId, {
@@ -298,11 +298,11 @@
         }
 
         if (document.getElementById('container_t')) {
-          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }} - {{ device.getEntryData(entry).t_name }}");
+          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }} - {{ device.temperatureName }}");
         }
 
         if (document.getElementById('container_rh')) {
-          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }} - {{ device.getEntryData(entry).rh_name }}");
+          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }} - {{ device.relativeHumidityName }}");
         }
       })
 
@@ -325,39 +325,39 @@
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
             <div class="titlebar">
-                <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }} - <span
-                            id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                <h3>Trenutni podaci za lokaciju {{ device.temperatureLocation }} - <span
+                            id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
                 <a href="#" class="toggle">&nbsp;</a>
             </div>
             <div class="block_cont" style="padding:4px;">
                 <div style="margin-bottom:10px;">
                 {% if client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') %}
                     <div class="dets-100" style="margin-left: 20px;">
-                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.getEntryData(entry).t_name }}</span><br><br>
-                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device_data.getT(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device_data.getTAvrg(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device_data.getTMax(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device_data.getTMin(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device_data.getRh(entry) }} {{ device.getEntryData(entry).rh_unit }}</span>
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.temperatureName }}</span><br><br>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureAverage }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device.getRelativeHumidity }}</span>
                     </div>
                     <div style="margin-left: 10px;" class="dets-100">
                         <div style="min-height:50px;" id="t1_image">
-                            <img alt="t1" src="{{ asset('assets/images/frizider.png') }}">
+                            <img alt="t1" src="{{ asset(device.temperatureImage) }}">
                         </div>
                     </div>
                 {% elseif client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') %}
                     <div class="dets-100"
                          style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
-                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.getEntryData(entry).t_name }}</span>
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.temperatureName }}</span>
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
                             <img alt="t1" src="{{ path('app_image_getimage', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
-                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; display: block;" id="t1_value">{{ device_data.getT(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right; display: block;" id="t1_value">{{ device_data.getTAvrg(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right; display: block;" id="t1max_value">{{ device_data.getTMax(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right; display: block;" id="t1min_value">{{ device_data.getTMin(entry) }} {{ device.getEntryData(entry).t_unit }}</span><br><br>
-                        <span style="color: #515d6b;">MKT</span>: <span style="float: right; display: block;" id="mkt1_value">{{ device_data.getMkt(entry) }} {{ device.getEntryData(entry).t_unit }}</span>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureAverage }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
                     </div>
                     <div class="dets"
                          style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
@@ -366,7 +366,7 @@
                                  src="{{ path('app_image_rh', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <br><br>
-                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">{{ device_data.getRh(entry) }} {{ device.getEntryData(entry).rh_unit }}</span>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">{{ device.relativeHumidity }}</span>
                     </div>
                 {% endif %}
                     <div class="clear"></div>
@@ -374,12 +374,12 @@
             </div>
         </div>
 
-        {% if device.entryData(entry).t_show_chart %}
+        {% if device.showTemperature %}
             <div id="devdata" class="block big"><!-- Block Begin -->
                 <div class="titlebar">
-                    <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno
-                        mjesto {{ device.getEntryData(entry).t_name }} - <span
-                                id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                    <h3>Trenutni podaci za lokaciju {{ device.temperatureLocation }}, mjerno
+                        mjesto {{ device.temperatureName }} - <span
+                                id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
                     <a href="#" class="toggle">&nbsp;</a>
                 </div>
 
@@ -391,12 +391,12 @@
             </div><!-- Block End -->
         {% endif %}
 
-        {% if device.entryData(entry).rh_show_chart %}
+        {% if device.showHumidity %}
             <div id="devdata" class="block big"><!-- Block Begin -->
                 <div class="titlebar">
-                    <h3>Trenutni podaci za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno
-                        mjesto {{ device.getEntryData(entry).t_name }} - <span
-                                id="device_date">{{ device_data.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                    <h3>Trenutni podaci za lokaciju {{ device.temperatureLocation }}, mjerno
+                        mjesto {{ device.temperatureName }} - <span
+                                id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
                     <a href="#" class="toggle">&nbsp;</a>
                 </div>
 
