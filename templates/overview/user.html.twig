@@ -44,7 +44,7 @@
                                 <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.location }}<br>{{ device.name }}</span><br><span
                                         style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }}
                                     {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
-                                        <br><span class="red">Uređaj offline {{ device.deviceDate|timeAgo }}</span>
+                                        <br><span class="red">Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}</span>
                                     {% endif %}
                                 </span>
                                 <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
