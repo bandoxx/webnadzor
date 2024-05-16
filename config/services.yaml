@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    router.request_context.host: test.webnadzor.net
+    router.request_context.scheme: https
     icon_directory: 'assets/images/details_icons'
     icon_directory_full_path: '%kernel.project_dir%/public/%icon_directory%'
     map_marker_directory: 'assets/images/map-icon'
