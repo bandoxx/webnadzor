@@ -23,7 +23,7 @@ class AlarmNotifier
         $email = (new Email())
             ->from('info@intelteh.hr')
             ->sender('info@intelteh.hr')
-            ->to('radivoje.pupovac98@gmail.com')
+            ->to('radivoje.pupovac98@gmail.com', 'damir.cerjak@intelteh.hr')
             ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
             ->html($this->twig->render('mail/active_alarm_notification.html.twig', [
                 'device' => $device,
