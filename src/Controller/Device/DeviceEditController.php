@@ -26,7 +26,7 @@ class DeviceEditController extends AbstractController
             throw new NotFoundHttpException();
         }
 
-        $icons = $deviceIconRepository->findBy(['client' => $clientId]);
+        $icons = $deviceIconRepository->findAll();
 
         if ($request->getMethod() === 'POST') {
             // TODO: Permissions
