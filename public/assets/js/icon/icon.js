@@ -17,7 +17,7 @@ function delete_confirm(icon_id) {
           url: '/api/icons/' + icon_id,
           type: 'DELETE',
           success: function(result) {
-            $(location).attr('href', "{{ path('app_icon_index', {clientId: clientId}) }}")
+            $(location).attr('href', "{{ path('app_icon_index') }}")
           },
           error: function(result) {
             alert('Greška! Molimo pokušajte ponovo');
@@ -55,7 +55,7 @@ function edit_icon(icon_id) {
             title: data[0].value
           },
           success: function(result) {
-            $(location).attr('href', "{{ path('app_icon_index', {clientId: clientId}) }}")
+            $(location).attr('href', "{{ path('app_icon_index') }}")
           },
           error: function(result) {
             alert('Greška! Molimo pokušajte ponovo');

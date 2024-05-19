@@ -23,7 +23,7 @@
                 url: '/api/icons/' + icon_id,
                 type: 'DELETE',
                 success: function(result) {
-                  $(location).attr('href', "{{ path('app_icon_index', {clientId: clientId}) }}")
+                  $(location).attr('href', "{{ path('app_icon_index') }}")
                 },
                 error: function(result) {
                   alert('Greška! Molimo pokušajte ponovo');
@@ -61,7 +61,7 @@
                   title: data[0].value
                 },
                 success: function(result) {
-                  $(location).attr('href', "{{ path('app_icon_index', {clientId: clientId}) }}")
+                  $(location).attr('href', "{{ path('app_icon_index') }}")
                 },
                 error: function(result) {
                   alert('Greška! Molimo pokušajte ponovo');
@@ -190,7 +190,7 @@
 
 {% block navigation %}
     <li><a href="#" id="iconadd" class="icon_plus">Dodaj ikonu</a></li>
-    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
+    <li><a href="{{ path('admin_overview') }}" class="icon_left">Povratak</a></li>
 {% endblock %}
 
 {% block content %}
@@ -211,7 +211,7 @@
         </form>
     </div>
     <div id="add-form" title="Dodaj novu ikonu" style="display:none;">
-        <form id="addform" class="form" action="{{ path('app_icon_new', {clientId: clientId}) }}" method="POST" enctype="multipart/form-data">
+        <form id="addform" class="form" action="{{ path('app_icon_new') }}" method="POST" enctype="multipart/form-data">
             <fieldset>
                 <label for="icon_title" style="display:block; margin-top:12px;">Naziv ikone</label>
                 <input type="text" name="icon_title" id="icon_title2" class="input validate[required,maxSize[24]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>

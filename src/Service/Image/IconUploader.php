@@ -19,7 +19,7 @@ class IconUploader
         private readonly EntityManagerInterface $entityManager
     ) {}
 
-    public function uploadAndSave(UploadedFile $uploadedFile, Client $client, string $title): void
+    public function uploadAndSave(UploadedFile $uploadedFile, string $title): void
     {
         $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
         // this is needed to safely include the file name as part of the URL
@@ -38,7 +38,7 @@ class IconUploader
         }
 
         $newIcon = new DeviceIcon();
-        $newIcon->setClient($client)
+        $newIcon
             ->setTitle($title)
             ->setFilename($newFilename);
 

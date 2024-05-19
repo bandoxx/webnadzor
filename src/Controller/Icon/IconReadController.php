@@ -8,13 +8,13 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/admin/{clientId}/icons', name: 'app_icon_index', methods: 'GET')]
+#[Route(path: '/admin/icons', name: 'app_icon_index', methods: 'GET')]
 class IconReadController extends AbstractController
 {
 
-    public function __invoke(int $clientId, DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
+    public function __invoke(DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
     {
-        $icons = $deviceIconRepository->findBy(['client' => $clientId]);
+        $icons = $deviceIconRepository->findAll();
 
         foreach ($icons as $icon) {
             $icon->setFullPath(sprintf("%s/%s", $parameterBag->get('icon_directory'), $icon->getFilename()));

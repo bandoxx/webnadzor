@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/device/{deviceId}/edit', name: 'app_device_edit', methods: 'GET|POST')]
@@ -22,7 +23,7 @@ class DeviceEditController extends AbstractController
         $device = $deviceRepository->find($deviceId);
 
         if (!$device) {
-            return $this->json(null, Response::HTTP_NOT_FOUND);
+            throw new NotFoundHttpException();
         }
 
         $icons = $deviceIconRepository->findBy(['client' => $clientId]);
