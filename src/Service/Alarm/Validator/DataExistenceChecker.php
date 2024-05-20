@@ -19,14 +19,14 @@ class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInter
 
             $alarm = $this->findAlarm($device, AlarmHandlerInterface::SENSOR_ERROR, $entry);
 
-            if ((bool) $device->getEntryData($entry)['t_use'] === true && !is_numeric($deviceData->getT($entry))) {
+            if ((bool) $device->getEntryData($entry)['t_use'] === true && (!is_numeric($deviceData->getT($entry)) || $deviceData->getT($entry) == 0)) {
                 $this->alarmShouldBeOn = true;
 
                 $this->finish($alarm, $deviceData, AlarmHandlerInterface::SENSOR_ERROR, $entry);
                 break;
             }
 
-            if ((bool) $device->getEntryData($entry)['rh_use'] === true && !is_numeric($deviceData->getRH($entry))) {
+            if ((bool) $device->getEntryData($entry)['rh_use'] === true && (!is_numeric($deviceData->getRH($entry)) || $deviceData->getT($entry) == 0)) {
                 $this->alarmShouldBeOn = true;
 
                 $this->finish($alarm, $deviceData, AlarmHandlerInterface::SENSOR_ERROR, $entry);
