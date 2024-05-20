@@ -67,6 +67,9 @@ class Client
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $OIB = null;
 
+    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
+    private ?ClientSetting $clientSetting = null;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -381,5 +384,22 @@ class Client
         }
 
         return implode(', ', $parts);
+    }
+
+    public function getClientSetting(): ?ClientSetting
+    {
+        return $this->clientSetting;
+    }
+
+    public function setClientSetting(ClientSetting $clientSetting): static
+    {
+        // set the owning side of the relation if necessary
+        if ($clientSetting->getClient() !== $this) {
+            $clientSetting->setClient($this);
+        }
+
+        $this->clientSetting = $clientSetting;
+
+        return $this;
     }
 }

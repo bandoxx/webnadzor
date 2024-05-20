@@ -20,10 +20,16 @@ class AlarmNotifier
      */
     public function notify(Device $device, array $alarms): void
     {
+        $settings = $device->getClient()->getClientSetting();
+
+        $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
+        $emails = array_merge($settings->getAlarmNotificationList(), $emails);
+
         $email = (new Email())
             ->from('info@intelteh.hr')
             ->sender('info@intelteh.hr')
-            ->to('radivoje.pupovac98@gmail.com', 'damir.cerjak@intelteh.hr')
+            ->to(...$emails)
+            ->cc('radivoje.pupovac98@gmail.com')
             ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
             ->html($this->twig->render('mail/active_alarm_notification.html.twig', [
                 'device' => $device,

@@ -2,12 +2,13 @@
 
 namespace App\Service\Alarm\Validator;
 
+use App\Entity\ClientSetting;
 use App\Entity\DeviceData;
 use App\Service\Alarm\AlarmHandlerInterface;
 
 class TemperatureChecker extends BaseAlarmHandler implements AlarmHandlerInterface
 {
-    public function validate(DeviceData $deviceData): void
+    public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {
         $device = $deviceData->getDevice();
 

@@ -1,6 +1,7 @@
 {% extends 'overview/overview.html.twig' %}
     {% block navigation %}
         {% if app.user.permission == 4 %}
+            <li><a href="{{ path('admin_client_settings', {clientId: clientId}) }}" class="icon_settings">Podešavanja</a></li>
             <li><a href="{{ path('admin_overview') }}" class="icon_users">Klijenti</a></li>
         {% endif %}
 

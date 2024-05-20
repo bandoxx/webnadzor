@@ -2,6 +2,7 @@
 
 namespace App\Service\Alarm;
 
+use App\Entity\ClientSetting;
 use App\Entity\DeviceData;
 
 interface AlarmHandlerInterface
@@ -15,7 +16,7 @@ interface AlarmHandlerInterface
     public const SIGNAL_LEVEL = 'signal-level';
     public const SENSOR_ERROR = 'sensor-error';
 
-    public function validate(DeviceData $deviceData): void;
+    public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void;
 
 
 }

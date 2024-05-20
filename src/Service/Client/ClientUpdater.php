@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Client;
 
 use App\Entity\Client;
+use App\Factory\ClientSettingFactory;
 use App\Service\Image\LogoUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 class ClientUpdater
 {
 
-    public function __construct(private LogoUploader $logoUploader, private EntityManagerInterface $entityManager) {}
+    public function __construct(private LogoUploader $logoUploader, private EntityManagerInterface $entityManager, private ClientSettingFactory $clientSettingFactory) {}
 
     public function updateByRequest(Request $request, Client $client): void
     {
@@ -20,7 +21,10 @@ class ClientUpdater
         $client->setOIB($request->request->get('oib'));
 
         if (!$client->getId()) {
+            $clientSettings = $this->clientSettingFactory->create($client);
+
             $this->entityManager->persist($client);
+            $this->entityManager->persist($clientSettings);
             $this->entityManager->flush();
         }
 

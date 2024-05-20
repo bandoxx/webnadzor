@@ -1184,3 +1184,7 @@ div.information .hide_btn:hover {
 table.dataTable.compact thead th {
     padding: 1px !important;
 }
+
+.margin-bottom-25 {
+    margin-bottom: 25px;
+}

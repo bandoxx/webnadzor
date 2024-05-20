@@ -72,7 +72,7 @@ class ParseXmlsCommand extends Command
 
             unlink($xmlPath);
 
-            $this->alarmValidator->validate($deviceData);
+            $this->alarmValidator->validate($deviceData, $device->getClient()->getClientSetting());
         }
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));

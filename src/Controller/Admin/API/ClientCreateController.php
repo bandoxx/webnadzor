@@ -3,7 +3,7 @@
 namespace App\Controller\Admin\API;
 
 use App\Entity\Client;
-use App\Service\ClientUpdater;
+use App\Service\Client\ClientUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
