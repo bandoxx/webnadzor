@@ -73,7 +73,7 @@
             <div id="userbar">
                 <div id="logoarea{% if client is not null and client.mainLogo is not empty %}-no-bg{% endif %}">
                     {% if client is not null %}
-                        <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;background-size: 180px 58px"></div></a>
+                        <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
                     {% else %}
                         <a href="/"><div id="logo"></div></a>
                     {% endif %}
