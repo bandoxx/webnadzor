@@ -129,10 +129,16 @@
                 <span>Aktivan alarm za minimalni nivo baterije</span>
               </label>
             </div>
-            <div class="form_row margin-bottom-25">
+            <div class="form_row">
               <input type="checkbox" id="c3" name="is_device_offline_alarm_active" {% if settings.isDeviceOfflineAlarmActive %}checked{% endif %}>
               <label style="display:inline !important" for="c3" role="button" aria-disabled="false">
                 <span>Aktiviranje alarma kada je uređaj offline</span>
+              </label>
+            </div>
+            <div class="form_row">
+              <input type="checkbox" id="c4" name="is_device_sensor_error_alarm_active" {% if settings.isDeviceSensorErrorAlarmActive %}checked{% endif %}>
+              <label style="display:inline !important" for="c4" role="button" aria-disabled="false">
+                <span>Aktiviranje alarma za grešku na senzoru</span>
               </label>
             </div>
           </div>

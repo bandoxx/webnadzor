@@ -36,6 +36,9 @@ class ClientSetting
     #[ORM\Column]
     private ?bool $isDeviceOfflineAlarmActive = null;
 
+    #[ORM\Column]
+    private ?bool $isDeviceSensorErrorAlarmActive = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -121,6 +124,18 @@ class ClientSetting
     public function setDeviceOfflineAlarmActive(bool $isDeviceOfflineAlarmActive): static
     {
         $this->isDeviceOfflineAlarmActive = $isDeviceOfflineAlarmActive;
+
+        return $this;
+    }
+
+    public function isDeviceSensorErrorAlarmActive(): ?bool
+    {
+        return $this->isDeviceSensorErrorAlarmActive;
+    }
+
+    public function setDeviceSensorErrorAlarmActive(bool $isDeviceSensorErrorAlarmActive): static
+    {
+        $this->isDeviceSensorErrorAlarmActive = $isDeviceSensorErrorAlarmActive;
 
         return $this;
     }

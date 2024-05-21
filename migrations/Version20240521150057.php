@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20240521150057 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE client_setting ADD is_device_sensor_error_alarm_active TINYINT(1) NOT NULL');
+        $this->addSql('UPDATE client_setting SET is_device_sensor_error_alarm_active = true');
+        $this->addSql('ALTER TABLE device DROP alarm_email_application');
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('ALTER TABLE client_setting DROP is_device_sensor_error_alarm_active');
+        $this->addSql('ALTER TABLE device ADD alarm_email_application JSON DEFAULT NULL');
+    }
+}

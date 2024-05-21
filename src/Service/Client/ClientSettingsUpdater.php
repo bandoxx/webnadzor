@@ -20,6 +20,7 @@ class ClientSettingsUpdater
             ->setDeviceSignalAlarm($data['device_signal_level'])
             ->setDeviceOfflineAlarmActive(filter_var($data['is_device_offline_alarm_active'], FILTER_VALIDATE_BOOLEAN))
             ->setBatteryLevelAlarmActive(filter_var($data['is_battery_level_alarm_active'], FILTER_VALIDATE_BOOLEAN))
+            ->setDeviceSensorErrorAlarmActive(filter_var($data['is_device_sensor_error_alarm_active'], FILTER_VALIDATE_BOOLEAN))
             ->setBatteryLevelAlert($data['battery_level_alarm'])
         ;
 
