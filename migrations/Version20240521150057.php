@@ -22,13 +22,11 @@ final class Version20240521150057 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE client_setting ADD is_device_sensor_error_alarm_active TINYINT(1) NOT NULL');
         $this->addSql('UPDATE client_setting SET is_device_sensor_error_alarm_active = true');
-        $this->addSql('ALTER TABLE device DROP alarm_email_application');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE client_setting DROP is_device_sensor_error_alarm_active');
-        $this->addSql('ALTER TABLE device ADD alarm_email_application JSON DEFAULT NULL');
     }
 }
