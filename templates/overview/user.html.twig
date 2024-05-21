@@ -109,6 +109,7 @@
                     <table id="table" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
                         <thead>
                         <tr role="row">
+                            <th>Adresa</th>
                             <th>Lokacija</th>
                             <th>Naziv mjernog mjesta</th>
                             <th>Status</th>
@@ -120,8 +121,9 @@
                         <tbody role="alert" aria-live="polite" aria-relevant="all">
                         {% for device in devices_table %}
                             <tr>
-                                <td class="">{{ device.location }}</td>
                                 <td class="">{{ device.name }}</td>
+                                <td class="">{{ device.location }}</td>
+                                <td class="">{{ device.temperatureName }}</td>
                                 <td class="">
                                     {% if device.online %}
                                         <span class="green">Online</span>
