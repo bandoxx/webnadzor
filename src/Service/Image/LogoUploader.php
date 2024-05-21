@@ -12,7 +12,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class LogoUploader
 {
 
-    public const LOGO_HEIGHT = 65;
+    public const LOGO_HEIGHT = 58;
     public const LOGO_WIDTH = 180;
     public const ICON_HEIGHT = 32;
     public const ICON_WIDTH = 32;
