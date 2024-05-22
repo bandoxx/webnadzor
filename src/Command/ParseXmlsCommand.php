@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Factory\DeviceDataFactory;
+use App\Factory\LockFactory;
 use App\Repository\DeviceRepository;
 use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,7 +11,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 #[AsCommand(
     name: 'app:parse-xmls',
@@ -27,6 +27,7 @@ class ParseXmlsCommand extends Command
         private DeviceRepository       $deviceRepository,
         private EntityManagerInterface $entityManager,
         private ValidatorCollection    $alarmValidator,
+        private LockFactory            $lockFactory,
         private string                 $xmlDirectory
     )
     {
@@ -35,6 +36,12 @@ class ParseXmlsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $lock = $this->lockFactory->create('parse-xml');
+
+        if (!$lock->acquire()) {
+            $output->writeln('Parser is running already...');
+        }
+
         $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
@@ -64,7 +71,8 @@ class ParseXmlsCommand extends Command
             $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
 
             if (!$deviceData) {
-                throw new BadRequestException(sprintf("XML Parser failed for %s", $xmlPath));
+                $output->writeln(sprintf("XML Parser failed for %s", $xmlPath));
+                continue;
             }
 
             $this->entityManager->persist($deviceData);
@@ -74,6 +82,8 @@ class ParseXmlsCommand extends Command
 
             $this->alarmValidator->validate($deviceData, $device->getClient()->getClientSetting());
         }
+
+        $lock->release();
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
