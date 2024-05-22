@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\Notify;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;

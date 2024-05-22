@@ -22,6 +22,29 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
+    public function getLast100Records(int $deviceId): array
+    {
+        return $this->createQueryBuilder('dd')
+            ->where('dd.device = :deviceId')->setParameter('deviceId', $deviceId)
+            ->orderBy('dd.deviceDate', 'DESC')
+            ->setMaxResults(100)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function getNumberOfRecordsForLastDay(int $deviceId)
+    {
+        return $this->createQueryBuilder('dd')
+            ->select('COUNT(dd)')
+            ->where('dd.device = :deviceId')->setParameter('deviceId', $deviceId)
+            ->andWhere('dd.deviceDate >= :fromDate')->setParameter('fromDate', (new \DateTime('-1 day'))->setTime(0, 0, 0))
+            ->andWhere('dd.deviceDate <= :toDate')->setParameter('toDate', (new \DateTime('-1 day'))->setTime(23, 59))
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
     public function getFirstRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')

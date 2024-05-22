@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceRepository;
-use App\Service\AlarmNotifier;
+use App\Service\Notify\AlarmNotifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

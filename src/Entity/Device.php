@@ -57,6 +57,9 @@ class Device
     #[ORM\Column(nullable: true)]
     private ?array $alarmEmail = null;
 
+    #[ORM\Column]
+    private ?int $xmlInterval = null;
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -326,6 +329,18 @@ class Device
     public function setAlarmEmail(?array $alarmEmail): static
     {
         $this->alarmEmail = $alarmEmail;
+
+        return $this;
+    }
+
+    public function getXmlInterval(): ?int
+    {
+        return $this->xmlInterval;
+    }
+
+    public function setXmlInterval(int $xmlInterval): static
+    {
+        $this->xmlInterval = $xmlInterval;
 
         return $this;
     }
