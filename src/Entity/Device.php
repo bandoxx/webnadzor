@@ -350,7 +350,7 @@ class Device
 
     public function getApplicationEmailList(): ?array
     {
-        return $this->applicationEmailList;
+        return $this->applicationEmailList ?? [];
     }
 
     public function setApplicationEmailList(?array $applicationEmailList): static
