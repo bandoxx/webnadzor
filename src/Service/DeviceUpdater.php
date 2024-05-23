@@ -57,11 +57,8 @@ class DeviceUpdater
             $this->updateDigital($device, $entry, $data);
         }
 
-        $device->setAlarmEmail([
-            'smtp1' => $data['smtp1'] ?: null,
-            'smtp2' => $data['smtp2'] ?: null,
-            'smtp3' => $data['smtp3'] ?: null
-        ]);
+        $device->setAlarmEmail(array_values(array_filter($data['smtp'] ?? [])));
+        $device->setApplicationEmailList(array_values(array_filter($data['applicationEmail'] ?? [])));
 
         if ($this->error) {
             throw new BadRequestException(json_encode($this->error));

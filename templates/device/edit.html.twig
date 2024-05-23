@@ -557,24 +557,48 @@
                 <div class="block_cont">
                     <div class="grid_4 alpha">
                         <div class="form_row">
-                            <label>Email 1</label>
-                            <input value="{{ device.alarmEmail.smtp1 }}"
+                            <label>Email iz uređaja 1</label>
+                            <input value="{{ device.alarmEmail[0] is defined ? device.alarmEmail[0] : '' }}"
                                    class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
-                                   style="width: 290px;" name="smtp1" id="SmtpT1" placeholder="Unesite email 1"
+                                   style="width: 290px;" name="smtp[]" id="SmtpT1" placeholder="Unesite email 1"
                                    original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
                         </div>
                         <div class="form_row">
-                            <label>Email 2</label>
-                            <input value="{{ device.alarmEmail.smtp2 }}"
+                            <label>Email iz uređaja 2</label>
+                            <input value="{{ device.alarmEmail[1] is defined ? device.alarmEmail[1] : '' }}"
                                    class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
-                                   style="width: 290px;" name="smtp2" id="SmtpT2" placeholder="Unesite email 2"
+                                   style="width: 290px;" name="smtp[]" id="SmtpT2" placeholder="Unesite email 2"
                                    original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
                         </div>
                         <div class="form_row">
-                            <label>Email 3</label>
-                            <input value="{{ device.alarmEmail.smtp3 }}"
+                            <label>Email iz uređaja 3</label>
+                            <input value="{{ device.alarmEmail[2] is defined ? device.alarmEmail[2] : '' }}"
                                    class="input validate[optional,custom[email],maxSize[40]] tipRight" type="text"
-                                   style="width: 290px;" name="smtp3" id="SmtpT3" placeholder="Unesite email 3"
+                                   style="width: 290px;" name="smtp[]" id="SmtpT3" placeholder="Unesite email 3"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
+                        </div>
+                    </div>
+
+                    <div class="grid_4 alpha">
+                        <div class="form_row">
+                            <label>Email iz aplikacije 1</label>
+                            <input value="{{ device.applicationEmailList[0] is defined ? device.applicationEmailList[0] : ''}}"
+                                   class="input validate[optional,custom[email],maxSize[50]] tipRight" type="text"
+                                   style="width: 290px;" name="applicationEmail[]" id="applicationEmail1" placeholder="Unesite email 1"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
+                        </div>
+                        <div class="form_row">
+                            <label>Email iz aplikacije 2</label>
+                            <input value="{{ device.applicationEmailList[1] is defined ? device.applicationEmailList[1] : ''}}"
+                                   class="input validate[optional,custom[email],maxSize[50]] tipRight" type="text"
+                                   style="width: 290px;" name="applicationEmail[]" id="applicationEmail2" placeholder="Unesite email 2"
+                                   original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
+                        </div>
+                        <div class="form_row">
+                            <label>Email iz aplikacije 3</label>
+                            <input value="{{ device.applicationEmailList[2] is defined ? device.applicationEmailList[1] : '' }}"
+                                   class="input validate[optional,custom[email],maxSize[50]] tipRight" type="text"
+                                   style="width: 290px;" name="applicationEmail[]" id="applicationEmail3" placeholder="Unesite email 3"
                                    original-title="E-mail adresa za alarme, maksimalno 40 znakova"/>
                         </div>
                     </div>

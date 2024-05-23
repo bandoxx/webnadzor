@@ -60,6 +60,9 @@ class Device
     #[ORM\Column]
     private ?int $xmlInterval = 0;
 
+    #[ORM\Column(nullable: true)]
+    private ?array $applicationEmailList = [];
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -341,6 +344,18 @@ class Device
     public function setXmlInterval(int $xmlInterval): static
     {
         $this->xmlInterval = $xmlInterval;
+
+        return $this;
+    }
+
+    public function getApplicationEmailList(): ?array
+    {
+        return $this->applicationEmailList;
+    }
+
+    public function setApplicationEmailList(?array $applicationEmailList): static
+    {
+        $this->applicationEmailList = $applicationEmailList;
 
         return $this;
     }
