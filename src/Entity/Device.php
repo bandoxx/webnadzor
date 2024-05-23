@@ -58,7 +58,7 @@ class Device
     private ?array $alarmEmail = null;
 
     #[ORM\Column]
-    private ?int $xmlInterval = null;
+    private ?int $xmlInterval = 0;
 
     public function __construct()
     {
