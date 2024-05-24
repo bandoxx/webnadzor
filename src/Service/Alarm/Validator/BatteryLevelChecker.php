@@ -11,11 +11,12 @@ class BatteryLevelChecker extends BaseAlarmHandler implements AlarmHandlerInterf
 {
     public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {
+        $type = new DeviceBatteryLow();
+
         if (!$clientSetting->isBatteryLevelAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
             return;
         }
-
-        $type = new DeviceBatteryLow();
 
         if ($deviceData->getBattery() <= $clientSetting->getBatteryLevelAlert()) {
             $this->createAlarm($deviceData, $type);

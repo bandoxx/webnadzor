@@ -11,11 +11,12 @@ class DeviceSignalLevelChecker extends BaseAlarmHandler implements AlarmHandlerI
 {
     public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {
+        $type = new DeviceSignalLow();
+
         if (!$clientSetting->isDeviceSignalAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
             return;
         }
-
-        $type = new DeviceSignalLow();
 
         if ($deviceData->getBattery() <= $clientSetting->getDeviceSignalAlarm()) {
             $this->createAlarm($deviceData, $type);

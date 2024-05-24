@@ -12,11 +12,12 @@ class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInter
 {
     public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {
+        $type = new DeviceMissingData();
+
         if (!$clientSetting->isDeviceSensorErrorAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
             return;
         }
-
-        $type = new DeviceMissingData();
 
         foreach (range(1, 2) as $entry) {
             if ($this->doesDeviceHasDataError($deviceData, $entry)) {
