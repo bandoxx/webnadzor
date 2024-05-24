@@ -185,16 +185,35 @@ class DeviceData
 
     public function isTemperatureOutOfRange($entry): bool
     {
+        return $this->isTemperatureHigh($entry) || $this->isTemperatureLow($entry);
+    }
+
+    public function isTemperatureLow($entry): bool
+    {
         $getter = "getT$entry";
         $temperature = $this->$getter();
+
+        if (!is_numeric($temperature)) {
+            return false;
+        }
 
         $deviceEntrySettings = $this->getDevice()->getEntryData($entry);
 
         $minimum = $deviceEntrySettings['t_min'];
 
-        if ($minimum && $minimum > $temperature) {
-            return true;
+        return $minimum && $minimum > $temperature;
+    }
+
+    public function isTemperatureHigh($entry): bool
+    {
+        $getter = "getT$entry";
+        $temperature = $this->$getter();
+
+        if (!is_numeric($temperature)) {
+            return false;
         }
+
+        $deviceEntrySettings = $this->getDevice()->getEntryData($entry);
 
         $maximum = $deviceEntrySettings['t_max'];
 
@@ -203,16 +222,35 @@ class DeviceData
 
     public function isHumidityOutOfRange($entry): bool
     {
+        return $this->isHumidityLow($entry) || $this->isHumidityHigh($entry);
+    }
+
+    public function isHumidityLow($entry): bool
+    {
         $getter = "getRh$entry";
         $humidity = $this->$getter();
+
+        if (!is_numeric($humidity)) {
+            return false;
+        }
 
         $deviceEntrySettings = $this->getDevice()->getEntryData($entry);
 
         $minimum = $deviceEntrySettings['rh_min'] ?? null;
 
-        if ($minimum && $minimum > $humidity) {
-            return true;
+        return $minimum && $minimum > $humidity;
+    }
+
+    public function isHumidityHigh($entry): bool
+    {
+        $getter = "getRh$entry";
+        $humidity = $this->$getter();
+
+        if (!is_numeric($humidity)) {
+            return false;
         }
+
+        $deviceEntrySettings = $this->getDevice()->getEntryData($entry);
 
         $maximum = $deviceEntrySettings['rh_max'] ?? null;
 

@@ -5,20 +5,18 @@ namespace App\Service\Alarm\Validator;
 use App\Entity\ClientSetting;
 use App\Entity\DeviceData;
 use App\Service\Alarm\AlarmHandlerInterface;
+use App\Service\Alarm\Types\DeviceSupplyOff;
 
 class DeviceSupplyChecker extends BaseAlarmHandler implements AlarmHandlerInterface
 {
     public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {
-        $this->alarmShouldBeOn = false;
+        $type = new DeviceSupplyOff();
 
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::SUPPLY_OFF);
-
-        if (!$deviceData->isSupply()) {
-            $this->alarmShouldBeOn = true;
+        if ($deviceData->isSupply()) {
+            $this->closeAlarm($deviceData, $type);
+        } else {
+            $this->createAlarm($deviceData, $type);
         }
-
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::SUPPLY_OFF);
     }
-
 }

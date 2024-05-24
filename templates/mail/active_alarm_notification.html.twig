@@ -1,5 +1,5 @@
 <ul>
 {% for alarm in alarms %}
-    <li>Mjerno mjesto: <b>{{ device.name }}</b>, lokacija: <b>{{ alarm.location }}</b>, tip alarma: <b>{{ alarm.type }}</b>, aktiviran: <b>{{ alarm.deviceDate|date('d.m.Y. H:i:s') }}</b>. <a href="{{ url('app_device_show', {clientId: device.client.id, deviceId: device.id}) }}">Link do uređaja</a></li>
+    <li>{{ alarm.message }} <a href="{{ url('app_device_show', {clientId: device.client.id, deviceId: device.id}) }}">Link do uređaja</a></li>
 {% endfor %}
 </ul>

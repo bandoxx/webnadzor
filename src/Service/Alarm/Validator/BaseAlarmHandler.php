@@ -7,49 +7,43 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceData;
 use App\Factory\DeviceAlarmFactory;
 use App\Repository\DeviceAlarmRepository;
+use App\Service\Alarm\Types\AlarmTypeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class BaseAlarmHandler
 {
+    public function __construct(protected DeviceAlarmFactory $alarmFactory, protected DeviceAlarmRepository $deviceAlarmRepository, protected EntityManagerInterface $entityManager)
+    {}
 
-    protected bool $alarmShouldBeOn;
-
-    public function __construct(public DeviceAlarmFactory $alarmFactory, public DeviceAlarmRepository $deviceAlarmRepository, public EntityManagerInterface $entityManager)
-    {
-        $this->alarmShouldBeOn = false;
-    }
-
-    public function findAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
+    protected function findAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
     {
         return $this->deviceAlarmRepository->findActiveAlarm($device, $type, $sensor);
     }
 
-    public function finish(?DeviceAlarm $alarm, DeviceData $deviceData, string $type, ?int $sensor = null): void
+    protected function closeAlarm(DeviceData $deviceData, AlarmTypeInterface $alarmType, ?int $sensor = null): void
     {
-        if (!($alarm xor $this->alarmShouldBeOn)) {
+        $alarm = $this->findAlarm($deviceData->getDevice(), $alarmType->getType(), $sensor);
+
+        if (!$alarm) {
             return;
         }
 
-        if ($alarm && !$this->alarmShouldBeOn) {
-            $this->closeAlarm($alarm, $deviceData);
-        } elseif (!$alarm && $this->alarmShouldBeOn) {
-            $this->createAlarm($deviceData, $type, $sensor);
-        }
-    }
-
-    public function closeAlarm(DeviceAlarm $alarm, DeviceData $deviceData): void
-    {
         $alarm->setEndServerDate(new \DateTime());
         $alarm->setEndDeviceDate($deviceData->getDeviceDate());
 
         $this->entityManager->flush();
     }
 
-    public function createAlarm(DeviceData $deviceData, string $type, ?int $sensor = null): void
+    protected function createAlarm(DeviceData $deviceData, AlarmTypeInterface $alarmType, ?int $sensor = null): void
     {
-        $alarm = $this->alarmFactory->create($deviceData, $type, $sensor);
-        $this->entityManager->persist($alarm);
+        $alarm = $this->findAlarm($deviceData->getDevice(), $alarmType->getType(), $sensor);
 
+        if ($alarm) {
+            return;
+        }
+
+        $alarm = $this->alarmFactory->create($deviceData, $alarmType, $sensor);
+        $this->entityManager->persist($alarm);
         $this->entityManager->flush();
     }
 }

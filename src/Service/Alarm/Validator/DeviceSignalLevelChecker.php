@@ -5,6 +5,7 @@ namespace App\Service\Alarm\Validator;
 use App\Entity\ClientSetting;
 use App\Entity\DeviceData;
 use App\Service\Alarm\AlarmHandlerInterface;
+use App\Service\Alarm\Types\DeviceSignalLow;
 
 class DeviceSignalLevelChecker extends BaseAlarmHandler implements AlarmHandlerInterface
 {
@@ -14,14 +15,12 @@ class DeviceSignalLevelChecker extends BaseAlarmHandler implements AlarmHandlerI
             return;
         }
 
-        $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::SIGNAL_LEVEL);
+        $type = new DeviceSignalLow();
 
         if ($deviceData->getBattery() <= $clientSetting->getDeviceSignalAlarm()) {
-            $this->alarmShouldBeOn = true;
+            $this->createAlarm($deviceData, $type);
+        } else {
+            $this->closeAlarm($deviceData, $type);
         }
-
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::SIGNAL_LEVEL);
     }
-
 }

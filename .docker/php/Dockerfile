@@ -35,6 +35,7 @@ RUN set -eux; \
     apt install -y netcat-traditional
 
 RUN set -eux; \
+    docker-php-ext-install sysvmsg sysvsem sysvshm; \
     # Install the PHP pdo_mysql extention
     docker-php-ext-install pdo_mysql; \
     # Install the PHP pdo_pgsql extention

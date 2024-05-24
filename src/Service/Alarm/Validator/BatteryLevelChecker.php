@@ -5,6 +5,7 @@ namespace App\Service\Alarm\Validator;
 use App\Entity\ClientSetting;
 use App\Entity\DeviceData;
 use App\Service\Alarm\AlarmHandlerInterface;
+use App\Service\Alarm\Types\DeviceBatteryLow;
 
 class BatteryLevelChecker extends BaseAlarmHandler implements AlarmHandlerInterface
 {
@@ -14,14 +15,12 @@ class BatteryLevelChecker extends BaseAlarmHandler implements AlarmHandlerInterf
             return;
         }
 
-        $this->alarmShouldBeOn = false;
-        $alarm = $this->findAlarm($deviceData->getDevice(), AlarmHandlerInterface::BATTERY_LEVEL);
+        $type = new DeviceBatteryLow();
 
         if ($deviceData->getBattery() <= $clientSetting->getBatteryLevelAlert()) {
-            $this->alarmShouldBeOn = true;
+            $this->createAlarm($deviceData, $type);
+        } else {
+            $this->closeAlarm($deviceData, $type);
         }
-
-        $this->finish($alarm, $deviceData, AlarmHandlerInterface::BATTERY_LEVEL);
     }
-
 }

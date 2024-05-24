@@ -11,7 +11,7 @@ class ValidatorCollection
     /**
      * @param AlarmHandlerInterface[] $validators
      */
-    public function __construct(private iterable $validators) {}
+    public function __construct(private readonly iterable $validators) {}
 
     public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
     {

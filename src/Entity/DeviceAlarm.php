@@ -18,6 +18,9 @@ class DeviceAlarm
     #[ORM\JoinColumn(nullable: false)]
     private ?Device $device = null;
 
+    #[ORM\ManyToOne]
+    private ?DeviceData $deviceData = null;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $serverDate = null;
 
@@ -35,6 +38,9 @@ class DeviceAlarm
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $type = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $message = null;
 
     #[ORM\Column]
     private bool $isNotified = false;
@@ -152,5 +158,29 @@ class DeviceAlarm
     public function isActive(): bool
     {
         return !((bool) $this->getEndDeviceDate());
+    }
+
+    public function getDeviceData(): ?DeviceData
+    {
+        return $this->deviceData;
+    }
+
+    public function setDeviceData(?DeviceData $deviceData): static
+    {
+        $this->deviceData = $deviceData;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?string $message): static
+    {
+        $this->message = $message;
+
+        return $this;
     }
 }
