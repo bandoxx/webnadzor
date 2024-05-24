@@ -69,13 +69,17 @@ class OverviewController extends AbstractController
                     $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
 
                     foreach ($activeAlarm as $alarm) {
-                        $data[$client->getId()]['alarms'][] =
-                            sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
-                                $device->getName(),
-                                $alarm->getLocation(),
-                                $alarm->getType(),
-                                $alarm->getDeviceDate()->format('d.m.Y H:i:s')
-                            );
+                        if ($alarm->getMessage()) {
+                            $data[$client->getId()]['alarms'][] = $alarm->getMessage();
+                        } else {
+                            $data[$client->getId()]['alarms'][] =
+                                sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
+                                    $device->getName(),
+                                    $alarm->getLocation(),
+                                    $alarm->getType(),
+                                    $alarm->getDeviceDate()->format('d.m.Y H:i:s')
+                                );
+                        }
                     }
                 }
             }
