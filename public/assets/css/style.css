@@ -362,6 +362,8 @@ div.information .hide_btn:hover {
 }
 
 #logoarea {
+    padding-left: 10px;
+    padding-right: 10px;
     width: 180px;
     height: 65px;
     background: url('/assets/images/userbar_bg.png') 65px repeat-x;
@@ -381,7 +383,6 @@ div.information .hide_btn:hover {
 }
 
 #logo {
-    margin-left: 10px;
     width: 100%;
     height: 100%;
     display: block;
