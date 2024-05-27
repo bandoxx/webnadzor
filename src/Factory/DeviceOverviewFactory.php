@@ -59,6 +59,7 @@ class DeviceOverviewFactory
             ->setRelativeHumidityLocation($deviceEntryData['rh_location'] ?? null)
             ->setLocation($deviceEntryData['t_location'] ?? null)
             ->setOnline($online)
+            ->setNote($deviceEntryData['t_note'] ?? null)
             ->setAlarm($numberOfAlarms > 0)
             ->setTemperature(sprintf("%s %s", $data->getT($entry), $temperatureUnit))
             ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entry), $temperatureUnit))

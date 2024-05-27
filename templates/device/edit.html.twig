@@ -215,6 +215,13 @@
                                        original-title="Naziv za &quot;Temperatura 1&quot; ulaz, maksimalno 16 znakova"/>
                             </div>
                             <div class="form_row">
+                                <label>Ograničenje vrednosti</label>
+                                <input value="{{ device.entry1.t_note ?? '' }}" class="input tipRight" type="text"
+                                       style="width: 290px;" name="t1_note" id="t1_note"
+                                       placeholder="Ograničenje vrednosti"
+                                       original-title="Ograničenje vrednosti"/>
+                            </div>
+                            <div class="form_row">
                                 <label>Ikona</label>
                                 <select name="t1_image" class="select" style="width: 290px;">
                                     <option value="0">Isključeno</option>
@@ -270,6 +277,13 @@
                                        style="width: 290px;" name="t2_name" id="t2_name"
                                        placeholder="Unesite &quot;Temperatura 2&quot; naziv"
                                        original-title="Naziv za &quot;Temperatura 2&quot; ulaz, maksimalno 50 znakova"/>
+                            </div>
+                            <div class="form_row">
+                                <label>Ograničenje vrednosti</label>
+                                <input value="{{ device.entry2.t_note ?? '' }}" class="input tipRight" type="text"
+                                       style="width: 290px;" name="t2_note" id="t2_note"
+                                       placeholder="Ograničenje vrednosti"
+                                       original-title="Ograničenje vrednosti"/>
                             </div>
                             <div class="form_row">
                                 <label>Ikona</label>

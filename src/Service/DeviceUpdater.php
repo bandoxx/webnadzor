@@ -112,6 +112,12 @@ class DeviceUpdater
             $this->error[] = 'T min max error';
         }
 
+        $noteKey = sprintf("t%s_note", $entry);
+
+        if (isset($data[$noteKey])) {
+            $device->setEntryData($entry, 't_note', trim($data[$noteKey]));
+        }
+
         $this->setImage($device, $entry, 't_image', $data['t' . $entry . '_image']);
     }
 

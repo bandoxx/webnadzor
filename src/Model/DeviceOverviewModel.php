@@ -12,6 +12,7 @@ class DeviceOverviewModel
     private ?string $name = null;
     private ?string $temperatureName = null;
     private ?string $relativeHumidityName = null;
+    private ?string $note = null;
     private ?bool $online = null;
     private ?bool $alarm = null;
     private ?bool $showTemperature = null;
@@ -287,6 +288,18 @@ class DeviceOverviewModel
     public function setRelativeHumidityLocation(?string $relativeHumidityLocation): static
     {
         $this->relativeHumidityLocation = $relativeHumidityLocation;
+
+        return $this;
+    }
+
+    public function getNote(): ?string
+    {
+        return $this->note;
+    }
+
+    public function setNote(?string $note): static
+    {
+        $this->note = $note;
 
         return $this;
     }

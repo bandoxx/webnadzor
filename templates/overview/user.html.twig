@@ -61,6 +61,9 @@
                                                                                   id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br><span
                                         style="color: #515d6b;">R. vlažnost:</span> <span style="float: right;"
                                                                                           id="rh1_value">{{ device.relativeHumidity }}</span>
+                                {% if device.note %}
+                                    <br><br><span class="red">{{ device.note }}</span>
+                                {% endif %}
                             </div>
                         {% endfor %}
                         <div class="clear"></div>
@@ -75,6 +78,11 @@
                     <div class="grid-block">
                         {% for device in devices_table %}
                             <div class="dets-100-225">
+                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                <span style="display:table; margin:0 auto; text-transform: uppercase;">
+                                    <span class="red">Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}</span>
+                                </span>
+                                {% endif %}
                                 <div style="margin-left: 15px;">
                                     <div style="min-height:50px;" id="t1_image">
                                         <img alt="t1" src="{{ asset(device.temperatureImage) }}">
@@ -87,6 +95,9 @@
                                 <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
                                 <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
                                 <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device.relativeHumidity }}</span>
+                                {% if device.note %}
+                                <br><br><span class="red">{{ device.note }}</span>
+                                {% endif %}
                             </div>
                         {% endfor %}
                         <div class="clear"></div>
