@@ -43,6 +43,7 @@ class OverviewController extends AbstractController
                 'pdfLogo' => $client->getPdfLogo(),
                 'mainLogo' => $client->getMainLogo(),
                 'mapIcon' => $client->getMapMarkerIcon(),
+                'devicePageView' => $client->getDevicePageView(),
                 'alarms' => []
             ];
 

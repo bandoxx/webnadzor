@@ -34,6 +34,7 @@
             $("#map_marker_icon_div").hide();
             $("#map").prop('checked', false).button('refresh');
             $("#thermometer").prop('checked', false).button('refresh');
+            $("#fridge").prop('checked', false).button('refresh');
             $(this).dialog('destroy');
           }
         });
@@ -51,13 +52,23 @@
         $('#map_marker_icon').val(selector.data('mapIcon'));
 
         let overviewShow = selector.data('overview');
+        let deviceOverviewShow = selector.data('devicepageview');
 
-        if (overviewShow == '1') {
+        if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}') {
           $("#map").prop('checked', true).button('refresh');
           $("#map_marker_icon_div").show();
-        } else if (overviewShow == '2') {
+        } else if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}') {
           $("#thermometer").prop('checked', true).button('refresh');
           $("#map_marker_icon_div").hide();
+        } else if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_ICONS') }}') {
+          $("#fridge").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").hide();
+        }
+
+        if (deviceOverviewShow == '{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') }}') {
+          $("#icons").prop('checked', true).button('refresh');
+        } else if (deviceOverviewShow == '{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') }}') {
+          $("#dynamic").prop('checked', true).button('refresh');
         }
 
         $('#edit-form').attr('title', 'Postavke klijenta');
@@ -297,15 +308,28 @@
                 <div class="form_row radioui">
                     <label for="map">Mapa</label>
                     <input type="radio" id="map" name="overview_view" class="radio validate[required]"
-                           value="1"/>
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}"/>
                     <label for="thermometer">Termometri</label>
                     <input type="radio" id="thermometer" name="overview_view" class="radio validate[required]"
-                           value="2"/>
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}"/>
+                    <label for="fridge">Hladnjak</label>
+                    <input type="radio" id="fridge" name="overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_ICONS') }}"/>
                 </div>
 
                 <div id="map_marker_icon_div" style="display: none;">
                     <label for="map_marker_icon" style="display:block; margin-top:12px;">Ikonica na mapi</label>
                     <input id="map_marker_icon" type="file" name="map_marker_icon">
+                </div>
+
+                <label style="display:block; margin-top:12px;">Prikaz na stranici uređaja</label>
+                <div class="form_row radioui">
+                    <label for="icons">Ikonice</label>
+                    <input type="radio" id="icons" name="device_overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') }}"/>
+                    <label for="dynamic">Termometri</label>
+                    <input type="radio" id="dynamic" name="device_overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') }}"/>
                 </div>
             </fieldset>
         </form>
@@ -378,6 +402,7 @@
                                          data-mainLogo="{{ client.mainLogo }}"
                                          data-mapIcon="{{ client.mapIcon }}"
                                          data-overview="{{ client.overview }}"
+                                         data-devicepageview="{{ client.devicePageView }}"
                                     >
                                         <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>
                                         <a href="#" class="action edit"><span>Uredi</span></a>

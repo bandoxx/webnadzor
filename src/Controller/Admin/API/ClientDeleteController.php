@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Client\API;
+namespace App\Controller\Admin\API;
 
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;

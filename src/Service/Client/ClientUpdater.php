@@ -16,6 +16,7 @@ class ClientUpdater
     public function updateByRequest(Request $request, Client $client): void
     {
         $client->setOverviewViews($request->request->get('overview_view'));
+        $client->setDevicePageView($request->request->get('device_overview_view'));
         $client->setName($request->request->get('name'));
         $client->setAddress($request->request->get('address'));
         $client->setOIB($request->request->get('oib'));
