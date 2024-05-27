@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
-      function new_client() {
+      function newClient() {
         $('#edit-form').attr('title', 'Unošenje novog klijenta');
 
         $('#edit-form').dialog({
@@ -39,7 +39,7 @@
         });
       }
 
-      function edit_client(client_id) {
+      function editClient(client_id) {
 
         let selector = $("#" + client_id);
 
@@ -106,12 +106,12 @@
         });
 
         $('div.actionbar a.edit').click(function() { /* EDIT ICON */
-          edit_client($(this).parent().attr('id'));
+          editClient($(this).parent().attr('id'));
         });
 
         $("#client_add").click(function() {
-          new_client();
-        })
+          newClient();
+        });
 
         $('.toggle').click(function() { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
@@ -214,6 +214,49 @@
           });
           map.fitBounds(bounds, {padding: [50,50]});
         });
+
+        $('.delete').click(function () { /* DELETE USER */
+          const delete_parent = $(this).parent();
+          const delete_id = $(delete_parent).data('id');
+
+          $('#delete_client').html($(delete_parent).data('name'));
+
+          $('#delete-confirm').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Obriši korisnika': function () {
+                $.ajax({
+                  url: '/api/client/' + delete_id,
+                  type: 'DELETE',
+                  success: function() {
+                    window.location.reload();
+                  },
+                  error: function() {
+                    alert('Greška! Molimo pokušajte ponovo');
+                  }
+                });
+              },
+              'Odustani': function () {
+                $(this).dialog('close');
+              }
+            },
+            close: function () {
+              $('#delete_client').html('');
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
     });
     </script>
 {% endblock %}
@@ -225,6 +268,13 @@
 {% endblock %}
 
 {% block content %}
+    <div id="delete-confirm" title="Obriši korisnika?" style="display:none;">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Klijent &quot;<span id="delete_client"></span>&quot; biti će trajno obrisan. Jeste li sigurni?
+        </p>
+    </div>
+
     <div id="edit-form" title="" style="display:none;">
         <form id="editform" class="form" action="#" method="POST" enctype="multipart/form-data">
             <fieldset>
@@ -331,6 +381,7 @@
                                     >
                                         <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>
                                         <a href="#" class="action edit"><span>Uredi</span></a>
+                                        <a href="#" class="action delete"><span>Obriši</span></a>
                                     </div>
                                 </td>
                                 <td>{{ client.alarms }}</td>

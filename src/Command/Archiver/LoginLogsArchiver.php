@@ -42,7 +42,7 @@ class LoginLogsArchiver extends Command
 
         $date = (new \DateTime('-1 day'))->setTime(0, 0, 0);
 
-        $clients = $this->clientRepository->findAll();
+        $clients = $this->clientRepository->findAllActive();
 
         foreach ($clients as $client) {
             $data = $this->loginLogRepository->findByClientAndForDay($client, $date);

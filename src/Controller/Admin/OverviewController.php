@@ -23,7 +23,7 @@ class OverviewController extends AbstractController
             ]);
         }
 
-        $clients = $clientRepository->findAll();
+        $clients = $clientRepository->findAllActive();
         $data = [];
         foreach ($clients as $client) {
             /** @var Device[] $devices */

@@ -70,6 +70,9 @@ class Client
     #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
     private ?ClientSetting $clientSetting = null;
 
+    #[ORM\Column]
+    private bool $isDeleted = false;
+
     public function __construct()
     {
         $this->user = new ArrayCollection();
@@ -399,6 +402,18 @@ class Client
         }
 
         $this->clientSetting = $clientSetting;
+
+        return $this;
+    }
+
+    public function isDeleted(): bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

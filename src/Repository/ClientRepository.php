@@ -20,4 +20,12 @@ class ClientRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Client::class);
     }
+
+    /**
+     * @return Client[]
+     */
+    public function findAllActive(): array
+    {
+        return $this->findBy(['isDeleted' => false]);
+    }
 }

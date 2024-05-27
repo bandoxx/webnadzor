@@ -14,7 +14,7 @@ class MapMarkersAllClientsController extends AbstractController
 {
     public function __invoke(ClientRepository $clientRepository, UserAccess $userAccess, $mapMarkerDirectory): JsonResponse
     {
-        $clients = $clientRepository->findAll();
+        $clients = $clientRepository->findAllActive();
         $user = $this->getUser();
         $markers['places'] = [];
         $counter = [];
