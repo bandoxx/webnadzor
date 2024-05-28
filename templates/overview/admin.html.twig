@@ -40,6 +40,37 @@
         });
       }
 
+      function settings() {
+        $('#settings-form').attr('title', 'Postavke');
+
+        $('#settings-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#settingsform').attr('action', '/api/smtp');
+              $('#settingsform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
       function editClient(client_id) {
 
         let selector = $("#" + client_id);
@@ -118,6 +149,10 @@
 
         $('div.actionbar a.edit').click(function() { /* EDIT ICON */
           editClient($(this).parent().attr('id'));
+        });
+
+        $("#settings").click(function() {
+          settings();
         });
 
         $("#client_add").click(function() {
@@ -273,6 +308,7 @@
 {% endblock %}
 
 {% block navigation %}
+    <li><a href="#" id="settings" class="icon_settings">Podešavanja</a></li>
     <li><a href="#" id="client_add" class="icon_plus">Dodaj klijenta</a></li>
     <li><a href="{{ path('app_icon_index') }}" class="icon_pictures">Uredi ikone</a></li>
     <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
@@ -331,6 +367,24 @@
                     <input type="radio" id="dynamic" name="device_overview_view" class="radio validate[required]"
                            value="{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') }}"/>
                 </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="settings-form" title="" style="display:none;">
+        <form id="settingsform" class="form" action="#" method="POST">
+            <fieldset>
+                <label for="smtp_server" style="display:block; margin-top:12px;">SMTP Server</label>
+                <input type="text" name="smtp_server" id="smtp_server" placeholder="mail.intelteh.hr" value="{{ smtp.host }}" class="input validate[required,maxSize[100text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_port" style="display:block; margin-top:12px;">Port</label>
+                <input type="text" name="smtp_port" id="smtp_port" placeholder="587" value="{{ smtp.port }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_username" style="display:block; margin-top:12px;">Korisnično ime</label>
+                <input type="text" name="smtp_username" id="smtp_username" placeholder="Korisnicko ime" value="{{ smtp.username }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_password" style="display:block; margin-top:12px;">Šifra</label>
+                <input type="text" name="smtp_password" id="smtp_password" placeholder="Šifra" value="{{ smtp.password }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
             </fieldset>
         </form>
     </div>

@@ -4,14 +4,14 @@ namespace App\Service\Notify;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
-use Symfony\Component\Mailer\MailerInterface;
+use App\Service\Mailer;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
 class AlarmNotifier
 {
 
-    public function __construct(private MailerInterface $mailer, private Environment $twig)
+    public function __construct(private readonly Mailer $mailer, private readonly Environment $twig)
     {}
 
     /**

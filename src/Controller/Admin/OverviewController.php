@@ -7,6 +7,7 @@ use App\Repository\ClientRepository;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
+use App\Repository\SmtpRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router): RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         if ($this->getUser()->getPermission() !== 4) {
             return $this->redirectToRoute('client_overview', [
@@ -94,6 +95,7 @@ class OverviewController extends AbstractController
 
         return $this->render('overview/admin.html.twig', [
             'clients' => $data,
+            'smtp' => $smtpRepository->findOneBy([])
         ]);
     }
 }

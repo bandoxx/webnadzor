@@ -2,14 +2,14 @@
 
 namespace App\Service\Notify;
 
-use Symfony\Component\Mailer\MailerInterface;
+use App\Service\Mailer;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
 class MissingXmlNotify
 {
 
-    public function __construct(private MailerInterface $mailer, private Environment $environment)
+    public function __construct(private readonly Mailer $mailer, private readonly Environment $environment)
     {}
 
     /**
