@@ -359,6 +359,7 @@
                         <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
                         <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
                     </div>
+                    {% if device.isHumidityUsed %}
                     <div class="dets"
                          style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="rh1_image">
@@ -368,6 +369,7 @@
                         <br><br>
                         <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">{{ device.relativeHumidity }}</span>
                     </div>
+                    {% endif %}
                 {% endif %}
                     <div class="clear"></div>
                 </div>

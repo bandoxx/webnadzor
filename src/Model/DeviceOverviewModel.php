@@ -27,6 +27,8 @@ class DeviceOverviewModel
     private ?string $meanKineticTemperature = null;
     private ?\DateTime $deviceDate = null;
     private ?string $temperatureImage = null;
+    private ?bool $isTemperatureUsed = null;
+    private ?bool $isHumidityUsed = null;
 
     public function getId(): ?int
     {
@@ -300,6 +302,30 @@ class DeviceOverviewModel
     public function setNote(?string $note): static
     {
         $this->note = $note;
+
+        return $this;
+    }
+
+    public function getIsTemperatureUsed(): ?bool
+    {
+        return $this->isTemperatureUsed;
+    }
+
+    public function setIsTemperatureUsed(?bool $isTemperatureUsed): static
+    {
+        $this->isTemperatureUsed = $isTemperatureUsed;
+
+        return $this;
+    }
+
+    public function getIsHumidityUsed(): ?bool
+    {
+        return $this->isHumidityUsed;
+    }
+
+    public function setIsHumidityUsed(?bool $isHumidityUsed): static
+    {
+        $this->isHumidityUsed = $isHumidityUsed;
 
         return $this;
     }

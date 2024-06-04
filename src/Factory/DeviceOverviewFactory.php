@@ -73,6 +73,8 @@ class DeviceOverviewFactory
             ->setTemperatureUnit($temperatureUnit)
             ->setRelativeHumidityUnit($humidityUnit)
             ->setTemperatureImage($icon)
+            ->setIsTemperatureUsed((bool) $deviceEntryData['t_use'])
+            ->setIsHumidityUsed((bool) $deviceEntryData['rh_use'])
         ;
 
         return $deviceOverviewModel;
