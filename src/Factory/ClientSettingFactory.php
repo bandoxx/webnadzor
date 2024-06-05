@@ -19,6 +19,7 @@ class ClientSettingFactory
             ->setDeviceSignalAlarmActive(true)
             ->setDeviceSignalAlarm(30)
             ->setDeviceOfflineAlarmActive(true)
+            ->setDeviceSensorErrorAlarmActive(true)
         ;
 
         return $clientSettings;
