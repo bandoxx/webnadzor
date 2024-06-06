@@ -29,6 +29,8 @@ class DeviceOverviewModel
     private ?string $temperatureImage = null;
     private ?bool $isTemperatureUsed = null;
     private ?bool $isHumidityUsed = null;
+    private ?bool $isTemperatureOffset = null;
+    private ?bool $isHumidityOffset = null;
 
     public function getId(): ?int
     {
@@ -327,6 +329,28 @@ class DeviceOverviewModel
     {
         $this->isHumidityUsed = $isHumidityUsed;
 
+        return $this;
+    }
+
+    public function getIsTemperatureOffset(): ?bool
+    {
+        return $this->isTemperatureOffset;
+    }
+
+    public function setIsTemperatureOffset(?bool $isTemperatureOffset): static
+    {
+        $this->isTemperatureOffset = $isTemperatureOffset;
+        return $this;
+    }
+
+    public function getIsHumidityOffset(): ?bool
+    {
+        return $this->isHumidityOffset;
+    }
+
+    public function setIsHumidityOffset(?bool $isHumidityOffset): static
+    {
+        $this->isHumidityOffset = $isHumidityOffset;
         return $this;
     }
 }

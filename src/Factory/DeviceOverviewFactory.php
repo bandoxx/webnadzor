@@ -75,6 +75,8 @@ class DeviceOverviewFactory
             ->setTemperatureImage($icon)
             ->setIsTemperatureUsed((bool) $deviceEntryData['t_use'])
             ->setIsHumidityUsed((bool) $deviceEntryData['rh_use'])
+            ->setIsHumidityOffset($data->isHumidityOutOfRange($entry))
+            ->setIsTemperatureOffset($data->isTemperatureOutOfRange($entry))
         ;
 
         return $deviceOverviewModel;

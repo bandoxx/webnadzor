@@ -41,26 +41,28 @@
                     <div style="margin-bottom:10px;">
                         {% for device in devices_table %}
                             <div class="dets" style="padding: 15px; margin-top: 10px; margin-left: 5px; font-size:11px;">
-                                <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.location }}<br>{{ device.name }}</span><br><span
-                                        style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                <div style="display:table; margin:0 auto; text-transform: uppercase; text-align: center;">
+                                    <span>{{ device.name }}<br>{{ device.temperatureLocation }}<br>{{ device.temperatureName }}</span>
+                                    <br><br>
+                                    <span style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }} </span>
                                     {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
                                         <br><span class="red">Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}</span>
                                     {% endif %}
-                                </span>
+                                </div>
                                 <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
                                     <img alt="t1"
                                          src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}">
                                 </div>
-                                <span style="color: #515d6b;">Trenutna:</span> <span style="float: right;"
-                                                                                     id="t1_value">{{ device.temperature }}</span><br><br><span
-                                        style="color: #515d6b;">Maksimalna:</span> <span style="float: right;"
-                                                                                         id="t1max_value">{{ device.temperatureMax }}</span><br><br><span
-                                        style="color: #515d6b;">Minimalna:</span> <span style="float: right;"
-                                                                                        id="t1min_value">{{ device.temperatureMin }}</span><br><br><span
-                                        style="color: #515d6b;">MKT:</span> <span style="float: right;"
-                                                                                  id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br><span
-                                        style="color: #515d6b;">R. vlažnost:</span> <span style="float: right;"
-                                                                                          id="rh1_value">{{ device.relativeHumidity }}</span>
+                                <span style="color: #515d6b;">Trenutna:</span>
+                                <span style="float: right;  {% if device.isTemperatureOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperature }}</span><br><br>
+                                <span style="color: #515d6b;">Maksimalna:</span>
+                                <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br><span
+                                        style="color: #515d6b;">Minimalna:</span>
+                                <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
+                                <span style="color: #515d6b;">MKT:</span>
+                                <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
+                                <span style="color: #515d6b;">R. vlažnost:</span>
+                                <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.relativeHumidity }}</span>
                                 {% if device.note %}
                                     <br><br><span class="red">{{ device.note }}</span>
                                 {% endif %}
@@ -78,23 +80,25 @@
                     <div class="grid-block">
                         {% for device in devices_table %}
                             <div class="dets-100-225">
-                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
-                                <span style="display:table; margin:0 auto; text-transform: uppercase;">
-                                    <span class="red">Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}</span>
-                                </span>
-                                {% endif %}
+                                <div style="display:table; margin:0 auto; text-transform: uppercase; text-align: center;">
+                                    <span>{{ device.name }}<br>{{ device.temperatureLocation }}<br>{{ device.temperatureName }}</span>
+                                    <br><br>
+                                    <span style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }} </span>
+                                    {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                        <br><span class="red">Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}</span>
+                                    {% endif %}
+                                </div>
                                 <div style="margin-left: 15px;">
                                     <div style="min-height:50px;" id="t1_image">
                                         <img alt="t1" src="{{ asset(device.temperatureImage) }}">
                                     </div>
                                 </div>
-                                <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.name }}</span><br>
-                                <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperature }}</span><br><br>
+                                <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; {% if device.isTemperatureOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperature }}</span><br><br>
                                 <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureAverage }}</span><br><br>
                                 <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br>
                                 <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
                                 <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
-                                <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device.relativeHumidity }}</span>
+                                <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.relativeHumidity }}</span>
                                 {% if device.note %}
                                 <br><br><span class="red">{{ device.note }}</span>
                                 {% endif %}
