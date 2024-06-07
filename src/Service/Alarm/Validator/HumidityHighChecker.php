@@ -16,6 +16,11 @@ class HumidityHighChecker extends BaseAlarmHandler implements AlarmHandlerInterf
         $device = $deviceData->getDevice();
         $type = new HumidityHigh();
 
+        if (!$clientSetting->getIsHumidityAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
+            return;
+        }
+
         foreach (range(1, 2) as $sensor) {
             if (((bool)$device->getEntryData($sensor)['rh_use'] === true) && $deviceData->isHumidityHigh($sensor)) {
                 $this->createAlarm($deviceData, $type, $sensor);

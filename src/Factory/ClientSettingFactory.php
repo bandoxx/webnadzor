@@ -20,6 +20,8 @@ class ClientSettingFactory
             ->setDeviceSignalAlarm(30)
             ->setDeviceOfflineAlarmActive(true)
             ->setDeviceSensorErrorAlarmActive(true)
+            ->setIsTemperatureAlarmActive(true)
+            ->setIsHumidityAlarmActive(true)
         ;
 
         return $clientSettings;

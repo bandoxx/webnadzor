@@ -21,6 +21,8 @@ class ClientSettingsUpdater
             ->setDeviceOfflineAlarmActive(filter_var($data['is_device_offline_alarm_active'], FILTER_VALIDATE_BOOLEAN))
             ->setBatteryLevelAlarmActive(filter_var($data['is_battery_level_alarm_active'], FILTER_VALIDATE_BOOLEAN))
             ->setDeviceSensorErrorAlarmActive(filter_var($data['is_device_sensor_error_alarm_active'], FILTER_VALIDATE_BOOLEAN))
+            ->setIsTemperatureAlarmActive(filter_var($data['is_temperature_alarm_active'], FILTER_VALIDATE_BOOLEAN))
+            ->setIsHumidityAlarmActive(filter_var($data['is_humidity_alarm_active'], FILTER_VALIDATE_BOOLEAN))
             ->setBatteryLevelAlert($data['battery_level_alarm'])
         ;
 

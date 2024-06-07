@@ -16,6 +16,11 @@ class TemperatureHighChecker extends BaseAlarmHandler implements AlarmHandlerInt
         $device = $deviceData->getDevice();
         $type = new TemperatureHigh();
 
+        if (!$clientSetting->getIsTemperatureAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
+            return;
+        }
+
         foreach (range(1, 2) as $sensor) {
             if (((bool)$device->getEntryData($sensor)['t_use'] === true) && $deviceData->isTemperatureHigh($sensor)) {
                 $this->createAlarm($deviceData, $type, $sensor);

@@ -39,6 +39,12 @@ class ClientSetting
     #[ORM\Column]
     private ?bool $isDeviceSensorErrorAlarmActive = null;
 
+    #[ORM\Column]
+    private ?bool $isTemperatureAlarmActive = null;
+
+    #[ORM\Column]
+    private ?bool $isHumidityAlarmActive = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +143,28 @@ class ClientSetting
     {
         $this->isDeviceSensorErrorAlarmActive = $isDeviceSensorErrorAlarmActive;
 
+        return $this;
+    }
+
+    public function getIsTemperatureAlarmActive(): ?bool
+    {
+        return $this->isTemperatureAlarmActive;
+    }
+
+    public function setIsTemperatureAlarmActive(?bool $isTemperatureAlarmActive): static
+    {
+        $this->isTemperatureAlarmActive = $isTemperatureAlarmActive;
+        return $this;
+    }
+
+    public function getIsHumidityAlarmActive(): ?bool
+    {
+        return $this->isHumidityAlarmActive;
+    }
+
+    public function setIsHumidityAlarmActive(?bool $isHumidityAlarmActive): static
+    {
+        $this->isHumidityAlarmActive = $isHumidityAlarmActive;
         return $this;
     }
 }

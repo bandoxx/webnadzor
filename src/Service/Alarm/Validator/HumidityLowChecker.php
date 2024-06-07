@@ -16,6 +16,11 @@ class HumidityLowChecker extends BaseAlarmHandler implements AlarmHandlerInterfa
         $device = $deviceData->getDevice();
         $type = new HumidityLow();
 
+        if (!$clientSetting->getIsHumidityAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
+            return;
+        }
+
         foreach (range(1, 2) as $sensor) {
             if (((bool)$device->getEntryData($sensor)['rh_use'] === true) && $deviceData->isHumidityLow($sensor)) {
                 $this->createAlarm($deviceData, $type, $sensor);

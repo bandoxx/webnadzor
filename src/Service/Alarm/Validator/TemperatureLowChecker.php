@@ -16,6 +16,11 @@ class TemperatureLowChecker extends BaseAlarmHandler implements AlarmHandlerInte
         $device = $deviceData->getDevice();
         $type = new TemperatureLow();
 
+        if (!$clientSetting->getIsTemperatureAlarmActive()) {
+            $this->closeAlarm($deviceData, $type);
+            return;
+        }
+
         foreach (range(1, 2) as $sensor) {
             if (((bool)$device->getEntryData($sensor)['t_use'] === true) && $deviceData->isTemperatureLow($sensor)) {
                 $this->createAlarm($deviceData, $type, $sensor);
