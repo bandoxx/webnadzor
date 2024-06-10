@@ -23,7 +23,7 @@ class DeviceOverviewFactory
         $deviceOverviewModel = new DeviceOverviewModel();
 
         $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entry);
-        $numberOfAlarms = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device, $entry);
+        $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
 
         if (!$data) {
             return null;
@@ -60,7 +60,7 @@ class DeviceOverviewFactory
             ->setLocation($deviceEntryData['t_location'] ?? null)
             ->setOnline($online)
             ->setNote($deviceEntryData['t_note'] ?? null)
-            ->setAlarm($numberOfAlarms > 0)
+            ->setAlarms($alarms)
             ->setTemperature(sprintf("%s %s", $data->getT($entry), $temperatureUnit))
             ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entry), $temperatureUnit))
             ->setTemperatureMax(sprintf("%s %s", $data->getTMax($entry), $temperatureUnit))

@@ -12,7 +12,7 @@
 .container_12 {
 	margin-left: auto;
 	margin-right: auto;
-	width: 1020px;
+	width: 1200px;
 }
 
 /* Grid >> Global
@@ -58,8 +58,8 @@
 ----------------------------------------------------------------------------------------------------*/
 
 .container_12 .dets {
-	width:160px;
-	height:510px;
+	width:195px;
+	height:515px;
 	padding-top:10px;
 	font-size: 14px;
 	font-weight: bold;
@@ -136,7 +136,7 @@
 }
 
 .container_12 .grid_12, .container_12 .big {
-	width:1010px;
+	width:1190px;
 }
 
 

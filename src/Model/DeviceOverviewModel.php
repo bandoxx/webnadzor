@@ -15,6 +15,7 @@ class DeviceOverviewModel
     private ?string $note = null;
     private ?bool $online = null;
     private ?bool $alarm = null;
+    private ?array $alarms = [];
     private ?bool $showTemperature = null;
     private ?bool $showHumidity = null;
     private ?string $temperatureUnit = null;
@@ -351,6 +352,23 @@ class DeviceOverviewModel
     public function setIsHumidityOffset(?bool $isHumidityOffset): static
     {
         $this->isHumidityOffset = $isHumidityOffset;
+        return $this;
+    }
+
+    public function getAlarms(): ?array
+    {
+        return $this->alarms;
+    }
+
+    public function setAlarms(?array $alarms): static
+    {
+        $this->alarms = $alarms;
+        $this->alarm = false;
+
+        if ($this->alarms) {
+            $this->alarm = true;
+        }
+
         return $this;
     }
 }

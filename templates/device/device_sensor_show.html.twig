@@ -322,6 +322,17 @@
 
 {% block content %}
     <div class="clear"></div>
+    {% if device.alarm %}
+    <div class="error grid_12">
+        <h3>
+            {% if device.alarms|length == 1 %}
+                {{ device.alarms[0].message }}
+            {% else %}
+                Trenutno je aktivno {{ device.alarms|length }} alarma!
+            {% endif %}
+        </h3>
+    </div>
+    {% endif %}
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
             <div class="titlebar">
