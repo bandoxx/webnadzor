@@ -19,9 +19,9 @@ class MissingXmlNotifyCommand extends Command
 {
     public const MINUTES_IN_DAY = 24 * 60;
     public function __construct(
-        private MissingXmlNotify $notify,
-        private DeviceRepository $deviceRepository,
-        private DeviceDataRepository $deviceDataRepository
+        private readonly MissingXmlNotify $notify,
+        private readonly DeviceRepository $deviceRepository,
+        private readonly DeviceDataRepository $deviceDataRepository
     )
     {
         parent::__construct();
@@ -32,7 +32,7 @@ class MissingXmlNotifyCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $notifications = [];
-        $devices = $this->deviceRepository->findAll();
+        $devices = $this->deviceRepository->findBy(['isDeleted' => false]);
 
         foreach ($devices as $device) {
             if ($device->getXmlInterval() === 0 || $device->isParserActive() === false) {

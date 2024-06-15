@@ -31,7 +31,7 @@ class CalculateDeviceXmlIntervalCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $devices = $this->deviceRepository->findBy(['xmlInterval' => 0]);
+        $devices = $this->deviceRepository->findBy(['xmlInterval' => 0, 'isDeleted' => false]);
 
         foreach ($devices as $device) {
             $interval = $this->getIntervalForDevice($device);

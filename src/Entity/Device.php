@@ -63,6 +63,8 @@ class Device
     #[ORM\Column(nullable: true)]
     private ?array $applicationEmailList = [];
 
+    #[ORM\Column]
+    private ?bool $isDeleted = false;
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -356,6 +358,18 @@ class Device
     public function setApplicationEmailList(?array $applicationEmailList): static
     {
         $this->applicationEmailList = $applicationEmailList;
+
+        return $this;
+    }
+
+    public function isDeleted(): ?bool
+    {
+        return $this->isDeleted;
+    }
+
+    public function setDeleted(bool $isDeleted): static
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

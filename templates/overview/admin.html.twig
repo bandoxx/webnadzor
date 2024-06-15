@@ -280,7 +280,7 @@
             resizable: false,
             modal: true,
             buttons: {
-              'Obriši korisnika': function () {
+              'Obriši klijenta': function () {
                 $.ajax({
                   url: '/api/client/' + delete_id,
                   type: 'DELETE',
@@ -315,7 +315,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="delete-confirm" title="Obriši korisnika?" style="display:none;">
+    <div id="delete-confirm" title="Obriši klijenta?" style="display:none;">
         <p>
             <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
             Klijent &quot;<span id="delete_client"></span>&quot; biti će trajno obrisan. Jeste li sigurni?

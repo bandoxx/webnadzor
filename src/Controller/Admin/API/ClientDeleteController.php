@@ -22,6 +22,16 @@ class ClientDeleteController extends AbstractController
         }
 
         $client->setDeleted(true);
+        $client->setDeletedByUser($this->getUser());
+        $client->setDeletedAt(new \DateTime());
+
+        $entityManager->flush();
+
+        $devices = $client->getDevice()->toArray();
+
+        foreach ($devices as $device) {
+            $device->setDeleted(true);
+        }
 
         $entityManager->flush();
 
