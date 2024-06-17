@@ -21,7 +21,7 @@ class HumidityHigh extends BaseType implements AlarmTypeInterface
 
         return sprintf("%s ima visoku vlagu: %s, maksimalno dozvoljeno: %s. %s",
             $this->getLocationString($device, $sensor),
-            $deviceData->getT($sensor),
+            $deviceData->getRh($sensor),
             $device->getEntryData($sensor)['rh_max'],
             $this->alarmActivatedString($deviceData)
         );

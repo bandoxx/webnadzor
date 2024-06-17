@@ -21,7 +21,7 @@ class HumidityLow extends BaseType implements AlarmTypeInterface
 
         return sprintf("%s ima nisku vlagu: %s, minimalno dozvoljeno: %s. %s",
             $this->getLocationString($device, $sensor),
-            $deviceData->getT($sensor),
+            $deviceData->getRh($sensor),
             $device->getEntryData($sensor)['rh_min'],
             $this->alarmActivatedString($deviceData)
         );

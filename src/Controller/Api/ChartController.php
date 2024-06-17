@@ -33,7 +33,7 @@ class ChartController extends AbstractController
             $toDate
         );
 
-        $result = $chartHandler->createChart($type, $data, $entry);
+        $result = $chartHandler->createChart($type, $data, $deviceId, $entry);
 
         return $this->json($result, Response::HTTP_OK);
     }

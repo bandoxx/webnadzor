@@ -100,9 +100,41 @@
         });
 
         elements.forEach(function (element) {
+          if (element === 'd1' || element == 'd2') {
+            return;
+          }
+
+          let name = $("#" + element + "_name");
+          let input = $("#" + element + "_chart_input");
+
+          if ($('#' + element + "_show_chart").attr('checked') === 'checked' && $('#' + element + "_use").attr('checked') === 'checked') {
+            $(input).show();
+            name.addClass('validate[required,maxSize[50]]');
+          } else {
+            $(input).hide();
+            name.removeClass('validate[required,maxSize[50]]');
+          }
+        });
+
+        elements.forEach(function (element) {
           $("#" + element + "_use").click(function () {
             let name = $("#" + element + "_name");
             let input = $("#" + element + "_input");
+
+            if ($('#' + this.id).attr('checked') === 'checked') {
+              $(input).show();
+              name.addClass('validate[required,maxSize[50]]');
+            } else {
+              $(input).hide();
+              name.removeClass('validate[required,maxSize[50]]');
+            }
+          });
+        });
+
+        elements.forEach(function (element) {
+          $("#" + element + "_show_chart").click(function () {
+            let name = $("#" + element + "_name");
+            let input = $("#" + element + "_chart_input");
 
             if ($('#' + this.id).attr('checked') === 'checked') {
               $(input).show();
@@ -243,7 +275,7 @@
                                 </select>
                             </div>
                             <div class="form_row">
-                                <label>Minimalna vrijednost</label>
+                                <label>Minimalna vrijednost za alarm</label>
                                 <input value="{{ device.entry1.t_min ?? '' }}"
                                        class="input validate[optional,custom[t_minmax]] tipRight" type="text"
                                        style="width: 290px;" name="t1_min" id="t1_min"
@@ -251,13 +283,33 @@
                                        original-title="Minimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
                             <div class="form_row">
-                                <label>Maksimalna vrijednost</label>
+                                <label>Maksimalna vrijednost za alarm</label>
                                 <input value="{{ device.entry1.t_max ?? '' }}"
                                        class="input validate[optional,custom[t_minmax]] tipRight" type="text"
                                        style="width: 290px;" name="t1_max" id="t1_max"
                                        placeholder="Unesite maksimalnu vrijednost"
                                        original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
+
+                            <div id="t1_chart_input">
+                                <div class="form_row">
+                                    <label>Minimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry1.t_chart_min ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="t1_chart_min" id="t1_chart_min"
+                                           placeholder="Unesite minimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
+                                <div class="form_row">
+                                    <label>Maksimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry1.t_chart_max ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="t1_chart_max" id="t1_chart_max"
+                                           placeholder="Unesite maksimalnu vrijednost"
+                                           original-title="Maksimalna vrednost za graf"/>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="grid_4 push_1 omega">
@@ -321,6 +373,25 @@
                                        style="width: 290px;" name="t2_max" id="t2_max"
                                        placeholder="Unesite maksimalnu vrijednost"
                                        original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
+                            </div>
+
+                            <div id="t2_chart_input">
+                                <div class="form_row">
+                                    <label>Minimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.t_chart_min ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="t2_chart_min" id="t2_chart_min"
+                                           placeholder="Unesite minimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
+                                <div class="form_row">
+                                    <label>Maksimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.t_chart_max ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="t2_chart_max" id="t2_chart_max"
+                                           placeholder="Unesite maksimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -386,6 +457,24 @@
                                        placeholder="Unesite maksimalnu vrijednost"
                                        original-title="Maksimalna vr. za ulaz &quot;Temperatura 1&quot; (-99.99 do 99.99)"/>
                             </div>
+                            <div id="rh1_chart_input">
+                                <div class="form_row">
+                                    <label>Minimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.rh_chart_min ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="rh1_chart_min" id="rh1_chart_min"
+                                           placeholder="Unesite minimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
+                                <div class="form_row">
+                                    <label>Maksimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.t_chart_max ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="rh1_chart_max" id="rh1_chart_max"
+                                           placeholder="Unesite maksimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="grid_4 push_1 omega">
@@ -439,6 +528,25 @@
                                        style="width: 290px;" name="rh2_max" id="rh2_max"
                                        placeholder="Unesite maksimalnu vrijednost"
                                        original-title="Maksimalna vr. za ulaz &quot;Temperatura 2&quot; (-99.99 do 99.99)"/>
+                            </div>
+
+                            <div id="rh2_chart_input">
+                                <div class="form_row">
+                                    <label>Minimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.rh_chart_min ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="rh2_chart_min" id="rh2_chart_min"
+                                           placeholder="Unesite minimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
+                                <div class="form_row">
+                                    <label>Maksimalna vrijednost za graf</label>
+                                    <input value="{{ device.entry2.rh_chart_max ?? '' }}"
+                                           class="input validate[optional,custom[t_minmax]] tipRight" type="text"
+                                           style="width: 290px;" name="rh2_chart_max" id="rh2_chart_max"
+                                           placeholder="Unesite maksimalnu vrijednost"
+                                           original-title="Minimalna vrednost za graf"/>
+                                </div>
                             </div>
                         </div>
                     </div>

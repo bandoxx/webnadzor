@@ -112,6 +112,11 @@ class DeviceUpdater
             $this->error[] = 'T min max error';
         }
 
+        $chartMin = trim($data['t' . $entry . '_chart_min']);
+        $chartMax = trim($data['t' . $entry . '_chart_max']);
+        $device->setEntryData($entry, 't_chart_min', $chartMin ?? null);
+        $device->setEntryData($entry, 't_chart_max', $chartMax ?? null);
+
         $noteKey = sprintf("t%s_note", $entry);
 
         if (isset($data[$noteKey])) {
@@ -154,6 +159,12 @@ class DeviceUpdater
         } else {
             $this->error[] = 'RH min/max error';
         }
+
+        $chartMin = trim($data['rh' . $entry . '_chart_min']);
+        $chartMax = trim($data['rh' . $entry . '_chart_max']);
+
+        $device->setEntryData($entry, 'rh_chart_min', $chartMin ?? null);
+        $device->setEntryData($entry, 'rh_chart_max', $chartMax ?? null);
 
         $this->setImage($device, $entry, 'rh_image', $data['rh' . $entry . '_image']);
     }

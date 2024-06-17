@@ -172,10 +172,46 @@
             let navigationSeries = {};
             let series = [];
             let yAxisText = '';
+            let plots = [];
 
             const data = await fetch(
               '{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry}) }}?type=' + type
             ).then(response => response.json());
+
+            if (isNaN(data.min) === false) {
+              plots.push({
+                color: 'white',
+                width: 2,
+                value: data.min,
+                label: {
+                  style: {
+                    color: 'white'
+                  },
+                  text: 'Minimum',
+                  align: 'right',
+                  x: -10,
+                  y: 12
+                }
+              })
+            }
+
+            if (isNaN(data.max) === false) {
+              plots.push({
+                color: 'white',
+                width: 2,
+                value: data.max,
+                label: {
+                  style: {
+                    color: 'white'
+                  },
+                  text: 'Maksimum',
+                  align: 'right',
+                  x: -10
+                }
+              })
+            }
+
+            console.log(plots);
 
             if (type === "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}") {
               navigationSeries = {
@@ -250,6 +286,7 @@
                 minRange: 3600 * 1000 // one hour
               },
               yAxis: {
+                plotLines: plots,
                 title: {
                   text: yAxisText,
                   rotation: 0
