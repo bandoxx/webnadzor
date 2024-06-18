@@ -16,7 +16,10 @@ services:
       MYSQL_PASSWORD: ${DATABASE_PASSWORD}
   apache:
     container_name: nadzor_apache
-    build: ./.docker/apache
+    build:
+      context: .
+      network: host
+      dockerfile: ./.docker/apache/Dockerfile
     ports:
       - "8080:80"
     volumes:
@@ -28,6 +31,7 @@ services:
     container_name: nadzor_php
     build:
       context: .
+      network: host
       dockerfile: ./.docker/php/Dockerfile
     environment:
       APP_ENV: ${APP_ENV}
