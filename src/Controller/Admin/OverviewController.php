@@ -72,9 +72,9 @@ class OverviewController extends AbstractController
 
                     foreach ($activeAlarm as $alarm) {
                         if ($alarm->getMessage()) {
-                            $data[$client->getId()]['alarms'][] = $alarm->getMessage();
+                            $data[$clientId]['alarms'][] = $alarm->getMessage();
                         } else {
-                            $data[$client->getId()]['alarms'][] =
+                            $data[$clientId]['alarms'][] =
                                 sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
                                     $device->getName(),
                                     $alarm->getLocation(),
