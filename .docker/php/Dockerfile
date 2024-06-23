@@ -1,17 +1,5 @@
-ARG PHP_VERSION=8.1
+FROM php:8.1-fpm
 
-FROM php:${PHP_VERSION}-fpm
-
-#
-#--------------------------------------------------------------------------
-# Software's Installation
-#--------------------------------------------------------------------------
-#
-# Installing tools and PHP extentions using "apt", "docker-php", "pecl",
-#
-
-# Install "curl", "libmemcached-dev", "libpq-dev", "libjpeg-dev",
-#         "libpng-dev", "libfreetype6-dev", "libssl-dev", "libmcrypt-dev",
 RUN set -eux; \
     apt-get update; \
     apt-get upgrade -y; \
@@ -34,12 +22,15 @@ RUN set -eux; \
     apt update; \
     apt install -y netcat-traditional
 
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+    && php composer-setup.php \
+    && php -r "unlink('composer-setup.php');" \
+    && mv composer.phar /usr/local/bin/composer
+
 RUN set -eux; \
     docker-php-ext-install sysvmsg sysvsem sysvshm; \
     # Install the PHP pdo_mysql extention
     docker-php-ext-install pdo_mysql; \
-    # Install the PHP pdo_pgsql extention
-    docker-php-ext-install pdo_pgsql; \
     # Install the PHP gd library
     docker-php-ext-configure gd \
             --prefix=/usr \
