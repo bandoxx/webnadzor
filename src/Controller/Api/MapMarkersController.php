@@ -7,6 +7,7 @@ use App\Service\Device\UserAccess;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/map/markers/{clientId}', name: 'api_map_markers')]
@@ -14,14 +15,12 @@ class MapMarkersController extends AbstractController
 {
     public function __invoke(int $clientId, ClientRepository $clientRepository, UserAccess $userAccess): JsonResponse
     {
-        $user = $this->getUser();
-        $client = $user->getClient();
-
+        $client = $clientRepository->find($clientId);
         if (!$client) {
-            $client = $clientRepository->find($clientId);
+            throw new BadRequestHttpException();
         }
 
-        $devices = $userAccess->getAccessibleDevices($client, $user);
+        $devices = $userAccess->getAccessibleDevices($client, $this->getUser());
 
         $markers['places'] = [];
         $counter = [];

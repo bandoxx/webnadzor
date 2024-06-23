@@ -7,7 +7,7 @@ use App\Entity\Device;
 use App\Entity\User;
 use App\Entity\UserDeviceAccess;
 use App\Factory\DeviceOverviewFactory;
-use App\Model\DeviceOverviewModel;
+use App\Model\Device\DeviceOverviewModel;
 use App\Repository\DeviceRepository;
 use App\Service\Device\UserAccess;
 
@@ -87,6 +87,8 @@ class DeviceLocationHandler
         }
 
         return [
+            'device_id' => $device->getId(),
+            'entry' => $userDeviceAccess->getSensor(),
             'name' => $device->getName(),
             'location' => $deviceEntryData['t_name']
         ];

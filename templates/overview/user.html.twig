@@ -42,7 +42,7 @@
                         {% for device in devices_table %}
                             <div class="dets" style="padding: 15px; margin-top: 10px; margin-left: 5px; font-size:11px;">
                                 <div style="display:table; margin:0 auto; text-transform: uppercase; text-align: center;">
-                                    <span>{{ device.name }}<br>{{ device.temperatureLocation }}<br>{{ device.temperatureName }}</span>
+                                    <span>{{ device.name }}<br>{{ device.temperatureModel.location }}<br>{{ device.temperatureModel.name }}</span>
                                     <br><br>
                                     <span style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }} </span>
                                     {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
@@ -54,15 +54,15 @@
                                          src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}">
                                 </div>
                                 <span style="color: #515d6b;">Trenutna:</span>
-                                <span style="float: right;  {% if device.isTemperatureOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperature }}</span><br><br>
+                                <span style="float: right;  {% if device.temperatureModel.isInOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>
                                 <span style="color: #515d6b;">Maksimalna:</span>
-                                <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br><span
+                                <span style="float: right;" id="t1max_value">{{ device.temperatureModel.maximumWithUnit }}</span><br><br><span
                                         style="color: #515d6b;">Minimalna:</span>
-                                <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
+                                <span style="float: right;" id="t1min_value">{{ device.temperatureModel.minimumWithUnit }}</span><br><br>
                                 <span style="color: #515d6b;">MKT:</span>
-                                <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
+                                <span style="float: right;" id="mkt1_value">{{ device.temperatureModel.meanWithUnit }}</span><br><br>
                                 <span style="color: #515d6b;">R. vlažnost:</span>
-                                <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.relativeHumidity }}</span>
+                                <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.humidity.currentWithUnit }}</span>
                                 {% if device.note %}
                                     <br><br><span class="red">{{ device.note }}</span>
                                 {% endif %}
@@ -81,7 +81,7 @@
                         {% for device in devices_table %}
                             <div class="dets" style="height:410px; padding: 15px; margin-top: 10px; margin-left: 5px; font-size:11px;">
                                 <div style="display:table; margin:0 auto; text-transform: uppercase; text-align: center;">
-                                    <span>{{ device.name }}<br>{{ device.temperatureLocation }}<br>{{ device.temperatureName }}</span>
+                                    <span>{{ device.name }}<br>{{ device.temperatureModel.location }}<br>{{ device.temperatureModel.name }}</span>
                                     <br><br>
                                     <span style="display:table; margin:0 auto;">{{ device.deviceDate|date('d.m.Y. H:i:s') }} </span>
                                     {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
@@ -90,17 +90,17 @@
                                 </div>
                                 <div style="margin-left: 15px;">
                                     <div style="min-height:50px;" id="t1_image">
-                                        <img alt="t1" src="{{ asset(device.temperatureImage) }}">
+                                        <img alt="t1" src="{{ asset(device.temperaturemodel.image) }}">
                                     </div>
                                 </div>
-                                <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; {% if device.isTemperatureOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperature }}</span><br><br>
-                                <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureAverage }}</span><br><br>
-                                <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureMax }}</span><br><br>
-                                <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureMin }}</span><br><br>
-                                <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.meanKineticTemperature }}</span><br><br>
-                                <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.relativeHumidity }}</span>
+                                <span style="color: #515d6b;">Trenutna</span>: <span style="float: right; {% if device.temperatureModel.isInOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>
+                                <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureModel.averageWithUnit }}</span><br><br>
+                                <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureModel.maximumWithUnit }}</span><br><br>
+                                <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureModel.minimumWithUnit }}</span><br><br>
+                                <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.temperatureModel.meanWithUnit }}</span><br><br>
+                                <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; {% if device.humidityModel.isInOffset %}color: red;{% endif %}" id="rh1_value">{{ device.humidityModel.currentWithUnit }}</span>
                                 {% if device.note %}
-                                <br><br><span class="red">{{ device.note }}</span>
+                                    <br><br><span class="red">{{ device.note }}</span>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -129,6 +129,9 @@
                             <th>Naziv mjernog mjesta</th>
                             <th>Status</th>
                             <th>Alarm</th>
+                            <th>Signal</th>
+                            <th>Napon B.</th>
+                            <th>Stanje B.</th>
                             <th class="sorting_disabled">Podaci</th>
                         </tr>
                         </thead>
@@ -137,8 +140,8 @@
                         {% for device in devices_table %}
                             <tr>
                                 <td class="">{{ device.name }}</td>
-                                <td class="">{{ device.location }}</td>
-                                <td class="">{{ device.temperatureName }}</td>
+                                <td class="">{{ device.temperatureModel.location }}</td>
+                                <td class="">{{ device.temperatureModel.name }}</td>
                                 <td class="">
                                     {% if device.online %}
                                         <span class="green">Online</span>
@@ -153,6 +156,9 @@
                                         <span class="green">Nije aktivan</span>
                                     {% endif %}
                                 </td>
+                                <td><span class="{% if device.signal < 30 %}red{% else %}green{% endif %}">{{ device.signal }}%</span></td>
+                                <td><span class="{% if device.power < 2.7 %}red{% else %}green{% endif %}">{{ device.power }}V</span></td>
+                                <td><span class="{% if device.battery < 30 %}red{% else %}green{% endif %}">{{ device.battery }}%</span></td>
                                 <td class="">
                                     <div id="{{ device.id }}" data-devnam="{{ device.name }}" class="actionbar">
                                         <a href="{{ path('app_device_entry_show', {id: device.id, clientId: clientId, entry: device.entry }) }}"

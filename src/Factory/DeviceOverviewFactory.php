@@ -3,7 +3,9 @@
 namespace App\Factory;
 
 use App\Entity\Device;
-use App\Model\DeviceOverviewModel;
+use App\Model\Device\DeviceOverviewModel;
+use App\Model\Device\HumidityModel;
+use App\Model\Device\TemperatureModel;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceIconRepository;
@@ -49,34 +51,44 @@ class DeviceOverviewFactory
             }
         }
 
+        $temperatureModel = (new TemperatureModel())
+            ->setUnit($temperatureUnit)
+            ->setAverage($data->getTAvrg($entry))
+            ->setMinimum($data->getTMin($entry))
+            ->setMaximum($data->getTMax($entry))
+            ->setMean($data->getMkt($entry))
+            ->setCurrent($data->getT($entry))
+            ->setLocation($deviceEntryData['t_location'] ?? null)
+            ->setName($deviceEntryData['t_name'] ?? null)
+            ->setIsShown((bool) $deviceEntryData['t_show_chart'])
+            ->setIsUsed((bool) $deviceEntryData['t_use'])
+            ->setIsInOffset($data->isTemperatureOutOfRange($entry))
+            ->setImage($icon)
+        ;
+
+        $humidityModel = (new HumidityModel())
+            ->setUnit($humidityUnit)
+            ->setCurrent($data->getRh($entry))
+            ->setIsShown($deviceEntryData['rh_show_chart'])
+            ->setIsInOffset($data->isHumidityOutOfRange($entry))
+            ->setIsUsed((bool) $deviceEntryData['rh_use'])
+            ->setName($deviceEntryData['rh_name'] ?? null)
+            ->setLocation($deviceEntryData['rh_location'] ?? null)
+        ;
+
         $deviceOverviewModel
             ->setId($device->getId())
             ->setEntry($entry)
             ->setName($device->getName())
-            ->setTemperatureName($deviceEntryData['t_name'] ?? null)
-            ->setRelativeHumidityName($deviceEntryData['rh_name'] ?? null)
-            ->setTemperatureLocation($deviceEntryData['t_location'] ?? null)
-            ->setRelativeHumidityLocation($deviceEntryData['rh_location'] ?? null)
-            ->setLocation($deviceEntryData['t_location'] ?? null)
+            ->setSignal($data->getGsmSignal())
+            ->setPower($data?->getVbat())
+            ->setBattery($data?->getBattery())
             ->setOnline($online)
             ->setNote($deviceEntryData['t_note'] ?? null)
             ->setAlarms($alarms)
-            ->setTemperature(sprintf("%s %s", $data->getT($entry), $temperatureUnit))
-            ->setMeanKineticTemperature(sprintf("%s %s", $data->getMkt($entry), $temperatureUnit))
-            ->setTemperatureMax(sprintf("%s %s", $data->getTMax($entry), $temperatureUnit))
-            ->setTemperatureMin(sprintf("%s %s", $data->getTMin($entry), $temperatureUnit))
-            ->setTemperatureAverage(sprintf("%s %s", $data->getTAvrg($entry), $temperatureUnit))
-            ->setRelativeHumidity(sprintf("%s %s", $data->getRh($entry), $humidityUnit))
             ->setDeviceDate($data->getDeviceDate())
-            ->setShowTemperature($deviceEntryData['t_show_chart'])
-            ->setShowHumidity($deviceEntryData['rh_show_chart'])
-            ->setTemperatureUnit($temperatureUnit)
-            ->setRelativeHumidityUnit($humidityUnit)
-            ->setTemperatureImage($icon)
-            ->setIsTemperatureUsed((bool) $deviceEntryData['t_use'])
-            ->setIsHumidityUsed((bool) $deviceEntryData['rh_use'])
-            ->setIsHumidityOffset($data->isHumidityOutOfRange($entry))
-            ->setIsTemperatureOffset($data->isTemperatureOutOfRange($entry))
+            ->setTemperatureModel($temperatureModel)
+            ->setHumidityModel($humidityModel)
         ;
 
         return $deviceOverviewModel;
