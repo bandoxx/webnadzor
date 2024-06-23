@@ -2,6 +2,7 @@
 
 namespace App\Controller\User;
 
+use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
 use App\Service\DeviceLocationHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class UsersGetController extends AbstractController
 {
 
-    public function __invoke(int $clientId, UserRepository $userRepository, DeviceLocationHandler $deviceLocationHandler): Response
+    public function __invoke(int $clientId, UserRepository $userRepository, ClientRepository $clientRepository, DeviceLocationHandler $deviceLocationHandler): Response
     {
         $users = $userRepository->findUsersByClientAndSuperAdmin($clientId);
 
@@ -21,8 +22,10 @@ class UsersGetController extends AbstractController
             $user->setAvailableLocations($deviceLocations);
         }
 
+        $clients = $clientRepository->findAll();
         return $this->render('user/list.html.twig', [
             'users' => $users,
+            'clients' => $clients,
             'client_locations' => $deviceLocationHandler->getClientDeviceLocations($clientId),
             'client_id' => $clientId
         ]);

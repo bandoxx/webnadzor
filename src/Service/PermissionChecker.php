@@ -14,11 +14,10 @@ class PermissionChecker
             return true;
         }
 
-        if ($user->getClient() === $client) {
+        if ($user->getClients()->contains($client)) {
             return true;
         }
 
         return false;
     }
-
 }

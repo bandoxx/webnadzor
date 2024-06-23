@@ -2,6 +2,7 @@
 
 namespace App\Controller\User\API;
 
+use App\Repository\ClientRepository;
 use App\Repository\UserRepository;
 use App\Service\User\UserPasswordSetter;
 use App\Service\UserDeviceAccessUpdater;
@@ -12,11 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/admin/{clientId}/user/{userId}', name: 'api_user_update', methods: 'PATCH')]
+#[Route(path: '/admin/user/{userId}', name: 'api_user_update', methods: 'PATCH')]
 class UserUpdateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
+    public function __invoke(int $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, ClientRepository $clientRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
     {
         $user = $userRepository->find($userId);
 
@@ -37,6 +38,20 @@ class UserUpdateController extends AbstractController
 
         if ($permission = $request->request->get('permissions')) {
             $user->setPermission($request->request->get($permission));
+        }
+
+        $clients = $request->get('clients');
+
+        $user->getClients()->clear();
+
+        foreach ($clients as $clientId) {
+            $client = $clientRepository->find($clientId);
+
+            if (!$client) {
+                continue;
+            }
+
+            $user->addClient($client);
         }
 
         $userDeviceAccessUpdater->update(

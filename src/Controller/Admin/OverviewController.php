@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Device;
+use App\Entity\User;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
@@ -18,15 +19,24 @@ class OverviewController extends AbstractController
 {
     public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
-        if ($this->getUser()->getPermission() !== 4) {
+        /** @var User $user */
+        $user = $this->getUser();
+        $clients = $user->getClients();
+
+        if ($clients->count() === 1) {
+            $clientId = $clients->first()->getId();
+
             return $this->redirectToRoute('client_overview', [
-                'clientId' => $this->getUser()->getClient()->getId(),
+                'clientId' => $clientId,
             ]);
         }
 
-        $clients = $clientRepository->findAllActive();
         $data = [];
         foreach ($clients as $client) {
+            if ($client->isDeleted()) {
+                continue;
+            }
+
             /** @var Device[] $devices */
             $devices = $client->getDevice()->toArray();
             $clientId = $client->getId();
@@ -90,6 +100,7 @@ class OverviewController extends AbstractController
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
             $data[$clientId]['alarmsOn'] = $activeAlarms;
+            //dd($data[$clientId]['alarms']);
             $data[$clientId]['alarms'] = implode("<br>", $data[$clientId]['alarms']);
         }
 

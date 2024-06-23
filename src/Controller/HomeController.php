@@ -16,12 +16,12 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        if ($user->getPermission() === 4) {
+        if ($user->getClients()->count() > 1 || $user->getPermission() === 4) {
             return $this->redirectToRoute('admin_overview');
         }
 
         return $this->redirectToRoute('client_overview', [
-            'clientId' => $user->getClient()->getId()
+            'clientId' => $user->getClients()->first()->getId()
         ]);
     }
 }

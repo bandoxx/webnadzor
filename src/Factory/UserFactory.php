@@ -23,6 +23,7 @@ class UserFactory
             ->setPermission($permission)
             ->setUsername($username)
             ->setOverviewViews($overviewViews)
+            ->addClient($client)
         ;
 
         $this->passwordSetter->setPassword($user, $password);

@@ -16,7 +16,7 @@ class UserDeviceAccessFactory
         $access->setDevice($device)
             ->setUser($user)
             ->setSensor($sensor)
-            ->setClient($user->getClient())
+            ->setClient($device->getClient())
         ;
 
         return $access;

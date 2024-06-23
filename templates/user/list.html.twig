@@ -56,20 +56,25 @@
           return false;
         });
 
-        var adedit;
         $('#editform').validationEngine('attach', {
           onValidationComplete: function(form, status){
             var form_data = $('#editform').serialize();
             if (status === true) {
-              adedit = [];
+              let devices = [];
+              let clients = [];
+
               $('#newallowed_devices').multiselect('getChecked').each(function() {
-                adedit.push($(this).val());
+                devices.push($(this).val());
+              })
+
+              $('#newallowed_clients').multiselect('getChecked').each(function() {
+                clients.push($(this).val());
               })
 
               $.ajax({
-                url: '/admin/{{ clientId }}/user/' + edit_id,
+                url: '/admin/user/' + edit_id,
                 type: 'PATCH',
-                data: $.param({locations: adedit}) + "&" + form_data,
+                data: $.param({locations: devices, clients: clients}) + "&" + form_data,
                 dataType: 'json',
                 success: function() {
                   $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}")
@@ -82,7 +87,7 @@
           }
         });/* VALIDATION ENGINE */
 
-        var edit_parent, edit_id, edit_username, edit_permissions, edit_ad = '';
+        var edit_parent, edit_id, edit_username, edit_permissions, edit_devices, edit_clients = '';
         $('div.actionbar a.edit').click(function () { /* EDIT ICON */
 
           edit_parent = $(this).parent();
@@ -91,7 +96,8 @@
           edit_username = $(edit_parent).data('username');
           edit_permissions = $(edit_parent).data('permissions');
           edit_overview_views = $(edit_parent).data('overviews');
-          edit_ad = $(edit_parent).data('ad').split(',');
+          edit_devices = String($(edit_parent).data('devices')).split(',');
+          edit_clients = String($(edit_parent).data('clients')).split(',');
 
           if (edit_overview_views == 1) {
             $('#map2').prop('checked', true).button('refresh');
@@ -103,19 +109,32 @@
             $('#default2').prop('checked', true).button('refresh');
           }
 
-          $('#edit-form').attr('title', 'Editing user - "' + edit_username + '"');
+          $('#edit-form').attr('title', 'Izmene na korisniku - "' + edit_username + '"');
 
           if (edit_permissions == 1) {
             $('#r4').prop('checked', true).button('refresh');
 
             $('#newallowed_devices').multiselect('enable');
+            $('#newallowed_clients').multiselect('enable');
+
             $('input[name="multiselect_newallowed_devices"]').each(function () {
-              $(this).prop('checked', true);
-              if ($.inArray($(this).val(), edit_ad)) {
-                $(this).prop('checked', true);
+              $(this).prop('checked', false);
+              if (edit_devices.includes($(this).val())) {
+                $(this).prop('checked', true).trigger('change');
               }
             });
-            $('#newallowed_devices').multiselect('refresh');
+
+            // $('#newallowed_devices').multiselect('refresh');
+
+            $('input[name="multiselect_newallowed_clients"]').each(function () {
+              $(this).prop('checked', false);
+              if (edit_clients.includes($(this).val())) {
+                $(this).prop('checked', true).trigger('change');
+              }
+
+            });
+            // $('#newallowed_clients').multiselect('refresh');
+
           } else if (edit_permissions == 2) {
             $('#r5').prop('checked', true).button('refresh');
           } else if (edit_permissions == 3) {
@@ -181,20 +200,25 @@
           return false;
         });
 
-        var locations;
         $('#addform').validationEngine('attach', {
           onValidationComplete: function (form, status) {
             var form_data = $('#addform').serialize();
             if (status === true) {
-              locations = [];
+              let locations = [];
+              let clients = [];
+
               $('#allowed_devices').multiselect('getChecked').each(function () {
                 locations.push($(this).val());
+              })
+
+              $('#newallowed_clients').multiselect('getChecked').each(function() {
+                clients.push($(this).val());
               })
 
               $.ajax({
                 url: "{{ path('app_user_createuser', {clientId: clientId}) }}",
                 type: 'POST',
-                data: $.param({locations: locations}) + "&" + form_data,
+                data: $.param({locations: locations, clients: clients}) + "&" + form_data,
                 dataType: 'json',
                 success: function () {
                   $(location).attr('href', "{{ path('app_user_getusers', {clientId: clientId}) }}")
@@ -356,6 +380,14 @@
                     </div>
                 </div>
                 <div class="form_row">
+                    <label for="allowed_clients">Pristup klijentima</label>
+                    <select id="allowed_clients" name="" class="multiselect" style="width: 270px;">
+                        {% for client in clients %}
+                            <option value="{{ client.id }}">{{ client.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form_row">
                     <label for="allowed_devices">Dozvoljene lokacije</label>
                     <select id="allowed_devices" name="" class="multiselect" style="width: 270px;">
                         {% for key, location in client_locations %}
@@ -415,6 +447,14 @@
                     </div>
                 </div>
                 <div class="form_row">
+                    <label for="newallowed_clients">Dozvoljeni klijenti</label>
+                    <select id="newallowed_clients" name="" class="multiselect" style="width: 270px;">
+                        {% for client in clients %}
+                            <option value="{{ client.id }}">{{ client.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form_row">
                     <label for="newallowed_devices">Dozvoljene lokacije</label>
                     <select id="newallowed_devices" name="" class="multiselect" style="width: 270px;">
                         {% for key, location in client_locations %}
@@ -463,8 +503,10 @@
                             <div id="{{ user.id }}"
                                  data-username="{{ user.username }}"
                                  data-permissions="{{ user.permission }}"
-                                 data-overviews="{{ user.overviewViews }}"
-                                 data-ad="" class="actionbar">
+                                 data-overviews="1"
+                                 data-devices="{{ user.availableLocations|map((value, key) => key)|join(',') }}"
+                                 data-clients="{{ user.clients|map(client => client.id)|join(',') }}"
+                                 class="actionbar">
                                 <a href="#" class="action edit"><span>Uredi</span></a>
                                 <a href="#" class="action delete"><span>Obriši</span></a>
                             </div>

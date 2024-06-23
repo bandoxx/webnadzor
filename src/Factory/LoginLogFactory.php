@@ -36,7 +36,6 @@ class LoginLogFactory
         $parserData = $parser->parse($userAgent);
 
         $loginLog->setUser($user)
-            ->setClient($user?->getClient())
             ->setUsername($request->request->get('username'))
             ->setPassword(!$user ? $request->request->get('password') : null)
             ->setIp(ip2long($remoteAddress))

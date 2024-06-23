@@ -23,9 +23,6 @@ class Client
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'client')]
-    private Collection $user;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
@@ -81,49 +78,25 @@ class Client
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $deletedAt = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'clients')]
+    private Collection $users;
+
     public function __construct()
     {
-        $this->user = new ArrayCollection();
         $this->device = new ArrayCollection();
         $this->userDeviceAccesses = new ArrayCollection();
         $this->deviceIcons = new ArrayCollection();
         $this->loginLogArchives = new ArrayCollection();
         $this->loginLogs = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUser(): Collection
-    {
-        return $this->user;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->user->contains($user)) {
-            $this->user->add($user);
-            $user->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->user->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getClient() === $this) {
-                $user->setClient(null);
-            }
-        }
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -448,5 +421,13 @@ class Client
         $this->deletedAt = $deletedAt;
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
     }
 }

@@ -35,6 +35,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     public function findUsersByClientAndSuperAdmin(int $clientId): array
     {
         return $this->createQueryBuilder('u')
+            ->innerJoin('u.clients', 'c')
             ->where('u.client = :clientId OR u.client IS NULL')
             ->setParameter('clientId', $clientId)
             ->orderBy('u.permission', 'DESC')
