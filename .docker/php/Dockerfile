@@ -10,6 +10,8 @@ RUN set -eux; \
             libpq-dev \
             libjpeg-dev \
             libpng-dev \
+            unzip \
+            libzip-dev \
             libfreetype6-dev \
             libssl-dev \
             libwebp-dev \
@@ -29,6 +31,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 
 RUN set -eux; \
     docker-php-ext-install sysvmsg sysvsem sysvshm; \
+    docker-php-ext-install zip pdo pdo_mysql; \
     # Install the PHP pdo_mysql extention
     docker-php-ext-install pdo_mysql; \
     # Install the PHP gd library
