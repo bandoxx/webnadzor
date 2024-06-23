@@ -62,7 +62,7 @@
                                 <span style="color: #515d6b;">MKT:</span>
                                 <span style="float: right;" id="mkt1_value">{{ device.temperatureModel.meanWithUnit }}</span><br><br>
                                 <span style="color: #515d6b;">R. vlažnost:</span>
-                                <span style="float: right; {% if device.isHumidityOffset %}color: red;{% endif %}" id="rh1_value">{{ device.humidity.currentWithUnit }}</span>
+                                <span style="float: right; {% if device.humidityModel.isInOffset %}color: red;{% endif %}" id="rh1_value">{{ device.humidityModel.currentWithUnit }}</span>
                                 {% if device.note %}
                                     <br><br><span class="red">{{ device.note }}</span>
                                 {% endif %}
