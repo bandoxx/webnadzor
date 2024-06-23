@@ -19,6 +19,10 @@
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script>
+      function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n)
+      }
+
       $(document).ready(function () {
         $('.toggle').click(function () { /* BLOCK TOGGLE */
           $(this).toggleClass('show');
@@ -178,7 +182,7 @@
               '{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry}) }}?type=' + type
             ).then(response => response.json());
 
-            if (isNaN(data.min) === false) {
+            if (isNumber(data.min)) {
               plots.push({
                 color: 'white',
                 width: 2,
@@ -195,7 +199,7 @@
               })
             }
 
-            if (isNaN(data.max) === false) {
+            if (isNumber(data.max)) {
               plots.push({
                 color: 'white',
                 width: 2,
