@@ -89,7 +89,7 @@ class HistoryDeviceDataArchiver extends Command
                 }
             }
 
-            if ($monthly && $date->format('d') === 1) {
+            if ($monthly && $date->format('d') == 1) {
                 $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                 foreach([1, 2] as $entry) {
