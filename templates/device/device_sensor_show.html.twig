@@ -375,7 +375,7 @@
     <div id="body">
         <div id="devdata" class="block big"><!-- Block Begin -->
             <div class="titlebar">
-                <h3>Trenutni podaci za lokaciju {{ device.temperatureModel.location }} - <span
+                <h3>Trenutni podaci za lokaciju {{ device.name }}, {{ device.temperatureModel.name }} - <span
                             id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
                 <a href="#" class="toggle">&nbsp;</a>
             </div>
@@ -430,8 +430,7 @@
             <div id="devdata" class="block big"><!-- Block Begin -->
                 <div class="titlebar">
                     <h3>Podaci za lokaciju {{ device.temperatureModel.location }}, mjerno
-                        mjesto {{ device.temperatureModel.name }} - <span
-                                id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                        mjesto {{ device.temperatureModel.name }}</h3>
                     <a href="#" class="toggle">&nbsp;</a>
                 </div>
 
@@ -447,8 +446,7 @@
             <div id="devdata" class="block big"><!-- Block Begin -->
                 <div class="titlebar">
                     <h3>Podaci za lokaciju {{ device.temperatureModel.location }}, mjerno
-                        mjesto {{ device.temperatureModel.name }} - <span
-                                id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                        mjesto {{ device.temperatureModel.name }}</span></h3>
                     <a href="#" class="toggle">&nbsp;</a>
                 </div>
 
