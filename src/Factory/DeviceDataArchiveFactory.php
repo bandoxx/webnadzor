@@ -8,17 +8,17 @@ use App\Entity\DeviceDataArchive;
 class DeviceDataArchiveFactory
 {
 
-    public function create(Device $device, \DateTime $serverDate, int $entry, string $fileName, string $period): DeviceDataArchive
+    public function create(Device $device, \DateTime $archiveDate, int $entry, string $fileName, string $period): DeviceDataArchive
     {
         $archive = new DeviceDataArchive();
-        $serverDate = (clone $serverDate)->modify('+1 day')->setTime(0, 15);
+        $serverDate = (clone $archiveDate)->modify('+1 day')->setTime(0, 15);
 
         $archive->setDevice($device)
-            ->setServerDate(new \DateTime())
+            ->setServerDate($serverDate)
             ->setEntry($entry)
             ->setFilename($fileName)
             ->setPeriod($period)
-            ->setArchiveDate($serverDate)
+            ->setArchiveDate($archiveDate)
         ;
 
         return $archive;
