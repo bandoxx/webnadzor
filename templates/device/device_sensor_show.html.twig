@@ -171,7 +171,7 @@
           }
         });
 
-        function render(containerId, type, title) {
+        function render(containerId, type) {
           (async () => {
             let navigationSeries = {};
             let series = [];
@@ -257,10 +257,6 @@
                 series: navigationSeries
               },
               rangeSelector: rangeSelector,
-              title: {
-                text: title,
-                align: 'left'
-              },
               scrollbar: {
                 liveRedraw: false
               },
@@ -337,11 +333,11 @@
         }
 
         if (document.getElementById('container_t')) {
-          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}", "{{ device.name }} - {{ device.temperatureModel.name }}");
+          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}");
         }
 
         if (document.getElementById('container_rh')) {
-          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}", "{{ device.name }} - {{ device.humidityModel.name }}");
+          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}");
         }
       })
 
