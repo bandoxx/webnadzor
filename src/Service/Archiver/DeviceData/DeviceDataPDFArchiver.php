@@ -34,7 +34,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
         $client = $device->getClient();
 
-        $fileName = sprintf("%s.xlsx", $fileName);
+        $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
         $this->savePDF($pdf, $path, $fileName);
     }
