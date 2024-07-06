@@ -45,7 +45,7 @@ class DeviceEditController extends AbstractController
             }
         }
 
-        return $this->render('device/edit.html.twig', [
+        return $this->render('v1/device/edit.html.twig', [
             'device' => $device,
             'icons' => $icons,
             'clientId' => $clientId,

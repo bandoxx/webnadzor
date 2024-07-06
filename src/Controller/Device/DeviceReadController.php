@@ -42,7 +42,7 @@ class DeviceReadController extends AbstractController
             $deviceTable[] = $deviceListModel;
         }
 
-        return $this->render('device/list.html.twig', [
+        return $this->render('v1/device/list.html.twig', [
             'devices_table' => $deviceTable,
             'client_id' => $clientId
         ]);

@@ -1,0 +1,69 @@
+{% set user = app.user %}
+{% set client = null %}
+{% if clientId is not defined %}
+    {% set clientId = null %}
+{% endif %}
+
+{% if user is not null %}
+    {% if user.client is not null %}
+        {% set clientId = user.client.id %}
+    {% else %}
+        {% set clientId = app.request.attributes.get('_route_params').clientId ?? null %}
+    {% endif %}
+{% endif %}
+
+{% if clientId is not null %}
+    {% set client = global_variables.getClient(clientId) %}
+{% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            {% if client is not null %}
+                {{ client.name }}
+            {% else %}
+                Administracija
+            {% endif %}
+        {% endblock %}
+    </title>
+    <link rel="icon" href="{{ asset('assets/images/intelteh.ico') }}">
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}#}
+    {% endblock %}
+
+    {% block stylesheets %}
+    {% endblock %}
+
+</head>
+<body>
+{% set user = app.user %}
+{% block body %}
+    <div id="main" class="container_12"><!-- Body Wrapper Begin -->
+        <div id="userbar">
+            <div id="logoarea">
+                {% if client is not null %}
+                    <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
+                {% else %}
+                    <a href="/"><div id="logo" style="background: url({{ asset('/assets/images/intelteh_logo.png') }}) center no-repeat;"></div></a>
+                {% endif %}
+            </div>
+            <ul id="navigation">
+                {% block navigation %}
+                {% endblock %}
+            </ul>
+            {% block userbar %}
+            {% endblock %}
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </div>
+{% endblock %}
+{#        <div id="copyright"><!-- Copyright Begin -->#}
+{#            Copyright © {{ 'now' | date('Y') }} by <a href="http://www.intelteh.hr/" target="_BLANK">Intelteh d.o.o.</a>#}
+{#        </div>#}
+</body>
+
+</html>
