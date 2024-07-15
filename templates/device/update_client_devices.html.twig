@@ -1,0 +1,409 @@
+{% extends 'overview/overview.html.twig' %}
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('assets/css/reset.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/css/grid.css') }}?version=1.1.3" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}?version=1.1.0" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/js/ui/admincp/jquery-ui-1.8.17.custom.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/js/tooltip/tipsy.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/js/fancybox/jquery.fancybox-1.3.4.css') }}" type="text/css" />
+        <link rel="stylesheet" href="{{ asset('assets/js/validation/validationEngine.jquery.css') }}" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.dataTables.css" />
+        <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+        <link rel="stylesheet" href="../../../../assets/css/image.css">
+    {% endblock %}
+    {% block navigation %}
+        {% if app.user.permission == 4 %}
+            <li><a href="{{ path('admin_client_settings', {clientId: clientId}) }}" class="icon_settings">Podešavanja</a></li>
+            <li><a href="{{ path('admin_overview') }}" class="icon_users">Klijenti</a></li>
+        {% endif %}
+
+        {% if app.user.permission >= 2 %}
+            <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_monitor">Mjerni uređaji</a></li>
+            <li><a href="{{ path('app_clientftp_read', {clientId: clientId}) }}" class="icon_bookmark">FTP podaci</a></li>
+            <li><a href="{{ path('app_user_getusers', {clientId: clientId}) }}" class="icon_users">Korisnici</a></li>
+            <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_article">Dnevnik prijava</a></li>
+        {% endif %}
+
+        {% if app.user.permission == 5 %}
+            <li><a href="{{ path('image_upload_form', {clientId: clientId}) }}" class="icon_monitor">Upload slike za klijenta</a></li>
+            <li><a href="{{ path('image_index', {clientId: clientId}) }}" class="icon_monitor">Pregled slika za klijenta</a></li>
+        {% endif %}
+
+        <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
+    {% endblock %}
+    {% block content %}
+
+        <div class="rotated-image">
+                <img id="mapImage" src="{{ clientStorage.getBaseImage }}" alt="">
+        </div>
+        <div class="center-container">
+            <div class="input-container">
+                <select id="initialTextbox">
+                    <option value="" selected disabled>Select an option</option>
+                </select>
+            </div>
+            <div>
+                <button id="addTextboxButton" onclick="createInputField()">Add Textbox</button>
+                <button id="valuesAndPositionsButton" onclick="logInputValues()">Submit</button>
+            </div>
+        </div>
+
+        <div id="container"></div>
+
+        <script>
+            let inputCount = 0;
+
+            // ##DJDJ Ovo isto da se resi
+            let options = JSON.parse('{{ clientDevices|raw }}');
+
+
+
+            let points = JSON.parse('{{ clientStorageDevices|raw }}');
+
+            points.forEach((point) => {
+
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Your code here
+                console.log("TESTE");
+                console.log(point);
+
+
+                const image = document.getElementById('mapImage');
+                var rect = image.getBoundingClientRect()
+                const imageRect = mapImage.getBoundingClientRect();
+
+
+                const input = document.createElement('textarea');
+                    // input.id = `textarea-${inputCount}`;
+
+                const container = document.getElementById('container');
+
+                const draggableContainer = document.createElement('div');
+                draggableContainer.className = 'draggable';
+                draggableContainer.id = `draggable-container-${inputCount}`;
+                draggableContainer.style.position = 'absolute';
+                draggableContainer.dataset.relativeX = null;
+                draggableContainer.dataset.relativeY = null;
+
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'input-container';
+                inputContainer.id = `input-container-${inputCount}`;
+
+                // ##DJDJ Ovde izvlacis x i y iz baze
+                // ##DJDJ Ovo je y
+                draggableContainer.style.top = `${imageRect.top + point.d_position_y}px`;
+                // ##DJDJ Ovo je x
+                draggableContainer.style.left = `${imageRect.left + point.d_position_x}px`;
+
+                if (point.d_placeholder_text){
+                    input.value = point.d_placeholder_text;
+                    input.name = "Blank";
+                    input.dataset.status = "text";
+                }
+                else {
+                    input.value = point.d_device_id + "-" + point.d_entry;
+                    input.name = point.d_device_id + "-" + point.d_entry;
+                    input.dataset.status = "device";
+                }
+
+                input.dataset.update = 1;
+
+                input.style.width = '50px';
+                input.style.height = '20px';
+                input.style.resize = 'both';
+                input.style.overflow = 'auto';
+                input.style.backgroundColor = 'lightgrey';
+                input.id = point.d_id;
+                adjustFontSize(input);
+
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.style.width = '20px';
+                colorInput.style.height = '20px';
+                colorInput.style.padding = '0';
+                colorInput.style.marginLeft = '10px';
+                colorInput.style.display = 'none';
+                input.style.color = 'rgb(0, 0, 0)';
+                colorInput.oninput = (e) => {
+                    input.style.color = e.target.value;
+                };
+
+
+                input.addEventListener('focus', () => {
+                    colorInput.style.display = 'inline-block';
+                });
+
+
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        colorInput.style.display = 'none';
+                    }, 200);
+                });
+
+                const deleteIcon = document.createElement('span');
+                deleteIcon.className = 'delete-icon';
+                deleteIcon.innerHTML = '&#10006;';
+                deleteIcon.onclick = () => container.removeChild(draggableContainer);
+
+                inputContainer.appendChild(input);
+                inputContainer.appendChild(colorInput);
+                draggableContainer.appendChild(inputContainer);
+                draggableContainer.appendChild(deleteIcon);
+                container.appendChild(draggableContainer);
+
+                makeDraggable(draggableContainer);
+
+            })
+            });
+
+
+            function populateSelectOptions(selectElement, options) {
+                console.log("OPTIONS");
+                console.log(options);
+
+                for(var k in options) {
+                    console.log("OPTION111");
+                    console.log(k, options[k].entry1);
+
+                    const optionElementEntry1 = document.createElement('option');
+                    optionElementEntry1.value = options[k].entry1.id + "-" + options[k].entry1.entry ;
+                    optionElementEntry1.textContent = options[k].entry1.name + " " + options[k].entry1.location;
+                    selectElement.appendChild(optionElementEntry1);
+
+                    const optionElementEntry2 = document.createElement('option');
+                    optionElementEntry2.value = options[k].entry2.id + "-" + options[k].entry2.entry ;
+                    optionElementEntry2.textContent = options[k].entry2.name + " " + options[k].entry2.location;
+                    selectElement.appendChild(optionElementEntry2);
+
+
+                }
+                const optionElement = document.createElement('option');
+                optionElement.value = "Blank";
+                optionElement.textContent = "Prazan";
+
+                selectElement.appendChild(optionElement);
+
+            };
+
+            const initialTextbox = document.getElementById('initialTextbox');
+
+            populateSelectOptions(initialTextbox, options);
+
+            const addTextboxButton = document.getElementById('addTextboxButton');
+            const mapImage = document.getElementById('mapImage');
+
+            initialTextbox.addEventListener('input', function() {
+                addTextboxButton.disabled = initialTextbox.value.trim() === '';
+            });
+
+            function createInputField() {
+                if (initialTextbox.value.trim() === '') {
+                    alert('Please enter valid data in the textbox before adding a new input field.');
+                    return;
+                }
+
+                inputCount++;
+                const container = document.getElementById('container');
+
+                const draggableContainer = document.createElement('div');
+                draggableContainer.className = 'draggable';
+                draggableContainer.id = `draggable-container-${inputCount}`;
+                draggableContainer.style.position = 'absolute';
+                draggableContainer.dataset.relativeX = 0;
+                draggableContainer.dataset.relativeY = 0;
+
+                const inputContainer = document.createElement('div');
+                inputContainer.className = 'input-container';
+                inputContainer.id = `input-container-${inputCount}`;
+
+                const imageRect = mapImage.getBoundingClientRect();
+                draggableContainer.style.top = `${imageRect.top + 10}px`;
+                draggableContainer.style.left = `${imageRect.left + 10}px`;
+
+
+                const input = document.createElement('textarea');
+                input.id = `textarea-${inputCount}`;
+                input.name = `${initialTextbox.value}`;
+                input.dataset.status = "text";
+
+
+                if (initialTextbox.value != "Blank"){
+                    input.value = initialTextbox.value;
+                    input.dataset.status = "device";
+                }
+                input.style.width = '50px';
+                input.style.height = '20px';
+                input.style.resize = 'both';
+                input.style.overflow = 'auto';
+                input.dataset.update = 0;
+                input.style.backgroundColor = 'lightgrey';
+
+                adjustFontSize(input);
+
+                const colorInput = document.createElement('input');
+                colorInput.type = 'color';
+                colorInput.style.width = '20px';
+                colorInput.style.height = '20px';
+                colorInput.style.padding = '0';
+                colorInput.style.marginLeft = '10px';
+                colorInput.style.display = 'none';
+                input.style.color = 'rgb(0, 0, 0)';
+                colorInput.oninput = (e) => {
+                    input.style.color = e.target.value;
+                };
+
+
+                input.addEventListener('focus', () => {
+                    colorInput.style.display = 'inline-block';
+                });
+
+
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        colorInput.style.display = 'none';
+                    }, 200);
+                });
+
+                const deleteIcon = document.createElement('span');
+                deleteIcon.className = 'delete-icon';
+                deleteIcon.innerHTML = '&#10006;';
+                deleteIcon.onclick = () => container.removeChild(draggableContainer);
+
+                inputContainer.appendChild(input);
+                inputContainer.appendChild(colorInput);
+                draggableContainer.appendChild(inputContainer);
+                draggableContainer.appendChild(deleteIcon);
+                container.appendChild(draggableContainer);
+
+                makeDraggable(draggableContainer);
+
+            }
+
+
+
+            function adjustFontSize(textarea) {
+                const resizeObserver = new ResizeObserver(() => {
+                    const { width, height } = textarea.getBoundingClientRect();
+                    const newSize = Math.min(width, height) / 2;
+                    textarea.style.fontSize = `${newSize}px`;
+                });
+                resizeObserver.observe(textarea);
+            }
+
+            function makeDraggable(element) {
+                let offsetX, offsetY;
+
+                element.addEventListener('mousedown', startDrag);
+
+                function startDrag(e) {
+                    if (e.target.className.includes('delete-icon') || e.target.tagName.toLowerCase() === 'textarea') {
+                        return;
+                    }
+                    e.preventDefault();
+                    const rect = element.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    document.addEventListener('mousemove', dragElement);
+                    document.addEventListener('mouseup', stopDrag);
+                }
+
+                function dragElement(e) {
+                    e.preventDefault();
+                    const imageRect = mapImage.getBoundingClientRect();
+
+                    console.log("Imagerect")
+                    console.log(imageRect)
+                    const containerRect = element.getBoundingClientRect();
+
+
+                    console.log("containerRect")
+                    console.log(containerRect)
+
+                    let x = e.clientX - offsetX;
+                    let y = e.clientY - offsetY;
+
+                    if (x < imageRect.left) x = imageRect.left;
+                    if (y < imageRect.top) y = imageRect.top;
+                    if (x + containerRect.width > imageRect.right) x = imageRect.right - containerRect.width;
+                    if (y + containerRect.height > imageRect.bottom) y = imageRect.bottom - containerRect.height;
+
+                    element.style.left = `${x}px`;
+                    element.style.top = `${y}px`;
+
+
+                    const relativeX = x - imageRect.left;
+                    const relativeY = y - imageRect.top;
+                    element.dataset.relativeX = relativeX;
+                    element.dataset.relativeY = relativeY;
+                }
+
+                function stopDrag() {
+                    document.removeEventListener('mousemove', dragElement);
+                    document.removeEventListener('mouseup', stopDrag);
+                }
+            }
+
+            async function logInputValues() {
+                const containers = document.querySelectorAll('.draggable');
+                const textBoxes = [];
+                const imageRect = mapImage.getBoundingClientRect();
+                let imgElement = document.getElementById('mapImage');
+                let imgSrc = imgElement.getAttribute('src');
+
+
+
+                containers.forEach(container => {
+                    console.log(container.dataset);
+                    const relativeX = parseFloat(container.dataset.relativeX);
+                    const relativeY = parseFloat(container.dataset.relativeY);
+                    const inputContainer = container.querySelector('.input-container');
+                    const input = inputContainer.querySelector('textarea');
+                    const width = input.style.width;
+                    const height = input.style.height;
+                    const fontSize = input.style.fontSize;
+                    const textColor = input.style.color;
+                    const name = input.name;
+                    const status = input.dataset.status;
+                    const update = input.dataset.update;
+                    const id = input.id;
+
+                    console.log('relative x and relative y', container.dataset.relativeX, container.dataset.relativeY);
+
+                    console.log('image rect top and image rect left', imageRect.top, imageRect.left);
+
+                    const x = relativeX;
+                    const y = relativeY;
+
+
+                    textBoxes.push({name: name,id:id,type:status,update:update, value: input.value, x, y, width, height, fontSize, textColor});
+                });
+
+                // textBoxes.push(imgSrc);
+                console.log(textBoxes);
+                let positionSave = await fetch(
+                    '{{ path('edit_devices', {clientId: clientId, clientStorageId: clientStorage.id}) }}',
+                    {
+                        method: 'PATCH',
+                        body: JSON.stringify(textBoxes)
+                    }
+                )
+
+                console.log(`Name: ${name}, Input Value: ${input.value}, X: ${x}, Y: ${y}, Width: ${width}, Height: ${height}, Font Size: ${fontSize} Text Color: textColor, Img src: ${imgSrc}`);
+            }
+
+            window.addEventListener('resize', () => {
+                const containers = document.querySelectorAll('.draggable');
+                const imageRect = mapImage.getBoundingClientRect();
+
+                containers.forEach(container => {
+                    const relativeX = parseFloat(container.dataset.relativeX);
+                    const relativeY = parseFloat(container.dataset.relativeY);
+
+                    container.style.left = `${imageRect.left + relativeX}px`;
+                    container.style.top = `${imageRect.top + relativeY}px`;
+                });
+            });
+        </script>
+
+
+    {% endblock %}

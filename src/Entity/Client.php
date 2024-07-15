@@ -15,6 +15,8 @@ class Client
     public const OVERVIEW_THERMOMETER = 2;
     public const OVERVIEW_ICONS = 3;
 
+    public const VIEW_DEVICE_MAP = 5;
+
     public const DEVICE_OVERVIEW_ICON = 1;
     public const DEVICE_OVERVIEW_DYNAMIC = 2;
 

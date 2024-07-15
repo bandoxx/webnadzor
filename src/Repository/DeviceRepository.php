@@ -43,6 +43,17 @@ class DeviceRepository extends ServiceEntityRepository
         return $this->findBy(['client' => $clientId]);
     }
 
+    public function findDevicesIdEntryByClient(int $clientId)
+    {
+        $qb = $this->createQueryBuilder('d')
+            ->select('d.id, d.name, d.entry1, d.entry2')
+            ->where('d.client = :clientId')
+            ->setParameter('clientId', $clientId)
+            ->setMaxResults(4);
+
+        return $qb->getQuery()->getScalarResult();
+    }
+
     public function doesMoreThenOneXmlNameExists(string $xmlName): int
     {
         $numberOfDevicesWithName = $this->createQueryBuilder('d')

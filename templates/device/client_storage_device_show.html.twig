@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/stock.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+{% endblock %}
+ {% block navigation %}
+     {% if app.user.permission == 4 %}
+         <li><a href="{{ path('admin_client_settings', {clientId: clientId}) }}" class="icon_settings">Podešavanja</a></li>
+         <li><a href="{{ path('admin_overview') }}" class="icon_users">Klijenti</a></li>
+     {% endif %}
+
+     {% if app.user.permission >= 2 %}
+         <li><a href="{{ path('app_device_list', {clientId: clientId}) }}" class="icon_monitor">Mjerni uređaji</a></li>
+         <li><a href="{{ path('app_clientftp_read', {clientId: clientId}) }}" class="icon_bookmark">FTP podaci</a></li>
+         <li><a href="{{ path('app_user_getusers', {clientId: clientId}) }}" class="icon_users">Korisnici</a></li>
+         <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_article">Dnevnik prijava</a></li>
+     {% endif %}
+
+     {#        {% if app.user.permission == 5 %}#}
+     <li><a href="{{ path('image_upload_form', {clientId: clientId}) }}" class="icon_monitor">Upload slike za klijenta</a></li>
+     <li><a href="{{ path('image_index', {clientId: clientId}) }}" class="icon_monitor">Pregled slika za klijenta</a></li>
+     {#        {% endif %}#}
+
+     <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
+ {% endblock %}
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Trenutni podaci za lokaciju - <span
+                            id="device_date">{{ clientStorage.name }}</span></h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding:4px;">
+                <div style="margin-bottom:10px;">
+{#                    {% if client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') %}#}
+
+{#                    {% elseif client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') %}#}
+                        <div class="dets-100"
+                             style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
+                            <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ clientStorage.name }}</span>
+{#                            {% for clientStorageDevice in clientStorageDevices %}#}
+                                <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
+{#                                    ##DJDJ StorageId -> Izvuci device -> 1 reponse svi device za storage #}
+                                    <img alt="t1" src="{{ path('app_device_image_getimage', {clientStorageId: clientStorage.id}) }}">
+                                </div>
+{#                            {% endfor %}#}
+
+                        </div>
+{#                    {% endif %}#}
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="clear"></div>
+        <div class="clear"></div>
+    </div>
+{% endblock %}

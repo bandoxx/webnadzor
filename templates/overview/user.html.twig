@@ -12,6 +12,12 @@
             <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_article">Dnevnik prijava</a></li>
         {% endif %}
 
+
+        {% if app.user.permission == 5 %}
+            <li><a href="{{ path('image_upload_form', {clientId: clientId}) }}" class="icon_monitor">Upload slike za klijenta</a></li>
+            <li><a href="{{ path('image_index', {clientId: clientId}) }}" class="icon_monitor">Pregled slika za klijenta</a></li>
+        {% endif %}
+
         <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
     {% endblock %}
 {% block content %}

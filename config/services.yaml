@@ -16,6 +16,7 @@ parameters:
     archive_directory: '%kernel.project_dir%/archive'
     database_username: '%env(DATABASE_NAME)%'
     database_password: '%env(DATABASE_PASSWORD)%'
+    images_directory: '/uploads/images/client_images/'
 services:
     # default configuration for services in *this* file
     _defaults:

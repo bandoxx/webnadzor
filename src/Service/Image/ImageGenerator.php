@@ -13,10 +13,58 @@ class ImageGenerator
 
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
-        private readonly KernelInterface      $kernel
-    )
-    {
+        private readonly KernelInterface $kernel
+    ) {
         $this->publicDir = $this->kernel->getProjectDir() . '/public';
+
+    }
+
+    public function generateDeviceStorage($clientStorageData,array $storage) {
+
+        $this->getDeviceImage($clientStorageData,$storage);
+
+    }
+
+    public function getDeviceImage($clientStorageData,$storages): void
+    {
+        $im = @ImageCreateFromPNG($this->publicDir .$clientStorageData->getBaseImage());
+        $languageFile = $this->publicDir.'/uploads/fonts/OpenSans-Regular.ttf';
+        imagealphablending($im, false);
+        imagesavealpha($im, true);
+
+        foreach ($storages as $storage){
+
+            $temperature = null;
+            if (array_key_exists('d_device_id',$storage)){
+                $data = $this->getDeviceData($storage['d_device_id'], $storage['d_entry']);
+
+                $temperature = $data?->getT($storage['d_entry']);
+            }
+
+            $cleanedString = str_replace(['rgb(', ')'], '', $storage['d_font_color']);
+
+            // Split the string by commas
+            list($red, $green, $blue) = explode(',', $cleanedString);
+
+            // Trim any whitespace from the values
+            $red = trim($red);
+            $green = trim($green);
+            $blue = trim($blue);
+
+            $color = ImageColorAllocate($im, $red, $green, $blue);
+
+            $rx = $storage['d_position_x'];
+            $ry = $storage['d_position_y'];
+
+            if (!is_null($temperature)){
+                imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$temperature);
+            }else{
+                imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$storage['d_placeholder_text']);
+            }
+        }
+
+        ImagePNG($im);
+        ImageDestroy($im);
     }
 
     public function generateThermometer(int $deviceId, int $entry): void
