@@ -51,7 +51,7 @@
                                 </div>
                                 <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
                                     <img alt="t1"
-                                         src="{{ path('app_image_getimage', {deviceId: device.id, entry: device.entry}) }}">
+                                         src="{{ path('app_image_t', {deviceId: device.id, entry: device.entry}) }}">
                                 </div>
                                 <span style="color: #515d6b;">Trenutna:</span>
                                 <span style="float: right;  {% if device.temperatureModel.isInOffset %}color: red;{% endif %}" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>

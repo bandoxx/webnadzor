@@ -397,7 +397,7 @@
                          style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
                         <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.temperatureModel.name }}</span>
                         <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
-                            <img alt="t1" src="{{ path('app_image_getimage', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
+                            <img alt="t1" src="{{ path('app_image_t', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
                         </div>
                         <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>
                         <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureModel.averageWithUnit }}</span><br><br>

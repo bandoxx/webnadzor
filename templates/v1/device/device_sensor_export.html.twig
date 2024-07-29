@@ -72,7 +72,7 @@
             .submit();
         });
 
-        $('#pdf').click(function() { /* DOWNLOAD XLS */
+        $('#pdf').click(function() { /* DOWNLOAD PDF */
           $('#exportform').attr('action', "{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry}) }}?date_from=" + $("#date_from").val() + '&date_to=' + $("#date_to").val() + "&export=pdf")
             .submit();
         });
