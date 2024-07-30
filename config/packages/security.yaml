@@ -45,6 +45,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+         - { route: 'app_api_chart_getchartdata', roles: PUBLIC_ACCESS }
          - { route: 'app_image_rh', roles: PUBLIC_ACCESS }
          - { route: 'app_image_getimage', roles: PUBLIC_ACCESS }
          - { path: ^/login, roles: PUBLIC_ACCESS }
