@@ -39,12 +39,14 @@ class DeviceAlarmRepository extends ServiceEntityRepository
      */
     public function findActiveAlarms(Device $device, ?int $sensor = null): array
     {
-        $builder = $this->createQueryBuilder('a')
-            ->where('a.device = :device AND a.endDeviceDate IS NULL')
-        ;
+        $builder = $this->createQueryBuilder('a');
 
-        if ($sensor) {
-            $builder->andWhere('a.sensor = :sensor')->setParameter('sensor', $sensor);
+        if ($sensor === null) {
+            $builder->where('a.device = :device AND a.endDeviceDate IS NULL');
+        } else {
+            $builder->where('a.device = :device AND a.endDeviceDate IS NULL AND (a.sensor = :sensor OR a.sensor IS NULL)')
+                ->setParameter('sensor', $sensor)
+            ;
         }
 
         return $builder->setParameter('device', $device)
