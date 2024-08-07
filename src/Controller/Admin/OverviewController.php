@@ -104,7 +104,7 @@ class OverviewController extends AbstractController
             $data[$clientId]['alarms'] = implode("<br>", $data[$clientId]['alarms']);
         }
 
-        return $this->render('v2/overview/admin.html.twig', [
+        return $this->render('v1/overview/admin.html.twig', [
             'clients' => $data,
             'smtp' => $smtpRepository->findOneBy([])
         ]);
