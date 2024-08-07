@@ -4,6 +4,7 @@ namespace App\Service\Client;
 
 use App\Entity\Client;
 use App\Factory\ClientSettingFactory;
+use App\Repository\UserRepository;
 use App\Service\Image\LogoUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,7 +12,12 @@ use Symfony\Component\HttpFoundation\Request;
 class ClientUpdater
 {
 
-    public function __construct(private LogoUploader $logoUploader, private EntityManagerInterface $entityManager, private ClientSettingFactory $clientSettingFactory) {}
+    public function __construct(
+        private readonly LogoUploader $logoUploader,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ClientSettingFactory $clientSettingFactory,
+        private readonly UserRepository $userRepository
+    ) {}
 
     public function updateByRequest(Request $request, Client $client): void
     {
@@ -32,6 +38,13 @@ class ClientUpdater
 
             $this->entityManager->persist($client);
             $this->entityManager->persist($clientSettings);
+            $this->entityManager->flush();
+
+            $users = $this->userRepository->findBy(['permission' => 4]);
+            foreach ($users as $user) {
+                $user->addClient($client);
+            }
+
             $this->entityManager->flush();
         }
 
