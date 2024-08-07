@@ -29,10 +29,6 @@
         {% endblock %}
     </title>
     <link rel="icon" href="{{ asset('assets/images/intelteh.ico') }}">
-    {% block javascripts %}
-        {% block importmap %}{{ importmap('app') }}{% endblock %}
-    {% endblock %}
-
 </head>
 {% set user = app.user %}
 {% block body %}
