@@ -23,7 +23,7 @@ class UsersGetController extends AbstractController
         }
 
         $clients = $clientRepository->findAll();
-        return $this->render('user/list.html.twig', [
+        return $this->render('v1/user/list.html.twig', [
             'users' => $users,
             'clients' => $clients,
             'client_locations' => $deviceLocationHandler->getClientDeviceLocations($clientId),

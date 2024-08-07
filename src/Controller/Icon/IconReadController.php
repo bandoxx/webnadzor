@@ -20,7 +20,7 @@ class IconReadController extends AbstractController
             $icon->setFullPath(sprintf("%s/%s", $parameterBag->get('icon_directory'), $icon->getFilename()));
         }
 
-        return $this->render('icon/index.html.twig', [
+        return $this->render('v1/icon/index.html.twig', [
             'icons' => $icons
         ]);
     }

@@ -64,7 +64,7 @@ class AlarmExportController extends AbstractController
 
         $tableData = $deviceDataFormatter->getTable($device, $data, $entry);
 
-        return $this->render('device/device_sensor_export.html.twig',[
+        return $this->render('v1/device/device_sensor_export.html.twig',[
             'device' => $device,
             'table_data' => $tableData,
             'entry' => $entry,

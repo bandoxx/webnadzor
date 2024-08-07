@@ -13,7 +13,7 @@ class LoginLogArchiveController extends AbstractController
 
     public function __invoke(int $clientId, LoginLogArchiveRepository $loginLogArchiveRepository): Response
     {
-        return $this->render('login_log/archive.html.twig', [
+        return $this->render('v1/login_log/archive.html.twig', [
             'logs' => $loginLogArchiveRepository->findBy(['client' => $clientId], ['id' => 'DESC'])
         ]);
     }

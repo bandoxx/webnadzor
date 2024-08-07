@@ -19,7 +19,7 @@ class ClientSettingController extends AbstractController
             throw new BadRequestException();
         }
 
-        return $this->render('client_setting/index.html.twig', [
+        return $this->render('v1/client_setting/index.html.twig', [
             'settings' => $settings
         ]);
     }

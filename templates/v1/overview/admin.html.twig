@@ -1,0 +1,478 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+      function newClient() {
+        $('#edit-form').attr('title', 'Unošenje novog klijenta');
+
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#editform').attr('action', '/api/client');
+              $('#editform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $("#map_marker_icon_div").hide();
+            $("#map").prop('checked', false).button('refresh');
+            $("#thermometer").prop('checked', false).button('refresh');
+            $("#fridge").prop('checked', false).button('refresh');
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
+      function settings() {
+        $('#settings-form').attr('title', 'Postavke');
+
+        $('#settings-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#settingsform').attr('action', '/api/smtp');
+              $('#settingsform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
+      function editClient(client_id) {
+
+        let selector = $("#" + client_id);
+
+        $('#client_name').val(selector.data('name'));
+        $('#client_address').val(selector.data('address'));
+        $('#client_oib').val(selector.data('oib'));
+        $('#main_logo').val(selector.data('pdfLogo'));
+        $('#pdf_logo').val(selector.data('mainLogo'));
+        $('#map_marker_icon').val(selector.data('mapIcon'));
+
+        let overviewShow = selector.data('overview');
+        let deviceOverviewShow = selector.data('devicepageview');
+
+        if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}') {
+          $("#map").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").show();
+        } else if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}') {
+          $("#thermometer").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").hide();
+        } else if (overviewShow == '{{ constant('App\\Entity\\Client::OVERVIEW_ICONS') }}') {
+          $("#fridge").prop('checked', true).button('refresh');
+          $("#map_marker_icon_div").hide();
+        }
+
+        if (deviceOverviewShow == '{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') }}') {
+          $("#icons").prop('checked', true).button('refresh');
+        } else if (deviceOverviewShow == '{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') }}') {
+          $("#dynamic").prop('checked', true).button('refresh');
+        }
+
+        $('#edit-form').attr('title', 'Postavke klijenta');
+
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function () {
+              $('#editform').attr('action', '/api/client/' + client_id);
+              $('#editform').submit();
+              return false;
+            },
+            'Odustani': function () {
+              $(this).dialog('close');
+            }
+          },
+          close: function () {
+            $("#map_marker_icon_div").hide();
+            $("#map").prop('checked', false).button('refresh');
+            $("#thermometer").prop('checked', false).button('refresh');
+            $(this).dialog('destroy');
+          }
+        });
+      }
+
+      $(document).ready(function() {
+
+        $('input[name="overview_view"]').on('change', function() {
+          let option = $('input[name="overview_view"]:checked').val();
+
+          if (option === '1') {
+            $("#map_marker_icon_div").show();
+          } else {
+            $("#map_marker_icon_div").hide();
+          }
+        });
+
+        $('div.actionbar a.edit').click(function() { /* EDIT ICON */
+          editClient($(this).parent().attr('id'));
+        });
+
+        $("#settings").click(function() {
+          settings();
+        });
+
+        $("#client_add").click(function() {
+          newClient();
+        });
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $('.radioui').buttonset();
+
+        const table = $('#table');
+
+        table.wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        var dataTable = table.DataTable({
+          pageLength: 100,
+          order: [[5, 'desc'], [2, 'desc']],
+          language: {
+            search: "Pretraga",
+            loading: "Ucitavanje...",
+            lengthMenu: '_MENU_ broj prikaza',
+            emptyTable: 'Prazna tablica',
+            info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+            infoEmpty: '',
+            infoFiltered: '(filtrirano od _MAX_ rezultata)',
+          },
+          columnDefs: [
+            { className: 'dt-control', targets: 0},
+            { orderable: false, targets: 6 },
+            { visible: false, targets: 7 },
+            { className: 'dt-center', targets: '_all' }
+          ],
+        }); /* DATA TABLES */
+
+        function format(text) {
+          text = text.replace(/&lt;/g,"<");
+          text = text.replace(/&gt;/g,">");
+
+          let parts = text.split('<br>');
+
+          let returnText = '<ul>';
+          parts.forEach(function (element) {
+            returnText += '<li>' + element + '</li>';
+          });
+
+          returnText += '</ul>';
+          return (returnText);
+        }
+
+        $('#table tbody').on('click', 'td.dt-control', function () {
+          var tr = $(this).closest('tr');
+          var row = dataTable.row(tr);
+
+          if (row.child.isShown()) {
+            // This row is already open - close it
+            row.child.hide();
+          } else {
+            let text = 'Nema aktivnih alarma';
+
+            if (row.data()[7]) {
+              text = format(row.data()[7]);
+            }
+
+            row.child(text).show();
+          }
+        });
+
+        var map = L.map('map_canvas');
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+        $.getJSON("{{ path('api_map_markers_all_clients') }}", function(data) {
+          var bounds = new L.LatLngBounds();
+          $.each(data.places, function(i, item) {
+            if (item.lat && item.lng) {
+              let icon = null;
+              if (item.icon) {
+                icon = L.icon({
+                  iconUrl: item.icon
+                });
+              }
+
+              if (icon) {
+                L.marker([item.lat, item.lng], {icon: icon}).addTo(map).bindPopup(item.name);
+              } else {
+                L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name);
+              }
+
+              bounds.extend([item.lat, item.lng]);
+            }
+          });
+          map.fitBounds(bounds, {padding: [50,50]});
+        });
+
+        $('.delete').click(function () { /* DELETE USER */
+          const delete_parent = $(this).parent();
+          const delete_id = $(delete_parent).data('id');
+
+          $('#delete_client').html($(delete_parent).data('name'));
+
+          $('#delete-confirm').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Obriši klijenta': function () {
+                $.ajax({
+                  url: '/api/client/' + delete_id,
+                  type: 'DELETE',
+                  success: function() {
+                    window.location.reload();
+                  },
+                  error: function() {
+                    alert('Greška! Molimo pokušajte ponovo');
+                  }
+                });
+              },
+              'Odustani': function () {
+                $(this).dialog('close');
+              }
+            },
+            close: function () {
+              $('#delete_client').html('');
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block navigation %}
+    <li><a href="#" id="settings" class="icon_settings">Podešavanja</a></li>
+    <li><a href="#" id="client_add" class="icon_plus">Dodaj klijenta</a></li>
+    <li><a href="{{ path('app_icon_index') }}" class="icon_pictures">Uredi ikone</a></li>
+    <li><a href="{{ path('app_logout') }}" class="icon_logout">Odjava</a></li>
+{% endblock %}
+
+{% block content %}
+    <div id="delete-confirm" title="Obriši klijenta?" style="display:none;">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Klijent &quot;<span id="delete_client"></span>&quot; biti će trajno obrisan. Jeste li sigurni?
+        </p>
+    </div>
+
+    <div id="edit-form" title="" style="display:none;">
+        <form id="editform" class="form" action="#" method="POST" enctype="multipart/form-data">
+            <fieldset>
+                <label for="client_name" style="display:block; margin-top:12px;">Naziv</label>
+                <input type="text" name="name" id="client_name" placeholder="Intelteh d.o.o" class="input validate[required,maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="client_address" style="display:block; margin-top:12px;">Adresa</label>
+                <input type="text" name="address" id="client_address" placeholder="Božidara Magovca 87, Zagreb" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="client_oib" style="display:block; margin-top:12px;">OIB</label>
+                <input type="text" name="oib" id="client_oib" placeholder="80595701131" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="main_logo" style="display:block; margin-top:12px;">Logo za website</label>
+                <input id="main_logo" type="file" name="main_logo">
+
+                <label for="pdf_logo" style="display:block; margin-top:12px;">Logo za dokumente</label>
+                <input id="pdf_logo" type="file" name="pdf_logo">
+
+                <label style="display:block; margin-top:12px;">Prikaz na pocetnoj stranici korisnicima</label>
+                <div class="form_row radioui">
+                    <label for="map">Mapa</label>
+                    <input type="radio" id="map" name="overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_MAP') }}"/>
+                    <label for="thermometer">Termometri</label>
+                    <input type="radio" id="thermometer" name="overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') }}"/>
+                    <label for="fridge">Hladnjak</label>
+                    <input type="radio" id="fridge" name="overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::OVERVIEW_ICONS') }}"/>
+                </div>
+
+                <div id="map_marker_icon_div" style="display: none;">
+                    <label for="map_marker_icon" style="display:block; margin-top:12px;">Ikonica na mapi</label>
+                    <input id="map_marker_icon" type="file" name="map_marker_icon">
+                </div>
+
+                <label style="display:block; margin-top:12px;">Prikaz na stranici uređaja</label>
+                <div class="form_row radioui">
+                    <label for="icons">Ikonice</label>
+                    <input type="radio" id="icons" name="device_overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') }}"/>
+                    <label for="dynamic">Termometri</label>
+                    <input type="radio" id="dynamic" name="device_overview_view" class="radio validate[required]"
+                           value="{{ constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') }}"/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <div id="settings-form" title="" style="display:none;">
+        <form id="settingsform" class="form" action="#" method="POST">
+            <fieldset>
+                <label for="smtp_server" style="display:block; margin-top:12px;">SMTP Server</label>
+                <input type="text" name="smtp_server" id="smtp_server" placeholder="mail.intelteh.hr" value="{{ smtp.host }}" class="input validate[required,maxSize[100text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_port" style="display:block; margin-top:12px;">Port</label>
+                <input type="text" name="smtp_port" id="smtp_port" placeholder="587" value="{{ smtp.port }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_username" style="display:block; margin-top:12px;">Korisnično ime</label>
+                <input type="text" name="smtp_username" id="smtp_username" placeholder="Korisnicko ime" value="{{ smtp.username }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+
+                <label for="smtp_password" style="display:block; margin-top:12px;">Šifra</label>
+                <input type="text" name="smtp_password" id="smtp_password" placeholder="Šifra" value="{{ smtp.password }}" class="input validate[maxSize[60]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="clear"></div>
+    <div id="body">
+        <div class="block big">
+            <div class="titlebar">
+                <h3>Sve lokacije</h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding:4px;">
+                <div id="map_canvas" style="height: 600px;"></div>
+            </div>
+        </div>
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Klijenti</h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding: 4px;">
+                <div id="otable_wrapper" class="dataTables_wrapper" role="grid">
+                    <div class="clear"></div>
+                    <div id="otable_processing" class="dataTables_processing" style="visibility: hidden;">
+                        Obrađujem...
+                    </div>
+                    <table id="table" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
+                        <thead>
+                        <tr role="row">
+                            <th></th>
+                            <th>Klijent</th>
+                            <th>Broj uređaja</th>
+                            <th>Online uređaja</th>
+                            <th>Offline uređaja</th>
+                            <th>Broj aktivnih alarma</th>
+                            <th>Opcije</th>
+                            <th>Sakriveno</th>
+                        </tr>
+                        </thead>
+
+                        <tbody role="alert" aria-live="polite" aria-relevant="all">
+                        {% for client in clients %}
+                            <tr>
+                                <td></td>
+                                <td class=" sorting_1">{{ client.name }}</td>
+                                <td class="">{{ client.numberOfDevices }}</td>
+                                <td class="">{{ client.onlineDevices }}</td>
+                                <td class="">
+                                    {% if client.offlineDevices %}
+                                        <span class="red">{{ client.offlineDevices }}</span>
+                                    {% else %}
+                                        <span class="green">{{ client.offlineDevices }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if client.alarmsOn %}
+                                        <span class="red">{{ client.alarmsOn }}</span>
+                                    {% else %}
+                                        <span class="green">{{ client.alarmsOn }}</span>
+                                    {% endif %}
+                                </td>
+                                <td style="width: 100px">
+                                    <div id="{{ client.id }}" class="actionbar"
+                                         data-id="{{ client.id }}"
+                                         data-name="{{ client.name }}"
+                                         data-address="{{ client.address }}"
+                                         data-oib="{{ client.oib }}"
+                                         data-pdfLogo="{{ client.pdfLogo }}"
+                                         data-mainLogo="{{ client.mainLogo }}"
+                                         data-mapIcon="{{ client.mapIcon }}"
+                                         data-overview="{{ client.overview }}"
+                                         data-devicepageview="{{ client.devicePageView }}"
+                                    >
+                                        <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>
+                                        <a href="#" class="action edit"><span>Uredi</span></a>
+                                        <a href="#" class="action delete"><span>Obriši</span></a>
+                                    </div>
+                                </td>
+                                <td>{{ client.alarms }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="clear"></div>
+                    <div class="data-table-bottom"></div>
+                    <div class="clear"></div>
+                </div><!-- Table Wrapper End -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

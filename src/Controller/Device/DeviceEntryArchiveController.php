@@ -19,7 +19,7 @@ class DeviceEntryArchiveController extends AbstractController
         $device = $deviceRepository->find($id);
         $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
 
-        return $this->render('device/device_sensor_archive.html.twig',[
+        return $this->render('v1/device/device_sensor_archive.html.twig',[
             'device' => $device,
             'device_data' => $deviceData,
             'entry' => $entry

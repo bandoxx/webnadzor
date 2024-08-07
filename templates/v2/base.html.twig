@@ -1,0 +1,37 @@
+{% set user = app.user %}
+{% set client = null %}
+{% if clientId is not defined %}
+    {% set clientId = null %}
+{% endif %}
+
+{% if user is not null %}
+    {% if user.client is not null %}
+        {% set clientId = user.client.id %}
+    {% else %}
+        {% set clientId = app.request.attributes.get('_route_params').clientId ?? null %}
+    {% endif %}
+{% endif %}
+
+{% if clientId is not null %}
+    {% set client = global_variables.getClient(clientId) %}
+{% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>
+        {% block title %}
+            {% if client is not null %}
+                {{ client.name }}
+            {% else %}
+                Administracija
+            {% endif %}
+        {% endblock %}
+    </title>
+    <link rel="icon" href="{{ asset('assets/images/intelteh.ico') }}">
+</head>
+{% set user = app.user %}
+{% block body %}
+
+{% endblock %}
+</html>

@@ -13,10 +13,10 @@ class ClientUpdater
 {
 
     public function __construct(
-        private LogoUploader $logoUploader,
-        private EntityManagerInterface $entityManager,
-        private ClientSettingFactory $clientSettingFactory,
-        private UserRepository $userRepository
+        private readonly LogoUploader $logoUploader,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ClientSettingFactory $clientSettingFactory,
+        private readonly UserRepository $userRepository
     ) {}
 
     public function updateByRequest(Request $request, Client $client): void

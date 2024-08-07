@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/image/t/{deviceId}/{entry}.png', name: 'app_image_getimage')]
+#[Route('/image/t/{deviceId}/{entry}.png', name: 'app_image_t')]
 class ThermometerController extends AbstractController
 {
 

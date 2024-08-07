@@ -20,7 +20,7 @@ class OverviewController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        return $this->render('overview/user.html.twig', [
+        return $this->render('v1/overview/user.html.twig', [
             'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($this->getUser(), $client),
         ]);
     }
