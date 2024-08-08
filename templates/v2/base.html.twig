@@ -29,9 +29,14 @@
         {% endblock %}
     </title>
     <link rel="icon" href="{{ asset('assets/images/intelteh.ico') }}">
+    <link href="{{ asset('build/style.css') }}" rel="stylesheet">
+
+    {% block head %}
+    {% endblock head %}
 </head>
 {% set user = app.user %}
 {% block body %}
 
 {% endblock %}
+<script defer src="{{ asset('build/bundle.js') }}"></script>
 </html>
