@@ -2,10 +2,9 @@
 
 namespace App\Controller\ClientSetting\API;
 
-use App\Repository\ClientSettingRepository;
+use App\Repository\ClientRepository;
 use App\Service\Client\ClientSettingsUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,17 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class ClientSettingUpdateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientSettingsUpdater $clientSettingsUpdater, ClientSettingRepository $clientSettingRepository): Response
+    public function __invoke(int $clientId, Request $request, ClientSettingsUpdater $clientSettingsUpdater, ClientRepository $clientRepository): Response
     {
-        $settings = $clientSettingRepository->findOneBy(['client' => $clientId]);
+        $client = $clientRepository->find($clientId);
 
-        if (!$settings) {
-            throw new BadRequestException();
-        }
+        $clientSettingsUpdater->update($client, $request);
 
-        $clientSettingsUpdater->update($settings, $request);
-
-        return $this->json(true, Response::HTTP_ACCEPTED);
+        return $this->redirectToRoute('client_overview', ['clientId' => $clientId]);
     }
 
 }
