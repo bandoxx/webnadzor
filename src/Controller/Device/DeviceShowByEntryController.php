@@ -19,7 +19,7 @@ class DeviceShowByEntryController extends AbstractController
     {
         $device = $deviceOverviewFactory->create($deviceRepository->find($id), $entry);
 
-        return $this->render('v1/device/device_sensor_show.html.twig', [
+        return $this->render('v2/device/device_sensor_show.html.twig', [
             'device' => $device,
             'entry' => $entry,
         ]);
