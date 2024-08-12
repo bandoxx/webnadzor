@@ -46,9 +46,13 @@
         <!-- SIDEBAR HEADER -->
         <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
             {% if client is not null %}
-                <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
+                <a href="{{ path('client_overview', {clientId: clientId}) }}">
+                    <img src="{{ asset('/assets/images/logo/' ~ client.mainLogo) }}" alt="Logo" />
+                </a>
             {% else %}
-                <a href="/"><div id="logo" style="background: url({{ asset('/assets/images/intelteh_logo.png') }}) center no-repeat;"></div></a>
+                <a href="/">
+                    <img src="{{ asset('/assets/images/intelteh_logo.png') }}" alt="Logo" />
+                </a>
             {% endif %}
 
             <button
