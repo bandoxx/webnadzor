@@ -353,6 +353,7 @@
                 </div>
                 <!-- Breadcrumb End -->
                 <!--Alert-->
+                {% if device.alarm %}
                 <div class="flex w-full border-l-6 mb-5 border-[#F87171] bg-[#F87171] bg-opacity-[15%] px-4 py-5 shadow-md md:p-4">
                     <div class="mr-5 flex h-9 w-full max-w-[36px] items-center justify-center rounded-lg bg-[#F87171] self-center">
                         <svg fill="none" height="13" viewBox="0 0 13 13" width="13" xmlns="http://www.w3.org/2000/svg">
@@ -360,7 +361,6 @@
                                   fill="#ffffff" stroke="#ffffff"></path>
                         </svg>
                     </div>
-                    {% if device.alarms|length > 0 %}
                         <div class="w-full flex flex-col justify-center">
                         {% for alarm in device.alarms %}
                             <h5 class="font-bold text-sm text-[#B45454]">
@@ -368,8 +368,8 @@
                             </h5>
                         {% endfor %}
                         </div>
-                    {% endif %}
                 </div>
+                {% endif %}
                 <!--End of alert-->
                 <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
                     <div class="flex">
