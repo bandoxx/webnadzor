@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -17,12 +18,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class DeviceCreateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): JsonResponse
+    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): RedirectResponse
     {
-        $xmlName = $request->request->get('xmlName');
+        $xmlName = $request->request->get('xmlName', '');
 
-        if ($deviceRepository->doesMoreThenOneXmlNameExists($request->request->get('xmlName', ''))) {
-            throw new BadRequestException();
+        if ($deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
+            $this->addFlash('error', sprintf("Xml naziv: `%s` već postoji!", $xmlName));
+            return $this->redirectToRoute('app_device_list', ['clientId' => $clientId]);
         }
 
         $client = $clientRepository->find($clientId);
@@ -31,7 +33,7 @@ class DeviceCreateController extends AbstractController
         $entityManager->persist($device);
         $entityManager->flush();
 
-        return $this->json($device->getId(), Response::HTTP_CREATED);
+        return $this->redirectToRoute('app_device_list', ['clientId' => $clientId]);
 
     }
 
