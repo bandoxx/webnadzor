@@ -1,6 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -12,13 +12,11 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-        Mapa i datatable
-    </title>
-    <link rel="icon" href="favicon.ico"><link href="{{ asset('build/style.css') }}" rel="stylesheet"></head>
+{% endblock %}
 
-<body
-        x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, modalOpenAddSettings: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+{% block body %}
+<body   data-chart="{{ path('api_map_markers_all_clients') }}"
+        x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenAlarms: false, modalOpenDelete: false, modalOpenAddSettings: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
         x-init="
           darkMode = JSON.parse(localStorage.getItem('darkMode'));
           $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
@@ -47,9 +45,11 @@
     >
         <!-- SIDEBAR HEADER -->
         <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-            <a href="{{ path('app_index') }}">
-                <img src="{{ asset('images/logo/logo.png') }}" alt="Logo" />
-            </a>
+            {% if client is not null %}
+                <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
+            {% else %}
+                <a href="/"><div id="logo" style="background: url({{ asset('/assets/images/intelteh_logo.png') }}) center no-repeat;"></div></a>
+            {% endif %}
 
             <button
                     class="block lg:hidden"
@@ -110,7 +110,7 @@
                             </li>
                             <li class="cursor-pointer">
                                 <a
-                                        href="icons.html"
+                                        href="{{ path('app_icon_index') }}"
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -251,7 +251,7 @@
                         >
           <span class="hidden text-right lg:block">
             <span class="block text-sm font-medium text-black dark:text-white">{{ app.user.username }}</span>
-            <span class="block text-xs font-medium">UX Designer</span>
+            <span class="block text-xs font-medium">{{ app.user.permissionName }}</span>
           </span>
 
                             <span class="h-12 w-12 rounded-full">
@@ -503,42 +503,6 @@
                                             </div>
                                         </div>
                                     </th>
-                                    <th data-type="date" data-format="YYYY/DD/MM">
-                                        <div
-                                                class="flex items-center justify-between gap-1.5"
-                                        >
-                                            <p>Broj aktivnih alarma</p>
-                                            <div class="inline-flex flex-col space-y-[2px]">
-                              <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
-                                </svg>
-                              </span>
-                                                <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
-                                          fill=""
-                                  />
-                                </svg>
-                              </span>
-                                            </div>
-                                        </div>
-                                    </th>
                                     <th>
                                         <div
                                                 class="flex items-center justify-between gap-1.5"
@@ -555,7 +519,6 @@
                                         <td>{{ client.numberOfDevices }}</td>
                                         <td>{{ client.onlineDevices }}</td>
                                         <td>{{ client.offlineDevices }}</td>
-                                        <td>{{ client.alarmsOn }}</td>
                                         <td style="width: 100px">
                                             <div class="flex justify-between">
                                                 <a href="{{ path('client_overview', {clientId: client.id}) }}">
@@ -568,16 +531,13 @@
                                                     </div>
                                                 </a>
                                                 <div class="edit-btn"
-                                                     data-index="0"
                                                      data-id="{{ client.id }}"
                                                      data-name="{{ client.name }}"
                                                      data-address="{{ client.address }}"
                                                      data-oib="{{ client.oib }}"
-                                                     data-pdfLogo="{{ client.pdfLogo }}"
-                                                     data-mainLogo="{{ client.mainLogo }}"
-                                                     data-mapIcon="{{ client.mapIcon }}"
                                                      data-overview="{{ client.overview }}"
                                                      data-devicepageview="{{ client.devicePageView }}"
+                                                     data-path="{{ path('api_client_update', { clientId: client.id }) }}"
                                                      x-on:click="modalOpenEdit = true">
                                                     <div class="cursor-pointer" title="Uredi">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -585,29 +545,31 @@
                                                         </svg>
                                                     </div>
                                                 </div>
-                                                <div class="delete-btn" data-index="0" x-on:click="modalOpenDelete = true">
+                                                <div class="delete-btn" data-path="{{ path('api_client_delete', { clientId: client.id }) }}" data-index="0" x-on:click="modalOpenDelete = true">
                                                     <div class="cursor-pointer" title="Obriši">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                                                         </svg>
                                                     </div>
                                                 </div>
+                                                <div class="alarm-btn relative cursor-pointer" data-index="0" x-on:click="modalOpenAlarms = true">
+                                                    {% if client.alarmsOn %}
+                                                    <div class="absolute text-white -top-2 -right-2 bg-red w-5 h-5 rounded-full text-center align-middle">
+                                                            <span class="relative -top-0.5">{{ client.alarmsOn }}</span>
+                                                    </div>
+                                                    {% endif %}
+                                                    <div class="cursor-pointer" title="Notifikacije alarma">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="hidden alarmNotifications">
+                                                        {% for alarm in client.alarms %}
+                                                            <span>{{ alarm }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
                                             </div>
-{#                                            <div id="{{ client.id }}" class="actionbar"#}
-{#                                                 data-id="{{ client.id }}"#}
-{#                                                 data-name="{{ client.name }}"#}
-{#                                                 data-address="{{ client.address }}"#}
-{#                                                 data-oib="{{ client.oib }}"#}
-{#                                                 data-pdfLogo="{{ client.pdfLogo }}"#}
-{#                                                 data-mainLogo="{{ client.mainLogo }}"#}
-{#                                                 data-mapIcon="{{ client.mapIcon }}"#}
-{#                                                 data-overview="{{ client.overview }}"#}
-{#                                                 data-devicepageview="{{ client.devicePageView }}"#}
-{#                                            >#}
-{#                                                <a href="{{ path('client_overview', {clientId: client.id}) }}" class="action view fancy"><span>Pregled</span></a>#}
-{#                                                <a href="#" class="action edit"><span>Uredi</span></a>#}
-{#                                                <a href="#" class="action delete"><span>Obriši</span></a>#}
-{#                                            </div>#}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -722,107 +684,128 @@
                             <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
                                 Postavke klijenta
                             </h3>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    Naziv
-                                </label>
-                                <input
-                                        type="text"
-                                        id="clientNameEdit"
-                                        placeholder="IntelTeh d.o.o"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    Adresa
-                                </label>
-                                <input
-                                        type="text"
-                                        placeholder="Božidara Magovca 87, Zagreb"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    OIB
-                                </label>
-                                <input
-                                        type="text"
-                                        placeholder="8051241245"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Logo za website
-                                </label>
-                                <input
-                                        type="file"
-                                        class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Logo za dokumente
-                                </label>
-                                <input
-                                        type="file"
-                                        class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Prikaz na početnoj stranici korisnicima
-                                </label>
-                                <div class="flex items-center rounded-full" id="editMapShownTag">
-                                    <input type="hidden" value="" id="editMapShownTagHidden">
-                                    <a href="#" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:hover:border-primary sm:px-6">Mapa</a>
-                                    <a href="#" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                    <a href="#" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
-                                </div>
-                            </div>
-                            <div class="my-2">
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Prikaz na početnoj stranici korisnicima
-                                </label>
-                                <div class="flex items-center rounded-full" id="editIconsShownTag">
-                                    <input type="hidden" value="" id="editIconsShownHidden">
-                                    <a href="#" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
-                                    <a href="#" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                </div>
-                            </div>
-                            <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
-                                <div class="w-full px-3 2xsm:w-1/2">
-                                    <button
-                                            class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                            <form action="" id="updateClientForm" method="POST" enctype="multipart/form-data">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
                                     >
-                                        Spremi promjene
-                                    </button>
+                                        Naziv
+                                    </label>
+                                    <input
+                                            name="name"
+                                            type="text"
+                                            id="clientNameEdit"
+                                            placeholder="IntelTeh d.o.o"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
                                 </div>
-                                <div class="w-full px-3 2xsm:w-1/2">
-                                    <button
-                                            @click="modalOpenEdit = false"
-                                            class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
                                     >
-                                        Odustani
-                                    </button>
+                                        Adresa
+                                    </label>
+                                    <input
+                                            name="address"
+                                            type="text"
+                                            id="clientAddressEdit"
+                                            placeholder="Božidara Magovca 87, Zagreb"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
                                 </div>
-                            </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        OIB
+                                    </label>
+                                    <input
+                                            name="oib"
+                                            type="text"
+                                            id="clientOibEdit"
+                                            placeholder="8051241245"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za website
+                                    </label>
+                                    <input
+                                            name="main_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za dokumente
+                                    </label>
+                                    <input
+                                            name="pdf_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na početnoj stranici korisnicima
+                                    </label>
+                                    <div class="flex items-center rounded-full mb-2" id="editMapShownTag">
+                                        <input type="hidden" name="overview_view" value="" id="editMapShownTagHidden">
+                                        <a href="#" data-value="1" id="showMapIconInput" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                        <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                        <a href="#" data-value="3" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
+                                    </div>
+                                </div>
+                                <div class="mb-4 hidden" id="mapIconClientInput">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ikonica na mapi
+                                    </label>
+                                    <input
+                                            name="map_marker_icon"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div class="my-2">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na stranici uređaja
+                                    </label>
+                                    <div class="flex items-center rounded-full" id="editIconsShownTag">
+                                        <input type="hidden" name="device_overview_view" value="" id="editIconsShownHidden">
+                                        <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                        <a href="#" data-value="2" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                    </div>
+                                </div>
+                                <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="submit"
+                                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                        >
+                                            Spremi promjene
+                                        </button>
+                                    </div>
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="button"
+                                                @click="modalOpenEdit = false"
+                                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                        >
+                                            Odustani
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
@@ -863,6 +846,7 @@
                             </p>
                             <a
                                     href="#"
+                                    id="removeClient"
                                     class="inline-block rounded border border-white px-12.5 py-3 text-center font-medium text-white transition hover:bg-white hover:text-black"
                             >
                                 Obriši klijenta
@@ -900,109 +884,154 @@
                             <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
                                 Unošenje novog klijenta
                             </h3>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    Naziv
-                                </label>
-                                <input
-                                        type="text"
-                                        placeholder="IntelTeh d.o.o"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    Adresa
-                                </label>
-                                <input
-                                        type="text"
-                                        placeholder="Božidara Magovca 87, Zagreb"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
-                                >
-                                    OIB
-                                </label>
-                                <input
-                                        type="text"
-                                        placeholder="8051241245"
-                                        class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Logo za website
-                                </label>
-                                <input
-                                        type="file"
-                                        class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Logo za dokumente
-                                </label>
-                                <input
-                                        type="file"
-                                        class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
-                                />
-                            </div>
-                            <div>
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Prikaz na početnoj stranici korisnicima
-                                </label>
-                                <div class="flex items-center rounded-full" id="addMapShownTag">
-                                    <input type="hidden" value="" id="addMapShownTagHidden">
-                                    <a href="#" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:hover:border-primary sm:px-6">Mapa</a>
-                                    <a href="#" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                    <a href="#" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
-                                </div>
-                            </div>
-                            <div class="my-2">
-                                <label
-                                        class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                >
-                                    Prikaz na početnoj stranici korisnicima
-                                </label>
-                                <div class="flex items-center rounded-full" id="addIconsShownTag">
-                                    <input type="hidden" value="" id="addIconsShownHidden">
-                                    <a href="#" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
-                                    <a href="#" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                </div>
-                            </div>
-                            <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
-                                <div class="w-full px-3 2xsm:w-1/2">
-                                    <button
-                                            class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                            <form action="{{ path('api_client_create') }}" id="insertClientForm" method="POST" enctype="multipart/form-data">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
                                     >
-                                        Spremi promjene
-                                    </button>
+                                        Naziv
+                                    </label>
+                                    <input
+                                            name="name"
+                                            type="text"
+                                            placeholder="IntelTeh d.o.o"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
                                 </div>
-                                <div class="w-full px-3 2xsm:w-1/2">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Adresa
+                                    </label>
+                                    <input
+                                            name="address"
+                                            type="text"
+                                            placeholder="Božidara Magovca 87, Zagreb"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        OIB
+                                    </label>
+                                    <input
+                                            name="oib"
+                                            type="text"
+                                            placeholder="8051241245"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za website
+                                    </label>
+                                    <input
+                                            name="main_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za dokumente
+                                    </label>
+                                    <input
+                                            name="pdf_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na početnoj stranici korisnicima
+                                    </label>
+                                    <div class="flex items-center rounded-full mb-2" id="addMapShownTag">
+                                        <input type="hidden" name="overview_view" value="" id="addMapShownTagHidden">
+                                        <a href="#" data-value="1" id="showMapIconInputAdd" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                        <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                        <a href="#" data-value="3" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
+                                    </div>
+                                </div>
+                                <div class="mb-4 hidden" id="mapIconClientInputAdd">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ikonica na mapi
+                                    </label>
+                                    <input
+                                            name="map_marker_icon"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div class="my-2">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na stranici uređaja
+                                    </label>
+                                    <div class="flex items-center rounded-full" id="addIconsShownTag">
+                                        <input type="hidden" name="device_overview_view" value="" id="addIconsShownHidden">
+                                        <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                        <a href="#" data-value="2" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                    </div>
+                                </div>
+                                <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="submit"
+                                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                        >
+                                            Spremi promjene
+                                        </button>
+                                    </div>
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="button"
+                                                @click="modalOpenAddNew = false"
+                                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                        >
+                                            Odustani
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div
+                            x-cloak
+                            x-show="modalOpenAlarms"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenAlarms = false"
+                                class="modal w-2/3 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                        >
+                            <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                Notifikacije alarma
+                            </h3>
+                            <ul class="text-center lg:text-left" id="alarmNotifications">
+                            </ul>
+                            <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                <div class="w-full px-3 2xsm:w-1/4">
                                     <button
-                                            @click="modalOpenAddNew = false"
+                                            @click="modalOpenAlarms = false"
                                             class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
                                     >
-                                        Odustani
+                                        Zatvori
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </main>
@@ -1010,6 +1039,5 @@
     </div>
     <!-- ===== Content Area End ===== -->
 </div>
-<!-- ===== Page Wrapper End ===== -->
-<script defer src="{{ asset('build/bundle.js') }}"></script></body>
-</html>
+</body>
+{% endblock %}

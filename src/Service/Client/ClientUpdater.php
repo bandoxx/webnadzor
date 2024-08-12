@@ -21,12 +21,12 @@ class ClientUpdater
 
     public function updateByRequest(Request $request, Client $client): void
     {
-        if ($request->request->get('overview_view')) {
-            $client->setOverviewViews($request->request->get('overview_view'));
+        if ($overview = $request->request->get('overview_view')) {
+            $client->setOverviewViews($overview);
         }
 
-        if ($request->request->get('device_overview_view')) {
-            $client->setDevicePageView($request->request->get('device_overview_view'));
+        if ($deviceOverview = $request->request->get('device_overview_view')) {
+            $client->setDevicePageView($deviceOverview);
         }
 
         $client->setName($request->request->get('name'));

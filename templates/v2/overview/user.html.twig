@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block body %}
-<body
+<body data-chart="{{ path('api_map_markers', { clientId: client.id }) }}"
         x-data="{ page: 'dataTables', modalOpenAddClientSettings: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
         x-init="
           darkMode = JSON.parse(localStorage.getItem('darkMode'));
@@ -45,9 +45,11 @@
     >
         <!-- SIDEBAR HEADER -->
         <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-            <a href="index.html">
-                <img src="src/images/logo/logo.png" alt="Logo" />
-            </a>
+            {% if client is not null %}
+                <a href="{{ path('client_overview', {clientId: clientId}) }}"><div id="logo" style="background: url({{ asset('/assets/images/logo/' ~ client.mainLogo) }}) center no-repeat;"></div></a>
+            {% else %}
+                <a href="/"><div id="logo" style="background: url({{ asset('/assets/images/intelteh_logo.png') }}) center no-repeat;"></div></a>
+            {% endif %}
 
             <button
                     class="block lg:hidden"
@@ -109,7 +111,7 @@
                             </li>
                             <li class="cursor-pointer">
                                 <a
-                                        href="measurementDevices.html"
+                                        href="{{ path('app_device_list', { clientId: client.id }) }}"
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -131,7 +133,7 @@
                             <li class="cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                                        href="../users.html"
+                                        href="{{ path('app_user_getusers', { clientId: client.id }) }}"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
@@ -141,7 +143,7 @@
                             </li>
                             <li class="cursor-pointer">
                                 <a
-                                        href="ledger.html"
+                                        href="{{ path('app_loginlog_getloginlogs', { clientId: client.id }) }}"
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -282,7 +284,7 @@
                         >
           <span class="hidden text-right lg:block">
             <span class="block text-sm font-medium text-black dark:text-white">{{ app.user.username }}</span>
-            <span class="block text-xs font-medium">UX Designer</span>
+            <span class="block text-xs font-medium">{{ app.user.permissionName }}</span>
           </span>
 
                             <span class="h-12 w-12 rounded-full">
@@ -312,7 +314,7 @@
                                 x-show="dropdownOpen"
                                 class="absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
                         >
-                            <a href="login.html">
+                            <a href="{{ path('app_logout') }}">
                                 <button
                                         class="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
                                 >

@@ -60,7 +60,6 @@ class OverviewController extends AbstractController
 
             $totalDevices = count($devices);
             $onlineDevices = 0;
-            $activeAlarms = 0;
 
             foreach ($devices as $device) {
                 $deviceData = $deviceDataRepository->findLastRecordForDevice($device);
@@ -74,8 +73,6 @@ class OverviewController extends AbstractController
                 }
 
                 $alarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
-
-                $activeAlarms += $alarms;
 
                 if ($alarms) {
                     $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
@@ -99,9 +96,7 @@ class OverviewController extends AbstractController
             $data[$clientId]['numberOfDevices'] = $totalDevices;
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
-            $data[$clientId]['alarmsOn'] = $activeAlarms;
-            //dd($data[$clientId]['alarms']);
-            $data[$clientId]['alarms'] = implode("<br>", $data[$clientId]['alarms']);
+            $data[$clientId]['alarmsOn'] = count($data[$clientId]['alarms']);
         }
 
         return $this->render('v2/overview/admin.html.twig', [
