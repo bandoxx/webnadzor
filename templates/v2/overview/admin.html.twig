@@ -44,7 +44,7 @@
             @click.outside="sidebarToggle = false"
     >
         <!-- SIDEBAR HEADER -->
-        <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+        <div class="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
             {% if client is not null %}
                 <a href="{{ path('client_overview', {clientId: clientId}) }}">
                     <img src="{{ asset('/assets/images/logo/' ~ client.mainLogo) }}" alt="Logo" />
