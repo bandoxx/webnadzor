@@ -3418,12 +3418,19 @@ body{
 }
 .data-table-common .datatable-table > tbody > tr:hover{
   background-color: rgb(60 80 224 / var(--tw-bg-opacity));
+  --tw-bg-opacity: 0.1;
+}
+
+.data-table-common .datatable-table > tbody > tr:nth-child(even){
+  background-color: rgb(60 80 224 / var(--tw-bg-opacity));
   --tw-bg-opacity: 0.05;
 }
+
 .data-table-one .datatable-table > tbody > tr > td:first-child{
   --tw-text-opacity: 1;
   color: rgb(60 80 224 / var(--tw-text-opacity));
 }
+
 :is(.dark .data-table-one .datatable-table > tbody > tr > td:first-child){
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
