@@ -61,13 +61,12 @@ class DeviceEntryExportController extends AbstractController
 
         $tableData = $deviceDataFormatter->getTable($device, $data, $entry);
 
-        return $this->render('v1/device/device_sensor_export.html.twig',[
+        return $this->render('v2/device/device_sensor_export.html.twig',[
             'device' => $device,
             'table_data' => $tableData,
             'entry' => $entry,
             'date_from' => $dateFrom,
-            'date_to' => $dateTo,
-            'client_id' => $clientId
+            'date_to' => $dateTo
         ]);
 
     }
