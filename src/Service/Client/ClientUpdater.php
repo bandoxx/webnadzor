@@ -3,6 +3,7 @@
 namespace App\Service\Client;
 
 use App\Entity\Client;
+use App\Factory\ClientFtpFactory;
 use App\Factory\ClientSettingFactory;
 use App\Repository\UserRepository;
 use App\Service\Image\LogoUploader;
@@ -16,7 +17,8 @@ class ClientUpdater
         private readonly LogoUploader $logoUploader,
         private readonly EntityManagerInterface $entityManager,
         private readonly ClientSettingFactory $clientSettingFactory,
-        private readonly UserRepository $userRepository
+        private readonly UserRepository $userRepository,
+        private readonly ClientFtpFactory $clientFtpFactory
     ) {}
 
     public function updateByRequest(Request $request, Client $client): void
@@ -35,9 +37,11 @@ class ClientUpdater
 
         if (!$client->getId()) {
             $clientSettings = $this->clientSettingFactory->create($client);
+            $clientFtp = $this->clientFtpFactory->create($client);
 
             $this->entityManager->persist($client);
             $this->entityManager->persist($clientSettings);
+            $this->entityManager->persist($clientFtp);
             $this->entityManager->flush();
 
             $users = $this->userRepository->findBy(['permission' => 4]);
