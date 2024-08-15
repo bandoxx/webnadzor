@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_MARSAL = 'Maršal';
+    public const ROLE_MARSAL = 'Root';
     public const ROLE_ADMINISTRATOR = 'Administrator';
     public const ROLE_MODERATOR = 'Moderator';
     public const ROLE_USER = 'Korisnik';
@@ -69,7 +69,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Client>
      */
-    #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Client::class, inversedBy: 'users', cascade: ['PERSIST', 'REMOVE'])]
     private Collection $clients;
 
     public function __construct()
@@ -77,6 +77,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->loginLogs = new ArrayCollection();
         $this->userDeviceAccesses = new ArrayCollection();
         $this->clients = new ArrayCollection();
+    }
+
+    public function __toString()
+    {
+        return sprintf("%s-%s", $this->getId() ?? 0, $this->getUsername());
     }
 
     public function getId(): ?int

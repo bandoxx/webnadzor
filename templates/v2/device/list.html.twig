@@ -52,6 +52,7 @@
                     <div>
                         <ul class="mb-6 flex flex-col gap-1.5">
                             <!-- Menu Item Messages -->
+                            {% if app.user.permission == 4 %}
                             <li @click="modalOpenAddNew = true" class="reload-tags cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -62,6 +63,7 @@
                                     Dodaj lokaciju
                                 </a>
                             </li>
+                            {% endif %}
                             <li class="cursor-pointer">
                                 <a
                                         href="{{ path('client_overview', { clientId: client.id }) }}"
@@ -411,7 +413,8 @@
                                         <span class="{% if device.battery < 30 %}text-red{% else %}text-green-600{% endif %}">{{ device.battery }}%</span>
                                     </td>
                                     <td>
-                                        <div class="flex">
+                                        {% if app.user.permission == 4 %}
+                                        <div class="flex justify-evenly">
                                             <a href="{{ path('app_device_edit', { clientId: client.id, deviceId: device.id }) }}">
                                                 <div class="edit-btn mr-5" data-index="0" x-on:click="modalOpenEdit = true">
                                                     <div class="cursor-pointer" title="Uredi">
@@ -435,6 +438,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

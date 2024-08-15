@@ -57,6 +57,7 @@
                     <!-- Support Group -->
                     <div>
                         <ul class="mb-6 flex flex-col gap-1.5">
+                            {% if app.user.permission == 4 %}
                             <!-- Menu Item Messages -->
                             <li @click="modalOpenAddClientSettings = true" class="cursor-pointer">
                                 <a
@@ -80,6 +81,7 @@
                                     Klijenti
                                 </a>
                             </li>
+                            {% endif %}
                             <li class="cursor-pointer">
                                 <a
                                         href="{{ path('app_device_list', { clientId: client.id }) }}"
@@ -101,6 +103,7 @@
                             <!--                                FTP Podaci-->
                             <!--                            </a>-->
                             <!--                        </li>-->
+                            {% if app.user.permission == 4 %}
                             <li class="cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -123,6 +126,7 @@
                                     Dnevnik Prijava
                                 </a>
                             </li>
+                            {% endif %}
                             <!-- Menu Item Messages -->
                         </ul>
                     </div>

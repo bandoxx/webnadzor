@@ -15,15 +15,14 @@ class UserFactory
     )
     {}
 
-    public function create(Client $client, string $username, string $password, int $permission, ?int $overviewViews): User
+    public function create(string $username, string $password, int $permission, ?int $overviewViews): User
     {
         $user = new User();
 
-        $user->setClient($client)
+        $user
             ->setPermission($permission)
             ->setUsername($username)
             ->setOverviewViews($overviewViews)
-            ->addClient($client)
         ;
 
         $this->passwordSetter->setPassword($user, $password);

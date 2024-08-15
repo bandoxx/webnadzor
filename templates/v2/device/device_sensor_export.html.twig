@@ -310,7 +310,7 @@
                                     <td>{{ data.avrg }}</td>
                                     <td>{{ data.rh }}</td>
                                     <td>
-                                        <div class="flex justify-center">
+                                        <div class="flex justify-evenly">
                                             <div class="edit-btn" data-id="{{ data.id }}" data-path="{{ path('api_device_data_update', { clientId: client.id, id: data.id, entry: entry, date_from: app.request.query.get('date_from'), date_to: app.request.query.get('date_to')}) }}" x-on:click="modalOpenEdit = true">
                                                 <div class="cursor-pointer" title="Napomena">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">

@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\UserDeviceAccess;
 use App\Factory\DeviceOverviewFactory;
 use App\Model\Device\DeviceOverviewModel;
+use App\Repository\ClientRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Device\UserAccess;
 
@@ -18,6 +19,7 @@ class DeviceLocationHandler
         private readonly DeviceRepository      $deviceRepository,
         private readonly UserAccess            $userAccess,
         private readonly DeviceOverviewFactory $deviceOverviewFactory,
+        private readonly ClientRepository      $clientRepository,
     ) {}
 
     public function getUserDeviceLocations(User $user): array
@@ -37,14 +39,14 @@ class DeviceLocationHandler
         return $deviceLocations;
     }
 
-    public function getClientDeviceLocations(int $clientId): array
+    public function getClientDeviceLocations(int $clientId, bool $includeClientInKey = false): array
     {
         $devices = $this->deviceRepository->findDevicesByClient($clientId);
 
         $deviceLocations = [];
 
         foreach ($devices as $device) {
-            $locations = $this->getLocationsForDevice($device);
+            $locations = $this->getLocationsForDevice($device, $includeClientInKey);
 
             foreach ($locations as $key => $location) {
                 $deviceLocations[$key] = $location;
@@ -52,6 +54,23 @@ class DeviceLocationHandler
         }
 
         return $deviceLocations;
+    }
+
+    public function getAllClientDeviceLocations(): array
+    {
+        $clients = $this->clientRepository->findBy([], ['name' => 'ASC']);
+        $locations = [];
+
+        foreach ($clients as $client) {
+            $data = $this->getClientDeviceLocations($client->getId(), true);
+            if (!$data) {
+                continue;
+            }
+
+            $locations[] = $data;
+        }
+
+        return array_merge(...$locations);
     }
 
     /**
@@ -87,6 +106,7 @@ class DeviceLocationHandler
         }
 
         return [
+            'client_id' => $device->getClient()->getId(),
             'device_id' => $device->getId(),
             'entry' => $userDeviceAccess->getSensor(),
             'name' => $device->getName(),
@@ -94,7 +114,7 @@ class DeviceLocationHandler
         ];
     }
 
-    private function getLocationsForDevice(Device $device): array
+    private function getLocationsForDevice(Device $device, bool $includeClientInKey = false): array
     {
         $deviceLocations = [];
 
@@ -105,9 +125,19 @@ class DeviceLocationHandler
                 continue;
             }
 
-            $deviceLocations[sprintf("%s-%s", $device->getId(), $i)] = [
-                'name' => $device->getName(),
-                'location' => $deviceEntryData['t_name']
+            $deviceName = $device->getName();
+            $location = $deviceEntryData['t_name'];
+
+            if ($includeClientInKey) {
+                $key = sprintf("%s-%s-%s", $device->getClient()->getId(), $device->getId(), $i);
+            } else {
+                $key = sprintf("%s-%s", $device->getId(), $i);
+            }
+
+            $deviceLocations[$key] = [
+                'name' => $deviceName,
+                'location' => $location,
+                'full' => sprintf("%s, %s", $deviceName, $location)
             ];
         }
 

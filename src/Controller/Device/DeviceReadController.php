@@ -2,6 +2,7 @@
 
 namespace App\Controller\Device;
 
+use App\Entity\User;
 use App\Model\DeviceListModel;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
@@ -15,7 +16,22 @@ class DeviceReadController extends AbstractController
 {
     public function __invoke(int $clientId, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceDataRepository $deviceDataRepository): Response
     {
-        $devices = $deviceRepository->findBy(['client' => $clientId]);
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getPermission() === 1) {
+            $accesses = $user->getUserDeviceAccesses()->toArray();
+            $devices = [];
+            foreach ($accesses as $access) {
+                if (array_key_exists($access->getDevice()->getId(), $devices) === false) {
+                    $devices[$access->getDevice()->getId()] = $access->getDevice();
+                }
+            }
+
+            $devices = array_values($devices);
+        } else {
+            $devices = $deviceRepository->findBy(['client' => $clientId]);
+        }
 
         $deviceTable = [];
         foreach ($devices as $device) {

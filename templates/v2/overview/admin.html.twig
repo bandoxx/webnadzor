@@ -51,6 +51,7 @@
                     class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
                     x-data="{selected: $persist('Dashboard')}"
             >
+                {% if app.user.permission == 4 %}
                 <!-- Menu Group -->
                 <div>
                     <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
@@ -58,6 +59,7 @@
                     <div>
                         <ul class="mb-6 flex flex-col gap-1.5">
                             <!-- Menu Item Messages -->
+
                             <li @click="modalOpenAddSettings = true" class="cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -94,6 +96,7 @@
                         </ul>
                     </div>
                 </div>
+                {% endif %}
             </nav>
             <!-- Sidebar Menu -->
         </div>
@@ -316,7 +319,7 @@
                                         <td>{{ client.onlineDevices }}</td>
                                         <td>{{ client.offlineDevices }}</td>
                                         <td style="width: 100px">
-                                            <div class="flex justify-between">
+                                            <div class="flex justify-evenly">
                                                 <a href="{{ path('client_overview', {clientId: client.id}) }}">
                                                     <div class="summary-btn" data-index="0">
                                                         <div class="cursor-pointer" title="Pregled">
@@ -326,6 +329,7 @@
                                                         </div>
                                                     </div>
                                                 </a>
+                                                {% if app.user.permission == 4 %}
                                                 <div class="edit-btn"
                                                      data-id="{{ client.id }}"
                                                      data-name="{{ client.name }}"
@@ -348,6 +352,7 @@
                                                         </svg>
                                                     </div>
                                                 </div>
+                                                {% endif %}
                                                 <div class="alarm-btn relative cursor-pointer" data-index="0" x-on:click="modalOpenAlarms = true">
                                                     {% if client.alarmsOn %}
                                                     <div class="absolute text-white -top-2 -right-2 bg-red w-5 h-5 rounded-full text-center align-middle">
