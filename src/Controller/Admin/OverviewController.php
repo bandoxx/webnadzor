@@ -21,10 +21,10 @@ class OverviewController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $clients = $user->getClients();
+        $clients = $clientRepository->findAllActive();
 
-        if ($clients->count() === 1) {
-            $clientId = $clients->first()->getId();
+        if ($user->getClients()->count() === 1) {
+            $clientId = $user->getclients()->first()->getId();
 
             return $this->redirectToRoute('client_overview', [
                 'clientId' => $clientId,
@@ -33,7 +33,7 @@ class OverviewController extends AbstractController
 
         $data = [];
         foreach ($clients as $client) {
-            if ($client->isDeleted()) {
+            if ($client->isDeleted() === true || in_array($user->getPermission(), [1, 2], true) || $user->getClients()->contains($client) === false) {
                 continue;
             }
 
