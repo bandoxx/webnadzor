@@ -2,6 +2,8 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\User;
+use App\Factory\MapMarkerFactory;
 use App\Repository\ClientRepository;
 use App\Service\Device\UserAccess;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,37 +15,17 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/map/markers/{clientId}', name: 'api_map_markers')]
 class MapMarkersController extends AbstractController
 {
-    public function __invoke(int $clientId, ClientRepository $clientRepository, UserAccess $userAccess): JsonResponse
+    public function __invoke(int $clientId, ClientRepository $clientRepository, UserAccess $userAccess, MapMarkerFactory $mapMarkerFactory): JsonResponse
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         $client = $clientRepository->find($clientId);
         if (!$client) {
             throw new BadRequestHttpException();
         }
 
-        $devices = $userAccess->getAccessibleDevices($client, $this->getUser());
-
-        $markers['places'] = [];
-        $counter = [];
-        foreach ($devices as $device) {
-            $locationHash = sha1($device->getLongitude() . $device->getLongitude());
-
-            if (array_key_exists($locationHash, $markers['places'])) {
-                $counter[$locationHash]++;
-            } else {
-                $counter[$locationHash] = 1;
-                $markers['places'][$locationHash] = [
-                    'name' => $device->getName(),
-                    'lat' => $device->getLatitude(),
-                    'lng' => $device->getLongitude()
-                ];
-            }
-
-            if ($counter[$locationHash] > 1) {
-                $markers['places'][$locationHash]['name'] = sprintf("%s uređaja", $counter[$locationHash]);
-            }
-        }
-
-        return $this->json(['places' => array_values($markers['places'])], Response::HTTP_OK);
+        return $this->json(['places' => $mapMarkerFactory->create($client, $user)], Response::HTTP_OK);
     }
 
 }
