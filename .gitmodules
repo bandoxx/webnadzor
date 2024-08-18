@@ -1,0 +1,3 @@
+[submodule "webnadzor-frontend"]
+	path = webnadzor-frontend
+	url = git@github.com:bandoxx/webnadzor-frontend.git
