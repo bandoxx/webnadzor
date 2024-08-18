@@ -174,6 +174,16 @@ class DeviceAlarm
 
     public function getMessage(): ?string
     {
+        // old messages didn't have this property
+        if (empty($this->message)) {
+            return sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
+                $this->device->getName(),
+                $this->getLocation(),
+                $this->getType(),
+                $this->getDeviceDate()->format('d.m.Y H:i:s')
+            );
+        }
+
         return $this->message;
     }
 

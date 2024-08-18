@@ -2,13 +2,13 @@
 
 namespace App\Controller\Client;
 
+use App\Entity\User;
 use App\Repository\ClientFtpRepository;
 use App\Repository\ClientRepository;
 use App\Repository\ClientSettingRepository;
 use App\Service\DeviceLocationHandler;
 use App\Service\PermissionChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -23,14 +23,16 @@ class OverviewController extends AbstractController
         ClientFtpRepository $clientFtpRepository
     ): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
         $client = $clientRepository->find($clientId);
 
-        if (!$client || PermissionChecker::isValid($this->getUser(), $client) === false) {
+        if (!$client || PermissionChecker::isValid($user, $client) === false) {
             throw $this->createAccessDeniedException();
         }
 
         return $this->render('v2/overview/user.html.twig', [
-            'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($this->getUser(), $client),
+            'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($user, $client),
             'settings' => $clientSettingRepository->findOneBy(['client' => $clientId]),
             'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId])
         ]);

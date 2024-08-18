@@ -9,14 +9,20 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/archive', name: 'app_devicedataarchive_read', methods: 'GET')]
 class DeviceEntryArchiveController extends AbstractController
 {
-    public function __invoke(int $clientId, int $id, int $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response
+    public function __invoke(int $clientId, int $id, int $entry, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository): Response|NotFoundHttpException
     {
         $device = $deviceRepository->find($id);
+
+        if (!$device) {
+            return $this->createNotFoundException('Device not found');
+        }
+
         $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
 
         return $this->render('v1/device/device_sensor_archive.html.twig',[

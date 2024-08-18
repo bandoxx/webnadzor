@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/api/{clientId}/device', name: 'api_device_create', methods: 'POST')]
 class DeviceCreateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): RedirectResponse
+    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): RedirectResponse|NotFoundHttpException
     {
         $xmlName = $request->request->get('xmlName', '');
 
@@ -28,6 +28,9 @@ class DeviceCreateController extends AbstractController
         }
 
         $client = $clientRepository->find($clientId);
+        if (!$client) {
+            return $this->createNotFoundException('Client not found');
+        }
 
         $device = $deviceFactory->create($client, $xmlName);
         $entityManager->persist($device);

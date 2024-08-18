@@ -21,7 +21,6 @@ class DeviceEditController extends AbstractController
 
     public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): RedirectResponse|Response
     {
-        $error = [];
         $device = $deviceRepository->find($deviceId);
 
         if (!$device) {
@@ -48,8 +47,6 @@ class DeviceEditController extends AbstractController
         return $this->render('v2/device/edit.html.twig', [
             'device' => $device,
             'icons' => $icons,
-            'clientId' => $clientId,
-            'errors' => $error,
             'temperature_type' => TemperatureType::getTypes()
         ]);
 

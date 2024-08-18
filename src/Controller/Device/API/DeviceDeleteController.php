@@ -2,15 +2,15 @@
 
 namespace App\Controller\Device\API;
 
+use App\Entity\User;
 use App\Repository\DeviceRepository;
 use App\Service\Device\PurgeDeviceData;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 
 #[Route(path: '/api/{clientId}/device/{deviceId}', name: 'api_device_delete', methods: 'POST')]
 class DeviceDeleteController extends AbstractController
@@ -18,7 +18,11 @@ class DeviceDeleteController extends AbstractController
 
     public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, PurgeDeviceData $purgeDeviceData, UserPasswordHasherInterface $userPasswordChecker): RedirectResponse
     {
+        /** @var User $user */
         $user = $this->getUser();
+        if (!$user) {
+            throw new UserNotFoundException();
+        }
 
         if ($user->getPermission() <= 3 || !$userPasswordChecker->isPasswordValid($user, $request->request->get('password_check', ''))) {
             $this->addFlash('error', 'Pogrešna lozinka.');

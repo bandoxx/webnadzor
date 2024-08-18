@@ -12,12 +12,13 @@ use App\Repository\SmtpRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, UrlGeneratorInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -78,17 +79,15 @@ class OverviewController extends AbstractController
                     $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
 
                     foreach ($activeAlarm as $alarm) {
-                        if ($alarm->getMessage()) {
-                            $data[$clientId]['alarms'][] = $alarm->getMessage();
-                        } else {
-                            $data[$clientId]['alarms'][] =
-                                sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
-                                    $device->getName(),
-                                    $alarm->getLocation(),
-                                    $alarm->getType(),
-                                    $alarm->getDeviceDate()->format('d.m.Y H:i:s')
-                                );
-                        }
+                        $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
+                            $router->generate('app_alarm_list', ['clientId' => $clientId, 'id' => $device->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+                        );
+
+                        $data[$clientId]['alarms'][] = sprintf(
+                            "%s - %s",
+                            $alarm->getMessage(),
+                            $path
+                        );
                     }
                 }
             }
