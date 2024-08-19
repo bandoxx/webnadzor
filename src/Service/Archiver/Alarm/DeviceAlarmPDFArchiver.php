@@ -46,6 +46,7 @@ class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInte
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetDrawColor(0, 0, 0);
         $pdf->SetLineWidth(0.25);
+        $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
         $pdf->Cell($pdf->pixelsToUnits(30), 4, 'Br.', 1, 0, 'L', true);
         $pdf->Cell($pdf->pixelsToUnits(105), 4, 'Datum', 1, 0, 'L', true);

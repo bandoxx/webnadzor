@@ -81,6 +81,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $pdf->SetTextColor(0, 0, 0);
         $pdf->SetDrawColor(0, 0, 0);
         $pdf->SetLineWidth(0.25);
+        $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
         // Header
         $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
