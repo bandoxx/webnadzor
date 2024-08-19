@@ -5,12 +5,10 @@ namespace App\Controller\Admin\API;
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/client/{clientId}', name: 'api_client_delete', methods: 'DELETE')]
+#[Route(path: '/api/client/{clientId}/delete', name: 'api_client_delete', methods: 'POST')]
 class ClientDeleteController extends AbstractController
 {
 
