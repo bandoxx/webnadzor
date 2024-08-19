@@ -1,0 +1,184 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="">
+    <script src="https://unpkg.com/leaflet@1.3.3/dist/leaflet.js" integrity="sha512-tAGcCfR4Sc5ZP5ZoVz0quoZDYX5aCtEm/eu1KhSLj2c9eFrylXZknQYmxUssFaVJKvvc0dJQixhGjG2yXWiV9Q==" crossorigin=""></script>
+    <script>
+      $(document).ready(function() {
+
+        setInterval(function() {
+          window.location.reload();
+        }, 5 * 60 * 1000);
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $('#device_add').click(function() { /* ADD DEVICE */
+          $('#add-form').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Dodaj novu lokaciju': function() {
+                $('#addform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#addform').validationEngine('hideAll');
+              $('#addform label').removeClass('ui-state-active');
+              $(this).dialog('destroy');
+            }
+          });
+        });
+
+        $('.radioui').buttonset();
+
+        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('#table').dataTable({
+          pageLength: 100,
+          language: {
+            search: "Pretraga",
+            loading: "Ucitavanje...",
+            lengthMenu: '_MENU_ broj prikaza',
+            emptyTable: 'Prazna tablica',
+            info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+            infoEmpty: '',
+            infoFiltered: '(filtrirano od _MAX_ rezultata)',
+          },
+          columnDefs: [
+            { orderable: false, targets: 4 },
+            { className: 'dt-center', targets: '_all' }
+          ],
+        }); /* DATA TABLES */
+
+        var delete_parent, delete_id, delete_devnam = '';
+        $('.delete').live('click', function(e) { /* DELETE DEVICE */
+
+          delete_parent = $(this).parent();
+          delete_id = $(delete_parent).attr('id');
+          delete_devnam = $(delete_parent).data('devnam');
+
+          $('#del_device_name').html(delete_devnam);
+          $('#delform input[type=radio]').click(function(){
+            $('#del_password').removeAttr('disabled');
+          });
+
+          $('#delete-confirm').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              '!! POTVRDI !!': function() {
+                $('#delform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#delform').validationEngine('hideAll');
+              $('#delform input[type=password]').val('').attr('disabled', 'disabled');
+              $('#delform label').removeClass('ui-state-active');
+              $('#del_device_name').html('');
+              $(this).dialog('destroy');
+            }
+          });
+
+          return false;
+        });
+
+        let markerIcon = null;
+
+        {% if client.mapMarkerIcon is not null %}
+          markerIcon = L.icon({
+            iconUrl: "{{ asset(global_variables.getMapMarkerDirectory() ~ '/' ~ client.mapMarkerIcon) }}"
+          });
+
+          console.log(markerIcon);
+        {% endif %}
+
+        var map = L.map('map_canvas');
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        $.getJSON("{{ path('api_map_markers', {clientId: clientId}) }}", function(data) {
+          var bounds = new L.LatLngBounds();
+          $.each(data.places, function(i, item) {
+            if (item.lat === null || item.lng === null) {
+              return;
+            }
+
+            if (markerIcon) {
+              L.marker([item.lat, item.lng], {icon: markerIcon}).addTo(map).bindPopup(item.name);
+            } else {
+              L.marker([item.lat, item.lng]).addTo(map).bindPopup(item.name);
+            }
+
+            bounds.extend([item.lat, item.lng]);
+          });
+
+          map.fitBounds(bounds, {padding: [50,50]});
+        });
+      });
+    </script>
+{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div id="add-form" title="Dodaj novu lokaciju" style="display:none;">
+        <p style="border: 1px solid transparent; padding: 0.3em;">Naziv XML datoteke mora biti jedinstven za svaku
+            lokaciju.</p>
+        <form id="addform" class="form" action="{{ app.request.getBaseURL() }}" method="POST">
+            <fieldset>
+                <div class="form_row">
+                    <label for="xml_name" style="display:block; margin-top:12px;">Naziv XML datoteke</label>
+                    <input type="text" name="xml_name" id="xml_name"
+                           class="input text ui-widget-content ui-corner-all validate[required,maxSize[18],ajax[ajax_xmlnameadd]]"
+                           style="display:block; width:95%; padding: .4em;"/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+{% endblock %}
+
+{% block content %}
+{% endblock %}

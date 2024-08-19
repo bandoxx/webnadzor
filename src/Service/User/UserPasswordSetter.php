@@ -9,7 +9,7 @@ class UserPasswordSetter
 {
 
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher,
+        private readonly UserPasswordHasherInterface $passwordHasher,
     ) {}
 
     public function setPassword(User $user, string $password): void

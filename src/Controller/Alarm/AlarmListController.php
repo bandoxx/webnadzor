@@ -33,7 +33,7 @@ class AlarmListController extends AbstractController
             ];
         }
 
-        return $this->render('alarm/list.html.twig', [
+        return $this->render('v2/alarm/list.html.twig', [
             'alarms' => $table,
             'device' => $device
         ]);

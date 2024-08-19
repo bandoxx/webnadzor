@@ -9,37 +9,32 @@ use App\Service\UserDeviceAccessUpdater;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/admin/{clientId}/users', name: 'app_user_createuser', methods: 'POST')]
+#[Route(path: '/api/client/{clientId}/users', name: 'app_user_createuser', methods: 'POST')]
 class UserCreateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserFactory $userFactory, UserDeviceAccessUpdater $userDeviceAccessUpdater, ClientRepository $clientRepository): JsonResponse
+    public function __invoke(int $clientId, Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository, UserFactory $userFactory, UserDeviceAccessUpdater $userDeviceAccessUpdater, ClientRepository $clientRepository): RedirectResponse
     {
         $permission = $request->request->get('permissions');
-
-        $client = $clientRepository->find($clientId);
-
-        if (!$client) {
-            throw new BadRequestHttpException('Client doesnt exist');
-        }
 
         $username = $request->request->get('username');
 
         $user = $userRepository->findOneByUsername($username);
 
         if ($user) {
+            // TODO: flashbag
             return $this->json(null, Response::HTTP_BAD_REQUEST);
         }
 
         $overviewViews = $request->request->get('overview_views');
 
         $user = $userFactory->create(
-            $client,
             $username,
             $request->request->get('password'),
             $permission,
@@ -49,12 +44,22 @@ class UserCreateController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
+        $clients = [];
+        $requestClients = $request->get('clients');
+
+        if (!$requestClients) {
+            $clients[] = $clientId;
+        } else {
+            $clients = explode(',', $requestClients);
+        }
+
         $userDeviceAccessUpdater->update(
             $user,
-            $request->get('locations')
+            $clients,
+            explode(',', $request->get('locations'))
         );
 
-        return $this->json(true, Response::HTTP_CREATED);
+        return $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
     }
 
 }

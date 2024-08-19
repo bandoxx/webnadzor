@@ -12,19 +12,20 @@ use App\Repository\SmtpRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
 {
-    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, RouterInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
+    public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, UrlGeneratorInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
         /** @var User $user */
         $user = $this->getUser();
-        $clients = $user->getClients();
+        $clients = $clientRepository->findAllActive();
 
-        if ($clients->count() === 1) {
-            $clientId = $clients->first()->getId();
+        if ($user->getClients()->count() === 1) {
+            $clientId = $user->getclients()->first()->getId();
 
             return $this->redirectToRoute('client_overview', [
                 'clientId' => $clientId,
@@ -33,7 +34,7 @@ class OverviewController extends AbstractController
 
         $data = [];
         foreach ($clients as $client) {
-            if ($client->isDeleted()) {
+            if ($client->isDeleted() === true || in_array($user->getPermission(), [1, 2], true) || $user->getClients()->contains($client) === false) {
                 continue;
             }
 
@@ -60,7 +61,6 @@ class OverviewController extends AbstractController
 
             $totalDevices = count($devices);
             $onlineDevices = 0;
-            $activeAlarms = 0;
 
             foreach ($devices as $device) {
                 $deviceData = $deviceDataRepository->findLastRecordForDevice($device);
@@ -75,23 +75,19 @@ class OverviewController extends AbstractController
 
                 $alarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
 
-                $activeAlarms += $alarms;
-
                 if ($alarms) {
                     $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
 
                     foreach ($activeAlarm as $alarm) {
-                        if ($alarm->getMessage()) {
-                            $data[$clientId]['alarms'][] = $alarm->getMessage();
-                        } else {
-                            $data[$clientId]['alarms'][] =
-                                sprintf("Mjerno mjesto: %s, Lokacija: %s, Tip alarma: '%s', upaljen od: %s",
-                                    $device->getName(),
-                                    $alarm->getLocation(),
-                                    $alarm->getType(),
-                                    $alarm->getDeviceDate()->format('d.m.Y H:i:s')
-                                );
-                        }
+                        $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
+                            $router->generate('app_alarm_list', ['clientId' => $clientId, 'id' => $device->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
+                        );
+
+                        $data[$clientId]['alarms'][] = sprintf(
+                            "%s - %s",
+                            $alarm->getMessage(),
+                            $path
+                        );
                     }
                 }
             }
@@ -99,12 +95,10 @@ class OverviewController extends AbstractController
             $data[$clientId]['numberOfDevices'] = $totalDevices;
             $data[$clientId]['onlineDevices'] = $onlineDevices;
             $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
-            $data[$clientId]['alarmsOn'] = $activeAlarms;
-            //dd($data[$clientId]['alarms']);
-            $data[$clientId]['alarms'] = implode("<br>", $data[$clientId]['alarms']);
+            $data[$clientId]['alarmsOn'] = count($data[$clientId]['alarms']);
         }
 
-        return $this->render('overview/admin.html.twig', [
+        return $this->render('v2/overview/admin.html.twig', [
             'clients' => $data,
             'smtp' => $smtpRepository->findOneBy([])
         ]);

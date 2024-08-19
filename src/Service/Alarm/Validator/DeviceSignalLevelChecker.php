@@ -18,7 +18,7 @@ class DeviceSignalLevelChecker extends BaseAlarmHandler implements AlarmHandlerI
             return;
         }
 
-        if ($deviceData->getBattery() <= $clientSetting->getDeviceSignalAlarm()) {
+        if ($deviceData->getGsmSignal() <= $clientSetting->getDeviceSignalAlarm()) {
             $this->createAlarm($deviceData, $type);
         } else {
             $this->closeAlarm($deviceData, $type);

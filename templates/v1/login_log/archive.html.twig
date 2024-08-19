@@ -1,0 +1,76 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+    $(document).ready(function() {
+
+      $('.toggle').click(function() { /* BLOCK TOGGLE */
+        $(this).toggleClass('show');
+        $(this).parent().parent().children('.block_cont').slideToggle(300);
+        $(this).parent().toggleClass('show');
+        return false;
+      });
+
+      $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+      $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+      $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+      $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+      $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+      $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+      $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+      $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+      $('#otable').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+      $('#otable tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+      $('#otable').dataTable({
+        'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
+        'bJQueryUI': true,
+        'bPaginate': false,
+        'bProcessing': true,
+        ajax: "{{ path('api_login_log_archive_daily', {clientId: clientId}) }}",
+        columnDefs: [
+          { className: 'dt-center', targets: '_all' }
+        ],
+        'fnDrawCallback': function(oSettings) {
+          if (oSettings.bSorted || oSettings.bFiltered) {
+            for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
+              $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i+1);
+            }
+          }
+        }
+      });/* DATA TABLES */
+
+    });
+  </script>
+{% endblock %}
+
+{% block navigation %}
+  <li><a href="{{ path('app_loginlog_getloginlogs', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block content %}
+  <div id="body">
+    <div class="block big"><!-- Block Begin -->
+      <div class="titlebar">
+        <h3><span id="archive_typetitle">ARHIVA DNEVNIKA PRIJAVA</h3>
+        <a href="#" class="toggle">&nbsp;</a>
+      </div>
+      <div class="block_cont" style="padding: 4px;">
+        <table id="otable" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
+          <thead>
+          <tr>
+            <th></th>
+            <th>Datum arhive</th>
+            <th>Datum izrade</th>
+            <th>Naziv datoteke</th>
+            <th>PDF</th>
+          </tr>
+          </thead>
+          <tbody></tbody>
+        </table><!-- Table Wrapper End -->
+      </div>
+    </div><!-- Block End -->
+  </div>
+{% endblock %}

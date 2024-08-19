@@ -1,0 +1,849 @@
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% endblock %}
+
+{% block body %}
+<body   data-chart="{{ path('api_map_markers_all_clients') }}"
+        x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenAlarms: false, modalOpenDelete: false, modalOpenAddSettings: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+        x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+        :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+>
+<!-- ===== Preloader Start ===== -->
+{% block preloader %}
+    {{ parent() }}
+{% endblock %}
+<!-- ===== Preloader End ===== -->
+
+<!-- ===== Page Wrapper Start ===== -->
+<div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <aside
+            :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+            class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+            @click.outside="sidebarToggle = false"
+    >
+
+        <!-- SIDEBAR HEADER -->
+        {% block sidebar_header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- SIDEBAR HEADER -->
+
+        <div
+                class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+        >
+            <!-- Sidebar Menu -->
+            <nav
+                    class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+                    x-data="{selected: $persist('Dashboard')}"
+            >
+                {% if app.user.permission == 4 %}
+                <!-- Menu Group -->
+                <div>
+                    <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                    <!-- Support Group -->
+                    <div>
+                        <ul class="mb-6 flex flex-col gap-1.5">
+                            <!-- Menu Item Messages -->
+
+                            <li @click="modalOpenAddSettings = true" class="cursor-pointer">
+                                <a
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 0 1 1.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.559.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.894.149c-.424.07-.764.383-.929.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 0 1-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.398.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 0 1-.12-1.45l.527-.737c.25-.35.272-.806.108-1.204-.165-.397-.506-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 0 1 .12-1.45l.773-.773a1.125 1.125 0 0 1 1.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                    Podešavanja
+                                </a>
+                            </li>
+                            <li @click="modalOpenAddNew = true" class="cursor-pointer">
+                                <a
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                                    </svg>
+                                    Dodaj Klijenta
+                                </a>
+                            </li>
+                            <li class="cursor-pointer">
+                                <a
+                                        href="{{ path('app_icon_index') }}"
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+                                    </svg>
+                                    Uredi ikone
+                                </a>
+                            </li>
+                            <!-- Menu Item Messages -->
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+            </nav>
+            <!-- Sidebar Menu -->
+        </div>
+    </aside>
+
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div
+            class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+    >
+        <!-- ===== Header Start ===== -->
+        {% block header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+            <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                {% block flashMessages %}
+                    {{ parent() }}
+                {% endblock %}
+                <!-- Breadcrumb Start -->
+                <div
+                        class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                        Mapa i datatable
+                    </h2>
+
+                    <nav>
+                        <ol class="flex items-center gap-2">
+                            <li>
+                                <a class="font-medium" href="{{ path('app_index') }}">Dashboard /</a>
+                            </li>
+                            <li class="font-medium text-primary">Mapa i Datatable</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- Breadcrumb End -->
+                <!--Leaflet map start-->
+                <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
+                    <h3 class="title-dt font-bold text-black dark:text-white mb-2">
+                        Sve lokacije
+                    </h3>
+                    <div id="map"></div>
+                </div>
+                <!-- ====== Leaflet map end -->
+                <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+
+                    <!-- ====== Data Table Start -->
+                    <div
+                            class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+                    >
+                        <div
+                                class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
+                        >
+                            <h3 class="title-dt font-bold text-black dark:text-white">
+                                Klijenti
+                            </h3>
+                            <table class="table w-full table-auto" id="dataTableClients">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Klijent</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Broj Uređaja</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Online uređaja</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Offline uređaja</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Opcije</p>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for client in clients %}
+                                    <tr>
+                                        <td>{{ client.name }}</td>
+                                        <td>{{ client.numberOfDevices }}</td>
+                                        <td>{{ client.onlineDevices }}</td>
+                                        <td>{{ client.offlineDevices }}</td>
+                                        <td style="width: 100px">
+                                            <div class="flex justify-evenly">
+                                                <a href="{{ path('client_overview', {clientId: client.id}) }}">
+                                                    <div class="summary-btn" data-index="0">
+                                                        <div class="cursor-pointer" title="Pregled">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                                {% if app.user.permission == 4 %}
+                                                <div class="edit-btn"
+                                                     data-id="{{ client.id }}"
+                                                     data-name="{{ client.name }}"
+                                                     data-address="{{ client.address }}"
+                                                     data-oib="{{ client.oib }}"
+                                                     data-overview="{{ client.overview }}"
+                                                     data-devicepageview="{{ client.devicePageView }}"
+                                                     data-path="{{ path('api_client_update', { clientId: client.id }) }}"
+                                                     x-on:click="modalOpenEdit = true">
+                                                    <div class="cursor-pointer" title="Uredi">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                <div class="delete-btn" data-path="{{ path('api_client_delete', { clientId: client.id }) }}" data-index="0" x-on:click="modalOpenDelete = true">
+                                                    <div class="cursor-pointer" title="Obriši">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                                <div class="alarm-btn relative cursor-pointer" data-index="0" x-on:click="modalOpenAlarms = true">
+                                                    {% if client.alarmsOn %}
+                                                    <div class="absolute text-white -top-2 -right-2 bg-red w-5 h-5 rounded-full text-center align-middle">
+                                                            <span class="relative -top-0.5">{{ client.alarmsOn }}</span>
+                                                    </div>
+                                                    {% endif %}
+                                                    <div class="cursor-pointer" title="Notifikacije alarma">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="hidden alarmNotifications">
+                                                        {% for alarm in client.alarms %}
+                                                            <span>{{ alarm }}</span>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ====== Data Table End -->
+                    <div
+                            x-cloak
+                            x-show="modalOpenAddSettings"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenAddSettings = false"
+                                class="modal w-full max-w-142.5 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                        >
+                            <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                Postavke
+                            </h3>
+                            <form action="/api/smtp" method="POST">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        SMTP Server
+                                    </label>
+                                    <input
+                                            type="text"
+                                            name="smtp_server"
+                                            placeholder="mail.intelteh.hr"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            value="{{ smtp.host }}"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Port
+                                    </label>
+                                    <input
+                                            type="text"
+                                            name="smtp_port"
+                                            placeholder="587"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            value="{{ smtp.port }}"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Korisničko ime
+                                    </label>
+                                    <input
+                                            type="text"
+                                            name="smtp_username"
+                                            placeholder="Korisničko ime"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            value="{{ smtp.username }}"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Šifra
+                                    </label>
+                                    <input
+                                            type="text"
+                                            name="smtp_password"
+                                            placeholder="Šifra"
+                                            class="w-full mb-4 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                            value="{{ smtp.password }}"
+                                    />
+                                </div>
+
+                                <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="submit"
+                                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                        >
+                                            Spremi promjene
+                                        </button>
+                                    </div>
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="button"
+                                                @click="modalOpenAddSettings = false"
+                                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                        >
+                                            Odustani
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div
+                            x-cloak
+                            x-show="modalOpenEdit"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenEdit = false"
+                                class="modal w-full max-w-142.5 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                        >
+                            <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                Postavke klijenta
+                            </h3>
+                            <form action="" id="updateClientForm" method="POST" enctype="multipart/form-data">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Naziv
+                                    </label>
+                                    <input
+                                            name="name"
+                                            type="text"
+                                            id="clientNameEdit"
+                                            placeholder="IntelTeh d.o.o"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Adresa
+                                    </label>
+                                    <input
+                                            name="address"
+                                            type="text"
+                                            id="clientAddressEdit"
+                                            placeholder="Božidara Magovca 87, Zagreb"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        OIB
+                                    </label>
+                                    <input
+                                            name="oib"
+                                            type="text"
+                                            id="clientOibEdit"
+                                            placeholder="8051241245"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za website
+                                    </label>
+                                    <input
+                                            name="main_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za dokumente
+                                    </label>
+                                    <input
+                                            name="pdf_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na početnoj stranici korisnicima
+                                    </label>
+                                    <div class="flex items-center rounded-full mb-2" id="editMapShownTag">
+                                        <input type="hidden" name="overview_view" value="" id="editMapShownTagHidden">
+                                        <a href="#" data-value="1" id="showMapIconInput" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                        <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                        <a href="#" data-value="3" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
+                                    </div>
+                                </div>
+                                <div class="mb-4 hidden" id="mapIconClientInput">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ikonica na mapi
+                                    </label>
+                                    <input
+                                            name="map_marker_icon"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div class="my-2">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na stranici uređaja
+                                    </label>
+                                    <div class="flex items-center rounded-full" id="editIconsShownTag">
+                                        <input type="hidden" name="device_overview_view" value="" id="editIconsShownHidden">
+                                        <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                        <a href="#" data-value="2" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                    </div>
+                                </div>
+                                <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="submit"
+                                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                        >
+                                            Spremi promjene
+                                        </button>
+                                    </div>
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="button"
+                                                @click="modalOpenEdit = false"
+                                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                        >
+                                            Odustani
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div
+                            x-cloak
+                            x-show="modalOpenDelete"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenDelete = false"
+                                class="modal relative w-full max-w-142.5 rounded-lg bg-danger px-8 py-12 text-center md:px-17.5 md:py-15"
+                        >
+<span class="mx-auto inline-block">
+  <svg
+          width="78"
+          height="78"
+          viewBox="0 0 78 78"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+  >
+    <rect opacity="0.1" width="78" height="78" rx="37" fill="white" />
+    <path
+            d="M39 16C26.7452 16 16 26.7452 16 39C16 51.2548 26.7452 62 39 62C51.2548 62 62 51.2548 62 39C62 26.7452 51.2548 16 39 16ZM39 58C28.5066 58 20 49.4934 20 39C20 28.5066 28.5066 20 39 20C49.4934 20 58 28.5066 58 39C58 49.4934 49.4934 58 39 58Z"
+            fill="white"
+    />
+    <path
+            d="M39 23C38.1716 23 37.5 23.6716 37.5 24.5V44.5C37.5 45.3284 38.1716 46 39 46C39.8284 46 40.5 45.3284 40.5 44.5V24.5C40.5 23.6716 39.8284 23 39 23ZM39 50C38.1716 50 37.5 50.6716 37.5 51.5C37.5 52.3284 38.1716 53 39 53C39.8284 53 40.5 52.3284 40.5 51.5C40.5 50.6716 39.8284 50 39 50Z"
+            fill="white"
+    />
+  </svg>
+</span>
+                            <form action="#" method="POST" id="removeClientForm">
+                                <h3 class="mt-5.5 text-left pb-2 text-lg font-bold text-white">
+                                    Obriši klijenta?
+                                </h3>
+                                <p class="mb-7.5 text-left font-medium text-white" id="clientDeleteMessage">
+                                    Klijent <span id="clientName">client_name</span> će biti trajno obrisan. Jeste li sigurni?
+                                </p>
+                                <button type="submit"
+                                        id="removeClient"
+                                        class="inline-block rounded border border-white px-12.5 py-3 text-center font-medium text-white transition hover:bg-white hover:text-black"
+                                >
+                                    Obriši klijenta
+                                </button>
+                                <button
+                                        type="button"
+                                        @click="modalOpenDelete = false"
+                                        class="absolute right-6 top-6 flex h-7 w-7 items-center justify-center rounded-full bg-white/45 text-white transition hover:bg-white hover:text-black"
+                                >
+                                    <svg
+                                            width="10"
+                                            height="10"
+                                            viewBox="0 0 13 13"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                                d="M6.4917 7.65579L11.106 12.2645C11.2545 12.4128 11.4715 12.5 11.6738 12.5C11.8762 12.5 12.0931 12.4128 12.2416 12.2645C12.5621 11.9445 12.5623 11.4317 12.2423 11.1114C12.2422 11.1113 12.2422 11.1113 12.2422 11.1113C12.242 11.1111 12.2418 11.1109 12.2416 11.1107L7.64539 6.50351L12.2589 1.91221L12.2595 1.91158C12.5802 1.59132 12.5802 1.07805 12.2595 0.757793C11.9393 0.437994 11.4268 0.437869 11.1064 0.757418C11.1063 0.757543 11.1062 0.757668 11.106 0.757793L6.49234 5.34931L1.89459 0.740581L1.89396 0.739942C1.57364 0.420019 1.0608 0.420019 0.740487 0.739944C0.42005 1.05999 0.419837 1.57279 0.73985 1.89309L6.4917 7.65579ZM6.4917 7.65579L1.89459 12.2639L1.89395 12.2645C1.74546 12.4128 1.52854 12.5 1.32616 12.5C1.12377 12.5 0.906853 12.4128 0.758361 12.2645L1.1117 11.9108L0.758358 12.2645C0.437984 11.9445 0.437708 11.4319 0.757539 11.1116C0.757812 11.1113 0.758086 11.111 0.75836 11.1107L5.33864 6.50287L0.740487 1.89373L6.4917 7.65579Z"
+                                                class="fill-current stroke-current"
+                                        />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div
+                            x-cloak
+                            x-show="modalOpenAddNew"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenAddNew = false"
+                                class="modal w-full max-w-142.5 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                        >
+                            <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                Unošenje novog klijenta
+                            </h3>
+                            <form action="{{ path('api_client_create') }}" id="insertClientForm" method="POST" enctype="multipart/form-data">
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Naziv
+                                    </label>
+                                    <input
+                                            name="name"
+                                            type="text"
+                                            placeholder="IntelTeh d.o.o"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Adresa
+                                    </label>
+                                    <input
+                                            name="address"
+                                            type="text"
+                                            placeholder="Božidara Magovca 87, Zagreb"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        OIB
+                                    </label>
+                                    <input
+                                            name="oib"
+                                            type="text"
+                                            placeholder="8051241245"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za website
+                                    </label>
+                                    <input
+                                            name="main_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Logo za dokumente
+                                    </label>
+                                    <input
+                                            name="pdf_logo"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na početnoj stranici korisnicima
+                                    </label>
+                                    <div class="flex items-center rounded-full mb-2" id="addMapShownTag">
+                                        <input type="hidden" name="overview_view" value="" id="addMapShownTagHidden">
+                                        <a href="#" data-value="1" id="showMapIconInputAdd" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                        <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                        <a href="#" data-value="3" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Hladnjak</a>
+                                    </div>
+                                </div>
+                                <div class="mb-4 hidden" id="mapIconClientInputAdd">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ikonica na mapi
+                                    </label>
+                                    <input
+                                            name="map_marker_icon"
+                                            type="file"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div class="my-2">
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Prikaz na stranici uređaja
+                                    </label>
+                                    <div class="flex items-center rounded-full" id="addIconsShownTag">
+                                        <input type="hidden" name="device_overview_view" value="" id="addIconsShownHidden">
+                                        <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                        <a href="#" data-value="2" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                    </div>
+                                </div>
+                                <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="submit"
+                                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                        >
+                                            Spremi promjene
+                                        </button>
+                                    </div>
+                                    <div class="w-full px-3 2xsm:w-1/2">
+                                        <button type="button"
+                                                @click="modalOpenAddNew = false"
+                                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                        >
+                                            Odustani
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div
+                            x-cloak
+                            x-show="modalOpenAlarms"
+                            x-transition
+                            class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                    >
+                        <div
+                                @click.outside="modalOpenAlarms = false"
+                                class="modal w-2/3 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                        >
+                            <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                Notifikacije alarma
+                            </h3>
+                            <ul class="text-center lg:text-left" id="alarmNotifications">
+                            </ul>
+                            <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                <div class="w-full px-3 2xsm:w-1/4">
+                                    <button
+                                            @click="modalOpenAlarms = false"
+                                            class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                    >
+                                        Zatvori
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+</div>
+</body>
+{% endblock %}

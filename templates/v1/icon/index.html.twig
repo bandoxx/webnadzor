@@ -1,0 +1,256 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+      function delete_confirm(icon_id) {
+        $('#delete-confirm').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Obriši ikonu': function() {
+              $.ajax({
+                url: '/api/icons/' + icon_id,
+                type: 'DELETE',
+                success: function(result) {
+                  $(location).attr('href', "{{ path('app_icon_index') }}")
+                },
+                error: function(result) {
+                  alert('Greška! Molimo pokušajte ponovo');
+                }
+              });
+            },
+            'Odustani': function() {
+              $(this).dialog('destroy');
+            }
+          }
+        });
+      }
+
+      function edit_icon(icon_id) {
+        $('#edit-form').dialog({
+          autoOpen: true,
+          show: {
+            effect: 'drop',
+            duration: 200
+          },
+          hide: {
+            effect: 'drop',
+            duration: 200
+          },
+          resizable: false,
+          modal: true,
+          buttons: {
+            'Spremi promjene': function() {
+              let data = $('#editform').serializeArray();
+
+              $.ajax({
+                url: '/api/icons/' + icon_id,
+                type: 'PATCH',
+                data: {
+                  title: data[0].value
+                },
+                success: function(result) {
+                  $(location).attr('href', "{{ path('app_icon_index') }}")
+                },
+                error: function(result) {
+                  alert('Greška! Molimo pokušajte ponovo');
+                }
+              });
+            },
+            'Odustani': function() {
+              $(this).dialog('close');
+            }
+          },
+          close: function() {
+            $('#editform input').val('');
+            $('#editform').validationEngine('hideAll');
+            $(this).dialog('destroy');
+          }
+        });
+
+        $('#editform').validationEngine('attach', {
+          onValidationComplete: function(form, status) {
+            var form_data = $('#editform').serialize();
+            if (status === true) {
+
+              $.post({}, $.param({icon_id:icon_id,troll:Math.random()}) + "&" + form_data, function(eddata, s, r) {
+                if (r.getResponseHeader('Requires-Auth') == 1) {
+                  $(location).attr('href', page_url);
+                  return false;
+                }
+                if (eddata == 'ok') {
+                  $(location).attr('href', page_url + 'icons_edit');
+                }
+                else {
+                  alert('Greška! Molimo pokušajte ponovo');
+                  console.log('response data: ' + eddata);
+                }
+              });
+            }
+          }
+        });/* VALIDATION ENGINE */
+      }
+
+      $(document).ready(function() {
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        $('.delete').click(function() { /* DELETE ICON */
+          delete_confirm($(this).parent().attr('id'));
+          return false;
+        });
+
+        $('.edit').click(function() { /* EDIT ICON */
+          edit_icon($(this).parent().attr('id'));
+          return false;
+        });
+
+        $('#addform').validationEngine('attach');/* VALIDATION ENGINE */
+        $('#iconadd').click(function() { /* ADD ICON */
+          $('#add-form').dialog({
+            autoOpen: true,
+            show: {
+              effect: 'drop',
+              duration: 200
+            },
+            hide: {
+              effect: 'drop',
+              duration: 200
+            },
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Dodaj novu ikonu': function() {
+                $('#addform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#addform input').val('');
+              $('#addform').validationEngine('hideAll');
+              $(this).dialog('destroy');
+            }
+          });
+          return false;
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $("a.fancy").fancybox(); /* FANCYBOX CLASS */
+
+        $('#table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('#table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('#table').dataTable({
+          pageLength: 100,
+          language: {
+            search: "Pretraga",
+            loading: "Ucitavanje...",
+            lengthMenu: '_MENU_ broj prikaza',
+            emptyTable: 'Prazna tablica',
+            info: 'Prikaz _START_ od _END_ od ukupno _TOTAL_ rezultata',
+            infoEmpty: '',
+            infoFiltered: '(filtrirano od _MAX_ rezultata)',
+          },
+          columnDefs: [
+            { className: 'dt-center', targets: '_all' }
+          ],
+        }); /* DATA TABLES */
+
+      });
+    </script>
+
+{% endblock %}
+
+{% block navigation %}
+    <li><a href="#" id="iconadd" class="icon_plus">Dodaj ikonu</a></li>
+    <li><a href="{{ path('admin_overview') }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+    <div id="delete-confirm" title="Obriši ikonu?" style="display:none;">
+        <p>
+            <span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>
+            Ova ikona biti će trajno izbrisana i nemože biti vraćena. Jeste li sigurni?
+        </p>
+    </div>
+    <div id="edit-form" title="Uredi naziv ikone" style="display:none;">
+        <form id="editform" class="form" action="#" method="POST">
+            <fieldset>
+                <label for="icon_title" style="display:block; margin-top:12px;">Novi naziv ikone</label>
+                <input type="text" name="icon_title" id="icon_title1" class="input validate[required,maxSize[24]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+            </fieldset>
+        </form>
+    </div>
+    <div id="add-form" title="Dodaj novu ikonu" style="display:none;">
+        <form id="addform" class="form" action="{{ path('app_icon_new') }}" method="POST" enctype="multipart/form-data">
+            <fieldset>
+                <label for="icon_title" style="display:block; margin-top:12px;">Naziv ikone</label>
+                <input type="text" name="icon_title" id="icon_title2" class="input validate[required,maxSize[24]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                <label for="icon" style="display:block; margin-top:12px;">Odaberi ikonu</label>
+                <input id="icon" type="file" name="icon">
+            </fieldset>
+        </form>
+    </div>
+    <div class="block big"><!-- Block Begin -->
+        <div class="titlebar">
+            <h3>Lista ikona</h3>
+            <a href="#" class="toggle">&nbsp;</a>
+        </div>
+        <div class="block_cont" style="padding: 4px;">
+            <table id="table" class="data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
+                <thead>
+                <tr>
+                    <th>Naziv ikone</th>
+                    <th>Naziv datoteke</th>
+                    <th width="80">Opcije</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for icon in icons %}
+                    <tr>
+                        <td>{{ icon.title }}</td>
+                        <td>{{ icon.filename }}</td>
+                        <td style="width: 100px">
+                            <div id="{{ icon.id }}" class="actionbar">
+                                <a href="{{ asset(icon.fullPath) }}" class="action view fancy"><span>Pregled</span></a>
+                                <a href="#" class="action edit"><span>Uredi</span></a>
+                                <a href="#" class="action delete"><span>Obriši</span></a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table><!-- Table Wrapper End -->
+        </div>
+    </div><!-- Block End -->
+    </div>
+{% endblock %}

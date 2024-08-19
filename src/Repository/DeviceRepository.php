@@ -63,6 +63,6 @@ class DeviceRepository extends ServiceEntityRepository
             ->getSingleScalarResult()
         ;
 
-        return $numberOfDevicesWithName > 1;
+        return $numberOfDevicesWithName > 0;
     }
 }

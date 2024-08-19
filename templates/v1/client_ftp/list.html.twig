@@ -1,0 +1,156 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block navigation %}
+    <li><a href="#" id="editinfo" class="icon_pen">Izmjeni podatke</a></li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+
+    <script>
+      $(document).ready(function() {
+
+        $('.toggle').click(function() { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        var edit_form = '';
+        $('#editinfo').click(function() { /* EDIT ICON */
+
+          edit_form = $('#edit-form');
+
+          $.each(['host', 'username', 'password', 'id'], function(i2, val) {
+            $('#' + val).val(edit_form.data(val));
+            console.log(val, edit_form.data(val));
+          });
+
+          $(edit_form).dialog({
+            resizable: false,
+            modal: true,
+            buttons: {
+              'Spremi promjene': function() {
+                $('#editform').submit();
+                return false;
+              },
+              'Odustani': function() {
+                $(this).dialog('close');
+              }
+            },
+            close: function() {
+              $('#editform input').val('');
+              $('#editform').validationEngine('hideAll');
+              $(this).dialog('destroy');
+            }
+          });
+          $('#editform').validationEngine('attach', {
+            onValidationComplete: function(form, status){
+              if (status === true) {
+
+                $.ajax({
+                  url: '/api/ftp/' + $('#id').val(),
+                  type: 'PATCH',
+                  data: {
+                    host: $("#host").val(),
+                    password: $("#password").val(),
+                    username: $("#username").val()
+                  },
+                  success: function(result) {
+                    $(location).attr('href', "{{ path('app_clientftp_read', {clientId: clientId}) }}")
+                  },
+                  error: function(result) {
+                    alert('Greška! Molimo pokušajte ponovo');
+                  }
+                });
+              }
+            }
+          });/* VALIDATION ENGINE */
+          return false;
+        });
+
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+
+        $("a.fancy").fancybox(); /* FANCYBOX CLASS */
+
+        $('.data-table').wrap('<div class="table-wrap" />'); /* NORMAL TABLE */
+        $('.data-table tr:even').addClass('even'); /* ODD/EVEN TABLEROW CLASS */
+        $('.data-table').dataTable({
+          'sDom': '<"data-table-top"><"clear"><"table-wrap"rt><"clear"><"data-table-bottom"><"clear">',
+          'bJQueryUI': true,
+          'bPaginate': false,
+          'bInfo': false,
+          'bFilter': false,
+          'aoColumnDefs': [{
+            bSortable: false, aTargets: ['sorting_disabled']
+          }],
+          'fnDrawCallback': function(oSettings) {
+            if (oSettings.bSorted || oSettings.bFiltered) {
+              for (var i = 0, iLen = oSettings.aiDisplay.length; i < iLen; i++) {
+                $('td:eq(0)', oSettings.aoData[oSettings.aiDisplay[i]].nTr).html(i+1);
+              }
+            }
+          }
+        }); /* DATA TABLES */
+      });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    <div id="body">
+    <div id="edit-form" title="Izmjeni podatke" style="display:none;"
+         data-host="{{ client_ftp.host }}" data-username="{{ client_ftp.username }}" data-password="{{ client_ftp.password }}" data-id="{{ client_ftp.id }}">
+        <form id="editform" class="form" action="" method="POST">
+            <fieldset>
+                <p style="margin-top:12px; border: 1px solid transparent; padding: 0.3em; font-weight:bold;">Podaci za prijavu loggera na FTP poslužitelj</p>
+                <input type="hidden" name="id" id="id">
+                <label for="host" style="display:block; margin-top:12px;">FTP poslužitelj</label>
+                <input type="text" name="host" id="host" class="input validate[required,maxSize[64]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                <label for="username" style="display:block; margin-top:12px;">FTP korisničko ime</label>
+                <input type="text" name="username" id="username" class="input validate[required,maxSize[64]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+                <label for="password" style="display:block; margin-top:12px;">FTP zaporka</label>
+                <input type="text" name="password" id="password" class="input validate[required,maxSize[64]] text ui-widget-content ui-corner-all" style="display:block; width:95%; padding: .4em;"/>
+            </fieldset>
+        </form>
+    </div>
+
+    <div class="block big"><!-- Block Begin -->
+        <div class="titlebar">
+            <h3>Podaci za prijavu loggera na FTP poslužitelj</h3>
+            <a href="#" class="toggle">&nbsp;</a>
+        </div>
+        <div class="block_cont" style="padding: 4px;">
+            <table class="data-table data-table-border stripe compact hover"><!-- Table Wrapper Begin -->
+                <thead>
+                <tr>
+                    <th class="sorting_disabled">Br.</th>
+                    <th class="sorting_disabled">FTP poslužitelj</th>
+                    <th class="sorting_disabled">FTP korisničko ime</th>
+                    <th class="sorting_disabled">FTP zaporka</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="">{{ client_ftp.id }}</td>
+                    <td class="">{{ client_ftp.host }}</td>
+                    <td class="">{{ client_ftp.username }}</td>
+                    <td class="">{{ client_ftp.password }}</td>
+                </tr>
+                </tbody>
+            </table><!-- Table Wrapper End -->
+        </div>
+    </div><!-- Block End -->
+    </div>
+{% endblock %}

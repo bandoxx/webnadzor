@@ -1,0 +1,365 @@
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
+    <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <meta charset="UTF-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+{% endblock %}
+
+{% block body %}
+<body
+        :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+        x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+        x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+>
+<!-- ===== Preloader Start ===== -->
+{% block preloader %}
+    {{ parent() }}
+{% endblock %}
+<!-- ===== Preloader End ===== -->
+
+<!-- ===== Page Wrapper Start ===== -->
+<div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <aside
+            :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+            class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+            @click.outside="sidebarToggle = false"
+    >
+
+        <!-- SIDEBAR HEADER -->
+        {% block sidebar_header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- SIDEBAR HEADER -->
+
+        <div
+                class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+        >
+            <!-- Sidebar Menu -->
+            <nav
+                    class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+                    x-data="{selected: $persist('Dashboard')}"
+            >
+                <!-- Menu Group -->
+                <div>
+                    <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                    <!-- Support Group -->
+                    <div>
+                        <ul class="mb-6 flex flex-col gap-1.5">
+                            <!-- Menu Item Messages -->
+                            <li class="reload-tags cursor-pointer">
+                                <a
+                                        referrerpolicy="no-referrer" target="_blank" href="{{ path('api_device_alarm_archive_download', { id: device.id, type: 'xlsx' }) }}"
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+                                    </svg>
+                                    Preuzmi Excel
+                                </a>
+                            </li>
+                            <li class="reload-tags cursor-pointer">
+                                <a
+                                        referrerpolicy="no-referrer" target="_blank" href="{{ path('api_device_alarm_archive_download', { id: device.id, type: 'pdf' }) }}"
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+                                    </svg>
+                                    Preuzmi PDF
+                                </a>
+                            </li>
+                            <li class="cursor-pointer">
+                                <a
+                                        href="{{ path('app_device_list', { clientId: client.id }) }}"
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                    </svg>
+                                    Povratak
+                                </a>
+                            </li>
+                            <!-- Menu Item Messages -->
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- Sidebar Menu -->
+        </div>
+    </aside>
+
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div
+            class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+    >
+
+        <!-- ===== Header Start ===== -->
+        {% block header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+            <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                <!-- Breadcrumb Start -->
+                <div
+                        class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                        Lista alarma
+                    </h2>
+
+                    <nav>
+                        <ol class="flex items-center gap-2">
+                            <li>
+                                <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                            </li>
+                            <li>
+                                <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
+                            </li>
+                            <li class="font-medium">
+                                <a class="font-medium" href="{{ path('app_device_list', { clientId: client.id }) }}">Pregled lokacije /
+                                </a>
+                            </li>
+                            <li class="font-medium text-primary">Lista alarma</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- Breadcrumb End -->
+                <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+
+                    <!-- ====== Data Table Start -->
+                    <div
+                            class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+                    >
+                        <div
+                                class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
+                        >
+                            <h3 class="title-dt font-bold text-black dark:text-white">
+                                Lista alarma za mjerni uređaj {{ device.name }}
+                            </h3>
+                            <table class="table w-full table-auto" id="datatableAlarmList">
+                                <thead>
+                                <tr>
+                                    <th data-type="datetime" data-format="DD.MM.YYYY hh:mm:ss">
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>DATUM</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th data-type="datetime" data-format="DD.MM.YYYY hh:mm:ss">
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Datum prestanka</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Aktivan</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Mjerno mesto</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div
+                                                class="flex items-center justify-between gap-1.5"
+                                        >
+                                            <p>Vrsta alarma</p>
+                                            <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for alarm in alarms %}
+                                <tr>
+                                    <td data-sort="{{ alarm.date|date('U') }}">{{ alarm.date|date('d.m.Y H:i:s') }}</td>
+                                    <td data-sort="{{ alarm.end_date|date('U') }}">{% if alarm.end_date is not null %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% endif %}</td>
+                                    <td>
+                                        {% if alarm.active %}
+                                            <span class="text-red">Da</span>
+                                        {% else %}
+                                            <span class="text-green-600">Ne</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ alarm.place }}</td>
+                                    <td>{{ alarm.type }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ====== Data Table End -->
+                </div>
+            </div>
+        </main>
+        <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+</div>
+</body>
+{% endblock %}

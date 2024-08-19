@@ -22,11 +22,12 @@ class UsersGetController extends AbstractController
             $user->setAvailableLocations($deviceLocations);
         }
 
-        $clients = $clientRepository->findAll();
-        return $this->render('user/list.html.twig', [
+        $clients = $clientRepository->findAllActive();
+
+        return $this->render('v2/user/list.html.twig', [
             'users' => $users,
             'clients' => $clients,
-            'client_locations' => $deviceLocationHandler->getClientDeviceLocations($clientId),
+            'client_locations' => $deviceLocationHandler->getClientDeviceLocations($clientId, true),
             'client_id' => $clientId
         ]);
     }

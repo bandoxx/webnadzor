@@ -2,29 +2,28 @@
 
 namespace App\Controller\ClientSetting\API;
 
-use App\Repository\ClientSettingRepository;
+use App\Repository\ClientRepository;
 use App\Service\Client\ClientSettingsUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/api/{clientId}/settings', name: 'api_client_settings_update')]
 class ClientSettingUpdateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientSettingsUpdater $clientSettingsUpdater, ClientSettingRepository $clientSettingRepository): Response
+    public function __invoke(int $clientId, Request $request, ClientSettingsUpdater $clientSettingsUpdater, ClientRepository $clientRepository): Response|NotFoundHttpException
     {
-        $settings = $clientSettingRepository->findOneBy(['client' => $clientId]);
-
-        if (!$settings) {
-            throw new BadRequestException();
+        $client = $clientRepository->find($clientId);
+        if (!$client) {
+            return $this->createNotFoundException('Client not found');
         }
 
-        $clientSettingsUpdater->update($settings, $request);
+        $clientSettingsUpdater->update($client, $request);
 
-        return $this->json(true, Response::HTTP_ACCEPTED);
+        return $this->redirectToRoute('client_overview', ['clientId' => $clientId]);
     }
 
 }

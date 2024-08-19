@@ -5,24 +5,27 @@ namespace App\Controller\User\API;
 use App\Repository\UserRepository;
 use App\Service\User\UserRemover;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/user/{userId}', name: 'api_user_delete', methods: 'DELETE')]
+#[Route(path: '/api/user/{userId}', name: 'api_user_delete', methods: 'POST')]
 class UserRemoveController extends AbstractController
 {
 
-    public function __invoke(int $userId, UserRepository $userRepository, UserRemover $userRemover): JsonResponse
+    public function __invoke(int $userId, Request $request, UserRepository $userRepository, UserRemover $userRemover): RedirectResponse
     {
         $user = $userRepository->find($userId);
 
+        $redirectUrl = $request->headers->get('referer');
+
         if (!$user) {
-            return $this->json('Not found', Response::HTTP_NOT_FOUND);
+            // TODO: Flashbag message
+            return $this->redirect($redirectUrl);
         }
 
         $userRemover->remove($user);
 
-        return $this->json(null, Response::HTTP_NO_CONTENT);
+        return $this->redirect($redirectUrl);
     }
 }

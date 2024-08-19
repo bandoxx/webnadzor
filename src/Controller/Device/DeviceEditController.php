@@ -8,18 +8,19 @@ use App\Repository\DeviceRepository;
 use App\Service\DeviceUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/device/{deviceId}/edit', name: 'app_device_edit', methods: 'GET|POST')]
 class DeviceEditController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): JsonResponse|Response
+    public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, DeviceIconRepository $deviceIconRepository, DeviceUpdater $deviceUpdater): RedirectResponse|Response
     {
-        $error = [];
         $device = $deviceRepository->find($deviceId);
 
         if (!$device) {
@@ -34,22 +35,18 @@ class DeviceEditController extends AbstractController
                 if ($this->getUser()->getPermission() >= 3) {
                     $deviceUpdater->update($device, $request->request->all());
 
-                    return $this->json(true, Response::HTTP_ACCEPTED);
+                    return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'deviceId' => $deviceId]);
                 }
 
-                return $this->json(false, Response::HTTP_UNAUTHORIZED);
+                return $this->redirectToRoute('client_overview', ['clientId' => $clientId]);
             } catch (\Throwable $e) {
-                $error = [$e->getMessage()];
-
-                return $this->json($error, Response::HTTP_BAD_REQUEST);
+                return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'deviceId' => $deviceId]);
             }
         }
 
-        return $this->render('device/edit.html.twig', [
+        return $this->render('v2/device/edit.html.twig', [
             'device' => $device,
             'icons' => $icons,
-            'clientId' => $clientId,
-            'errors' => $error,
             'temperature_type' => TemperatureType::getTypes()
         ]);
 

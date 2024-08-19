@@ -12,7 +12,7 @@ class LoginLogGetController extends AbstractController
 {
     public function __invoke(int $clientId, LoginLogRepository $loginLogRepository): Response
     {
-        return $this->render('login_log/list.html.twig', [
+        return $this->render('v2/login_log/list.html.twig', [
             'logs' => $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC'])
         ]);
     }

@@ -3,6 +3,7 @@
 namespace App\Service\Client;
 
 use App\Entity\Client;
+use App\Factory\ClientFtpFactory;
 use App\Factory\ClientSettingFactory;
 use App\Repository\UserRepository;
 use App\Service\Image\LogoUploader;
@@ -13,20 +14,21 @@ class ClientUpdater
 {
 
     public function __construct(
-        private LogoUploader $logoUploader,
-        private EntityManagerInterface $entityManager,
-        private ClientSettingFactory $clientSettingFactory,
-        private UserRepository $userRepository
+        private readonly LogoUploader $logoUploader,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ClientSettingFactory $clientSettingFactory,
+        private readonly UserRepository $userRepository,
+        private readonly ClientFtpFactory $clientFtpFactory
     ) {}
 
     public function updateByRequest(Request $request, Client $client): void
     {
-        if ($request->request->get('overview_view')) {
-            $client->setOverviewViews($request->request->get('overview_view'));
+        if ($overview = $request->request->get('overview_view')) {
+            $client->setOverviewViews($overview);
         }
 
-        if ($request->request->get('device_overview_view')) {
-            $client->setDevicePageView($request->request->get('device_overview_view'));
+        if ($deviceOverview = $request->request->get('device_overview_view')) {
+            $client->setDevicePageView($deviceOverview);
         }
 
         $client->setName($request->request->get('name'));
@@ -35,9 +37,11 @@ class ClientUpdater
 
         if (!$client->getId()) {
             $clientSettings = $this->clientSettingFactory->create($client);
+            $clientFtp = $this->clientFtpFactory->create($client);
 
             $this->entityManager->persist($client);
             $this->entityManager->persist($clientSettings);
+            $this->entityManager->persist($clientFtp);
             $this->entityManager->flush();
 
             $users = $this->userRepository->findBy(['permission' => 4]);

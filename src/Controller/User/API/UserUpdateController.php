@@ -8,16 +8,17 @@ use App\Service\User\UserPasswordSetter;
 use App\Service\UserDeviceAccessUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/admin/user/{userId}', name: 'api_user_update', methods: 'PATCH')]
+#[Route(path: '/api/client/{clientId}/user/{userId}', name: 'api_user_update', methods: 'POST')]
 class UserUpdateController extends AbstractController
 {
 
-    public function __invoke(int $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, ClientRepository $clientRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): JsonResponse
+    public function __invoke(int $clientId, int $userId, UserPasswordSetter $passwordSetter, Request $request, UserRepository $userRepository, ClientRepository $clientRepository, UserDeviceAccessUpdater $userDeviceAccessUpdater): RedirectResponse
     {
         $user = $userRepository->find($userId);
 
@@ -36,30 +37,27 @@ class UserUpdateController extends AbstractController
 
         $user->setOverviewViews(is_numeric($overviewViews) ? $overviewViews : null);
 
-        if ($permission = $request->request->get('permissions')) {
-            $user->setPermission($request->request->get($permission));
+        $permission = $request->request->get('permissions');
+        if ($permission) {
+            $user->setPermission($permission);
         }
 
-        $clients = $request->get('clients');
+        $clients = [];
+        $requestClients = $request->get('clients');
 
-        $user->getClients()->clear();
-
-        foreach ($clients as $clientId) {
-            $client = $clientRepository->find($clientId);
-
-            if (!$client) {
-                continue;
-            }
-
-            $user->addClient($client);
+        if (!$requestClients) {
+            $clients[] = $clientId;
+        } else {
+            $clients = explode(',', $requestClients);
         }
 
         $userDeviceAccessUpdater->update(
             $user,
-            $request->get('locations')
+            $clients,
+            explode(',', $request->get('locations'))
         );
 
-        return $this->json(true, Response::HTTP_ACCEPTED);
+        return $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
 
     }
 

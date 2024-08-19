@@ -1,0 +1,459 @@
+{% extends 'v1/base.html.twig' %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        $('.tipTop').tipsy({gravity: 's', fade: true}); /* TOOLTIP CLASS */
+        $('.tipBot').tipsy({gravity: 'n', fade: true}); /* TOOLTIP CLASS */
+        $('.tipLeft').tipsy({gravity: 'e', fade: true}); /* TOOLTIP CLASS */
+        $('.tipRight').tipsy({gravity: 'w', fade: true}); /* TOOLTIP CLASS */
+
+        $('.ie #userbar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .titlebar').corner('top 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .block_cont').corner('bottom 5px'); /* IE BORDER-RADIUS FIX */
+        $('.ie .error, .ie .warning, .ie .success, .ie .information').corner('5px'); /* IE BORDER-RADIUS FIX */
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/stock.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+      function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n)
+      }
+
+      $(document).ready(function () {
+        $('.toggle').click(function () { /* BLOCK TOGGLE */
+          $(this).toggleClass('show');
+          $(this).parent().parent().children('.block_cont').slideToggle(300);
+          $(this).parent().toggleClass('show');
+          return false;
+        });
+
+        const rangeSelector = {
+          buttons: [{
+            type: 'day',
+            count: 3,
+            text: '3d'
+          }, {
+            type: 'week',
+            count: 1,
+            text: '1w'
+          }, {
+            type: 'month',
+            count: 1,
+            text: '1m'
+          }, {
+            type: 'month',
+            count: 6,
+            text: '6m'
+          }, {
+            type: 'year',
+            count: 1,
+            text: '1y'
+          }, {
+            type: 'all',
+            text: 'All'
+          }],
+          selected: 5
+        };
+
+        Highcharts.setOptions({
+          title: {
+            style: {
+              color: '#cccccc'
+            }
+          },
+          chart: {
+            backgroundColor: '#202d3b'
+          },
+          navigation: {
+            buttonOptions: {
+              theme: {
+                fill: '#333333',
+                'stroke-width': 0
+              }
+            }
+          },
+          navigator: {
+            maskInside: false,
+            maskFill: '#eeeeee44',
+            xAxis: {
+              gridLineWidth: 0,
+              labels: {
+                style: {
+                  color: '#c5c7c9',
+                  opacity: 1,
+                  textOutline: 0
+                }
+              }
+            },
+          },
+          plotOptions: {
+            series: {
+              lastPrice: {
+                color: '#c0c0c0',
+                enabled: true,
+                label: {
+                  backgroundColor: '#fbfbfb',
+                  borderRadius: 0,
+                  enabled: true,
+                  padding: 3,
+                  style: {
+                    color: '#000'
+                  }
+                }
+              }
+            }
+          },
+          rangeSelector: {
+            buttonTheme: {
+              fill: '#333333',
+              padding: 1,
+              r: 2,
+              states: {
+                hover: {
+                  style: {
+                    color: '#333333'
+                  }
+                }
+              },
+              style: {
+                color: '#c5c7c9'
+              }
+            },
+            inputStyle: {
+              color: '#c5c7c9'
+            },
+            labelStyle: {
+              color: '#c5c7c9'
+            }
+          },
+          tooltip: {
+            backgroundColor: '#fbfbfb',
+            borderRadius: 0,
+            borderWidth: 0,
+            padding: 3
+          },
+          xAxis: {
+            gridLineColor: '#2b3648',
+            gridLineWidth: 1,
+            lineColor: '#999999',
+            tickColor: '#999999',
+            tickLength: 5,
+            labels: {
+              style: {
+                color: '#c5c7c9'
+              }
+            }
+          },
+          yAxis: {
+            crosshair: {
+              label: {
+                backgroundColor: '#fbfbfb',
+                borderRadius: 0,
+                enabled: true,
+                padding: 3,
+                style: {
+                  color: '#000'
+                }
+              }
+            },
+            gridLineColor: '#21323f',
+            lineColor: '#999999',
+            lineWidth: 1,
+            labels: {
+              style: {
+                color: '#9d9da2'
+              }
+            }
+          }
+        });
+
+        function render(containerId, type) {
+          (async () => {
+            let navigationSeries = {};
+            let series = [];
+            let yAxisText = '';
+            let plots = [];
+
+            const data = await fetch(
+              '{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry}) }}?type=' + type
+            ).then(response => response.json());
+
+            if (isNumber(data.min)) {
+              plots.push({
+                color: 'white',
+                width: 2,
+                value: data.min,
+                label: {
+                  style: {
+                    color: 'white'
+                  },
+                  text: 'Minimum',
+                  align: 'right',
+                  x: -10,
+                  y: 12
+                }
+              })
+            }
+
+            if (isNumber(data.max)) {
+              plots.push({
+                color: 'white',
+                width: 2,
+                value: data.max,
+                label: {
+                  style: {
+                    color: 'white'
+                  },
+                  text: 'Maksimum',
+                  align: 'right',
+                  x: -10
+                }
+              })
+            }
+
+            if (type === "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}") {
+              navigationSeries = {
+                data: data.t,
+                name: 'Temperatura',
+              };
+
+              series = [{
+                name: 'Temperatura',
+                data: data.t,
+              }, {
+                name: 'MKT',
+                data: data.mkt,
+                color: "#e20074"
+              }];
+
+              yAxisText = "{{ device.temperatureModel.unit }}"
+            } else {
+              navigationSeries = {
+                name: 'Vlaznost',
+                data: data.rh
+              };
+
+              series = [{
+                name: 'Vlaznost',
+                data: data.rh
+              }]
+
+              yAxisText = "{{ device.humidityModel.unit }}"
+            }
+
+            Highcharts.stockChart(containerId, {
+              chart: {
+                zoomType: 'x'
+              },
+              time: {
+                timezone: 'Europe/Zagreb'
+              },
+              navigator: {
+                adaptToUpdatedData: false,
+                series: navigationSeries
+              },
+              rangeSelector: rangeSelector,
+              scrollbar: {
+                liveRedraw: false
+              },
+              xAxis: {
+                events: {
+                  afterSetExtremes:
+                    function (e) {
+                      let min = Math.floor(e.min / 1000);
+                      let max = Math.floor(e.max / 1000);
+
+                      let chart = $('#' + containerId).highcharts();
+                      chart.showLoading('Učitavam...');
+                      $.getJSON("{{ path('app_api_chart_getchartdata', {deviceId: device.id, entry: entry }) }}?type=" + type + "&fromDate=" + min + "&toDate=" + max,
+                        function (data) {
+                          if (data.t) {
+                            chart.series[0].setData(data.t);
+                            chart.series[1].setData(data.mkt);
+                          } else {
+                            chart.series[0].setData(data.rh);
+                          }
+                          chart.hideLoading();
+                        });
+                    }
+                },
+                minRange: 3600 * 1000 // one hour
+              },
+              yAxis: {
+                plotLines: plots,
+                title: {
+                  text: yAxisText,
+                  rotation: 0
+                }
+              },
+              legend: {
+                enabled: false
+              },
+              plotOptions: {
+                area: {
+                  fillColor: {
+                    linearGradient: {
+                      x1: 0,
+                      y1: 0,
+                      x2: 0,
+                      y2: 1
+                    },
+                    stops: [
+                      [0, Highcharts.getOptions().colors[0]],
+                      [1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                  },
+                  marker: {
+                    radius: 2
+                  },
+                  lineWidth: 1,
+                  states: {
+                    hover: {
+                      lineWidth: 1
+                    }
+                  },
+                  threshold: null
+                }
+              },
+
+              series: series,
+              tooltip: {
+                valueDecimals: 2,
+                valueSuffix: yAxisText
+              },
+              dataGrouping: {
+                enabled: false
+              }
+            });
+          })();
+        }
+
+        if (document.getElementById('container_t')) {
+          render('container_t', "{{ constant('App\\Service\\ChartHandler::TEMPERATURE') }}");
+        }
+
+        if (document.getElementById('container_rh')) {
+          render('container_rh', "{{ constant('App\\Service\\ChartHandler::HUMIDITY') }}");
+        }
+      })
+
+
+    </script>
+{% endblock %}
+
+{% block navigation %}
+    <li><a href="{{ path('app_devicedataarchive_read', {clientId: clientId, id: device.id, entry: entry}) }}"
+           class="icon_save">Arhiva</a></li>
+    <li><a href="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry }) }}" class="icon_xls">Izvoz
+            podataka</a></li>
+    <li><a href="{{ path('app_alarm_list', {clientId: clientId, id: device.id}) }}" class="icon_time">Lista alarma</a>
+    </li>
+    <li><a href="{{ path('client_overview', {clientId: clientId}) }}" class="icon_left">Povratak</a></li>
+{% endblock %}
+
+{% block content %}
+    <div class="clear"></div>
+    {% if device.alarm %}
+    <div class="error grid_12">
+        <h3>
+            {% if device.alarms|length == 1 %}
+                {{ device.alarms[0].message }}
+            {% else %}
+                Trenutno je aktivno {{ device.alarms|length }} alarma!
+            {% endif %}
+        </h3>
+    </div>
+    {% endif %}
+    <div id="body">
+        <div id="devdata" class="block big"><!-- Block Begin -->
+            <div class="titlebar">
+                <h3>Podaci za lokaciju {{ device.name }}, {{ device.temperatureModel.name }} - <span
+                            id="device_date">{{ device.deviceDate|date("d.m.Y H:i:s") }}</span></h3>
+                <a href="#" class="toggle">&nbsp;</a>
+            </div>
+            <div class="block_cont" style="padding:4px;">
+                <div style="margin-bottom:10px;">
+                {% if client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_ICON') %}
+                    <div class="dets-100" style="margin-left: 20px;">
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.temperatureModel.name }}</span><br><br>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureModel.averageWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureModel.maximumWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureModel.minimumWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.temperatureModel.meanWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right;" id="rh1_value">{{ device.humidityModel.currentWithUnit }}</span>
+                    </div>
+                    <div style="margin-left: 10px;" class="dets-100">
+                        <div style="min-height:50px;" id="t1_image">
+                            <img alt="t1" src="{{ asset(device.temperatureModel.image) }}">
+                        </div>
+                    </div>
+                {% elseif client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') %}
+                    <div class="dets-100"
+                         style="height: 100%; padding: 15px; margin-top: 10px; margin-left: 20px; font-size:11px;">
+                        <span style="display:table; margin:0 auto; text-transform: uppercase;">{{ device.temperatureModel.name }}</span>
+                        <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="t1_image">
+                            <img alt="t1" src="{{ path('app_image_t', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
+                        </div>
+                        <span style="color: #515d6b;">Trenutna</span>: <span style="float: right;" id="t1_value">{{ device.temperatureModel.currentWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Srednja</span>: <span style="float: right;" id="t1avrg_value">{{ device.temperatureModel.averageWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Maksimalna</span>: <span style="float: right;" id="t1max_value">{{ device.temperatureModel.maximumWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">Minimalna</span>: <span style="float: right;" id="t1min_value">{{ device.temperatureModel.minimumWithUnit }}</span><br><br>
+                        <span style="color: #515d6b;">MKT</span>: <span style="float: right;" id="mkt1_value">{{ device.temperatureModel.meanWithUnit }}</span><br><br>
+                    </div>
+                    {% if device.humidityModel.isUsed %}
+                    <div class="dets"
+                         style="height: 100%; padding: 15px; margin-top: 100px; margin-left: 20px; font-size:11px;">
+                        <div style="display:block; padding: 15px 0 15px 0; min-height:50px;" id="rh1_image">
+                            <img alt="rh1"
+                                 src="{{ path('app_image_rh', {clientId: clientId, deviceId: device.id, entry: entry}) }}">
+                        </div>
+                        <br><br>
+                        <span style="color: #515d6b;">R. vlažnost</span>: <span style="float: right; display: block;" id="rh1_value">{{ device.humidityModel.currentWithUnit }}</span>
+                    </div>
+                    {% endif %}
+                {% endif %}
+                    <div class="clear"></div>
+                </div>
+            </div>
+        </div>
+
+        {% if device.temperatureModel.isShown %}
+            <div id="devdata" class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Trenutni podaci za lokaciju {{ device.name }}, {{ device.temperatureModel.name }}</h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+
+                <div class="block_cont" style="padding:0;">
+                    <div style="margin-bottom:0;">
+                        <div id="container_t" class="highcharts-dark"></div>
+                    </div>
+                </div>
+            </div><!-- Block End -->
+        {% endif %}
+
+        {% if device.humidityModel.isShown %}
+            <div id="devdata" class="block big"><!-- Block Begin -->
+                <div class="titlebar">
+                    <h3>Trenutni podaci za lokaciju {{ device.name }}, {{ device.temperatureModel.name }}</span></h3>
+                    <a href="#" class="toggle">&nbsp;</a>
+                </div>
+
+                <div class="block_cont" style="padding:0;">
+                    <div style="margin-bottom:0;">
+                        <div id="container_rh" class="highcharts-dark"></div>
+                    </div>
+                </div>
+            </div><!-- Block End -->
+        {% endif %}
+
+
+        <div class="clear"></div>
+        <div class="clear"></div>
+    </div>
+{% endblock %}
