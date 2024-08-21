@@ -47,7 +47,7 @@ class DeviceReadController extends AbstractController
             $numberOfAlarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
             $online = false;
 
-            if ($data && time() - @strtotime($data->getDeviceDate()?->format('Y-m-d H:i:s')) < 4200) {
+            if ($data && time() - $data->getDeviceDate()?->format('U') < 5400) {
                 $online = true;
             }
 

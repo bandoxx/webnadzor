@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 #[Route('/overview', name: 'admin_overview')]
 class OverviewController extends AbstractController
@@ -69,7 +68,7 @@ class OverviewController extends AbstractController
                     continue;
                 }
 
-                if (time() - @strtotime($deviceData->getDeviceDate()->format('Y-m-d H:i:s')) < 4200) {
+                if (time() - $deviceData->getDeviceDate()?->format('U') < 5400) {
                     $onlineDevices++;
                 }
 
