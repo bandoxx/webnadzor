@@ -180,7 +180,7 @@
                 {% endif %}
 
                 {% if overviewType == constant('App\\Entity\\Client::OVERVIEW_THERMOMETER') %}
-                <div class="bg-white dark:bg-boxdark mb-5">
+                    <div class="bg-white dark:bg-boxdark mb-5">
                     <div class="flex justify-between border border-stroke px-6.5 py-4 dark:border-strokedark">
                         <h3 class="font-medium text-black dark:text-white">
                             Trenutni podaci
@@ -201,11 +201,11 @@
                             <p class="text-center font-bold text-black dark:text-white">
                                 {{ device.deviceDate|date('d.m.Y. H:i:s') }}
                             </p>
-                            {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
                             <p class="turned-off-notification">
-                                Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
+                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                    Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
+                                {% endif %}
                             </p>
-                            {% endif %}
                             <p class="flex justify-center mb-3">
                                 <img src="{{ path('app_image_t', {deviceId: device.id, entry: device.entry}) }}">
                             </p>
@@ -213,8 +213,6 @@
                             <ul>
                                 <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Trenutna: <span
                                             class="text-black dark:text-white">{{ device.temperatureModel.currentWithUnit }}</span></li>
-{#                                <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Srednja: <span#}
-{#                                            class="text-black dark:text-white">21.92 °C</span></li>#}
                                 <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Maksimalna: <span
                                             class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span></li>
                                 <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Minimalna: <span
@@ -229,6 +227,54 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% elseif overviewType == constant('App\\Entity\\Client::OVERVIEW_ICONS') %}
+                    <div class="bg-white dark:bg-boxdark mb-5">
+                        <div class="flex justify-between border border-stroke px-6.5 py-4 dark:border-strokedark">
+                            <h3 class="font-medium text-black dark:text-white">
+                                Trenutni podaci
+                            </h3>
+                            <p class="cursor-pointer closeable-btn mb-0">
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="form-closeable border border-stroke dark:border-strokedark flex justify-evenly flex-wrap">
+                            {% for device in devices_table %}
+                                <div class="measurement-device">
+                                    <p class="text-center font-bold mb-3 text-black dark:text-white">
+                                        {{ device.name }}<br>{{ device.temperatureModel.location }}<br> {{ device.temperatureModel.name }}
+                                    </p>
+                                    <p class="text-center font-bold text-black dark:text-white">
+                                        {{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                    </p>
+                                    <p class="turned-off-notification">
+                                        {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                            Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
+                                        {% endif %}
+                                    </p>
+                                    <p class="flex justify-center mb-3">
+                                        <img src="{{ asset('assets/images/frizider.png') }}" />
+                                    </p>
+                                    <p>
+                                    <ul>
+                                        <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Trenutna: <span
+                                                    class="text-black dark:text-white">{{ device.temperatureModel.currentWithUnit }}</span></li>
+                                        <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Maksimalna: <span
+                                                    class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span></li>
+                                        <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Minimalna: <span
+                                                    class="text-black dark:text-white">{{ device.temperatureModel.minimumWithUnit }}</span></li>
+                                        <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">MKT: <span
+                                                    class="text-black dark:text-white">{{ device.temperatureModel.meanWithUnit }}</span></li>
+                                        <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">R. vlažnost: <span
+                                                    class="text-black dark:text-white">{{ device.humidityModel.currentWithUnit }}</span></li>
+                                        <li class="measurement-device-note">{{ device.note }}</li>
+                                    </ul>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 {% elseif overviewType == constant('App\\Entity\\Client::OVERVIEW_MAP') %}
                     <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
                         <h3 class="title-dt font-bold text-black dark:text-white mb-2">
