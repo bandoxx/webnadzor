@@ -54,4 +54,9 @@ class DeviceRepository extends ServiceEntityRepository
 
         return $numberOfDevicesWithName > 0;
     }
+
+    public function findActiveDevices(): array
+    {
+        return $this->findBy(['isDeleted' => false]);
+    }
 }
