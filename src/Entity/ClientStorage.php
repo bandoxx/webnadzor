@@ -4,8 +4,9 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
+use App\Repository\ClientStorageRepository;
 
-#[ORM\Entity(repositoryClass: "App\Repository\ClientStorageRepository")]
+#[ORM\Entity(repositoryClass: ClientStorageRepository::class)]
 #[ORM\Table(name: "client_storage")]
 class ClientStorage
 {
@@ -14,25 +15,26 @@ class ClientStorage
     #[ORM\Column(type: "integer")]
     private $id;
 
-    #[ORM\Column(type: "integer")]
-    private $client_id;
+    #[ORM\ManyToOne(inversedBy: 'clientStorages')]
+    #[ORM\JoinColumn(nullable: false)]
+    private Client $client;
 
     #[ORM\Column(type: "string", length: 255)]
-    private $base_image;
+    private $image;
 
     #[ORM\Column(type: "string", length: 255)]
     private $name;
 
     #[ORM\Column(type: "datetime")]
-    private $created_at;
+    private $createdAt;
 
     #[ORM\Column(type: "datetime")]
-    private $updated_at;
+    private $updatedAt;
 
     public function __construct()
     {
-        $this->created_at = new DateTime();
-        $this->updated_at = new DateTime();
+        $this->createdAt = new DateTime();
+        $this->updatedAt = new DateTime();
     }
 
     public function getId(): ?int
@@ -40,26 +42,14 @@ class ClientStorage
         return $this->id;
     }
 
-    public function getClientId(): ?int
+    public function getImage(): ?string
     {
-        return $this->client_id;
+        return $this->image;
     }
 
-    public function setClientId(int $client_id): self
+    public function setImage(string $image): self
     {
-        $this->client_id = $client_id;
-
-        return $this;
-    }
-
-    public function getBaseImage(): ?string
-    {
-        return $this->base_image;
-    }
-
-    public function setBaseImage(string $base_image): self
-    {
-        $this->base_image = $base_image;
+        $this->image = $image;
 
         return $this;
     }
@@ -78,24 +68,36 @@ class ClientStorage
 
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $created_at): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeInterface
     {
-        return $this->updated_at;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updated_at): self
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
-        $this->updated_at = $updated_at;
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getClient(): Client
+    {
+        return $this->client;
+    }
+
+    public function setClient(Client $client): self
+    {
+        $this->client = $client;
 
         return $this;
     }

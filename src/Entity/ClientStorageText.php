@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientStorageTextRepository;
 
-#[ORM\Entity(repositoryClass: "App\Repository\ClientStorageTextRepository")]
-#[ORM\Table(name: "client_storage_text")]
+#[ORM\Entity(repositoryClass: ClientStorageTextRepository::class)]
 class ClientStorageText
 {
     #[ORM\Id]
@@ -13,24 +13,24 @@ class ClientStorageText
     #[ORM\Column(type: "integer")]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\ClientStorage", inversedBy: "texts")]
+    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "texts")]
     #[ORM\JoinColumn(nullable: false)]
-    private $client_storage;
+    private $clientStorage;
 
     #[ORM\Column(type: "integer")]
-    private $font_size;
+    private $fontSize;
 
     #[ORM\Column(type: "string", length: 7)]
-    private $font_color;
+    private $fontColor;
 
     #[ORM\Column(type: "string", length: 255)]
-    private $placeholder_text;
+    private $text;
 
     #[ORM\Column(type: "integer")]
-    private $position_x;
+    private $positionX;
 
     #[ORM\Column(type: "integer")]
-    private $position_y;
+    private $positionY;
 
     public function getId(): ?int
     {
@@ -39,72 +39,72 @@ class ClientStorageText
 
     public function getClientStorage(): ?ClientStorage
     {
-        return $this->client_storage;
+        return $this->clientStorage;
     }
 
-    public function setClientStorage(?ClientStorage $client_storage): self
+    public function setClientStorage(?ClientStorage $clientStorage): self
     {
-        $this->client_storage = $client_storage;
+        $this->clientStorage = $clientStorage;
 
         return $this;
     }
 
     public function getFontSize(): ?int
     {
-        return $this->font_size;
+        return $this->fontSize;
     }
 
-    public function setFontSize(int $font_size): self
+    public function setFontSize(int $fontSize): self
     {
-        $this->font_size = $font_size;
+        $this->fontSize = $fontSize;
 
         return $this;
     }
 
     public function getFontColor(): ?string
     {
-        return $this->font_color;
+        return $this->fontColor;
     }
 
-    public function setFontColor(string $font_color): self
+    public function setFontColor(string $fontColor): self
     {
-        $this->font_color = $font_color;
+        $this->fontColor = $fontColor;
 
         return $this;
     }
 
     public function getPlaceholderText(): ?string
     {
-        return $this->placeholder_text;
+        return $this->text;
     }
 
-    public function setPlaceholderText(string $placeholder_text): self
+    public function setText(string $text): self
     {
-        $this->placeholder_text = $placeholder_text;
+        $this->text = $text;
 
         return $this;
     }
 
     public function getPositionX(): ?int
     {
-        return $this->position_x;
+        return $this->positionX;
     }
 
-    public function setPositionX(int $position_x): self
+    public function setPositionX(int $positionX): self
     {
-        $this->position_x = $position_x;
+        $this->positionX = $positionX;
 
         return $this;
     }
 
     public function getPositionY(): ?int
     {
-        return $this->position_y;
+        return $this->positionY;
     }
 
-    public function setPositionY(int $position_y): self
+    public function setPositionY(int $positionY): self
     {
-        $this->position_y = $position_y;
+        $this->positionY = $positionY;
 
         return $this;
     }

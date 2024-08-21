@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\ClientStorageDeviceRepository;
 
-#[ORM\Entity(repositoryClass: "App\Repository\ClientStorageDeviceRepository")]
-#[ORM\Table(name: "client_storage_device")]
+#[ORM\Entity(repositoryClass: ClientStorageDeviceRepository::class)]
 class ClientStorageDevice
 {
     #[ORM\Id]
@@ -13,27 +13,28 @@ class ClientStorageDevice
     #[ORM\Column(type: "integer")]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: "App\Entity\ClientStorage", inversedBy: "devices")]
+    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "devices")]
     #[ORM\JoinColumn(nullable: false)]
-    private $client_storage;
+    private $clientStorage;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Device $device = null;
 
     #[ORM\Column(type: "integer")]
-    private $device_id;
-
-    #[ORM\Column(type: "string", length: 255)]
     private $entry;
 
     #[ORM\Column(type: "integer")]
-    private $font_size;
+    private $fontSize;
 
     #[ORM\Column(type: "string", length: 7)]
-    private $font_color;
+    private $fontColor;
 
     #[ORM\Column(type: "integer")]
-    private $position_x;
+    private $positionX;
 
     #[ORM\Column(type: "integer")]
-    private $position_y;
+    private $positionY;
 
     public function getId(): ?int
     {
@@ -42,24 +43,12 @@ class ClientStorageDevice
 
     public function getClientStorage(): ?ClientStorage
     {
-        return $this->client_storage;
+        return $this->clientStorage;
     }
 
-    public function setClientStorage(?ClientStorage $client_storage): self
+    public function setClientStorage(?ClientStorage $clientStorage): self
     {
-        $this->client_storage = $client_storage;
-
-        return $this;
-    }
-
-    public function getDeviceId(): ?int
-    {
-        return $this->device_id;
-    }
-
-    public function setDeviceId(int $device_id): self
-    {
-        $this->device_id = $device_id;
+        $this->clientStorage = $clientStorage;
 
         return $this;
     }
@@ -78,48 +67,60 @@ class ClientStorageDevice
 
     public function getFontSize(): ?int
     {
-        return $this->font_size;
+        return $this->fontSize;
     }
 
-    public function setFontSize(int $font_size): self
+    public function setFontSize(int $fontSize): self
     {
-        $this->font_size = $font_size;
+        $this->fontSize = $fontSize;
 
         return $this;
     }
 
     public function getFontColor(): ?string
     {
-        return $this->font_color;
+        return $this->fontColor;
     }
 
-    public function setFontColor(string $font_color): self
+    public function setFontColor(string $fontColor): self
     {
-        $this->font_color = $font_color;
+        $this->fontColor = $fontColor;
 
         return $this;
     }
 
     public function getPositionX(): ?int
     {
-        return $this->position_x;
+        return $this->positionX;
     }
 
-    public function setPositionX(int $position_x): self
+    public function setPositionX(int $positionX): self
     {
-        $this->position_x = $position_x;
+        $this->positionX = $positionX;
 
         return $this;
     }
 
     public function getPositionY(): ?int
     {
-        return $this->position_y;
+        return $this->positionY;
     }
 
-    public function setPositionY(int $position_y): self
+    public function setPositionY(int $positionY): self
     {
-        $this->position_y = $position_y;
+        $this->positionY = $positionY;
+
+        return $this;
+    }
+
+    public function getDevice(): ?Device
+    {
+        return $this->device;
+    }
+
+    public function setDevice(?Device $device): static
+    {
+        $this->device = $device;
 
         return $this;
     }
