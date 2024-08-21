@@ -48,8 +48,8 @@ class DeviceDataRepository extends ServiceEntityRepository
     public function getFirstRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')
-            ->where('dd.id = :id')
-            ->setParameter('id', $deviceId)
+            ->where('dd.device = :device_id')
+            ->setParameter('device_id', $deviceId)
             ->orderBy('dd.deviceDate' , 'ASC')
             ->setMaxResults(1)
             ->getQuery()
@@ -60,8 +60,8 @@ class DeviceDataRepository extends ServiceEntityRepository
     public function getLastRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')
-            ->where('dd.id = :id')
-            ->setParameter('id', $deviceId)
+            ->where('dd.device = :device_id')
+            ->setParameter('device_id', $deviceId)
             ->orderBy('dd.deviceDate' , 'DESC')
             ->setMaxResults(1)
             ->getQuery()

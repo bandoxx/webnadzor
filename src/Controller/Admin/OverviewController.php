@@ -37,19 +37,17 @@ class OverviewController extends AbstractController
                 continue;
             }
 
-            /** @var Device[] $devices */
-            $devices = $client->getDevice()->toArray();
             $clientId = $client->getId();
+            $devices = $deviceRepository->findDevicesByClient($clientId);
 
             $data[$client->getId()] = [
                 'id' => $clientId,
                 'name' => $client->getName(),
                 'address' => $client->getAddress(),
                 'oib' => $client->getOIB(),
-                'numberOfDevices' => 0,
+                'numberOfDevices' => count($devices),
                 'onlineDevices' => 0,
                 'offlineDevices' => 0,
-                'alarmsOn' => 0,
                 'overview' => $client->getOverviewViews(),
                 'pdfLogo' => $client->getPdfLogo(),
                 'mainLogo' => $client->getMainLogo(),
@@ -58,7 +56,6 @@ class OverviewController extends AbstractController
                 'alarms' => []
             ];
 
-            $totalDevices = count($devices);
             $onlineDevices = 0;
 
             foreach ($devices as $device) {
@@ -91,10 +88,8 @@ class OverviewController extends AbstractController
                 }
             }
 
-            $data[$clientId]['numberOfDevices'] = $totalDevices;
             $data[$clientId]['onlineDevices'] = $onlineDevices;
-            $data[$clientId]['offlineDevices'] = $totalDevices - $onlineDevices;
-            $data[$clientId]['alarmsOn'] = count($data[$clientId]['alarms']);
+            $data[$clientId]['offlineDevices'] = $data[$clientId]['numberOfDevices'] - $onlineDevices;
         }
 
         return $this->render('v2/overview/admin.html.twig', [

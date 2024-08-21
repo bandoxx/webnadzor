@@ -33,6 +33,7 @@ class DeviceOfflineCheckerCommand extends Command
         foreach ($devices as $device) {
             $settings = $device->getClient()?->getClientSetting();
             $deviceData = $this->deviceDataRepository->getLastRecord($device->getId());
+
             if ($deviceData === null || $settings === null) {
                 continue;
             }

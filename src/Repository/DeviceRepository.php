@@ -40,7 +40,7 @@ class DeviceRepository extends ServiceEntityRepository
 
     public function findDevicesByClient(int $clientId): array
     {
-        return $this->findBy(['client' => $clientId]);
+        return $this->findBy(['client' => $clientId, 'isDeleted' => false]);
     }
 
     public function doesMoreThenOneXmlNameExists(string $xmlName): int
