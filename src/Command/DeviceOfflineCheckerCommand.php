@@ -26,6 +26,8 @@ class DeviceOfflineCheckerCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $devices = $this->deviceRepository->findActiveDevices();
 
         foreach ($devices as $device) {
@@ -37,6 +39,8 @@ class DeviceOfflineCheckerCommand extends Command
 
             $this->checker->validate($deviceData, $settings);
         }
+
+        $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         return Command::SUCCESS;
     }
