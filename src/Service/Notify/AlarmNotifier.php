@@ -32,7 +32,7 @@ class AlarmNotifier
             ->to(...$emails)
             ->cc('radivoje.pupovac98@gmail.com')
             ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
-            ->html($this->twig->render('mail/active_alarm_notification.html.twig', [
+            ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
                 'device' => $device,
                 'alarms' => $alarms
             ]))
