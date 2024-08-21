@@ -18,7 +18,7 @@ class DeviceOfflineChecker extends BaseAlarmHandler
             return;
         }
 
-        if ($deviceData->getDeviceDate()?->format('U') > 5400) {
+        if (time() - $deviceData->getDeviceDate()?->format('U') > 5400) {
             $this->createAlarm($deviceData, $type);
         } else {
             $this->closeAlarm($deviceData, $type);
