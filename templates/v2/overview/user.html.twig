@@ -243,18 +243,21 @@
                         <div class="form-closeable border border-stroke dark:border-strokedark flex justify-evenly flex-wrap">
                             {% for device in devices_table %}
                                 <div class="measurement-device">
-                                    <p class="text-center font-bold mb-3 text-black dark:text-white">
-                                        {{ device.name }}<br>{{ device.temperatureModel.location }}<br> {{ device.temperatureModel.name }}
-                                    </p>
-                                    <p class="text-center font-bold text-black dark:text-white">
-                                        {{ device.deviceDate|date('d.m.Y. H:i:s') }}
-                                    </p>
-                                    <p class="turned-off-notification">
-                                        {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
-                                            Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
-                                        {% endif %}
-                                    </p>
-                                    <div class="h-48">
+                                    <div class="h-40">
+                                        <p class="text-center font-bold mb-3 text-black dark:text-white">
+                                            {{ device.name }}<br>{{ device.temperatureModel.location }}<br> {{ device.temperatureModel.name }}
+                                        </p>
+                                        <p class="text-center font-bold text-black dark:text-white">
+                                            {{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                        </p>
+                                        <p class="turned-off-notification">
+                                            {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                                Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                    <div class="h-52">
                                         <p class="flex justify-center mb-3">
                                             <img class="h-full" src="{{ asset(device.temperatureModel.image) }}" />
                                         </p>

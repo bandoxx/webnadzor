@@ -3743,6 +3743,14 @@ select:disabled, input:disabled{
   display: none !important;
 }
 
+.h-40 {
+  height: 10rem;
+}
+
+.h-52 {
+  height: 13rem;
+}
+
 .file\:mr-5::-webkit-file-upload-button{
   margin-right: 1.25rem;
 }
@@ -4357,5 +4365,3 @@ select:disabled, input:disabled{
     padding-right: 2.75rem;
   }
 }
-
-
