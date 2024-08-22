@@ -23,10 +23,8 @@ class DeviceUpdater
     {
     }
 
-    public function update(Device $device, array $data): Device
+    public function update(Device $device, array $data): array
     {
-        $oldDevice = clone $device;
-
         ####### DEVICE NAME
         $deviceName = trim($data['device_name']);
         if ($this->length($deviceName, 40)) {
@@ -36,10 +34,13 @@ class DeviceUpdater
         }
 
         $xmlName = trim($data['xml_name']);
-        if (!$this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
-            $device->setXmlName($xmlName);
-        } else {
-            $this->error[] = 'XML exists already.';
+
+        if ($device->getXmlName() !== $xmlName) {
+            if (!$this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
+                $device->setXmlName($xmlName);
+            } else {
+                $this->error[] = 'XML exists already.';
+            }
         }
 
         $location = trim($data['location']);
@@ -61,13 +62,13 @@ class DeviceUpdater
         $device->setApplicationEmailList(array_values(array_filter($data['applicationEmail'] ?? [])));
 
         if ($this->error) {
-            throw new BadRequestException(json_encode($this->error));
+            return $this->error;
         }
 
         //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
 
-        return $device;
+        return [];
     }
 
     private function updateTemperature(Device $device, int $entry, array $data): void
