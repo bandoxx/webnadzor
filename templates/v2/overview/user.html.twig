@@ -254,9 +254,12 @@
                                             Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
                                         {% endif %}
                                     </p>
-                                    <p class="flex justify-center mb-3">
-                                        <img src="{{ asset(device.temperatureModel.image) }}" />
-                                    </p>
+                                    <div class="h-48">
+                                        <p class="flex justify-center mb-3">
+                                            <img class="h-full" src="{{ asset(device.temperatureModel.image) }}" />
+                                        </p>
+                                    </div>
+
                                     <p>
                                     <ul>
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">Trenutna: <span
