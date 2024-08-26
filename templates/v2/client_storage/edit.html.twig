@@ -210,7 +210,7 @@
 
         let textInputTemplate = `<div class='textInput relative' id='textInput{idNum}'>
                                 <div class="h-16 flex flex-col">
-                                    <input name="textDevice{idNum}" type="text" placeholder="Novo tekstualno polje" class="textInputChange w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
+                                    <input name="text[option][]" type="text" placeholder="Novo tekstualno polje" class="textInputChange w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
                                     <div class="flex justify-center">
                                         <div class="dragIcon mr-3 text-white relative self-center">
                                             <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
@@ -227,18 +227,18 @@
                                         </div>
                                 </div>
                                 <input type="text" class="colorPicker">
-                                <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="deviceColor{idNum}"/>
-                                <input type="hidden" class="deviceCoors" value="0,0" name="deviceCoors{idNum}"/>
+                                <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="text[color][]"/>
+                                <input type="hidden" class="deviceCoors" value="0,0" name="text[position][]"/>
                             </div>`;
 
         //options can be sent from backend and options elements can be generated here for template
         let dropDownInputTemplate = `<div class='dropDownInput relative' id='ddInput{idNum}'>
                                     <div class="h-16 flex flex-col">
                                         <div class="userSelectedLocation relative z-20">
-                                            <select name="device{idNum}" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input {transparent}">
-                                                <option class="text-body" value="">Option 1</option>
-                                                <option class="text-body" value="">Option 2</option>
-                                                <option class="text-body" value="">Option 3</option>
+                                            <select name="device[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input {transparent}">
+                                                {% for option in dropdown %}
+                                                <option class="text-body" value="{{ option.value }}">{{ option.text }}</option>
+                                                {% endfor %}
                                             </select>
                                             <span class="absolute right-10 top-1/2 z-20 -translate-y-1/2" style="right: 60px;">
                                                 <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -264,8 +264,8 @@
                                         </div>
                                     </div>
                                     <input type="text" class="colorPicker">
-                                    <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="deviceDDColor{idNum}"/>
-                                    <input type="hidden" class="deviceCoors" value="0,0" name="deviceDDCoors{idNum}"/>
+                                    <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="device[color][]"/>
+                                    <input type="hidden" class="deviceCoors" value="0,0" name="device[position][]"/>
                                 </div>`;
 
         function addSpectrumAndDraggable($elem, color, addExtraSpace = false) {
@@ -362,8 +362,9 @@
 
         $transparentToggle.click(toggleTransparency);
 
-        //load directly from back-end here
-        createInput("text", 400, 400, "#ffffff", "CaoCaoCao");
+        {% for input in clientStorage.textInput %}
+            createInput("text", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.text }}");
+        {% endfor %}
 
     </script>
     <!-- ===== Input Boxes Manipulation Scripts End ===== -->

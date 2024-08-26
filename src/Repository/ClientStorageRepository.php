@@ -27,7 +27,7 @@ class ClientStorageRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('c')
             ->select('c.id')
-            ->where('c.client_id = :clientId')
+            ->where('c.client = :clientId')
             ->setParameter('clientId', $clientId);
 
         return $qb->getQuery()->getSingleColumnResult();

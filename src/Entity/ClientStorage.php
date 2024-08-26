@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
 use App\Repository\ClientStorageRepository;
 
 #[ORM\Entity(repositoryClass: ClientStorageRepository::class)]
-#[ORM\Table(name: "client_storage")]
 class ClientStorage
 {
     #[ORM\Id]
@@ -18,6 +19,12 @@ class ClientStorage
     #[ORM\ManyToOne(inversedBy: 'clientStorages')]
     #[ORM\JoinColumn(nullable: false)]
     private Client $client;
+
+    #[ORM\OneToMany(targetEntity: ClientStorageText::class, mappedBy: 'clientStorage')]
+    private Collection $textInput;
+
+    #[ORM\OneToMany(targetEntity: ClientStorageDevice::class, mappedBy: 'clientStorage')]
+    private Collection $deviceInput;
 
     #[ORM\Column(type: "string", length: 255)]
     private $image;
@@ -35,6 +42,8 @@ class ClientStorage
     {
         $this->createdAt = new DateTime();
         $this->updatedAt = new DateTime();
+        $this->textInput = new ArrayCollection();
+        $this->deviceInput = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -98,6 +107,66 @@ class ClientStorage
     public function setClient(Client $client): self
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ClientStorageText>
+     */
+    public function getTextInput(): Collection
+    {
+        return $this->textInput;
+    }
+
+    public function addTextInput(ClientStorageText $textInput): static
+    {
+        if (!$this->textInput->contains($textInput)) {
+            $this->textInput->add($textInput);
+            $textInput->setClientStorage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTextInput(ClientStorageText $textInput): static
+    {
+        if ($this->textInput->removeElement($textInput)) {
+            // set the owning side to null (unless already changed)
+            if ($textInput->getClientStorage() === $this) {
+                $textInput->setClientStorage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ClientStorageDevice>
+     */
+    public function getDeviceInput(): Collection
+    {
+        return $this->deviceInput;
+    }
+
+    public function addDeviceInput(ClientStorageDevice $deviceInput): static
+    {
+        if (!$this->deviceInput->contains($deviceInput)) {
+            $this->deviceInput->add($deviceInput);
+            $deviceInput->setClientStorage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeviceInput(ClientStorageDevice $deviceInput): static
+    {
+        if ($this->deviceInput->removeElement($deviceInput)) {
+            // set the owning side to null (unless already changed)
+            if ($deviceInput->getClientStorage() === $this) {
+                $deviceInput->setClientStorage(null);
+            }
+        }
 
         return $this;
     }

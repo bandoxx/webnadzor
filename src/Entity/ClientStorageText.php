@@ -13,9 +13,9 @@ class ClientStorageText
     #[ORM\Column(type: "integer")]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "texts")]
+    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "textInput")]
     #[ORM\JoinColumn(nullable: false)]
-    private $clientStorage;
+    private ClientStorage $clientStorage;
 
     #[ORM\Column(type: "integer")]
     private $fontSize;
@@ -73,7 +73,7 @@ class ClientStorageText
         return $this;
     }
 
-    public function getPlaceholderText(): ?string
+    public function getText(): ?string
     {
         return $this->text;
     }

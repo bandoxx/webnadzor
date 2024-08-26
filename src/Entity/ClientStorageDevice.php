@@ -13,13 +13,13 @@ class ClientStorageDevice
     #[ORM\Column(type: "integer")]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "devices")]
+    #[ORM\ManyToOne(targetEntity: ClientStorage::class, inversedBy: "deviceInput")]
     #[ORM\JoinColumn(nullable: false)]
-    private $clientStorage;
+    private ClientStorage $clientStorage;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Device::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Device $device = null;
+    private Device $device;
 
     #[ORM\Column(type: "integer")]
     private $entry;
@@ -35,6 +35,9 @@ class ClientStorageDevice
 
     #[ORM\Column(type: "integer")]
     private $positionY;
+
+    #[ORM\Column(type: "string")]
+    private $type;
 
     public function getId(): ?int
     {
@@ -113,14 +116,26 @@ class ClientStorageDevice
         return $this;
     }
 
-    public function getDevice(): ?Device
+    public function getDevice(): Device
     {
         return $this->device;
     }
 
-    public function setDevice(?Device $device): static
+    public function setDevice(Device $device): self
     {
         $this->device = $device;
+
+        return $this;
+    }
+
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }
