@@ -16,7 +16,8 @@ class IconUploader
     public function __construct(
         private readonly SluggerInterface      $slugger,
         private readonly ParameterBagInterface $parameterBag,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly string $iconFullDirectory
     ) {}
 
     public function uploadAndSave(UploadedFile $uploadedFile, string $title): void
@@ -29,7 +30,7 @@ class IconUploader
         // Move the file to the directory where brochures are stored
         try {
             $uploadedFile->move(
-                $this->parameterBag->get('icon_directory_full_path'),
+                $this->iconFullDirectory,
                 $newFilename
             );
         } catch (FileException $e) {

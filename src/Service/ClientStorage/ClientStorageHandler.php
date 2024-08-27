@@ -4,23 +4,34 @@ namespace App\Service\ClientStorage;
 
 use App\Entity\Client;
 use App\Entity\ClientStorage;
+use App\Service\Image\ClientStorageUploader;
+use Symfony\Component\HttpFoundation\Request;
 
 class ClientStorageHandler
 {
 
     public function __construct(
         private ClientStorageUpdater $clientStorageUpdater,
+        private ClientStorageUploader $clientStorageUploader
     ) {}
 
 
-    public function update(ClientStorage $clientStorage, array $inputs)
+    public function update(ClientStorage $clientStorage, Request $request)
     {
+        $inputs = $request->request->all();
+
         if (isset($inputs['text']['option'])) {
             $this->clientStorageUpdater->updateTextInputs($clientStorage, $inputs['text']);
         }
 
         if (isset($inputs['text']['device'])) {
             $this->clientStorageUpdater->updateDeviceInputs($clientStorage, $inputs['device']);
+        }
+
+        $image = $request->files->get('clientStorageImage');
+
+        if ($image) {
+            $this->clientStorageUploader->uploadAndSave($image, $clientStorage);
         }
     }
 

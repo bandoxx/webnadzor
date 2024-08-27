@@ -1,33 +1,23 @@
 <?php
 
 namespace App\Controller\Image;
-use App\Repository\ClientStorageDeviceRepository;
-use App\Repository\ClientStorageRepository;
-use App\Repository\ClientStorageTextRepository;
+use App\Entity\ClientStorage;
 use App\Service\Image\ImageGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
-#[Route('/image/{clientStorageId}.png', name: 'app_device_image_getimage')]
 
+#[Route('/image/{id}.png', name: 'app_device_image_getimage')]
 class CustomerDeviceController extends AbstractController
 {
     public function __invoke(
-        $clientStorageId,
-        ClientStorageTextRepository $clientStorageTextRepository,
-        ClientStorageRepository $clientStorageRepository,
-        ClientStorageDeviceRepository $clientStorageDeviceRepository,
-        ImageGenerator $imageGenerator): StreamedResponse
+        ClientStorage $clientStorage,
+        ImageGenerator $imageGenerator
+    ): StreamedResponse
     {
-        $clientStorageData = $clientStorageRepository->find($clientStorageId);
-        $clientStorageTextRData = $clientStorageTextRepository->getByClientId($clientStorageId);
-        $clientStorageDeviceData = $clientStorageDeviceRepository->getByClientId($clientStorageId);
-        $mergedClientStorageDevices = array_merge($clientStorageTextRData,$clientStorageDeviceData);
-
-
         $response = new StreamedResponse(
-            function () use ($imageGenerator,$clientStorageData,$mergedClientStorageDevices) {
-                $imageGenerator->generateDeviceStorage($clientStorageData,$mergedClientStorageDevices);
+            function () use ($imageGenerator, $clientStorage) {
+                $imageGenerator->generateDeviceStorage($clientStorage);
             }
         );
 

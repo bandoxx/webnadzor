@@ -115,7 +115,7 @@
                     </div>
                     <!-- Breadcrumb End -->
                     <div class="overlay-image flex flex-col gap-5 md:gap-7 2xl:gap-10">
-                        <form method="post" id="imageForm">
+                        <form method="post" id="imageForm" enctype="multipart/form-data">
                         <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
                             <h3 class="title-dt flex justify-between font-bold text-black dark:text-white mb-2 items-center">
                                 {client_storage_name}
@@ -137,9 +137,9 @@
                                 <div class="storage-imgContainer relative">
 
                                     <div class="storage-img">
-                                        <img src="https://cdn11.bigcommerce.com/s-bcwxdbhdjm/images/stencil/original/image-manager/warehousebirdseye.jpg?t=1666884012"
+                                        <img src="{{ asset('/assets/images/client-storage/' ~ clientStorage.image) }}"
                                              id="clientStorageImg"
-                                             width="1000" height="600" alt="">
+                                        >
                                     </div>
                                 </div>
                                 <div class="storage-buttons flex flex-col self-center">

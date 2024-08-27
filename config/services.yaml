@@ -12,6 +12,8 @@ parameters:
     map_marker_directory_full_path: '%kernel.project_dir%/public/%map_marker_directory%'
     logo_directory: 'assets/images/logo'
     logo_directory_full_path: '%kernel.project_dir%/public/%logo_directory%'
+    client_storage_directory: 'assets/images/client-storage'
+    client_storage_directory_full_path: '%kernel.project_dir%/public/%client_storage_directory%'
     xml_directory: '%kernel.project_dir%/data'
     archive_directory: '%kernel.project_dir%/archive'
     database_username: '%env(DATABASE_NAME)%'
@@ -28,6 +30,9 @@ services:
             $xmlDirectory: '%xml_directory%'
             $archiveDirectory: '%archive_directory%'
             $iconDirectory: '%icon_directory%'
+            $clientStorageDirectory: '%client_storage_directory_full_path%'
+            $iconFullDirectory: '%icon_directory_full_path%'
+
     _instanceof:
         App\Service\Alarm\AlarmHandlerInterface:
             tags: [ 'app.alarm.validator' ]

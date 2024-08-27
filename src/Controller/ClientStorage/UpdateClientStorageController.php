@@ -33,7 +33,7 @@ class UpdateClientStorageController extends AbstractController
             ]);
         }
 
-        $clientStorageHandler->update($clientStorage, $request->request->all());
+        $clientStorageHandler->update($clientStorage, $request);
 
         return $this->render('v2/client_storage/edit.html.twig', [
             'clientStorage' => $clientStorage,

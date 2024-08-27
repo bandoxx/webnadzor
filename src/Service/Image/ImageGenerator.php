@@ -2,6 +2,7 @@
 
 namespace App\Service\Image;
 
+use App\Entity\ClientStorage;
 use App\Repository\DeviceDataRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -13,55 +14,66 @@ class ImageGenerator
 
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
-        private readonly KernelInterface $kernel
+        private readonly KernelInterface $kernel,
+        private readonly string $clientStorageDirectory
     ) {
         $this->publicDir = $this->kernel->getProjectDir() . '/public';
 
     }
 
-    public function generateDeviceStorage($clientStorageData,array $storage) {
-
-        $this->getDeviceImage($clientStorageData,$storage);
-
-    }
-
-    public function getDeviceImage($clientStorageData,$storages): void
+    public function generateDeviceStorage(ClientStorage $clientStorage): void
     {
-        $im = @ImageCreateFromPNG($this->publicDir .$clientStorageData->getBaseImage());
-        $languageFile = $this->publicDir.'/uploads/fonts/OpenSans-Regular.ttf';
+        $im = @ImageCreateFromPNG(sprintf("%s/%s", $this->clientStorageDirectory, $clientStorage->getImage()));
+        $languageFile = $this->publicDir.'/uploads/fonts/Satoshi-Regular.ttf';
         imagealphablending($im, false);
         imagesavealpha($im, true);
 
-        foreach ($storages as $storage){
+        foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
+            $text = $textInput->getText();
+            $color = str_split(ltrim($textInput->getFontColor(), '#'), 2);
 
-            $temperature = null;
-            if (array_key_exists('d_device_id',$storage)){
-                $data = $this->getDeviceData($storage['d_device_id'], $storage['d_entry']);
+            [$red, $green, $blue] = [hexdec($color[0]), hexdec($color[1]), hexdec($color[2])];
 
-                $temperature = $data?->getT($storage['d_entry']);
-            }
-
-            $cleanedString = str_replace(['rgb(', ')'], '', $storage['d_font_color']);
-
-            // Split the string by commas
-            list($red, $green, $blue) = explode(',', $cleanedString);
-
-            // Trim any whitespace from the values
-            $red = trim($red);
-            $green = trim($green);
-            $blue = trim($blue);
+            ImageColorAllocate($im, $red, $green, $blue);
 
             $color = ImageColorAllocate($im, $red, $green, $blue);
 
-            $rx = $storage['d_position_x'];
-            $ry = $storage['d_position_y'];
+            $positionX = $textInput->getPositionX();
+            $positionY = $textInput->getPositionY();
 
-            if (!is_null($temperature)){
-                imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$temperature);
-            }else{
-                imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$storage['d_placeholder_text']);
-            }
+            imagettftext($im, 12,0, $positionX + 21, $positionY + 28, $color, $languageFile, $text);
         }
+
+        //foreach ($storages as $storage){
+        //
+        //    $temperature = null;
+        //    if (array_key_exists('d_device_id',$storage)){
+        //        $data = $this->getDeviceData($storage['d_device_id'], $storage['d_entry']);
+        //
+        //        $temperature = $data?->getT($storage['d_entry']);
+        //    }
+        //
+        //    $cleanedString = str_replace(['rgb(', ')'], '', $storage['d_font_color']);
+        //
+        //    // Split the string by commas
+        //    list($red, $green, $blue) = explode(',', $cleanedString);
+        //
+        //    // Trim any whitespace from the values
+        //    $red = trim($red);
+        //    $green = trim($green);
+        //    $blue = trim($blue);
+        //
+        //    $color = ImageColorAllocate($im, $red, $green, $blue);
+        //
+        //    $rx = $storage['d_position_x'];
+        //    $ry = $storage['d_position_y'];
+        //
+        //    if (!is_null($temperature)){
+        //        imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$temperature);
+        //    }else{
+        //        imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$storage['d_placeholder_text']);
+        //    }
+        //}
 
         ImagePNG($im);
         ImageDestroy($im);
