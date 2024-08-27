@@ -2,7 +2,7 @@
 
 namespace App\Controller\Image;
 use App\Entity\ClientStorage;
-use App\Service\Image\ImageGenerator;
+use App\Service\Image\ClientStorageImageGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,7 +12,7 @@ class CustomerDeviceController extends AbstractController
 {
     public function __invoke(
         ClientStorage $clientStorage,
-        ImageGenerator $imageGenerator
+        ClientStorageImageGenerator $imageGenerator
     ): StreamedResponse
     {
         $response = new StreamedResponse(

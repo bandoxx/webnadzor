@@ -21,64 +21,6 @@ class ImageGenerator
 
     }
 
-    public function generateDeviceStorage(ClientStorage $clientStorage): void
-    {
-        $im = @ImageCreateFromPNG(sprintf("%s/%s", $this->clientStorageDirectory, $clientStorage->getImage()));
-        $languageFile = $this->publicDir.'/uploads/fonts/Satoshi-Regular.ttf';
-        imagealphablending($im, false);
-        imagesavealpha($im, true);
-
-        foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
-            $text = $textInput->getText();
-            $color = str_split(ltrim($textInput->getFontColor(), '#'), 2);
-
-            [$red, $green, $blue] = [hexdec($color[0]), hexdec($color[1]), hexdec($color[2])];
-
-            ImageColorAllocate($im, $red, $green, $blue);
-
-            $color = ImageColorAllocate($im, $red, $green, $blue);
-
-            $positionX = $textInput->getPositionX();
-            $positionY = $textInput->getPositionY();
-
-            imagettftext($im, 12,0, $positionX + 21, $positionY + 28, $color, $languageFile, $text);
-        }
-
-        //foreach ($storages as $storage){
-        //
-        //    $temperature = null;
-        //    if (array_key_exists('d_device_id',$storage)){
-        //        $data = $this->getDeviceData($storage['d_device_id'], $storage['d_entry']);
-        //
-        //        $temperature = $data?->getT($storage['d_entry']);
-        //    }
-        //
-        //    $cleanedString = str_replace(['rgb(', ')'], '', $storage['d_font_color']);
-        //
-        //    // Split the string by commas
-        //    list($red, $green, $blue) = explode(',', $cleanedString);
-        //
-        //    // Trim any whitespace from the values
-        //    $red = trim($red);
-        //    $green = trim($green);
-        //    $blue = trim($blue);
-        //
-        //    $color = ImageColorAllocate($im, $red, $green, $blue);
-        //
-        //    $rx = $storage['d_position_x'];
-        //    $ry = $storage['d_position_y'];
-        //
-        //    if (!is_null($temperature)){
-        //        imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$temperature);
-        //    }else{
-        //        imagettftext($im,$storage['d_font_size'],0,$rx,$ry,$color,$languageFile,$storage['d_placeholder_text']);
-        //    }
-        //}
-
-        ImagePNG($im);
-        ImageDestroy($im);
-    }
-
     public function generateThermometer(int $deviceId, int $entry): void
     {
         $data = $this->getDeviceData($deviceId, $entry);

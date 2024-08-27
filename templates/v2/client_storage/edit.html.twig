@@ -366,6 +366,11 @@
             createInput("text", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.text }}");
         {% endfor %}
 
+        {% for input in clientStorage.deviceInput %}
+            createInput("dropdown", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.device.id }}-{{ input.entry }}-{{ input.type }}");
+        {% endfor %}
+
+
     </script>
     <!-- ===== Input Boxes Manipulation Scripts End ===== -->
     </body>

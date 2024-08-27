@@ -24,7 +24,7 @@ class ClientStorageHandler
             $this->clientStorageUpdater->updateTextInputs($clientStorage, $inputs['text']);
         }
 
-        if (isset($inputs['text']['device'])) {
+        if (isset($inputs['device']['option'])) {
             $this->clientStorageUpdater->updateDeviceInputs($clientStorage, $inputs['device']);
         }
 
