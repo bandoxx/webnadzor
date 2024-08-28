@@ -61,7 +61,7 @@
                                 <!-- Menu Item Messages -->
                                 <li class="cursor-pointer">
                                     <a
-                                            href="/"
+                                            href="{{ path('client_overview', { clientId: clientId }) }}"
                                             class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -125,14 +125,14 @@
                                         Ime skladišne jedinice
                                     </label>
                                 <input name="client_storage_name" type="text"
-                                       value="{client_storage_name}"
+                                       value="{{ clientStorage.name ?? '' }}"
                                        placeholder="Ime skladišne jedinice" class="w-70 textInputChange mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
                                 </div>
                                     <div>
                                     <label
                                             class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
                                     >
-                                        Slika pozadine
+                                        Slika pozadine (.png format, maksimalna veličina 1600x600)
                                     </label>
                                     <input
                                             id="fileImage"

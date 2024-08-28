@@ -5,6 +5,7 @@ namespace App\Service\ClientStorage;
 use App\Entity\Client;
 use App\Entity\ClientStorage;
 use App\Service\Image\ClientStorageUploader;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class ClientStorageHandler
@@ -12,13 +13,26 @@ class ClientStorageHandler
 
     public function __construct(
         private ClientStorageUpdater $clientStorageUpdater,
-        private ClientStorageUploader $clientStorageUploader
+        private ClientStorageUploader $clientStorageUploader,
+        private EntityManagerInterface $entityManager
     ) {}
 
 
     public function update(ClientStorage $clientStorage, Request $request)
     {
         $inputs = $request->request->all();
+
+        $image = $request->files->get('clientStorageImage');
+
+        if ($image) {
+            $this->clientStorageUploader->uploadAndSave($image, $clientStorage);
+        }
+
+        if ($clientStorage->getId() === null) {
+            $clientStorage->setName($inputs['client_storage_name'] ?? '');
+            $this->entityManager->persist($clientStorage);
+            $this->entityManager->flush();
+        }
 
         if (isset($inputs['text']['option'])) {
             $this->clientStorageUpdater->updateTextInputs($clientStorage, $inputs['text']);
@@ -28,11 +42,7 @@ class ClientStorageHandler
             $this->clientStorageUpdater->updateDeviceInputs($clientStorage, $inputs['device']);
         }
 
-        $image = $request->files->get('clientStorageImage');
 
-        if ($image) {
-            $this->clientStorageUploader->uploadAndSave($image, $clientStorage);
-        }
     }
 
     public function getDropDown(Client $client): array
