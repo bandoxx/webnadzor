@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\ClientFtpRepository;
 use App\Repository\ClientRepository;
 use App\Repository\ClientSettingRepository;
+use App\Repository\ClientStorageRepository;
 use App\Service\DeviceLocationHandler;
 use App\Service\PermissionChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,7 +21,8 @@ class OverviewController extends AbstractController
         ClientRepository $clientRepository,
         DeviceLocationHandler $deviceLocationHandler,
         ClientSettingRepository $clientSettingRepository,
-        ClientFtpRepository $clientFtpRepository
+        ClientFtpRepository $clientFtpRepository,
+        ClientStorageRepository $clientStorageRepository
     ): Response
     {
         /** @var User $user */

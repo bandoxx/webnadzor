@@ -1,0 +1,403 @@
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.js" integrity="sha512-1aNp9qKP+hKU/VJwCtYqJP9tdZWbMDN5pEEXXoXT0pTAxZq1HHZhNBR/dtTNSrHO4U1FsFGGILbqG1O9nl8Mdg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/spectrum/1.8.1/spectrum.min.css" integrity="sha512-KuSX+43gVS5MEIJD2ewtrFPOHqC1PJnL8o2f5ciggPC0JUZ8XV0QXlfArO1mSzKkVFdRjsBDfrTU96C5SuRfqQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        {% block title %}Uredi sliku{% endblock %}
+    </title>
+{% endblock %}
+{% block body %}
+    <body
+            x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+            x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+            :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+    >
+    <!-- ===== Preloader Start ===== -->
+    {% block preloader %}
+        {{ parent() }}
+    {% endblock %}
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside
+                :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+                class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+                @click.outside="sidebarToggle = false"
+        >
+            <!-- SIDEBAR HEADER -->
+            {% block sidebar_header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- SIDEBAR HEADER -->
+
+            <div
+                    class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+            >
+                <!-- Sidebar Menu -->
+                <nav
+                        class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+                        x-data="{selected: $persist('Dashboard')}"
+                >
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                        <!-- Support Group -->
+                        <div>
+                            <ul class="mb-6 flex flex-col gap-1.5">
+                                <!-- Menu Item Messages -->
+                                <li class="cursor-pointer">
+                                    <a
+                                            href="{{ path('client_overview', { clientId: clientId }) }}"
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/>
+                                        </svg>
+                                        Povratak
+                                    </a>
+                                </li>
+                                <!-- Menu Item Messages -->
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+
+        <!-- ===== Sidebar End ===== -->
+
+        <!-- ===== Content Area Start ===== -->
+        <div
+                class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+        >
+            <!-- ===== Header Start ===== -->
+            {% block header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- ===== Header End ===== -->
+
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    <!-- Breadcrumb Start -->
+                    <div
+                            class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                            Uredi sliku
+                        </h2>
+
+                        <nav>
+                            <ol class="flex items-center gap-2">
+                                <li>
+                                    <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                                </li>
+                                <li>
+                                    <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
+                                </li>
+                                <li class="font-medium text-primary">Uredi sliku</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- Breadcrumb End -->
+                    <div class="overlay-image flex flex-col gap-5 md:gap-7 2xl:gap-10">
+                        <form method="post" id="imageForm" enctype="multipart/form-data">
+                        <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
+                            <h3 class="title-dt flex justify-between font-bold text-black dark:text-white mb-2 items-center">
+                                <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ime skladišne jedinice
+                                    </label>
+                                <input name="client_storage_name" type="text"
+                                       value="{{ clientStorage.name ?? '' }}"
+                                       placeholder="Ime skladišne jedinice" class="w-70 textInputChange mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
+                                </div>
+                                    <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Slika pozadine (.png format, maksimalna veličina 1600x600)
+                                    </label>
+                                    <input
+                                            id="fileImage"
+                                            type="file"
+                                            name="clientStorageImage"
+                                            class="w-full mb-2 cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-normal outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:px-5 file:py-2 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                            </h3>
+                            <div class="flex">
+                                <div class="storage-imgContainer relative">
+
+                                    <div class="storage-img">
+                                        <img src="{{ asset('/assets/images/client-storage/' ~ clientStorage.image) }}"
+                                             id="clientStorageImg"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="storage-buttons flex flex-col self-center">
+                                    <div class="add-textInput mb-10 cursor-pointer relative text-white mx-auto"
+                                         title="Dodaj tekstualno polje">
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor"
+                                             class="size-6 relative top-1 left-1 z-10">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="add-dropdown mb-10 cursor-pointer relative text-white mx-auto"
+                                         title="Dodaj polje sa padajućom listom">
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor"
+                                             class="size-6 relative top-1 left-1 z-10">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="transparent-switch mb-10 cursor-pointer relative text-white mx-auto"
+                                         title="Prikazi tekst bez pozadine">
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                        </svg>
+                                    </div>
+                                    <div class="save-changes cursor-pointer relative text-white mx-auto"
+                                         title="Sačuvaj izmene">
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    <!-- ===== Input Boxes Manipulation Scripts ===== -->
+    <script>
+        let isTransparencyToggled = false;
+        let deviceNum = 0;
+        let deviceDDNum = 0;
+        const $addTextInput = $(".add-textInput");
+        const $addDDInput = $(".add-dropdown");
+        const $transparentToggle = $(".transparent-switch");
+        const $saveChanges = $(".save-changes");
+        const $form = $("#imageForm");
+        const $imgContainer = $(".storage-img");
+        const $fileInput = $("#fileImage");
+        const $mainImgContainer = $(".overlay-image");
+        const $sidebar = $("aside");
+
+        let textInputTemplate = `<div class='textInput relative' id='textInput{idNum}'>
+                                <div class="h-16 flex flex-col">
+                                    <input name="text[option][]" type="text" placeholder="Novo tekstualno polje" class="textInputChange w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
+                                    <div class="flex justify-center">
+                                        <div class="dragIcon mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="dragIcon deleteBtn cursor-pointer ml-4 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </div>
+                                        </div>
+                                </div>
+                                <input type="text" class="colorPicker">
+                                <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="text[color][]"/>
+                                <input type="hidden" class="deviceCoors" value="0,0" name="text[position][]"/>
+                            </div>`;
+
+        //options can be sent from backend and options elements can be generated here for template
+        let dropDownInputTemplate = `<div class='dropDownInput relative' id='ddInput{idNum}'>
+                                    <div class="h-16 flex flex-col">
+                                        <div class="userSelectedLocation relative z-20">
+                                            <select name="device[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input {transparent}">
+                                                {% for option in dropdown %}
+                                                <option class="text-body" value="{{ option.value }}">{{ option.text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="absolute right-10 top-1/2 z-20 -translate-y-1/2" style="right: 60px;">
+                                                <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                    <g opacity="0.8">
+                                                        <path clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381" fill-rule="evenodd"></path>
+                                                    </g>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="flex justify-center">
+                                        <div class="dragIcon mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="dragIcon deleteBtn cursor-pointer ml-4 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" class="colorPicker">
+                                    <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="device[color][]"/>
+                                    <input type="hidden" class="deviceCoors" value="0,0" name="device[position][]"/>
+                                </div>`;
+
+        function addSpectrumAndDraggable($elem, color, addExtraSpace = false) {
+            let $colorPicker = $elem.find('.colorPicker');
+            $colorPicker.spectrum({
+                color: color,
+                change: function(color) {
+                    $(this).parent().find('.colorPickerHiddenVal').val(color.toHexString());
+                    $(this).parent().find('.textInputChange').css('color', color.toHexString());
+                }
+            });
+
+            $elem.find('.sp-replacer').css({
+                "position": "absolute",
+                "top": addExtraSpace ? "2px" : "5px",
+                "right": "5px",
+                "z-index": "999"
+            });
+
+            $elem.draggable({
+                containment: "parent",
+                drag: function(event, ui) {
+                    $(this).find('.deviceCoors').val(ui.position.left + "," + ui.position.top);
+                }
+            });
+        }
+
+        function createInput(type, x, y, color, text) {
+            let template = type === 'text' ? textInputTemplate : dropDownInputTemplate;
+            let idNum = type === 'text' ? deviceNum : deviceDDNum;
+
+            let $elem = $(template.replace(/{idNum}/g, idNum));
+            $elem.css({ "left": x, "top": y});
+            $elem.find('.textInputChange').val(text);
+            $elem.find('.textInputChange').css("color", color);
+            $elem.find('.colorPickerHiddenVal').val(color);
+            $elem.find('.deviceCoors').val(x + ',' + y);
+
+            $imgContainer.append($elem);
+            addSpectrumAndDraggable($elem, color, type !== 'text');
+
+            if (type === 'text') {
+                deviceNum++;
+            } else {
+                deviceDDNum++;
+            }
+        }
+
+        function toggleTransparency() {
+            isTransparencyToggled = !isTransparencyToggled;
+            const toggleClass = isTransparencyToggled ? 'transparent' : '{transparent}';
+            $(".textInput input, .dropDownInput select").toggleClass("transparent");
+            textInputTemplate = textInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
+            dropDownInputTemplate = dropDownInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
+        }
+
+        $addTextInput.click(function () {
+            createInput("text", 0, 0, "#000000", "");
+        });
+
+        $addDDInput.click(function () {
+            createInput("dropdown", 0, 0, "#000000", "");
+        });
+
+        $saveChanges.click(function (){
+            $form.submit();
+        });
+
+        $(document).on("click", ".deleteBtn", function (){
+            $(this).parent().parent().parent().remove();
+        });
+
+        $fileInput.change(function () {
+            const file = this.files[0];
+            const allowedFormats = ['image/png'];
+            if (!allowedFormats.includes(file.type)) {
+                alert("Invalid file format. Please select a PNG image.");
+                this.value = ''; // clear input
+                return;
+            }
+            const img = new Image();
+            const imgElement = $('#clientStorageImg')[0];
+
+            img.src = (window.URL ? URL : webkitURL).createObjectURL(file);
+
+            img.onload = function () {
+                const maxWidth = 1258;
+                const maxHeight = 600;
+                let width = img.width;
+                let height = img.height;
+
+                //calculate the aspect ratio
+                const aspectRatio = width / height;
+                if (width > maxWidth || height > maxHeight) {
+                    if (width / maxWidth > height / maxHeight) {
+                        width = maxWidth;
+                        height = Math.round(width / aspectRatio);
+                    } else {
+                        height = maxHeight;
+                        width = Math.round(height * aspectRatio);
+                    }
+                }
+                imgElement.src = img.src;
+                imgElement.width = width;
+                imgElement.height = height;
+            };
+        });
+
+        $transparentToggle.click(toggleTransparency);
+
+        {% for input in clientStorage.textInput %}
+            createInput("text", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.text }}");
+        {% endfor %}
+
+        {% for input in clientStorage.deviceInput %}
+            createInput("dropdown", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.device.id }}-{{ input.entry }}-{{ input.type }}");
+        {% endfor %}
+
+
+    </script>
+    <!-- ===== Input Boxes Manipulation Scripts End ===== -->
+    </body>
+{% endblock %}

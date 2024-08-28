@@ -306,6 +306,16 @@ class Device
         return $this;
     }
 
+    public function isTUsed($entry): bool
+    {
+        return (bool) $this->getEntryData($entry)['t_use'];
+    }
+
+    public function isRhUsed($entry): bool
+    {
+        return (bool) $this->getEntryData($entry)['rh_use'];
+    }
+
     public function getEntryData($entry)
     {
         $getter = "getEntry$entry";

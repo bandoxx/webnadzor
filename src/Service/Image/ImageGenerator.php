@@ -2,6 +2,7 @@
 
 namespace App\Service\Image;
 
+use App\Entity\ClientStorage;
 use App\Repository\DeviceDataRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -13,10 +14,11 @@ class ImageGenerator
 
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
-        private readonly KernelInterface      $kernel
-    )
-    {
+        private readonly KernelInterface $kernel,
+        private readonly string $clientStorageDirectory
+    ) {
         $this->publicDir = $this->kernel->getProjectDir() . '/public';
+
     }
 
     public function generateThermometer(int $deviceId, int $entry): void

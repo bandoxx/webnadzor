@@ -15,6 +15,8 @@ class Client
     public const OVERVIEW_THERMOMETER = 2;
     public const OVERVIEW_ICONS = 3;
 
+    public const OVERVIEW_SCADA = 4;
+
     public const DEVICE_OVERVIEW_ICON = 1;
     public const DEVICE_OVERVIEW_DYNAMIC = 2;
 
@@ -84,6 +86,12 @@ class Client
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'clients')]
     private Collection $users;
 
+    /**
+     * @var Collection<int, ClientStorage>
+     */
+    #[ORM\OneToMany(targetEntity: ClientStorage::class, mappedBy: 'client')]
+    private Collection $clientStorages;
+
     public function __construct()
     {
         $this->device = new ArrayCollection();
@@ -92,6 +100,7 @@ class Client
         $this->loginLogArchives = new ArrayCollection();
         $this->loginLogs = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->clientStorages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -429,5 +438,35 @@ class Client
     public function getUsers(): Collection
     {
         return $this->users;
+    }
+
+    /**
+     * @return Collection<int, ClientStorage>
+     */
+    public function getClientStorages(): Collection
+    {
+        return $this->clientStorages;
+    }
+
+    public function addClientStorage(ClientStorage $clientStorage): static
+    {
+        if (!$this->clientStorages->contains($clientStorage)) {
+            $this->clientStorages->add($clientStorage);
+            $clientStorage->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientStorage(ClientStorage $clientStorage): static
+    {
+        if ($this->clientStorages->removeElement($clientStorage)) {
+            // set the owning side to null (unless already changed)
+            if ($clientStorage->getClient() === $this) {
+                $clientStorage->setClient(null);
+            }
+        }
+
+        return $this;
     }
 }

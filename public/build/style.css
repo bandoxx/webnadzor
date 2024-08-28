@@ -3743,6 +3743,100 @@ select:disabled, input:disabled{
   display: none !important;
 }
 
+/*client storage css*/
+.storage-imgContainer {
+  height: 600px;
+  width: 90%;
+  overflow: auto;
+}
+
+.storage-img{
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+}
+.storage-img img {
+  max-width: 1258px;
+  max-height: 600px;
+}
+
+.storage-buttons {
+  width: 10%;
+}
+
+.textInput, .dropDownInput{
+  width: 250px;
+  cursor: -webkit-grab!important;
+  cursor: grab!important;
+  position: absolute!important;
+  top: 0px;
+  left: 0px;
+}
+
+.textInput .transparent, .dropDownInput .transparent {
+background: transparent!important;
+}
+
+.textInput div, .textInput label, .dropDownInput div, .dropDownInput label {
+  cursor: -webkit-grab !important;
+  cursor: grab !important;
+}
+
+.add-textInput, .add-dropdown, .transparent-switch, .save-changes{
+  width: 32px;
+}
+
+.editClientStorage{
+  width: 32px;
+  height: 32px;
+  right: 50px;
+  top: -16px;
+}
+
+.editClientStorage svg{
+  top: 3px;
+  left: 5px;
+}
+
+#createNewClientStorage{
+  width: 32px;
+  height: 32px;
+  top: 10px;
+}
+
+#createNewClientStorage svg{
+  top: -0.75rem;
+}
+
+.animate-pulse {
+  -webkit-animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+          animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite
+}
+
+.textInput .textInputChange{
+  padding-right: 60px;
+}
+
+.dropDownInput .textInputChange{
+  width: 250px;
+}
+
+@-webkit-keyframes ping {
+   75%, 100% {
+     -webkit-transform: scale(1.4);
+             transform: scale(1.4);
+     opacity: 0;
+   }
+ }
+
+@keyframes ping {
+   75%, 100% {
+     -webkit-transform: scale(1.4);
+             transform: scale(1.4);
+     opacity: 0;
+   }
+ }
+
 .h-40 {
   height: 10rem;
 }

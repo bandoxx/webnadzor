@@ -25,6 +25,7 @@
 deploy.php
 /public/assets/images/logo/
 /public/assets/images/map-icon/
+/public/assets/images/client-storage/
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
