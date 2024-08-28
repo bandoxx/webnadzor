@@ -32,13 +32,11 @@ class OverviewController extends AbstractController
         if (!$client || PermissionChecker::isValid($user, $client) === false) {
             throw $this->createAccessDeniedException();
         }
-        $clientStorageIds = $clientStorageRepository->findIdsByClientId($clientId);
 
         return $this->render('v2/overview/user.html.twig', [
             'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($user, $client),
             'settings' => $clientSettingRepository->findOneBy(['client' => $clientId]),
-            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId]),
-            'client_storage_ids' => $clientStorageIds
+            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId])
         ]);
     }
 
