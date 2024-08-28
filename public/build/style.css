@@ -3813,6 +3813,28 @@ select:disabled, input:disabled{
   width: 32px;
 }
 
+.editClientStorage{
+  width: 32px;
+  height: 32px;
+  right: 50px;
+  top: -16px;
+}
+
+.editClientStorage svg{
+  top: 3px;
+  left: 5px;
+}
+
+#createNewClientStorage{
+  width: 32px;
+  height: 32px;
+  top: 10px;
+}
+
+#createNewClientStorage svg{
+  top: -0.75rem;
+}
+
 .animate-pulse {
   -webkit-animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
   animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite
