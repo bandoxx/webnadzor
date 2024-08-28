@@ -109,6 +109,9 @@
                                 <li>
                                     <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
                                 </li>
+                                <li>
+                                    <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
+                                </li>
                                 <li class="font-medium text-primary">Uredi sliku</li>
                             </ol>
                         </nav>
