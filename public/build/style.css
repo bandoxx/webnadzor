@@ -3783,7 +3783,8 @@ select:disabled, input:disabled{
   width: fit-content;
 }
 .storage-img img {
-  max-width: unset;
+  max-width: 1258px;
+  max-height: 600px;
 }
 
 .storage-buttons {

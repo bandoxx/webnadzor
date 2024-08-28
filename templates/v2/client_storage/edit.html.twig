@@ -318,8 +318,8 @@
             isTransparencyToggled = !isTransparencyToggled;
             const toggleClass = isTransparencyToggled ? 'transparent' : '{transparent}';
             $(".textInput input, .dropDownInput select").toggleClass("transparent");
-            textInputTemplate = textInputTemplate.replace(/{transparent}/g, toggleClass);
-            dropDownInputTemplate = dropDownInputTemplate.replace(/{transparent}/g, toggleClass);
+            textInputTemplate = textInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
+            dropDownInputTemplate = dropDownInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
         }
 
         $addTextInput.click(function () {
@@ -355,8 +355,9 @@
             //when the image is loaded adjust the size of the #clientStorageImg element
             img.onload = function() {
                 imgElement.src = img.src;
-                imgElement.width = img.width;
-                imgElement.height = img.height;
+                console.log(img.width, img.height);
+                imgElement.width = img.width >= 1258 ? 1258 : img.width
+                imgElement.height = img.height >= 600 ? 600 : img.height;
             };
         });
 
