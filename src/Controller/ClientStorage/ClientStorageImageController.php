@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controller\Image;
+namespace App\Controller\ClientStorage;
 use App\Entity\ClientStorage;
 use App\Service\Image\ClientStorageImageGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/image/{id}.png', name: 'app_device_image_getimage')]
-class CustomerDeviceController extends AbstractController
+#[Route('/image/client-storage/{id}.png', name: 'app_client_storage_image')]
+class ClientStorageImageController extends AbstractController
 {
     public function __invoke(
         ClientStorage $clientStorage,
