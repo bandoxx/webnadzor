@@ -118,8 +118,17 @@
                         <form method="post" id="imageForm" enctype="multipart/form-data">
                         <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
                             <h3 class="title-dt flex justify-between font-bold text-black dark:text-white mb-2 items-center">
-                                {client_storage_name}
                                 <div>
+                                    <label
+                                            class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
+                                    >
+                                        Ime skladišne jedinice
+                                    </label>
+                                <input name="client_storage_name" type="text"
+                                       value="{client_storage_name}"
+                                       placeholder="Ime skladišne jedinice" class="w-70 textInputChange mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
+                                </div>
+                                    <div>
                                     <label
                                             class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
                                     >
@@ -338,26 +347,39 @@
             $(this).parent().parent().parent().remove();
         });
 
-        $fileInput.change(function (){
+        $fileInput.change(function () {
             const file = this.files[0];
-            const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
+            const allowedFormats = ['image/png'];
             if (!allowedFormats.includes(file.type)) {
-                alert("Invalid file format. Please select a JPEG, PNG, or GIF image.");
-                this.value = ''; //clear input
+                alert("Invalid file format. Please select a PNG image.");
+                this.value = ''; // clear input
                 return;
             }
             const img = new Image();
             const imgElement = $('#clientStorageImg')[0];
 
-            //update the image
             img.src = (window.URL ? URL : webkitURL).createObjectURL(file);
 
-            //when the image is loaded adjust the size of the #clientStorageImg element
-            img.onload = function() {
+            img.onload = function () {
+                const maxWidth = 1258;
+                const maxHeight = 600;
+                let width = img.width;
+                let height = img.height;
+
+                //calculate the aspect ratio
+                const aspectRatio = width / height;
+                if (width > maxWidth || height > maxHeight) {
+                    if (width / maxWidth > height / maxHeight) {
+                        width = maxWidth;
+                        height = Math.round(width / aspectRatio);
+                    } else {
+                        height = maxHeight;
+                        width = Math.round(height * aspectRatio);
+                    }
+                }
                 imgElement.src = img.src;
-                console.log(img.width, img.height);
-                imgElement.width = img.width >= 1258 ? 1258 : img.width
-                imgElement.height = img.height >= 600 ? 600 : img.height;
+                imgElement.width = width;
+                imgElement.height = height;
             };
         });
 
