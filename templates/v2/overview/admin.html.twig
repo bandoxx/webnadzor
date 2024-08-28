@@ -357,9 +357,9 @@
                                                 </div>
                                                 {% endif %}
                                                 <div class="alarm-btn relative cursor-pointer" data-index="0" x-on:click="modalOpenAlarms = true">
-                                                    {% if client.alarmsOn %}
+                                                    {% if client.alarms|length %}
                                                     <div class="absolute text-white -top-2 -right-2 bg-red w-5 h-5 rounded-full text-center align-middle">
-                                                            <span class="relative -top-0.5">{{ client.alarmsOn }}</span>
+                                                            <span class="relative -top-0.5">{{ client.alarms|length }}</span>
                                                     </div>
                                                     {% endif %}
                                                     <div class="cursor-pointer" title="Notifikacije alarma">

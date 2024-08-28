@@ -3837,6 +3837,18 @@ background: transparent!important;
    }
  }
 
+.h-40 {
+  height: 10rem;
+}
+
+.h-52 {
+  height: 13rem;
+}
+
+.max-h-52 {
+  max-height: 13rem;
+}
+
 .file\:mr-5::-webkit-file-upload-button{
   margin-right: 1.25rem;
 }
@@ -4451,5 +4463,3 @@ background: transparent!important;
     padding-right: 2.75rem;
   }
 }
-
-

@@ -20,7 +20,7 @@ class AlarmListController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $alarms = $deviceAlarmRepository->findByDevice($device);
+        $alarms = $deviceAlarmRepository->findByDeviceOrderByEndDate($device);
         $table = [];
 
         foreach ($alarms as $alarm) {

@@ -337,7 +337,8 @@
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Ikona
                                                             </label>
-                                                            <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                            <select id="t1-image"
+                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                     @change="isOptionSelected = true"
                                                                     name="t1_image"
                                                                     class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
@@ -503,7 +504,8 @@
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Ikona
                                                             </label>
-                                                            <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                            <select id="t2-image"
+                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                     @change="isOptionSelected = true"
                                                                     name="t2_image"
                                                                     class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
@@ -674,7 +676,8 @@
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Ikona
                                                             </label>
-                                                            <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                            <select id="rh1-image"
+                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                     @change="isOptionSelected = true"
                                                                     name="rh1_image"
                                                                     class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
@@ -827,11 +830,12 @@
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Ikona
                                                             </label>
-                                                            <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                            <select id="rh2-image"
+                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                     @change="isOptionSelected = true"
                                                                     name="rh2_image"
                                                                     class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
-                                                                <option class="text-body" value="0" selected="selected">Isključeno</option>
+                                                                <option class="text-body" value="0">Isključeno</option>
                                                                 {% for icon in icons %}
                                                                     <option class="text-body" value="{{ icon.id }}"
                                                                             {% if device.entry1.rh_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>

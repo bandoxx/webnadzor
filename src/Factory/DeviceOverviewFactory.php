@@ -32,7 +32,7 @@ class DeviceOverviewFactory
         }
 
         $online = false;
-        if (time() - @strtotime($data->getDeviceDate()->format('Y-m-d H:i:s')) < 4200) {
+        if (time() - $data->getDeviceDate()?->format('U') < 5400) {
             $online = true;
         }
 

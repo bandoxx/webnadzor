@@ -29,6 +29,11 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         )->free();
     }
 
+    public function findByDeviceOrderByEndDate(Device $device): array
+    {
+        return array_merge([...$this->findActiveAlarms($device), ...$this->findDeactivatedAlarms($device)]);
+    }
+
     public function findByDevice(Device $device): array
     {
         return $this->findBy(['device' => $device], ['deviceDate' => 'DESC']);
@@ -50,6 +55,26 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         }
 
         return $builder->setParameter('device', $device)
+            ->orderBy('a.deviceDate', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findDeactivatedAlarms(Device $device, ?int $sensor = null): array
+    {
+        $builder = $this->createQueryBuilder('a');
+
+        if ($sensor === null) {
+            $builder->where('a.device = :device AND a.endDeviceDate IS NOT NULL');
+        } else {
+            $builder->where('a.device = :device AND a.endDeviceDate IS NOT NULL AND (a.sensor = :sensor OR a.sensor IS NULL)')
+                ->setParameter('sensor', $sensor)
+            ;
+        }
+
+        return $builder->setParameter('device', $device)
+            ->orderBy('a.endDeviceDate', 'DESC')
             ->getQuery()
             ->getResult()
         ;

@@ -30,10 +30,9 @@ class DeviceEditController extends AbstractController
         $icons = $deviceIconRepository->findAll();
 
         if ($request->getMethod() === 'POST') {
-            // TODO: Permissions
             try {
                 if ($this->getUser()->getPermission() >= 3) {
-                    $deviceUpdater->update($device, $request->request->all());
+                    $errors = $deviceUpdater->update($device, $request->request->all());
 
                     return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'deviceId' => $deviceId]);
                 }

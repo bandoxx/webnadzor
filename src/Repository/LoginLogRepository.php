@@ -22,6 +22,19 @@ class LoginLogRepository extends ServiceEntityRepository
         parent::__construct($registry, LoginLog::class);
     }
 
+    public function findByClientAndIncludeSuperAdmin(int $clientId)
+    {
+        return $this->createQueryBuilder('l')
+            ->where('l.client = :client')
+            ->setParameter('client', $clientId)
+            ->orWhere('l.client IS NULL')
+            ->orderBy('l.id', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+
+    }
+
     public function findByClientAndForDay(Client $client, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->setTime(0, 0);
