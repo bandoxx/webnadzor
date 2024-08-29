@@ -12,6 +12,9 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 class ClientStorageUploader
 {
 
+    public const MAX_WIDTH = 1200;
+    public const MAX_HEIGHT = 700;
+
     public function __construct(
         private readonly SluggerInterface      $slugger,
         private readonly EntityManagerInterface $entityManager,
@@ -41,7 +44,7 @@ class ClientStorageUploader
     {
         [$width, $height] = getimagesize($filePath);
 
-        $scale = min(1400 / $width, 700 / $height);
+        $scale = min(self::MAX_WIDTH / $width, self::MAX_HEIGHT / $height);
 
         if ($scale >= 1) {
             return;

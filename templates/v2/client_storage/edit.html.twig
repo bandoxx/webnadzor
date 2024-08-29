@@ -135,7 +135,7 @@
                                     <label
                                             class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
                                     >
-                                        Slika pozadine (.png format, maksimalna veličina 1600x600)
+                                        Slika pozadine (.png format, maksimalna veličina 1200x700)
                                     </label>
                                     <input
                                             id="fileImage"
@@ -374,8 +374,9 @@
             img.src = (window.URL ? URL : webkitURL).createObjectURL(file);
 
             img.onload = function () {
-                const maxWidth = 1400;
-                const maxHeight = 700;
+                const maxWidth = {{ constant('App\\Service\\Image\\ClientStorageUploader::MAX_WIDTH') }};
+                const maxHeight = {{ constant('App\\Service\\Image\\ClientStorageUploader::MAX_HEIGHT') }};
+
                 let width = img.width;
                 let height = img.height;
 
