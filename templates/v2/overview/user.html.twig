@@ -325,7 +325,7 @@
                             </div>
                             <div>
                                 {% for key, storage in client.clientStorages %}
-                                    <div x-show="openTab === {{ key }}" class="font-medium leading-relaxed" {% if key != 0 %}style="display: none;"{% endif %}>
+                                    <div x-show="openTab === {{ key }}" class="flex items-center justify-center font-medium leading-relaxed" {% if key != 0 %}style="display: none;"{% endif %}>
                                         <img src="{{ path('app_client_storage_image', { id: storage.id }) }}"/>
                                     </div>
                                 {% endfor %}

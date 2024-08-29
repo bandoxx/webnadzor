@@ -41,9 +41,7 @@ class ClientStorageUploader
     {
         [$width, $height] = getimagesize($filePath);
 
-        $scale = min(1600 / $width, 600 / $height);
-
-        dump($scale);
+        $scale = min(1400 / $width, 700 / $height);
 
         if ($scale >= 1) {
             return;
