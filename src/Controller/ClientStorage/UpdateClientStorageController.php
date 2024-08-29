@@ -3,6 +3,7 @@
 namespace App\Controller\ClientStorage;
 
 use App\Entity\Client;
+use App\Entity\User;
 use App\Service\ClientStorage\ClientStorageHandler;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,13 @@ class UpdateClientStorageController extends AbstractController
         ClientStorageHandler $clientStorageHandler
     ): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getPermission() !== 4) {
+            return $this->redirectToRoute('client_overview', ['clientId' => $client->getId()]);
+        }
+
         $dropDown = $clientStorageHandler->getDropDown($client);
 
         if ($request->isMethod('GET')) {
