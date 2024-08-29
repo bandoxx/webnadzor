@@ -66,7 +66,7 @@ class ClientStorageImageGenerator
 
     private function generateText($image, $positionX, $positionY, $color, $text): void
     {
-        $font = $this->publicDir.'/uploads/fonts/Satoshi-Regular.ttf';
+        $font = $this->publicDir.'/uploads/fonts/Satoshi-Bold.ttf';
         $color = str_split(ltrim($color, '#'), 2);
 
         [$red, $green, $blue] = [hexdec($color[0]), hexdec($color[1]), hexdec($color[2])];

@@ -3745,7 +3745,7 @@ select:disabled, input:disabled{
 
 /*client storage css*/
 .storage-imgContainer {
-  height: 600px;
+  height: 700px;
   width: 90%;
   overflow: auto;
 }
@@ -3756,8 +3756,8 @@ select:disabled, input:disabled{
   width: fit-content;
 }
 .storage-img img {
-  max-width: 1258px;
-  max-height: 600px;
+  max-width: 1200px;
+  max-height: 700px;
 }
 
 .storage-buttons {
@@ -3782,15 +3782,23 @@ background: transparent!important;
   cursor: grab !important;
 }
 
-.add-textInput, .add-dropdown, .transparent-switch, .save-changes{
+.add-textInput, .add-dropdown, .transparent-switch, .save-changes, .deleteStorage{
   width: 32px;
+}
+
+.deleteStorage{
+  margin-bottom: 100px;
+}
+
+.storageTitle{
+  margin-right: 40px;
 }
 
 .editClientStorage{
   width: 32px;
   height: 32px;
-  right: 50px;
-  top: -16px;
+  right: -40px;
+  top: 10px;
 }
 
 .editClientStorage svg{
@@ -3802,6 +3810,7 @@ background: transparent!important;
   width: 32px;
   height: 32px;
   top: 10px;
+margin-left: auto;
 }
 
 #createNewClientStorage svg{

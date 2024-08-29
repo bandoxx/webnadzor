@@ -292,7 +292,7 @@
                     </div>
                 {% elseif overviewType == constant('App\\Entity\\Client::OVERVIEW_SCADA') %}
                     <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 py-3 px-3">
-                        <h3 class="title-dt font-bold text-black dark:text-white mb-6">
+                        <h3 class="title-dt font-bold text-black dark:text-white">
                             Sve skladišne jedinice
                         </h3>
                         <div x-data="
@@ -304,9 +304,9 @@
                       hidden: 'hidden',
                       }
                       " class="mb-14 w-full p-7.5">
-                            <div class="mb-6 flex flex-wrap gap-5 border-b border-stroke dark:border-strokedark sm:gap-10">
+                            <div class="mb-3 flex flex-wrap gap-5 border-b border-stroke dark:border-strokedark sm:gap-10">
                                 {% for key, storage in client.clientStorages %}
-                                    <div @click="openTab = {{ key }}" :class="openTab === {{ key }} ? activeClasses : inactiveClasses" class="border-b-2 py-4 relative text-sm font-medium hover:text-primary md:text-base border-primary cursor-pointer">
+                                    <div @click="openTab = {{ key }}" :class="openTab === {{ key }} ? activeClasses : inactiveClasses" class="storageTitle border-b-2 py-4 relative text-sm font-medium hover:text-primary md:text-base border-primary cursor-pointer">
                                         {{ storage.name }}
                                         <a href="{{ path('app_client_storage_get_post', { clientId: client.id, client_storage_id: storage.id }) }}" title="Izmeni skadu" class="editClientStorage absolute text-white" :class="openTab === {{ key }} ? visible : hidden">
                                             <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
@@ -316,7 +316,7 @@
                                         </a>
                                     </div>
                                 {% endfor %}
-                                <a href="{{ path('app_client_storage_post', { clientId: client.id }) }}" title="Dodaj novu skladišnu jedinicu" id="createNewClientStorage" class="border-b-2 relative py-4 text-sm font-medium text-white md:text-base border-transparent">
+                                <a href="{{ path('app_client_storage_post', { clientId: client.id }) }}" title="Dodaj novu skladišnu jedinicu" id="createNewClientStorage" class="border-b-2 relative mb-3 py-4 text-sm font-medium text-white md:text-base border-transparent">
                                     <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative left-1 z-10">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
@@ -325,7 +325,7 @@
                             </div>
                             <div>
                                 {% for key, storage in client.clientStorages %}
-                                    <div x-show="openTab === {{ key }}" class="font-medium leading-relaxed" {% if key != 0 %}style="display: none;"{% endif %}>
+                                    <div x-show="openTab === {{ key }}" class="flex items-center justify-center font-medium leading-relaxed" {% if key != 0 %}style="display: none;"{% endif %}>
                                         <img src="{{ path('app_client_storage_image', { id: storage.id }) }}"/>
                                     </div>
                                 {% endfor %}
