@@ -42,8 +42,20 @@ class ClientStorageHandler
         if (isset($inputs['device']['option'])) {
             $this->clientStorageUpdater->updateDeviceInputs($clientStorage, $inputs['device']);
         }
+    }
 
+    public function removeClientStorage(ClientStorage $clientStorage): void
+    {
+        foreach ($clientStorage->getDeviceInput()->toArray() as $deviceInput) {
+            $this->entityManager->remove($deviceInput);
+        }
 
+        foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
+            $this->entityManager->remove($textInput);
+        }
+
+        $this->entityManager->remove($clientStorage);
+        $this->entityManager->flush();
     }
 
     public function getDropDown(Client $client): array
