@@ -249,6 +249,7 @@
                                         </div>
                                 </div>
                                 <input type="text" class="colorPicker">
+                                <input type="number" value="16" min="1" max="30" class="fontSizer" name="text[font][]">
                                 <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="text[color][]"/>
                                 <input type="hidden" class="deviceCoors" value="0,0" name="text[position][]"/>
                             </div>`;
@@ -286,6 +287,7 @@
                                         </div>
                                     </div>
                                     <input type="text" class="colorPicker">
+                                    <input type="number" value="16" min="1" max="30" class="fontSizer" name="text[font][]">
                                     <input type="hidden" class="colorPickerHiddenVal" value="#000000" name="device[color][]"/>
                                     <input type="hidden" class="deviceCoors" value="0,0" name="device[position][]"/>
                                 </div>`;
@@ -315,7 +317,7 @@
             });
         }
 
-        function createInput(type, x, y, color, text) {
+        function createInput(type, x, y, color, text, fontSize = 16) {
             let template = type === 'text' ? textInputTemplate : dropDownInputTemplate;
             let idNum = type === 'text' ? deviceNum : deviceDDNum;
 
@@ -327,6 +329,8 @@
             $elem.find('.deviceCoors').val(x + ',' + y);
 
             $imgContainer.append($elem);
+            $elem.find('.fontSizer').val(fontSize);
+            $elem.find('.fontSizer').trigger("change");
             addSpectrumAndDraggable($elem, color, type !== 'text');
 
             if (type === 'text') {
@@ -339,17 +343,17 @@
         function toggleTransparency() {
             isTransparencyToggled = !isTransparencyToggled;
             const toggleClass = isTransparencyToggled ? 'transparent' : '{transparent}';
-            $(".textInput input, .dropDownInput select").toggleClass("transparent");
+            $(".textInput input[type='text'], .dropDownInput select").toggleClass("transparent");
             textInputTemplate = textInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
             dropDownInputTemplate = dropDownInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
         }
 
         $addTextInput.click(function () {
-            createInput("text", 0, 0, "#000000", "");
+            createInput("text", 0, 0, "#000000", "", 16);
         });
 
         $addDDInput.click(function () {
-            createInput("dropdown", 0, 0, "#000000", "");
+            createInput("dropdown", 0, 0, "#000000", "", 16);
         });
 
         $saveChanges.click(function (){
@@ -358,6 +362,26 @@
 
         $(document).on("click", ".deleteBtn", function (){
             $(this).parent().parent().parent().remove();
+        });
+
+        $(document).on("change", ".fontSizer", function (){
+            let $input = $(this).parent().find(".textInputChange");
+            let fontSize = $(this).val();
+            if(fontSize > 30){
+                fontSize = 30;
+            }
+            if(fontSize < 1){
+                fontSize = 1
+            }
+            $(this).val(fontSize);
+            let widthAdjustment = 16 - fontSize < 0 ? 16 - fontSize : 0;
+            let newWidth = 250 + (widthAdjustment * -1) * 10;
+
+            $input.css({
+                "font-size": fontSize + "px",
+                "width": newWidth + "px"
+            });
+            $(this).parent().css("width", newWidth + "px");
         });
 
         $fileInput.change(function () {
