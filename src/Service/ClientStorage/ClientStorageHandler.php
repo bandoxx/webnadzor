@@ -28,8 +28,9 @@ class ClientStorageHandler
             $this->clientStorageUploader->uploadAndSave($image, $clientStorage);
         }
 
+        $clientStorage->setName($inputs['client_storage_name'] ?? '');
+
         if ($clientStorage->getId() === null) {
-            $clientStorage->setName($inputs['client_storage_name'] ?? '');
             $this->entityManager->persist($clientStorage);
             $this->entityManager->flush();
         }

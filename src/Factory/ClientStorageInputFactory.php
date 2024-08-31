@@ -10,26 +10,26 @@ use App\Entity\Device;
 class ClientStorageInputFactory
 {
 
-    public function createText(ClientStorage $clientStorage, string $text, string $color, $positionX, $positionY): ClientStorageText
+    public function createText(ClientStorage $clientStorage, string $text, int $fontSize, string $color, $positionX, $positionY): ClientStorageText
     {
         return (new ClientStorageText())
             ->setClientStorage($clientStorage)
             ->setText($text)
             ->setFontColor($color)
-            ->setFontSize(0)
+            ->setFontSize($fontSize)
             ->setPositionX($positionX)
             ->setPositionY($positionY)
         ;
     }
 
-    public function createDynamicText(ClientStorage $clientStorage, Device $device, int $entry, string $type, string $color, $positionX, $positionY): ClientStorageDevice
+    public function createDynamicText(ClientStorage $clientStorage, Device $device, int $entry, string $type, int $fontSize, string $color, $positionX, $positionY): ClientStorageDevice
     {
         return (new ClientStorageDevice())
             ->setClientStorage($clientStorage)
             ->setDevice($device)
             ->setEntry($entry)
             ->setType($type)
-            ->setFontSize(0)
+            ->setFontSize($fontSize)
             ->setFontColor($color)
             ->setPositionX($positionX)
             ->setPositionY($positionY)
