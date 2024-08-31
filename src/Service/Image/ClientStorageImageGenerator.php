@@ -27,7 +27,7 @@ class ClientStorageImageGenerator
         imagesavealpha($image, true);
 
         foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
-            $this->generateText($image, $textInput->getPositionX(), $textInput->getPositionY(), $textInput->getFontColor(), $textInput->getText());
+            $this->generateText($image, $textInput->getPositionX(), $textInput->getPositionY(), $textInput->getFontColor(), $textInput->getFontSize(), $textInput->getText());
         }
 
         foreach ($clientStorage->getDeviceInput()->toArray() as $deviceInput) {
@@ -35,7 +35,7 @@ class ClientStorageImageGenerator
             $deviceData = $this->deviceOverviewFactory->create($deviceInput->getDevice(), $deviceInput->getEntry());
 
             if (!$deviceData) {
-                $this->generateText($image, $deviceInput->getPositionX(), $deviceInput->getPositionY(), '#FF0000', 'Nema podataka.');
+                $this->generateText($image, $deviceInput->getPositionX(), $deviceInput->getPositionY(), '#FF0000', $deviceInput->getFontSize(), 'Nema podataka.');
                 continue;
             }
 
@@ -57,22 +57,31 @@ class ClientStorageImageGenerator
                 $text = $humidityData->getCurrentWithUnit();
             }
 
-            $this->generateText($image, $deviceInput->getPositionX(), $deviceInput->getPositionY(), $color, $text);
+            $this->generateText($image, $deviceInput->getPositionX(), $deviceInput->getPositionY(), $color, $deviceInput->getFontSize(), $text);
         }
 
         ImagePNG($image);
         ImageDestroy($image);
     }
 
-    private function generateText($image, $positionX, $positionY, $color, $text): void
+    private function generateText($image, $positionX, $positionY, $color, $fontSize, $text): void
     {
         $font = $this->publicDir.'/uploads/fonts/Satoshi-Bold.ttf';
         $color = str_split(ltrim($color, '#'), 2);
 
+        $positionX += 21;
+        $positionY += 28;
+
+        $textbox = imagettfbbox($fontSize, 0, $font, $text);
+        $textWidth = abs($textbox[4] - $textbox[0]);
+        $textHeight = abs($textbox[5] - $textbox[1]);
+
         [$red, $green, $blue] = [hexdec($color[0]), hexdec($color[1]), hexdec($color[2])];
 
         $color = ImageColorAllocate($image, $red, $green, $blue);
+        $write = ImageColorAllocate($image, 255, 255, 255);
 
-        imagettftext($image, 12,0, $positionX + 21, $positionY + 28, $color, $font, $text);
+        imagefilledrectangle($image, $positionX - 4, $positionY - $textHeight - 4, $positionX + $textWidth + 4, $positionY + 4, $write);
+        imagettftext($image, $fontSize, 0, $positionX, $positionY, $color, $font, $text);
     }
 }

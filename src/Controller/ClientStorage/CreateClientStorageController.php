@@ -44,7 +44,7 @@ class CreateClientStorageController extends AbstractController
 
         return $this->redirectToRoute('app_client_storage_get_post', [
             'clientId' => $client->getId(),
-            'client_storage_id' => $clientStorage->getId()
+            'clientStorageId' => $clientStorage->getId()
         ]);
     }
 }

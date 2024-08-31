@@ -38,6 +38,7 @@ class ClientStorageUpdater
                 $this->devices[$deviceId],
                 $entry,
                 $type,
+                $device['font'][$i],
                 $device['color'][$i],
                 $positionX,
                 $positionY
@@ -63,6 +64,7 @@ class ClientStorageUpdater
             $entity = $this->clientStorageInputFactory->createText(
                 $clientStorage,
                 $text['option'][$i],
+                $text['font'][$i],
                 $text['color'][$i],
                 $positionX,
                 $positionY

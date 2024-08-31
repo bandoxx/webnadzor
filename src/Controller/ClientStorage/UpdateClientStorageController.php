@@ -12,14 +12,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Entity\ClientStorage;
 
-#[Route('/admin/{clientId}/client-storage/{client_storage_id}', name: 'app_client_storage_get_post', methods: ['GET', 'POST'])]
+#[Route('/admin/{clientId}/client-storage/{clientStorageId}', name: 'app_client_storage_get_post', methods: ['GET', 'POST'])]
 class UpdateClientStorageController extends AbstractController
 {
 
     public function __invoke(
         #[MapEntity(id: 'clientId')]
         Client $client,
-        #[MapEntity(id: 'client_storage_id')]
+        #[MapEntity(id: 'clientStorageId')]
         ClientStorage $clientStorage,
         Request $request,
         ClientStorageHandler $clientStorageHandler
