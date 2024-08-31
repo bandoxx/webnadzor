@@ -301,7 +301,7 @@
 
         let textInputTemplate = `<div class='textInput relative' id='textInput{idNum}'>
                                 <div class="h-16 flex flex-col">
-                                    <input name="text[option][]" type="text" placeholder="Novo tekstualno polje" class="textInputChange w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary {transparent}">
+                                    <input name="text[option][]" type="text" placeholder="Novo tekstualno polje" class="textInputChange w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter {transparent}">
                                     <div class="flex justify-center">
                                         <div class="dragIcon mr-3 text-white relative self-center">
                                             <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
@@ -327,7 +327,7 @@
         let dropDownInputTemplate = `<div class='dropDownInput relative' id='ddInput{idNum}'>
                                     <div class="h-16 flex flex-col">
                                         <div class="userSelectedLocation relative z-20">
-                                            <select name="device[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input {transparent}">
+                                            <select name="device[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary {transparent}">
                                                 {% for option in dropdown %}
                                                 <option class="text-body" value="{{ option.value }}">{{ option.text }}</option>
                                                 {% endfor %}
