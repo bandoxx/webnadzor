@@ -1037,16 +1037,16 @@
 
                 if (type === "text") {
                     elementHTML = textInputTemplate
-                        .replace("{x}", x + fontSize)
-                        .replace("{y}", y + fontSize / 2)
+                        .replace("{x}", x + Math.ceil(fontSize / 2) + 10)
+                        .replace("{y}", y + Math.ceil(fontSize / 2))
                         .replace("{fontSize}", fontSize)
                         .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px;" : "")
                         .replace("{color}", color)
                         .replace("{text}", text);
                 } else {
                     elementHTML = dropDownInputTemplate
-                        .replace("{x}", x + fontSize)
-                        .replace("{y}", y + fontSize / 2)
+                        .replace("{x}", x + Math.ceil(fontSize / 2) + 10)
+                        .replace("{y}", y + Math.ceil(fontSize / 2))
                         .replace("{fontSize}", fontSize)
                         .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px;" : "")
                         .replace("{color}", color)
