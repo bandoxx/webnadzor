@@ -1056,10 +1056,14 @@
                 $inputContainer.append(elementHTML);
             }
 
-            //generate inputs here from back end
-            createInput(0, "text", 100, 100, "#009988", "This is an example text", 16);
-            createInput(0, "dropDown", 300, 200, "#0015ff", "This is an example device", 22, "https://www.google.com"); //link for the device should be generated on the back end and put here
-            createInput(1, "text", 300, 300, "#067bda", "This is an example text", 16);
+            {% for key, storage in client_storages %}
+                {% for text in storage.textInput %}
+                    createInput({{ key }}, "text", {{ text.positionX }}, {{ text.positionY }}, "{{ text.fontColor }}", "{{ text.text }}", {{ text.fontSize }});
+                {% endfor %}
+{#                {% for dropdown in storage.deviceInput %}#}
+{#                    createInput({{ key }}, "dropDown", {{ dropdown.positionX }}, {{ dropdown.positionY }}, "{{ dropdown.fontColor }}", "{{ text.text }}", {{ text.fontSize }}, "https://www.google.com"); //link for the device should be generated on the back end and put here#}
+{#                {% endfor %}#}
+            {% endfor %}
         });
     </script>
     <!-- ===== Show Input Fields Logic Scripts End ===== -->

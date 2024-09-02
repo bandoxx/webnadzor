@@ -36,7 +36,8 @@ class OverviewController extends AbstractController
         return $this->render('v2/overview/user.html.twig', [
             'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($user, $client),
             'settings' => $clientSettingRepository->findOneBy(['client' => $clientId]),
-            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId])
+            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId]),
+            'client_storages' => $client->getClientStorages()->toArray()
         ]);
     }
 
