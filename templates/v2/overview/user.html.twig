@@ -373,7 +373,7 @@
                                         </a>
                                     {% endif %}
                                 </div>
-                                <div>
+                                <div class="overflow-x-auto overflow-y-auto">
                                     {% for key, storage in client.clientStorages %}
                                         <div x-show="openTab === {{ key }}"
                                              class="flex tab-image tab-image-{{ key }} relative mx-auto font-medium leading-relaxed"
