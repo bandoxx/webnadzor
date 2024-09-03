@@ -32,6 +32,9 @@ class ClientStorageText
     #[ORM\Column(type: "integer")]
     private $positionY;
 
+    #[ORM\Column]
+    private bool $backgroundActive = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -106,6 +109,17 @@ class ClientStorageText
     {
         $this->positionY = $positionY;
 
+        return $this;
+    }
+
+    public function isBackgroundActive(): bool
+    {
+        return $this->backgroundActive;
+    }
+
+    public function setBackgroundActive(bool $backgroundActive): self
+    {
+        $this->backgroundActive = $backgroundActive;
         return $this;
     }
 }

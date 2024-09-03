@@ -7,6 +7,7 @@ use App\Repository\ClientFtpRepository;
 use App\Repository\ClientRepository;
 use App\Repository\ClientSettingRepository;
 use App\Repository\ClientStorageRepository;
+use App\Service\ClientStorage\ScadaFactory;
 use App\Service\DeviceLocationHandler;
 use App\Service\PermissionChecker;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,7 +23,8 @@ class OverviewController extends AbstractController
         DeviceLocationHandler $deviceLocationHandler,
         ClientSettingRepository $clientSettingRepository,
         ClientFtpRepository $clientFtpRepository,
-        ClientStorageRepository $clientStorageRepository
+        ClientStorageRepository $clientStorageRepository,
+        ScadaFactory $scadaFactory
     ): Response
     {
         /** @var User $user */
@@ -33,10 +35,15 @@ class OverviewController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
+        foreach ($client->getClientStorages()->toArray() as $clientStorage) {
+            $clientStorages[] = $scadaFactory->createFromClientStorage($clientStorage);
+        }
+
         return $this->render('v2/overview/user.html.twig', [
             'devices_table' => $deviceLocationHandler->getClientDeviceLocationData($user, $client),
             'settings' => $clientSettingRepository->findOneBy(['client' => $clientId]),
-            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId])
+            'ftp' => $clientFtpRepository->findOneBy(['client' => $clientId]),
+            'client_storages' => $clientStorages ?? []
         ]);
     }
 

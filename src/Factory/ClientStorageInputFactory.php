@@ -10,7 +10,7 @@ use App\Entity\Device;
 class ClientStorageInputFactory
 {
 
-    public function createText(ClientStorage $clientStorage, string $text, int $fontSize, string $color, $positionX, $positionY): ClientStorageText
+    public function createText(ClientStorage $clientStorage, string $text, int $fontSize, string $color, $positionX, $positionY, bool $backgroundActive): ClientStorageText
     {
         return (new ClientStorageText())
             ->setClientStorage($clientStorage)
@@ -19,10 +19,11 @@ class ClientStorageInputFactory
             ->setFontSize($fontSize)
             ->setPositionX($positionX)
             ->setPositionY($positionY)
+            ->setBackgroundActive($backgroundActive)
         ;
     }
 
-    public function createDynamicText(ClientStorage $clientStorage, Device $device, int $entry, string $type, int $fontSize, string $color, $positionX, $positionY): ClientStorageDevice
+    public function createDynamicText(ClientStorage $clientStorage, Device $device, int $entry, string $type, int $fontSize, string $color, $positionX, $positionY, bool $backgroundActive): ClientStorageDevice
     {
         return (new ClientStorageDevice())
             ->setClientStorage($clientStorage)
@@ -33,6 +34,7 @@ class ClientStorageInputFactory
             ->setFontColor($color)
             ->setPositionX($positionX)
             ->setPositionY($positionY)
+            ->setBackgroundActive($backgroundActive)
         ;
     }
 }

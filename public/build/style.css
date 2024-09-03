@@ -3793,6 +3793,21 @@ select:disabled, input:disabled{
 
 .textInput, .dropDownInput{
   width: 250px;
+  height: 100px;
+}
+
+.tab-image{
+  width: -moz-fit-content;
+  width: -webkit-fit-content;
+  width: fit-content;
+}
+
+.tab-image img {
+  max-width: 1200px;
+  max-height: 700px;
+}
+
+.textInput, .dropDownInput{
   cursor: -webkit-grab!important;
   cursor: grab!important;
   position: absolute!important;
@@ -3867,6 +3882,14 @@ select:disabled, input:disabled{
 
 .dropDownInput .textInputChange option{
   font-size: 16px!important;
+}
+
+.editButtons{
+  visibility: hidden;
+}
+
+.textInput:hover .editButtons, .dropDownInput:hover .editButtons{
+  visibility: visible;
 }
 
 @-webkit-keyframes ping {
