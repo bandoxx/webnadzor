@@ -4,8 +4,10 @@ namespace App\Service\Image;
 
 use App\Entity\ClientStorage;
 use App\Factory\DeviceOverviewFactory;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\HttpKernel\KernelInterface;
 
+#[Deprecated]
 class ClientStorageImageGenerator
 {
 

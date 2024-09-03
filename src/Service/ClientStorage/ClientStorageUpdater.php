@@ -42,7 +42,7 @@ class ClientStorageUpdater
                 $device['color'][$i],
                 $positionX,
                 $positionY,
-                $device['background'] === 'true'
+                $device['background'][$i] === 'true'
             );
 
             $clientStorage->addDeviceInput($entity);

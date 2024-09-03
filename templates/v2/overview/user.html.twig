@@ -1059,12 +1059,9 @@
             }
 
             {% for key, storage in client_storages %}
-                {% for text in storage.textInput %}
-                    createInput({{ key }}, "text", {{ text.positionX }}, {{ text.positionY }}, "{{ text.fontColor }}", "{{ text.text }}", {{ text.backgroundActive ? 'true' : 'false' }}, {{ text.fontSize }});
+                {% for input in storage %}
+                    createInput({{ key }}, "{{ input.type }}", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.text }}", {{ input.activeBackground ? 'true' : 'false' }}, {{ input.fontSize }}, {% if input.url %}"{{ input.url }}"{% else %}null{% endif %});
                 {% endfor %}
-{#                {% for dropdown in storage.deviceInput %}#}
-{#                    createInput({{ key }}, "dropDown", {{ dropdown.positionX }}, {{ dropdown.positionY }}, "{{ dropdown.fontColor }}", "{{ text.text }}", true, {{ text.fontSize }}, "https://www.google.com"); //link for the device should be generated on the back end and put here#}
-{#                {% endfor %}#}
             {% endfor %}
         });
     </script>
