@@ -39,6 +39,9 @@ class ClientStorageDevice
     #[ORM\Column(type: "string")]
     private $type;
 
+    #[ORM\Column]
+    private bool $backgroundActive = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -137,6 +140,17 @@ class ClientStorageDevice
     {
         $this->type = $type;
 
+        return $this;
+    }
+
+    public function isBackgroundActive(): bool
+    {
+        return $this->backgroundActive;
+    }
+
+    public function setBackgroundActive(bool $backgroundActive): self
+    {
+        $this->backgroundActive = $backgroundActive;
         return $this;
     }
 }

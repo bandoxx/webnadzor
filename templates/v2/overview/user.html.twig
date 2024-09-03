@@ -378,7 +378,7 @@
                                         <div x-show="openTab === {{ key }}"
                                              class="flex tab-image tab-image-{{ key }} relative mx-auto font-medium leading-relaxed"
                                              {% if key != 0 %}style="display: none;"{% endif %}>
-                                            <img src="{{ path('app_client_storage_image', { id: storage.id }) }}"/>
+                                            <img id="client-storage-{{ key }}" src="{{ asset('assets/images/client-storage/' ~ storage.image) }}"/>
                                         </div>
                                     {% endfor %}
                                 </div>
@@ -1060,7 +1060,7 @@
 
             {% for key, storage in client_storages %}
                 {% for text in storage.textInput %}
-                    createInput({{ key }}, "text", {{ text.positionX }}, {{ text.positionY }}, "{{ text.fontColor }}", "{{ text.text }}", false, {{ text.fontSize }});
+                    createInput({{ key }}, "text", {{ text.positionX }}, {{ text.positionY }}, "{{ text.fontColor }}", "{{ text.text }}", {{ text.backgroundActive ? 'true' : 'false' }}, {{ text.fontSize }});
                 {% endfor %}
 {#                {% for dropdown in storage.deviceInput %}#}
 {#                    createInput({{ key }}, "dropDown", {{ dropdown.positionX }}, {{ dropdown.positionY }}, "{{ dropdown.fontColor }}", "{{ text.text }}", true, {{ text.fontSize }}, "https://www.google.com"); //link for the device should be generated on the back end and put here#}

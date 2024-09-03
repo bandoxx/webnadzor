@@ -41,7 +41,8 @@ class ClientStorageUpdater
                 $device['font'][$i],
                 $device['color'][$i],
                 $positionX,
-                $positionY
+                $positionY,
+                $device['background'] === 'true'
             );
 
             $clientStorage->addDeviceInput($entity);
@@ -67,7 +68,8 @@ class ClientStorageUpdater
                 $text['font'][$i],
                 $text['color'][$i],
                 $positionX,
-                $positionY
+                $positionY,
+                $text['background'][$i] === 'true'
             );
 
             $clientStorage->addTextInput($entity);
