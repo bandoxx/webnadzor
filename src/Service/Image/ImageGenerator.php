@@ -2,7 +2,6 @@
 
 namespace App\Service\Image;
 
-use App\Entity\ClientStorage;
 use App\Repository\DeviceDataRepository;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -14,8 +13,7 @@ class ImageGenerator
 
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
-        private readonly KernelInterface $kernel,
-        private readonly string $clientStorageDirectory
+        private readonly KernelInterface $kernel
     ) {
         $this->publicDir = $this->kernel->getProjectDir() . '/public';
 
@@ -52,7 +50,7 @@ class ImageGenerator
         ImageDestroy($im);
     }
 
-    public function generateRelativyHumidity(int $deviceId, int $entry): void
+    public function generateRelativeHumidity(int $deviceId, int $entry): void
     {
         $data = $this->getDeviceData($deviceId, $entry);
 

@@ -47,12 +47,7 @@ class LoginLogsArchiver extends Command
         foreach ($clients as $client) {
             $data = $this->loginLogRepository->findByClientAndForDay($client, $date);
 
-            try {
-                $this->generateDailyReport($client, $data, $date);
-            } catch (\Throwable $e) {
-                $output->writeln(ExceptionFormatter::string($e));
-                return Command::FAILURE;
-            }
+            $this->generateDailyReport($client, $data, $date);
         }
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));

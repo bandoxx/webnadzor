@@ -80,12 +80,7 @@ class HistoryDeviceDataArchiver extends Command
                 $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
                 foreach([1, 2] as $entry) {
-                    try {
-                        $this->generateDailyReport($device, $data, $entry, $date);
-                    } catch (\Throwable $e) {
-                        $output->writeln(ExceptionFormatter::string($e));
-                        return Command::FAILURE;
-                    }
+                    $this->generateDailyReport($device, $data, $entry, $date);
                 }
             }
 
@@ -93,12 +88,7 @@ class HistoryDeviceDataArchiver extends Command
                 $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                 foreach([1, 2] as $entry) {
-                    try {
-                        $this->generateMonthlyReport($device, $data, $entry, $date);
-                    } catch (\Throwable $e) {
-                        $output->writeln(ExceptionFormatter::string($e));
-                        return Command::FAILURE;
-                    }
+                    $this->generateMonthlyReport($device, $data, $entry, $date);
                 }
             }
         }
