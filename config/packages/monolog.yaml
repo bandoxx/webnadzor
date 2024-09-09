@@ -40,6 +40,11 @@ when@test:
 when@prod:
     monolog:
         handlers:
+            sentry:
+                type: sentry
+                level: !php/const Monolog\Logger::ERROR
+                hub_id: Sentry\State\HubInterface
+                fill_extra_context: true
             main:
                 type: fingers_crossed
                 action_level: error
