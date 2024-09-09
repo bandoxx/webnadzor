@@ -45,6 +45,9 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    Monolog\Processor\PsrLogMessageProcessor:
+        tags: { name: monolog.processor, handler: sentry }
+
     App\Service\Alarm\ValidatorCollection:
         arguments:
             $validators: !tagged_iterator app.alarm.validator
