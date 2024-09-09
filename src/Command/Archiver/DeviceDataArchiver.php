@@ -11,6 +11,7 @@ use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\Exception\ExceptionFormatter;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,12 +65,7 @@ class DeviceDataArchiver extends Command
                 $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
                 foreach([1, 2] as $entry) {
-                    try {
-                        $this->generateDailyReport($device, $data, $entry, $date);
-                    } catch (\Throwable $e) {
-                        $output->writeln(ExceptionFormatter::string($e));
-                        return Command::FAILURE;
-                    }
+                    $this->generateDailyReport($device, $data, $entry, $date);
                 }
             }
         }
@@ -79,12 +75,7 @@ class DeviceDataArchiver extends Command
                 $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                 foreach([1, 2] as $entry) {
-                    try {
-                        $this->generateMonthlyReport($device, $data, $entry, $date);
-                    } catch (\Throwable $e) {
-                        $output->writeln(ExceptionFormatter::string($e));
-                        return Command::FAILURE;
-                    }
+                    $this->generateMonthlyReport($device, $data, $entry, $date);
                 }
             }
         }

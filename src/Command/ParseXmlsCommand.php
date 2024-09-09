@@ -7,6 +7,7 @@ use App\Factory\LockFactory;
 use App\Repository\DeviceRepository;
 use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,6 +27,7 @@ class ParseXmlsCommand extends Command
         private DeviceDataFactory      $deviceDataFactory,
         private DeviceRepository       $deviceRepository,
         private EntityManagerInterface $entityManager,
+        private LoggerInterface        $logger,
         private ValidatorCollection    $alarmValidator,
         private LockFactory            $lockFactory,
         private string                 $xmlDirectory
@@ -56,13 +58,13 @@ class ParseXmlsCommand extends Command
             $device = $this->deviceRepository->binaryFindOneByName($name);
 
             if (!$device) {
-                $output->writeln(sprintf("Client with file name %s doesn't exist!", $name));
+                $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
                 unlink($xmlPath);
                 continue;
             }
 
             if ($device->isParserActive() === false) {
-                $output->writeln(sprintf("Client with file name %s is not currently active!", $name));
+                $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
                 unlink($xmlPath);
 
                 continue;
@@ -75,7 +77,7 @@ class ParseXmlsCommand extends Command
             $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
 
             if (!$deviceData) {
-                $output->writeln(sprintf("XML Parser failed for %s", $xmlPath));
+                $this->logger->error(sprintf("XML Parser failed for %s", $xmlPath));
                 continue;
             }
 
