@@ -15,7 +15,7 @@ class RelativeHumidityController extends AbstractController
     {
         $response = new StreamedResponse(
             function () use ($imageGenerator, $deviceId, $entry) {
-                $imageGenerator->generateRelativyHumidity($deviceId, $entry);
+                $imageGenerator->generateRelativeHumidity($deviceId, $entry);
             }
         );
 

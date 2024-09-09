@@ -6,7 +6,9 @@ use App\Entity\Client;
 use App\Factory\ClientFtpFactory;
 use App\Factory\ClientSettingFactory;
 use App\Repository\UserRepository;
-use App\Service\Image\LogoUploader;
+use App\Service\Image\ClientImage\MainLogoHandler;
+use App\Service\Image\ClientImage\MapMarkerIconHandler;
+use App\Service\Image\ClientImage\PdfLogoHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -14,13 +16,16 @@ class ClientUpdater
 {
 
     public function __construct(
-        private readonly LogoUploader $logoUploader,
+        private readonly MainLogoHandler        $mainLogoHandler,
+        private readonly MapMarkerIconHandler   $mapMarkerIconHandler,
+        private readonly PdfLogoHandler         $pdfLogoHandler,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ClientSettingFactory $clientSettingFactory,
-        private readonly UserRepository $userRepository,
-        private readonly ClientFtpFactory $clientFtpFactory
+        private readonly ClientSettingFactory   $clientSettingFactory,
+        private readonly UserRepository         $userRepository,
+        private readonly ClientFtpFactory       $clientFtpFactory
     ) {}
 
+    # TODO: Replace Request object with parameters or DTO
     public function updateByRequest(Request $request, Client $client): void
     {
         if ($overview = $request->request->get('overview_view')) {
@@ -34,6 +39,8 @@ class ClientUpdater
         $client->setName($request->request->get('name'));
         $client->setAddress($request->request->get('address'));
         $client->setOIB($request->request->get('oib'));
+
+        $this->entityManager->flush();
 
         if (!$client->getId()) {
             $clientSettings = $this->clientSettingFactory->create($client);
@@ -53,17 +60,18 @@ class ClientUpdater
         }
 
         if ($mainLogo = $request->files->get('main_logo')) {
-            $this->logoUploader->uploadAndSaveMainLogo($mainLogo, $client);
+            $fileName = $this->mainLogoHandler->upload($mainLogo, $client);
+            $this->mainLogoHandler->save($client, $fileName);
         }
 
         if ($pdfLogo = $request->files->get('pdf_logo')) {
-            $this->logoUploader->uploadAndSavePDFLogo($pdfLogo, $client);
+            $fileName = $this->pdfLogoHandler->upload($pdfLogo, $client);
+            $this->mainLogoHandler->save($client, $fileName);
         }
 
         if ($mapIcon = $request->files->get('map_marker_icon')) {
-            $this->logoUploader->uploadAndSaveMapMarkerIcon($mapIcon, $client);
+            $fileName = $this->mapMarkerIconHandler->upload($mapIcon, $client);
+            $this->mapMarkerIconHandler->save($client, $fileName);
         }
-
-        $this->entityManager->flush();
     }
 }

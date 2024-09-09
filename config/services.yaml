@@ -52,6 +52,15 @@ services:
         arguments:
             $validators: !tagged_iterator app.alarm.validator
 
-    App\Service\Image\LogoUploader:
-        $logoPath: '%logo_directory_full_path%'
-        $mapMarkerPath: '%map_marker_directory_full_path%'
+    ### File uploader target path
+    App\Service\FileUploader\Types\ClientStorageImageUploader:
+        $targetDirectory: '%client_storage_directory_full_path%'
+
+    App\Service\FileUploader\Types\MapMarkerIconUploader:
+        $targetDirectory: '%map_marker_directory_full_path%'
+
+    App\Service\FileUploader\Types\ImageUploader:
+        $targetDirectory: '%icon_directory_full_path%'
+
+    App\Service\FileUploader\Types\LogoUploader:
+        $targetDirectory: '%logo_directory_full_path%'

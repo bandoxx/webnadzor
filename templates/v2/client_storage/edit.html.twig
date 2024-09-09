@@ -531,8 +531,8 @@
             img.src = (window.URL ? URL : webkitURL).createObjectURL(file);
 
             img.onload = function () {
-                const maxWidth = {{ constant('App\\Service\\Image\\ClientStorageUploader::MAX_WIDTH') }};
-                const maxHeight = {{ constant('App\\Service\\Image\\ClientStorageUploader::MAX_HEIGHT') }};
+                const maxWidth = {{ constant('App\\Service\\Image\\ClientImage\\ScadaImageHandler::IMAGE_WIDTH') }};
+                const maxHeight = {{ constant('App\\Service\\Image\\ClientImage\\ScadaImageHandler::IMAGE_HEIGHT') }};
 
                 let width = img.width;
                 let height = img.height;

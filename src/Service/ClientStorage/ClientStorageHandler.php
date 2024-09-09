@@ -4,7 +4,7 @@ namespace App\Service\ClientStorage;
 
 use App\Entity\Client;
 use App\Entity\ClientStorage;
-use App\Service\Image\ClientStorageUploader;
+use App\Service\Image\ClientImage\ScadaImageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,19 +13,20 @@ class ClientStorageHandler
 
     public function __construct(
         private ClientStorageUpdater $clientStorageUpdater,
-        private ClientStorageUploader $clientStorageUploader,
+        private ScadaImageHandler $scadaImageHandler,
         private EntityManagerInterface $entityManager
     ) {}
 
 
-    public function update(ClientStorage $clientStorage, Request $request)
+    public function update(ClientStorage $clientStorage, Request $request): void
     {
         $inputs = $request->request->all();
 
         $image = $request->files->get('clientStorageImage');
 
         if ($image) {
-            $this->clientStorageUploader->uploadAndSave($image, $clientStorage);
+            $fileName = $this->scadaImageHandler->upload($image, $clientStorage);
+            $this->scadaImageHandler->save($clientStorage, $fileName);
         }
 
         $clientStorage->setName($inputs['client_storage_name'] ?? '');
