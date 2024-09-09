@@ -19,6 +19,8 @@ parameters:
     database_username: '%env(DATABASE_NAME)%'
     database_password: '%env(DATABASE_PASSWORD)%'
     images_directory: '/uploads/images/client_images/'
+    device_document_directory: 'uploads/device-document'
+    device_document_directory_full_path: '%kernel.project_dir%/public/%device_document_directory%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -32,6 +34,7 @@ services:
             $iconDirectory: '%icon_directory%'
             $clientStorageDirectory: '%client_storage_directory_full_path%'
             $iconFullDirectory: '%icon_directory_full_path%'
+            $deviceDocumentDirectory: '%device_document_directory%'
 
     _instanceof:
         App\Service\Alarm\AlarmHandlerInterface:
@@ -64,3 +67,6 @@ services:
 
     App\Service\FileUploader\Types\LogoUploader:
         $targetDirectory: '%logo_directory_full_path%'
+
+    App\Service\FileUploader\Types\DeviceDocumentUploader:
+        $targetDirectory: '%device_document_directory_full_path%'
