@@ -6,5 +6,5 @@ use App\Service\FileUploader\BaseUploader;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 
 #[Autoconfigure(lazy: true)]
-class LogoUploader extends BaseUploader
+class DeviceDocumentUploader extends BaseUploader
 {}

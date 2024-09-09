@@ -43,7 +43,7 @@ services:
     depends_on:
       - mysql
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     container_name: nadzor_phpmyadmin
     links:
       - mysql
