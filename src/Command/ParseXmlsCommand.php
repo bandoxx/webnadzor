@@ -68,6 +68,10 @@ class ParseXmlsCommand extends Command
                 continue;
             }
 
+            if (empty(filesize($xmlPath)) === true) {
+                continue;
+            }
+
             $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
 
             if (!$deviceData) {
