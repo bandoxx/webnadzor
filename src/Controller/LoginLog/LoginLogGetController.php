@@ -15,12 +15,16 @@ class LoginLogGetController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
+        $logs = [];
 
-        if ($user->getPermission() === 4) {
-            $logs = $loginLogRepository->findByClientAndIncludeSuperAdmin($clientId);
-        } else {
-            $logs = $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC']);
+        if ($user->isRoot()) {
+            $logs = $loginLogRepository->findRootLogins();
         }
+
+        $clientLogs = $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC']);
+        $logs = array_merge($logs, $clientLogs);
+
+        usort($logs, static fn($a, $b) => strcmp($b->getId(), $a->getId()));
 
         return $this->render('v2/login_log/list.html.twig', [
             'logs' => $logs

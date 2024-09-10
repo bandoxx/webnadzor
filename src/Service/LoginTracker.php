@@ -19,11 +19,33 @@ class LoginTracker
 
         if (!$user || !$successfulLogin) {
             $log = $this->loginLogFactory->badLogin($request, $user);
+            $this->entityManager->persist($log);
         } else {
-            $log = $this->loginLogFactory->goodLogin($request, $user);
+            $clients = [];
+
+            if ($user->isRoot() === false) {
+                $userClients = $user->getClients()->toArray();
+
+                foreach ($userClients as $client) {
+                    if ($client->isDeleted()) {
+                        continue;
+                    }
+
+                    $clients[] = $client;
+                }
+            }
+
+            foreach ($clients as $client) {
+                $log = $this->loginLogFactory->goodLogin($request, $user, $client);
+                $this->entityManager->persist($log);
+            }
+
+            if (empty($clients)) {
+                $log = $this->loginLogFactory->goodLogin($request, $user);
+                $this->entityManager->persist($log);
+            }
         }
 
-        $this->entityManager->persist($log);
         $this->entityManager->flush();
     }
 

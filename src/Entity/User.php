@@ -13,15 +13,15 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_MARSAL = 'Root';
-    public const ROLE_ADMINISTRATOR = 'Administrator';
-    public const ROLE_MODERATOR = 'Moderator';
-    public const ROLE_USER = 'Korisnik';
+    public const ROLE_ROOT = 4;
+    public const ROLE_ADMINISTRATOR = 3;
+    public const ROLE_MODERATOR = 2;
+    public const ROLE_USER = 1;
     public const PERMISSIONS = [
-        1 => self::ROLE_USER,
-        2 => self::ROLE_MODERATOR,
-        3 => self::ROLE_ADMINISTRATOR,
-        4 => self::ROLE_MARSAL
+        self::ROLE_USER => 'Korisnik',
+        self::ROLE_MODERATOR => 'Moderator',
+        self::ROLE_ADMINISTRATOR => 'Administrator',
+        self::ROLE_ROOT => 'Root'
     ];
 
     #[ORM\Id]
@@ -120,15 +120,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        if ($this->permission === 4) {
+        if ($this->isRoot()) {
             $roles[] = 'ROLE_MARSAL';
         }
 
-        if ($this->permission === 3) {
+        if ($this->isAdministrator()) {
             $roles[] = 'ROLE_ADMINISTRATOR';
         }
 
-        if ($this->permission === 2) {
+        if ($this->isModerator()) {
             $roles[] = 'ROLE_MODERATOR';
         }
 
@@ -225,6 +225,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPermission(): ?int
     {
         return $this->permission;
+    }
+
+    public function isUser(): bool
+    {
+        return $this->permission === self::ROLE_USER;
+    }
+
+    public function isModerator(): bool
+    {
+        return $this->permission === self::ROLE_MODERATOR;
+    }
+
+    public function isAdministrator(): bool
+    {
+        return $this->permission === self::ROLE_ADMINISTRATOR;
+    }
+
+    public function isRoot(): bool
+    {
+        return $this->permission === self::ROLE_ROOT;
     }
 
     public function getPermissionName(): ?string
