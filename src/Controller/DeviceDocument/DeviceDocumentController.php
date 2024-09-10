@@ -27,7 +27,7 @@ class DeviceDocumentController extends AbstractController
     ): Response
     {
         if ($request->getMethod() === 'POST') {
-            $year = $request->request->get('year');
+            $year = $request->request->getInt('year');
             $documentNumber = $request->request->get('documentNumber');
             $sensorNumber = $request->request->get('sensorNumber');
             $document = $request->files->get('document');
