@@ -24,7 +24,13 @@ class DeviceDeleteController extends AbstractController
             throw new UserNotFoundException();
         }
 
-        if ($user->getPermission() <= 3 || !$userPasswordChecker->isPasswordValid($user, $request->request->get('password_check', ''))) {
+        if ($user->isUser() || $user->isModerator()) {
+            $this->addFlash('error', 'Nemate prava za brisanje uređaja.');
+
+            return $this->redirectTo($clientId);
+        }
+
+        if (!$userPasswordChecker->isPasswordValid($user, $request->request->get('password_check', ''))) {
             $this->addFlash('error', 'Pogrešna lozinka.');
 
             return $this->redirectTo($clientId);
