@@ -355,7 +355,7 @@ class Device
 
     public function getXmlIntervalInSeconds(): ?int
     {
-        return $this->xmlInterval * 60 + 4 * 60; // 4 * 60 is trashhold
+        return $this->xmlInterval * 60 + 8 * 60; // 8 minutes threshold
     }
 
     public function setXmlInterval(int $xmlInterval): static
