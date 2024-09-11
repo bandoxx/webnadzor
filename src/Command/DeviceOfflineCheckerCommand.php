@@ -12,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/** Run every 2 minutes */
 #[AsCommand(name: 'app:device:offline-checker', description: 'Alarm activator/deactivator for offline devices')]
 class DeviceOfflineCheckerCommand extends Command
 {
@@ -32,7 +33,7 @@ class DeviceOfflineCheckerCommand extends Command
 
         foreach ($devices as $device) {
             $settings = $device->getClient()?->getClientSetting();
-            $deviceData = $this->deviceDataRepository->getLastRecord($device->getId());
+            $deviceData = $this->deviceDataRepository->findLastRecordForDevice($device);
 
             if ($deviceData === null || $settings === null) {
                 continue;

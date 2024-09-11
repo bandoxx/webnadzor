@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\Deprecated;
 
 /**
  * @extends ServiceEntityRepository<DeviceData>
@@ -57,6 +58,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    #[Deprecated]
     public function getLastRecord(int $deviceId): ?DeviceData
     {
         return $this->createQueryBuilder('dd')

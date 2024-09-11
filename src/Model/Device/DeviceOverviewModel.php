@@ -9,6 +9,7 @@ class DeviceOverviewModel
     private ?string $name = null;
     private ?string $note = null;
     private ?bool $online = null;
+    private ?bool $offline = null;
     private ?bool $alarm = null;
     private ?array $alarms = [];
     private ?float $power;
@@ -172,5 +173,10 @@ class DeviceOverviewModel
     {
         $this->humidityModel = $humidityModel;
         return $this;
+    }
+
+    public function getOffline(): ?bool
+    {
+        return !$this->online;
     }
 }

@@ -353,6 +353,11 @@ class Device
         return $this->xmlInterval;
     }
 
+    public function getXmlIntervalInSeconds(): ?int
+    {
+        return $this->xmlInterval * 60;
+    }
+
     public function setXmlInterval(int $xmlInterval): static
     {
         $this->xmlInterval = $xmlInterval;

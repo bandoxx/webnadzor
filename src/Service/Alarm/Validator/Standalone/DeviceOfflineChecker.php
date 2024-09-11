@@ -9,19 +9,26 @@ use App\Service\Alarm\Validator\BaseAlarmHandler;
 
 class DeviceOfflineChecker extends BaseAlarmHandler
 {
-    public function validate(DeviceData $deviceData, ClientSetting $clientSetting): void
+    public function validate(DeviceData $lastDeviceData, ClientSetting $clientSetting): void
     {
         $type = new DeviceOffline();
 
         if ($clientSetting->isDeviceOfflineAlarmActive() === false) {
-            $this->closeAlarm($deviceData, $type);
+            $this->closeAlarm($lastDeviceData, $type);
             return;
         }
 
-        if (time() - $deviceData->getDeviceDate()?->format('U') > 5400) {
-            $this->createAlarm($deviceData, $type);
+        $device = $lastDeviceData->getDevice();
+        $xmlInterval = $device->getXmlIntervalInSeconds();
+
+        if (!$xmlInterval) {
+            throw new \RuntimeException(sprintf("Xml interval is required. Device with id %d, doesn't have interval set!", $device->getId()));
+        }
+
+        if (time() - $lastDeviceData->getDeviceDate()?->format('U') > $xmlInterval) {
+            $this->createAlarm($lastDeviceData, $type);
         } else {
-            $this->closeAlarm($deviceData, $type);
+            $this->closeAlarm($lastDeviceData, $type);
         }
     }
 }

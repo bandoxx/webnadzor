@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Client;
+namespace App\Controller\Overview;
 
 use App\Entity\User;
 use App\Repository\ClientFtpRepository;
@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/overview', name: 'client_overview')]
-class OverviewController extends AbstractController
+class UserOverview extends AbstractController
 {
     public function __invoke(
         int $clientId,

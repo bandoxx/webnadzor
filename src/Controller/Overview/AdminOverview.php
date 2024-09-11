@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Controller\Admin;
+namespace App\Controller\Overview;
 
-use App\Entity\Device;
 use App\Entity\User;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceAlarmRepository;
@@ -15,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/overview', name: 'admin_overview')]
-class OverviewController extends AbstractController
+class AdminOverview extends AbstractController
 {
     public function __invoke(ClientRepository $clientRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, UrlGeneratorInterface $router, SmtpRepository $smtpRepository): RedirectResponse|\Symfony\Component\HttpFoundation\Response
     {
@@ -33,7 +32,7 @@ class OverviewController extends AbstractController
 
         $data = [];
         foreach ($clients as $client) {
-            if ($client->isDeleted() === true || in_array($user->getPermission(), [1, 2], true) || $user->getClients()->contains($client) === false) {
+            if ($client->isDeleted() === true || $user->isUser() || $user->isModerator() || $user->getClients()->contains($client) === false) {
                 continue;
             }
 
@@ -65,7 +64,7 @@ class OverviewController extends AbstractController
                     continue;
                 }
 
-                if (time() - $deviceData->getDeviceDate()?->format('U') < 5400) {
+                if (time() - $deviceData->getDeviceDate()->format('U') < $device->getXmlIntervalInSeconds()) {
                     $onlineDevices++;
                 }
 
