@@ -2,17 +2,16 @@
 
 namespace App\Controller\Device;
 
+use App\Entity\User;
 use App\Model\TemperatureType;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\DeviceUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: '/admin/{clientId}/device/{deviceId}/edit', name: 'app_device_edit', methods: 'GET|POST')]
@@ -27,11 +26,13 @@ class DeviceEditController extends AbstractController
             throw new NotFoundHttpException();
         }
 
+        /** @var User $user */
+        $user = $this->getUser();
         $icons = $deviceIconRepository->findAll();
 
         if ($request->getMethod() === 'POST') {
             try {
-                if ($this->getUser()->getPermission() >= 3) {
+                if ($user->isRoot() || $user->isAdministrator()) {
                     $errors = $deviceUpdater->update($device, $request->request->all());
 
                     return $this->redirectToRoute('app_device_edit', ['clientId' => $clientId, 'deviceId' => $deviceId]);
