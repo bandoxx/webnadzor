@@ -23,12 +23,12 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
-    public function getLast100Records(int $deviceId): array
+    public function getLast50Records(int $deviceId): array
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :deviceId')->setParameter('deviceId', $deviceId)
             ->orderBy('dd.deviceDate', 'DESC')
-            ->setMaxResults(100)
+            ->setMaxResults(50)
             ->getQuery()
             ->getResult()
         ;

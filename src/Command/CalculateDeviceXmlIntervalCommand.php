@@ -48,7 +48,7 @@ class CalculateDeviceXmlIntervalCommand extends Command
 
     private function getIntervalForDevice(Device $device)
     {
-        $deviceData = $this->deviceDataRepository->getLast100Records($device->getId());
+        $deviceData = $this->deviceDataRepository->getLast50Records($device->getId());
         $times = [];
 
         foreach ($deviceData as $key => $data) {
