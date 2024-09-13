@@ -208,17 +208,17 @@
                                 <p>
                                 <ul class="text-center text-sm lg:text-left">
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">Trenutna: <span
-                                                class="text-black dark:text-white">{{ device.temperatureModel.currentWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.currentWithUnit }}{% endif %}</span></li>
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">Srednja: <span
-                                                class="text-black dark:text-white">{{ device.temperatureModel.averageWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.averageWithUnit }}{% endif %}</span></li>
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">Maksimalna: <span
-                                                class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.maximumWithUnit }}{% endif %}</span></li>
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">Minimalna: <span
-                                                class="text-black dark:text-white">{{ device.temperatureModel.minimumWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.minimumWithUnit }}{% endif %}</span></li>
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">MKT: <span
-                                                class="text-black dark:text-white">{{ device.temperatureModel.meanWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.meanWithUnit }}{% endif %}</span></li>
                                     <li class="font-bold text-neutral-500 dark:text-neutral-200">R. vlažnost: <span
-                                                class="text-black dark:text-white">{{ device.humidityModel.currentWithUnit }}</span></li>
+                                                class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.humidityModel.currentWithUnit }}{% endif %}</span></li>
                                 </ul>
                                 </p>
                             </div>
@@ -239,15 +239,15 @@
                                     <p>
                                     <ul class="text-center lg:text-left">
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">Trenutna: <span
-                                                    class="text-black dark:text-white">{{ device.temperatureModel.currentWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.currentWithUnit }}{% endif %}</span></li>
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">Srednja: <span
-                                                    class="text-black dark:text-white">{{ device.temperatureModel.averageWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.averageWithUnit }}{% endif %}</span></li>
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">Maksimalna: <span
-                                                    class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.maximumWithUnit }}{% endif %}</span></li>
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">Minimalna: <span
-                                                    class="text-black dark:text-white">{{ device.temperatureModel.minimumWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.minimumWithUnit }}{% endif %}</span></li>
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">MKT: <span
-                                                    class="text-black dark:text-white">{{ device.temperatureModel.meanWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.temperatureModel.meanWithUnit }}{% endif %}</span></li>
                                     </ul>
                                     </p>
                                 </div>
@@ -266,7 +266,7 @@
                                     <p class="font-medium">
                                     <ul class="text-center lg:text-left">
                                         <li class="font-bold text-neutral-500 dark:text-neutral-200">R. vlažnost: <span
-                                                    class="text-black dark:text-white">{{ device.humidityModel.currentWithUnit }}</span></li>
+                                                    class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.humidityModel.currentWithUnit }}{% endif %}</span></li>
                                     </ul>
                                     </p>
                                 </div>
