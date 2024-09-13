@@ -2,9 +2,11 @@
 
 namespace App\Controller\Device\API;
 
+use App\Entity\Device;
 use App\Entity\User;
 use App\Repository\DeviceRepository;
 use App\Service\Device\PurgeDeviceData;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +18,15 @@ use Symfony\Component\Security\Core\Exception\UserNotFoundException;
 class DeviceDeleteController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $deviceId, Request $request, DeviceRepository $deviceRepository, PurgeDeviceData $purgeDeviceData, UserPasswordHasherInterface $userPasswordChecker): RedirectResponse
+    public function __invoke(
+        int $clientId,
+        #[MapEntity(id: 'deviceId')]
+        Device $device,
+        Request $request,
+        DeviceRepository $deviceRepository,
+        PurgeDeviceData $purgeDeviceData,
+        UserPasswordHasherInterface $userPasswordChecker
+    ): RedirectResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -36,11 +46,6 @@ class DeviceDeleteController extends AbstractController
             return $this->redirectTo($clientId);
         }
 
-        $device = $deviceRepository->find($deviceId);
-        if (!$device) {
-            return $this->redirectTo($clientId);
-        }
-
         $action = $request->request->get('delete_action', '');
 
         if (!in_array($action, ['delete_device', 'empty_data'], true)) {
@@ -50,9 +55,9 @@ class DeviceDeleteController extends AbstractController
         }
 
         if ($action === 'delete_device') {
-            $purgeDeviceData->removeAllDataRelatedToDevice($deviceId);
+            $purgeDeviceData->removeAllDataRelatedToDevice($device->getId());
         } else {
-            $purgeDeviceData->removeDeviceData($deviceId);
+            $purgeDeviceData->removeDeviceData($device->getId());
         }
 
         return $this->redirectTo($clientId);

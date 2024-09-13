@@ -26,7 +26,7 @@ class DeviceSettingsMaker
             $shouldSave = true;
         }
 
-        $xmlLocation = sprintf("%s/%s-Settings.xml",$this->xmlDirectory, $device->getXmlName());
+        $xmlLocation = sprintf("%s/%s-Settings.xml", $this->xmlDirectory, $device->getXmlName());
         $xmlData = $xml->asXML();
 
         if ($shouldSave) {

@@ -7,7 +7,6 @@ use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\XmlParser\DeviceSettingsMaker;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class DeviceUpdater
 {
@@ -36,7 +35,7 @@ class DeviceUpdater
         $xmlName = trim($data['xml_name']);
 
         if ($device->getXmlName() !== $xmlName) {
-            if (!$this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
+            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
                 $device->setXmlName($xmlName);
             } else {
                 $this->error[] = 'XML exists already.';
@@ -111,8 +110,8 @@ class DeviceUpdater
 
         $chartMin = trim($data['t' . $entry . '_chart_min']);
         $chartMax = trim($data['t' . $entry . '_chart_max']);
-        $device->setEntryData($entry, 't_chart_min', $chartMin ?? null);
-        $device->setEntryData($entry, 't_chart_max', $chartMax ?? null);
+        $device->setEntryData($entry, 't_chart_min', $chartMin);
+        $device->setEntryData($entry, 't_chart_max', $chartMax);
 
         $noteKey = sprintf("t%s_note", $entry);
 
@@ -160,8 +159,8 @@ class DeviceUpdater
         $chartMin = trim($data['rh' . $entry . '_chart_min']);
         $chartMax = trim($data['rh' . $entry . '_chart_max']);
 
-        $device->setEntryData($entry, 'rh_chart_min', $chartMin ?? null);
-        $device->setEntryData($entry, 'rh_chart_max', $chartMax ?? null);
+        $device->setEntryData($entry, 'rh_chart_min', $chartMin);
+        $device->setEntryData($entry, 'rh_chart_max', $chartMax);
 
         $this->setImage($device, $entry, 'rh_image', $data['rh' . $entry . '_image']);
     }

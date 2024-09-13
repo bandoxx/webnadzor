@@ -35,6 +35,10 @@ class UserDeviceAccessUpdater
             foreach ($locations as $location) {
                 [$clientId, $deviceId, $entry] = explode('-', $location);
 
+                $clientId = (int) $clientId;
+                $deviceId = (int) $deviceId;
+                $entry    = (int) $entry;
+
                 if (array_key_exists($deviceId, $this->devices) === false) {
                     $this->devices[$deviceId] = $this->deviceRepository->find($deviceId);
                 }

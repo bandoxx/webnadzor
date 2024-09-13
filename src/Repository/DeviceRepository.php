@@ -43,7 +43,7 @@ class DeviceRepository extends ServiceEntityRepository
         return $this->findBy(['client' => $clientId, 'isDeleted' => false]);
     }
 
-    public function doesMoreThenOneXmlNameExists(string $xmlName): int
+    public function doesMoreThenOneXmlNameExists(string $xmlName): bool
     {
         $numberOfDevicesWithName = $this->createQueryBuilder('d')
             ->select('COUNT(d)')

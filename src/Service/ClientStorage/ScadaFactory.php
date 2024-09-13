@@ -53,6 +53,7 @@ class ScadaFactory
         $device = $deviceInput->getDevice();
         $entry = $deviceInput->getEntry();
         $color = $deviceInput->getFontColor();
+        $text = null;
 
         $deviceData = $this->deviceOverviewFactory->create($device, $entry);
         $deviceShowUrl = $this->router->generate('app_device_entry_show', [

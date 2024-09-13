@@ -34,6 +34,7 @@ class PurgeDeviceData
 
     public function removeDeviceData(int $deviceId): void
     {
+        $this->deviceAlarmRepository->deleteAlarmsRelatedToDevice($deviceId);
         $this->deviceDataRepository->removeDataForDevice($deviceId);
     }
 }
