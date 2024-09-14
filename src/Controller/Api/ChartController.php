@@ -17,11 +17,11 @@ class ChartController extends AbstractController
 
     public function __invoke(int $deviceId, int $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler): JsonResponse
     {
-        if ($fromDate = $request->query->get('fromDate')) {
+        if ($fromDate = $request->query->getInt('fromDate')) {
             $fromDate = (new \DateTime())->setTimestamp($fromDate);
         }
 
-        if ($toDate = $request->query->get('toDate')) {
+        if ($toDate = $request->query->getInt('toDate')) {
             $toDate = (new \DateTime())->setTimestamp($toDate);
         }
 

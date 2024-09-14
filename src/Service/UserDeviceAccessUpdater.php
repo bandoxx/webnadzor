@@ -31,6 +31,8 @@ class UserDeviceAccessUpdater
 
         $this->entityManager->flush();
 
+        $clientId = null;
+
         if ($user->getPermission() === 1) {
             foreach ($locations as $location) {
                 [$clientId, $deviceId, $entry] = explode('-', $location);
@@ -38,6 +40,10 @@ class UserDeviceAccessUpdater
                 $clientId = (int) $clientId;
                 $deviceId = (int) $deviceId;
                 $entry    = (int) $entry;
+
+                if (!$clientId) {
+                    continue;
+                }
 
                 if (array_key_exists($deviceId, $this->devices) === false) {
                     $this->devices[$deviceId] = $this->deviceRepository->find($deviceId);

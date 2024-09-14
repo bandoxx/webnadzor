@@ -19,7 +19,7 @@ class MapMarkersAllClientsController extends AbstractController
     {
         $clients = $clientRepository->findAllActive();
 
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
 
         if (!$user) {

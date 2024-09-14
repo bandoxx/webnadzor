@@ -3,7 +3,7 @@
 namespace App\Service\Image;
 
 use App\Repository\DeviceDataRepository;
-use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ImageGenerator
 {
@@ -13,9 +13,9 @@ class ImageGenerator
 
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
-        private readonly KernelInterface $kernel
+        private readonly ParameterBagInterface $parameterBag
     ) {
-        $this->publicDir = $this->kernel->getProjectDir() . '/public';
+        $this->publicDir = $this->parameterBag->get('kernel.project_dir');
 
     }
 

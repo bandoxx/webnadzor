@@ -13,8 +13,8 @@ class ScadaModel
     private string $fontColor;
     private int $fontSize;
     private ?string $url;
-    private string $positionX;
-    private string $positionY;
+    private int $positionX;
+    private int $positionY;
     private bool $activeBackground;
 
     public function getType(): string
@@ -72,23 +72,23 @@ class ScadaModel
         return $this;
     }
 
-    public function getPositionX(): string
+    public function getPositionX(): int
     {
         return $this->positionX;
     }
 
-    public function setPositionX(string $positionX): self
+    public function setPositionX(int $positionX): self
     {
         $this->positionX = $positionX;
         return $this;
     }
 
-    public function getPositionY(): string
+    public function getPositionY(): int
     {
         return $this->positionY;
     }
 
-    public function setPositionY(string $positionY): self
+    public function setPositionY(int $positionY): self
     {
         $this->positionY = $positionY;
         return $this;

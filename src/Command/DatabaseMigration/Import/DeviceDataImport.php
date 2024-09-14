@@ -152,7 +152,7 @@ class DeviceDataImport
         $query = sprintf("SELECT * FROM data_lunit_%d", $newDevice->getOldId());
 
         $firstRecord = $deviceDataRepository->getFirstRecord($newDevice->getId());
-        $lastRecord = $deviceDataRepository->getLastRecord($newDevice->getId());
+        $lastRecord = $deviceDataRepository->findLastRecordForDevice($newDevice);
 
         $limit = 20_000;
 

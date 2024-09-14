@@ -85,7 +85,7 @@ class DeviceSettingsMaker
         }
 
         $number = $number * 100 + 1;
-        if (strlen($number) === 3) {
+        if (strlen((string) $number) === 3) {
             return "0$number";
         }
 

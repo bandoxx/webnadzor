@@ -58,19 +58,6 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    #[Deprecated]
-    public function getLastRecord(int $deviceId): ?DeviceData
-    {
-        return $this->createQueryBuilder('dd')
-            ->where('dd.device = :device_id')
-            ->setParameter('device_id', $deviceId)
-            ->orderBy('dd.deviceDate' , 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-
     public function removeDataForDevice(int $deviceId): void
     {
         $this->getEntityManager()->getConnection()->executeQuery(

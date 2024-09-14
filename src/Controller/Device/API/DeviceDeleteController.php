@@ -28,7 +28,7 @@ class DeviceDeleteController extends AbstractController
         UserPasswordHasherInterface $userPasswordChecker
     ): RedirectResponse
     {
-        /** @var User $user */
+        /** @var User|null $user */
         $user = $this->getUser();
         if (!$user) {
             throw new UserNotFoundException();
