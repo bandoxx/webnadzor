@@ -66,7 +66,7 @@ class DeviceUpdater
             return $this->error;
         }
 
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
 
         return [];
