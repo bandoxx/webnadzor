@@ -24,6 +24,8 @@ class DeviceUpdater
 
     public function update(Device $device, array $data): array
     {
+        $oldDevice = clone $device;
+
         ####### DEVICE NAME
         $deviceName = trim($data['device_name']);
         if ($this->length($deviceName, 40)) {
@@ -64,7 +66,7 @@ class DeviceUpdater
             return $this->error;
         }
 
-        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
 
         return [];
