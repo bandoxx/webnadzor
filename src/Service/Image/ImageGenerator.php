@@ -15,8 +15,7 @@ class ImageGenerator
         private readonly DeviceDataRepository $deviceDataRepository,
         private readonly ParameterBagInterface $parameterBag
     ) {
-        $this->publicDir = $this->parameterBag->get('kernel.project_dir');
-
+        $this->publicDir = $this->parameterBag->get('kernel.project_dir') . '/public';
     }
 
     public function generateThermometer(int $deviceId, int $entry): void
