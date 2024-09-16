@@ -47,7 +47,7 @@ class ScadaImageHandler
             $width *= $scale;
             $height *= $scale;
 
-            $this->imageResizer::resize($upload->getFileName(), (int) $width, (int) $height);
+            $this->imageResizer::resize($upload->getFullPath(), (int) $width, (int) $height);
         }
     }
 }
