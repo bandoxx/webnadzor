@@ -15,7 +15,10 @@ class LoginTracker
 
     public function log(Request $request, bool $successfulLogin = true): void
     {
-        $user = $this->userRepository->findOneByUsername($request->request->get('username'));
+        $user = null;
+        if ($username = $request->request->get('username')) {
+            $user = $this->userRepository->findOneByUsername($username);
+        }
 
         if (!$user || !$successfulLogin) {
             $log = $this->loginLogFactory->badLogin($request, $user);
