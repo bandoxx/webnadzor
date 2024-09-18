@@ -59,15 +59,15 @@ class DeviceUpdater
             $this->updateDigital($device, $entry, $data);
         }
 
-        $device->setAlarmEmail(array_values(array_filter($data['smtp'] ?? [])));
-        $device->setApplicationEmailList(array_values(array_filter($data['applicationEmail'] ?? [])));
+        $device->setAlarmEmail(array_values(array_unique(array_filter($data['smtp'] ?? []))));
+        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['applicationEmail'] ?? []))));
 
         if ($this->error) {
             return $this->error;
         }
 
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
 
         return [];
     }

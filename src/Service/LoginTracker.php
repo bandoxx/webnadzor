@@ -51,5 +51,4 @@ class LoginTracker
 
         $this->entityManager->flush();
     }
-
 }
