@@ -4,20 +4,21 @@ namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
-use App\Service\Archiver\Archiver;
+use App\Service\Archiver\Model\ArchiveModel;
+use App\Service\Archiver\PDFArchiver;
 use TCPDF;
 
-class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterface
+class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
-        $this->savePDF($pdf);
+        $this->saveInMemory($pdf);
     }
 
-    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): void
+    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): ArchiveModel
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -25,10 +26,11 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
 
         $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->savePDF($pdf, $path, $fileName);
+
+        return $this->save($pdf, $path, $fileName);
     }
 
-    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): void
+    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName): ArchiveModel
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -36,7 +38,8 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
 
         $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->savePDF($pdf, $path, $fileName);
+
+        return $this->save($pdf, $path, $fileName);
     }
 
     private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): TCPDF
@@ -46,7 +49,7 @@ class DeviceDataPDFArchiver extends Archiver implements DeviceDataArchiverInterf
         $rhUnit = $deviceEntryData['rh_unit'];
         $client = $device->getClient();
 
-        $pdf = $this->preparePDF();
+        $pdf = $this->prepare();
 
         // set default header data
         $headerData = $subtitle . "\n";

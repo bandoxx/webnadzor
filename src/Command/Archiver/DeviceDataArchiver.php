@@ -9,9 +9,8 @@ use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
-use App\Service\Exception\ExceptionFormatter;
+use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -30,6 +29,7 @@ class DeviceDataArchiver extends Command
         private DeviceRepository         $deviceRepository,
         private DeviceDataRepository     $deviceDataRepository,
         private DeviceDataArchiveFactory $deviceDataArchiveFactory,
+        private RawDataHandler           $rawDataHandler,
         private EntityManagerInterface   $entityManager
     )
     {
@@ -89,7 +89,9 @@ class DeviceDataArchiver extends Command
         $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
-        $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
+        $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
+
+        $this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
 
@@ -100,8 +102,11 @@ class DeviceDataArchiver extends Command
     private function generateMonthlyReport($device, $data, $entry, $date): void
     {
         $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
+
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
-        $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
+        $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
+
+        $this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 

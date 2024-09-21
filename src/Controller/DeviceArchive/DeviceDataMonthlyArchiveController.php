@@ -37,6 +37,10 @@ class DeviceDataMonthlyArchiveController extends AbstractController
                 'pdf_path' => $router->generate('api_device_data_archive_download', [
                     'id' => $data->getId(),
                     'type' => 'pdf'
+                ]),
+                'raw_data_path' => $router->generate('api_device_data_archive_download', [
+                    'id' => $data->getId(),
+                    'type' => 'enc'
                 ])
             ];
         }

@@ -4,6 +4,8 @@ RUN set -eux; \
     apt-get update; \
     apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
+            nano \
+            ghostscript \
             curl \
             libmemcached-dev \
             libz-dev \
@@ -23,6 +25,11 @@ RUN set -eux; \
 RUN set -eux; \
     apt update; \
     apt install -y netcat-traditional
+
+RUN apt-get update && apt-get install -y \
+    libmagickwand-dev --no-install-recommends \
+    && pecl install imagick \
+	&& docker-php-ext-enable imagick
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \

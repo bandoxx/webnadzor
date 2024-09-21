@@ -21,6 +21,9 @@ parameters:
     images_directory: '/uploads/images/client_images/'
     device_document_directory: 'uploads/device-document'
     device_document_directory_full_path: '%kernel.project_dir%/public/%device_document_directory%'
+    public_key_path: '%kernel.project_dir%/key/public.key'
+    private_key_path: '%kernel.project_dir%/key/key.pem'
+    aes_key_path: '%kernel.project_dir%/key/aes.json'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -70,3 +73,11 @@ services:
 
     App\Service\FileUploader\Types\DeviceDocumentUploader:
         $targetDirectory: '%device_document_directory_full_path%'
+
+    App\Service\Crypto\PNG\Encrypt:
+        $publicKeyPath: '%public_key_path%'
+        $aesKeyPath: '%aes_key_path%'
+
+    App\Service\Crypto\PNG\Decrypt:
+        $privateKeyPath: '%private_key_path%'
+        $aesKeyPath: '%aes_key_path%'

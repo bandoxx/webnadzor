@@ -4,22 +4,22 @@ namespace App\Service\Archiver\Alarm;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
-use App\Service\Archiver\Archiver;
+use App\Service\Archiver\XLSXArchiver;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class DeviceAlarmXLSXArchiver extends Archiver implements DeviceAlarmArchiverInterface
+class DeviceAlarmXLSXArchiver extends XLSXArchiver implements DeviceAlarmArchiverInterface
 {
     public function generate(Device $device, array $data): void
     {
         $xlsx = $this->generateBody($device, $data);
-        $this->saveXLSX($xlsx);
+        $this->saveInMemory($xlsx);
     }
 
     private function generateBody(Device $device, array $data): Spreadsheet
     {
         $client = $device->getClient();
-        $objPHPExcel = $this->prepareXLSX();
+        $objPHPExcel = $this->prepare();
 
         $objPHPExcel->setActiveSheetIndex(0);
         $objPHPExcel->getActiveSheet()->setTitle('Arhiva podataka');
