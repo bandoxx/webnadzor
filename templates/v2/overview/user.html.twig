@@ -1035,7 +1035,7 @@
                 let $inputContainer = $(".tab-image-" + tabKey);
                 let elementHTML = "";
 
-                if (type === "text") {
+                if (type === "text" || type === "onOff") {
                     elementHTML = textInputTemplate
                         .replace("{x}", x + Math.ceil(fontSize / 2) + 10)
                         .replace("{y}", y + Math.ceil(fontSize / 2))
