@@ -17,7 +17,7 @@ class RawDataHandler
 
     public function encryptPdfToPng(string $pdfFilePath, string $outputPath): void
     {
-        $temporaryPNG = sys_get_temp_dir() . '.png';
+        $temporaryPNG = sys_get_temp_dir() . '/' . uniqid() . '.png';
         $this->pdfToPngConverter->convert($pdfFilePath, $temporaryPNG);
         $this->encrypt->encrypt($temporaryPNG, $outputPath);
 

@@ -91,7 +91,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
 
-        $this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        //$this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
 
@@ -106,7 +106,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-        $this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        //$this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
