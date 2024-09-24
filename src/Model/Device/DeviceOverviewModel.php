@@ -11,7 +11,7 @@ class DeviceOverviewModel
     private ?bool $online = null;
     private ?bool $alarm = null;
     private ?array $alarms = [];
-    private ?float $power;
+    private ?float $power = null;
     private ?int $signal;
     private ?int $battery;
     private ?\DateTime $deviceDate = null;
@@ -126,7 +126,10 @@ class DeviceOverviewModel
 
     public function setPower(?float $power): self
     {
-        $this->power = number_format($power, 1);
+        if ($power) {
+            $this->power = number_format($power, 1);
+        }
+
         return $this;
     }
 
@@ -172,5 +175,10 @@ class DeviceOverviewModel
     {
         $this->humidityModel = $humidityModel;
         return $this;
+    }
+
+    public function getOffline(): ?bool
+    {
+        return !$this->online;
     }
 }

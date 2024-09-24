@@ -183,12 +183,12 @@ class DeviceData
         return $this;
     }
 
-    public function isTemperatureOutOfRange($entry): bool
+    public function isTemperatureOutOfRange(int $entry): bool
     {
         return $this->isTemperatureHigh($entry) || $this->isTemperatureLow($entry);
     }
 
-    public function isTemperatureLow($entry): bool
+    public function isTemperatureLow(int $entry): bool
     {
         $getter = "getT$entry";
         $temperature = $this->$getter();
@@ -204,7 +204,7 @@ class DeviceData
         return $minimum && $minimum > $temperature;
     }
 
-    public function isTemperatureHigh($entry): bool
+    public function isTemperatureHigh(int $entry): bool
     {
         $getter = "getT$entry";
         $temperature = $this->$getter();
@@ -220,12 +220,12 @@ class DeviceData
         return $maximum && $maximum < $temperature;
     }
 
-    public function isHumidityOutOfRange($entry): bool
+    public function isHumidityOutOfRange(int $entry): bool
     {
         return $this->isHumidityLow($entry) || $this->isHumidityHigh($entry);
     }
 
-    public function isHumidityLow($entry): bool
+    public function isHumidityLow(int $entry): bool
     {
         $getter = "getRh$entry";
         $humidity = $this->$getter();
@@ -241,7 +241,7 @@ class DeviceData
         return $minimum && $minimum > $humidity;
     }
 
-    public function isHumidityHigh($entry): bool
+    public function isHumidityHigh(int $entry): bool
     {
         $getter = "getRh$entry";
         $humidity = $this->$getter();
@@ -257,63 +257,63 @@ class DeviceData
         return $maximum && $maximum < $humidity;
     }
 
-    public function isD($entry): bool
+    public function isD(int $entry): bool
     {
         $getter = "isD$entry";
 
         return $this->$getter();
     }
 
-    public function getT($entry): ?string
+    public function getT(int $entry): ?string
     {
         $getter = "getT$entry";
 
         return $this->$getter();
     }
 
-    public function getRh($entry): ?string
+    public function getRh(int $entry): ?string
     {
         $getter = "getRh$entry";
 
         return $this->$getter();
     }
 
-    public function getTMin($entry): ?string
+    public function getTMin(int $entry): ?string
     {
         $getter = "getTMin$entry";
 
         return $this->$getter();
     }
 
-    public function getTMax($entry): ?string
+    public function getTMax(int $entry): ?string
     {
         $getter = "getTMax$entry";
 
         return $this->$getter();
     }
 
-    public function getTAvrg($entry): ?string
+    public function getTAvrg(int $entry): ?string
     {
         $getter = "getTAvrg$entry";
 
         return $this->$getter();
     }
 
-    public function getMkt($entry): ?string
+    public function getMkt(int $entry): ?string
     {
         $getter = "getMkt$entry";
 
         return $this->$getter();
     }
 
-    public function getNote($entry): ?string
+    public function getNote(int $entry): ?string
     {
         $getter = "getNote$entry";
 
         return $this->$getter();
     }
 
-    public function setNote($entry, $note): static
+    public function setNote(int $entry, ?string $note): static
     {
         $setter = "setNote$entry";
 

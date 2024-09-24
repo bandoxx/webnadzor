@@ -1,5 +1,5 @@
 <ul>
 {% for alarm in alarms %}
-    <li>{{ alarm.message }} <a href="{{ url('app_device_show', {clientId: device.client.id, deviceId: device.id}) }}">Link do uređaja</a></li>
+    <li>{{ alarm.message }} <a href="{{ url('app_device_edit', {clientId: device.client.id, deviceId: device.id}) }}">Link do uređaja</a></li>
 {% endfor %}
 </ul>

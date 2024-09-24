@@ -4,14 +4,14 @@ namespace App\Service\Archiver\Alarm;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
-use App\Service\Archiver\Archiver;
+use App\Service\Archiver\PDFArchiver;
 
-class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInterface
+class DeviceAlarmPDFArchiver extends PDFArchiver implements DeviceAlarmArchiverInterface
 {
     public function generate(Device $device, $data): void
     {
         $client = $device->getClient();
-        $pdf = $this->preparePDF();
+        $pdf = $this->prepare();
 
         // set default header data
         $headerData = sprintf('Datoteka generirana %s', (new \DateTime())->format('d.m.Y H:i:s')) . "\n";
@@ -80,6 +80,6 @@ class DeviceAlarmPDFArchiver extends Archiver implements DeviceAlarmArchiverInte
             $pdf->Cell($pdf->pixelsToUnits(30 + 105 * 2 + 60 + 100 * 2), 6, 'Nema podataka!', 1, 0, 'L', false);
         }
 
-        $this->savePDF($pdf);
+        $this->saveInMemory($pdf);
     }
 }

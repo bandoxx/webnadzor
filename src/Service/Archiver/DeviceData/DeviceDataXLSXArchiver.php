@@ -4,21 +4,22 @@ namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
-use App\Service\Archiver\Archiver;
+use App\Service\Archiver\Model\ArchiveModel;
+use App\Service\Archiver\XLSXArchiver;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInterface
+class DeviceDataXLSXArchiver extends XLSXArchiver implements DeviceDataArchiverInterface
 {
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
-        $this->saveXLSX($xlsx, $fileName);
+        $this->saveInMemory($xlsx);
     }
 
-    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): void
+    public function saveDaily(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): ArchiveModel
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -26,10 +27,11 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
 
         $fileName = sprintf("%s.xlsx", $fileName);
         $path = sprintf('%s/%s/daily/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->saveXLSX($xlsx, $path, $fileName);
+
+        return $this->save($xlsx, $path, $fileName);
     }
 
-    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): void
+    public function saveMonthly(Device $device, array $deviceData, $entry, \DateTime $archiveDate, ?string $fileName = null): ArchiveModel
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
@@ -37,7 +39,8 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
 
         $fileName = sprintf("%s.xlsx", $fileName);
         $path = sprintf('%s/%s/monthly/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->saveXLSX($xlsx, $path, $fileName);
+
+        return $this->save($xlsx, $path, $fileName);
     }
 
     private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): Spreadsheet
@@ -46,7 +49,7 @@ class DeviceDataXLSXArchiver extends Archiver implements DeviceDataArchiverInter
         $tUnit = $deviceEntryData['t_unit'];
         $rhUnit = $deviceEntryData['rh_unit'];
 
-        $objPHPExcel = $this->prepareXLSX();
+        $objPHPExcel = $this->prepare();
 
         $objPHPExcel->setActiveSheetIndex(0);
         $objPHPExcel->getActiveSheet()->setTitle('Arhiva podataka');

@@ -26,7 +26,7 @@ class DeviceSettingsMaker
             $shouldSave = true;
         }
 
-        $xmlLocation = sprintf("%s/%s-Settings.xml",$this->xmlDirectory, $device->getXmlName());
+        $xmlLocation = sprintf("%s/%s-Settings.xml", $this->xmlDirectory, $device->getXmlName());
         $xmlData = $xml->asXML();
 
         if ($shouldSave) {
@@ -62,7 +62,7 @@ class DeviceSettingsMaker
     private function saveEmail(Device $device, array $data): array
     {
         $currentEmails = $device->getAlarmEmail();
-        $newList = [$data['smtp1'], $data['smtp2'], $data['smtp3']];
+        $newList = array_values(array_unique(array_filter($data['smtp'])));
 
         if (count(array_diff($currentEmails, $newList)) === 0) {
             return [];
@@ -70,9 +70,11 @@ class DeviceSettingsMaker
 
         $xmlList = [];
 
-        foreach (range(1, 3) as $i) {
-            $email = $this->checkEmail($data["smtp$i"]);
-            $xmlList["SmtpT$i"] = $email;
+        $i = 1;
+        foreach ($newList as $email) {
+            $validatedEmail = $this->checkEmail($email);
+            $xmlList["SmtpT$i"] = $validatedEmail;
+            ++$i;
         }
 
         return $xmlList;
@@ -85,7 +87,7 @@ class DeviceSettingsMaker
         }
 
         $number = $number * 100 + 1;
-        if (strlen($number) === 3) {
+        if (strlen((string) $number) === 3) {
             return "0$number";
         }
 

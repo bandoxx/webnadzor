@@ -3,28 +3,28 @@
 namespace App\Service\Archiver\LoginLog;
 
 use App\Entity\Client;
-use App\Entity\LoginLog;
-use App\Service\Archiver\Archiver;
 use App\Service\Archiver\ArchiverInterface;
+use App\Service\Archiver\Model\ArchiveModel;
+use App\Service\Archiver\PDFArchiver;
 use TCPDF;
 
-class LoginLogPDFArchiver extends Archiver implements ArchiverInterface
+class LoginLogPDFArchiver extends PDFArchiver implements ArchiverInterface
 {
 
-    public function saveDaily(Client $client, array $loginLogs, \DateTime $archiveDate, string $fileName): void
+    public function saveDaily(Client $client, array $loginLogs, \DateTime $archiveDate, string $fileName): ArchiveModel
     {
         $subtitle = sprintf("Podaci za %s - Log prijava", $archiveDate->format(self::DAILY_FORMAT));
         $pdf = $this->generateBody($client, $loginLogs, $subtitle);
 
         $fileName = sprintf("%s.pdf", $fileName);
         $path = sprintf('%s/%s/login_log/%s/', $this->getArchiveDirectory(), $client->getId(), $archiveDate->format('Y/m/d'));
-        $this->savePDF($pdf, $path, $fileName);
+
+        return $this->save($pdf, $path, $fileName);
     }
 
     private function generateBody(Client $client, array $loginLogs, string $subtitle): TCPDF
     {
-
-        $pdf = $this->preparePDF();
+        $pdf = $this->prepare();
 
         // set default header data
         $headerData = $subtitle . "\n";

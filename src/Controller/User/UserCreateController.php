@@ -25,12 +25,12 @@ class UserCreateController extends AbstractController
 
         $username = $request->request->get('username');
 
-        $user = $userRepository->findOneByUsername($username);
+        //$user = $userRepository->findOneByUsername($username);
 
-        if ($user) {
-            // TODO: flashbag
-            return $this->json(null, Response::HTTP_BAD_REQUEST);
-        }
+        //if ($user) {
+        //    // TODO: flashbag
+        //    return $this->json(null, Response::HTTP_BAD_REQUEST);
+        //}
 
         $overviewViews = $request->request->get('overview_views');
 

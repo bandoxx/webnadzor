@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:calculate-xml-interval',
-    description: 'Function for calculating xml interval for getting xml',
+    description: 'Function for calculating xml interval for getting xml, once a day',
 )]
 class CalculateDeviceXmlIntervalCommand extends Command
 {
@@ -31,7 +31,7 @@ class CalculateDeviceXmlIntervalCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $devices = $this->deviceRepository->findBy(['xmlInterval' => 0, 'isDeleted' => false]);
+        $devices = $this->deviceRepository->findBy(['isDeleted' => false]);
 
         foreach ($devices as $device) {
             $interval = $this->getIntervalForDevice($device);
@@ -48,7 +48,7 @@ class CalculateDeviceXmlIntervalCommand extends Command
 
     private function getIntervalForDevice(Device $device)
     {
-        $deviceData = $this->deviceDataRepository->getLast100Records($device->getId());
+        $deviceData = $this->deviceDataRepository->getLast50Records($device->getId());
         $times = [];
 
         foreach ($deviceData as $key => $data) {

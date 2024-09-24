@@ -59,12 +59,12 @@ class ClientStorageDevice
         return $this;
     }
 
-    public function getEntry(): ?string
+    public function getEntry(): ?int
     {
         return $this->entry;
     }
 
-    public function setEntry(string $entry): self
+    public function setEntry(int $entry): self
     {
         $this->entry = $entry;
 

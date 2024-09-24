@@ -212,11 +212,15 @@
                                                 {{ device.name }}<br>{{ device.temperatureModel.location }}
                                                 <br> {{ device.temperatureModel.name }}
                                             </p>
-                                            <p class="text-center font-bold text-black dark:text-white">
+                                            <p class="text-center font-bold {% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">
+                                            {% if device.online %}
                                                 {{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                            {% else %}
+                                                Nema podataka
+                                            {% endif %}
                                             </p>
                                             <p class="turned-off-notification">
-                                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                                {% if device.offline %}
                                                     Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
                                                 {% endif %}
                                             </p>
@@ -228,23 +232,23 @@
                                         <ul>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Trenutna: <span
-                                                        class="{% if device.temperatureModel.isInOffset %}text-red{% else %}text-black dark:text-white{% endif %}">{{ device.temperatureModel.currentWithUnit }}</span>
+                                                        class="{% if device.temperatureModel.isInOffset or device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %} {{ device.temperatureModel.currentWithUnit }} {% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Maksimalna: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.maximumWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Minimalna: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.minimumWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.minimumWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 MKT: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.meanWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.meanWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 R. vlažnost: <span
-                                                        class="{% if device.humidityModel.inOffset %}text-red{% else %}text-black dark:text-white{% endif %}">{{ device.humidityModel.currentWithUnit }}</span>
+                                                        class="{% if device.humidityModel.inOffset or device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.humidityModel.currentWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="measurement-device-note">{{ device.note }}</li>
                                         </ul>
@@ -273,11 +277,15 @@
                                                 {{ device.name }}<br>{{ device.temperatureModel.location }}
                                                 <br> {{ device.temperatureModel.name }}
                                             </p>
-                                            <p class="text-center font-bold text-black dark:text-white">
-                                                {{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                            <p class="text-center font-bold {% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">
+                                                {% if device.online %}
+                                                    {{ device.deviceDate|date('d.m.Y. H:i:s') }}
+                                                {% else %}
+                                                    Nema podataka
+                                                {% endif %}
                                             </p>
                                             <p class="turned-off-notification">
-                                                {% if "now"|date('U') - device.deviceDate|date('U') > 5400 %}
+                                                {% if device.offline %}
                                                     Uređaj offline {{ device.deviceDate|date('d.m.Y. H:i:s')|timeAgo }}
                                                 {% endif %}
                                             </p>
@@ -293,23 +301,23 @@
                                         <ul>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Trenutna: <span
-                                                        class="{% if device.temperatureModel.isInOffset %}text-red{% else %}text-black dark:text-white{% endif %}">{{ device.temperatureModel.currentWithUnit }}</span>
+                                                        class="{% if device.temperatureModel.isInOffset or device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.currentWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Maksimalna: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.maximumWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.maximumWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 Minimalna: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.minimumWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.minimumWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 MKT: <span
-                                                        class="text-black dark:text-white">{{ device.temperatureModel.meanWithUnit }}</span>
+                                                        class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.temperatureModel.meanWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="font-bold text-neutral-500 dark:text-neutral-200 flex justify-between">
                                                 R. vlažnost: <span
-                                                        class="{% if device.humidityModel.inOffset %}text-red{% else %}text-black dark:text-white{% endif %}">{{ device.humidityModel.currentWithUnit }}</span>
+                                                        class="{% if device.humidityModel.inOffset or device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %} GREŠKA {% else %}{{ device.humidityModel.currentWithUnit }}{% endif %}</span>
                                             </li>
                                             <li class="measurement-device-note">{{ device.note }}</li>
                                         </ul>

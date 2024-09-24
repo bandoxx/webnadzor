@@ -15,16 +15,40 @@ class LoginTracker
 
     public function log(Request $request, bool $successfulLogin = true): void
     {
-        $user = $this->userRepository->findOneByUsername($request->request->get('username'));
+        $user = null;
+        if ($username = $request->request->get('username')) {
+            $user = $this->userRepository->findOneByUsername($username);
+        }
 
         if (!$user || !$successfulLogin) {
             $log = $this->loginLogFactory->badLogin($request, $user);
+            $this->entityManager->persist($log);
         } else {
-            $log = $this->loginLogFactory->goodLogin($request, $user);
+            $clients = [];
+
+            if ($user->isRoot() === false) {
+                $userClients = $user->getClients()->toArray();
+
+                foreach ($userClients as $client) {
+                    if ($client->isDeleted()) {
+                        continue;
+                    }
+
+                    $clients[] = $client;
+                }
+            }
+
+            foreach ($clients as $client) {
+                $log = $this->loginLogFactory->goodLogin($request, $user, $client);
+                $this->entityManager->persist($log);
+            }
+
+            if (empty($clients)) {
+                $log = $this->loginLogFactory->goodLogin($request, $user);
+                $this->entityManager->persist($log);
+            }
         }
 
-        $this->entityManager->persist($log);
         $this->entityManager->flush();
     }
-
 }

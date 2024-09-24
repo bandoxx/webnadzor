@@ -32,7 +32,7 @@ class DeviceOverviewFactory
         }
 
         $online = false;
-        if (time() - $data->getDeviceDate()?->format('U') < 5400) {
+        if (time() - $data->getDeviceDate()?->format('U') < $device->getXmlIntervalInSeconds()) {
             $online = true;
         }
 
@@ -81,8 +81,8 @@ class DeviceOverviewFactory
             ->setEntry($entry)
             ->setName($device->getName())
             ->setSignal($data->getGsmSignal())
-            ->setPower($data?->getVbat())
-            ->setBattery($data?->getBattery())
+            ->setPower($data->getVbat())
+            ->setBattery($data->getBattery())
             ->setOnline($online)
             ->setNote($deviceEntryData['t_note'] ?? null)
             ->setAlarms($alarms)

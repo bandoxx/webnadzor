@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[Route(path: '/', name: 'app_index')]
 class HomeController extends AbstractController
 {
-    public function __invoke(UserInterface $user): RedirectResponse
+    public function __invoke(): RedirectResponse
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
         if (!$user->getUserIdentifier()) {
             return $this->redirectToRoute('app_login');
         }

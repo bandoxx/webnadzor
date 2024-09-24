@@ -7,7 +7,6 @@ use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use App\Service\XmlParser\DeviceSettingsMaker;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class DeviceUpdater
 {
@@ -25,6 +24,8 @@ class DeviceUpdater
 
     public function update(Device $device, array $data): array
     {
+        $oldDevice = clone $device;
+
         ####### DEVICE NAME
         $deviceName = trim($data['device_name']);
         if ($this->length($deviceName, 40)) {
@@ -36,7 +37,7 @@ class DeviceUpdater
         $xmlName = trim($data['xml_name']);
 
         if ($device->getXmlName() !== $xmlName) {
-            if (!$this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
+            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
                 $device->setXmlName($xmlName);
             } else {
                 $this->error[] = 'XML exists already.';
@@ -58,15 +59,15 @@ class DeviceUpdater
             $this->updateDigital($device, $entry, $data);
         }
 
-        $device->setAlarmEmail(array_values(array_filter($data['smtp'] ?? [])));
-        $device->setApplicationEmailList(array_values(array_filter($data['applicationEmail'] ?? [])));
+        $device->setAlarmEmail(array_values(array_unique(array_filter($data['smtp'] ?? []))));
+        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['applicationEmail'] ?? []))));
 
         if ($this->error) {
             return $this->error;
         }
 
-        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
         $this->entityManager->flush();
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
 
         return [];
     }
@@ -79,11 +80,7 @@ class DeviceUpdater
 
         $tLocation = trim($data['t' . $entry . '_location']);
 
-        if ($this->length($tLocation, 50)) {
-            $device->setEntryData($entry, 't_location', $tLocation);
-        } else {
-            $this->error[] = 'T location size.';
-        }
+        $device->setEntryData($entry, 't_location', $tLocation);
 
         if ($tUse === '0') {
             return;
@@ -92,13 +89,13 @@ class DeviceUpdater
         $tName = trim($data['t' . $entry . '_name']);
         $tUnit = trim($data['t' . $entry . '_unit']);
 
-        if ($this->length($tName, 50)) {
+        if ($this->length($tName, 50, 1)) {
             $device->setEntryData($entry, 't_name', $tName);
         } else {
             $this->error[] = 'T name size';
         }
 
-        if ($this->length($tUnit, 8, 0)) {
+        if ($this->length($tUnit, 8)) {
             $device->setEntryData($entry, 't_unit', $tUnit);
         } else {
             $this->error[] = 'T unit length';
@@ -115,8 +112,8 @@ class DeviceUpdater
 
         $chartMin = trim($data['t' . $entry . '_chart_min']);
         $chartMax = trim($data['t' . $entry . '_chart_max']);
-        $device->setEntryData($entry, 't_chart_min', $chartMin ?? null);
-        $device->setEntryData($entry, 't_chart_max', $chartMax ?? null);
+        $device->setEntryData($entry, 't_chart_min', $chartMin);
+        $device->setEntryData($entry, 't_chart_max', $chartMax);
 
         $noteKey = sprintf("t%s_note", $entry);
 
@@ -140,13 +137,13 @@ class DeviceUpdater
         $thName = trim($data['rh' . $entry . '_name']);
         $rhUnit = trim($data['rh' . $entry . '_unit']);
 
-        if ($this->length($thName, 50)) {
+        if ($this->length($thName, 50, 1)) {
             $device->setEntryData($entry, 'rh_name', $thName);
         } else {
             $this->error[] = 'RH name error';
         }
 
-        if ($this->length($rhUnit, 8, 0)) {
+        if ($this->length($rhUnit, 8)) {
             $device->setEntryData($entry, 'rh_unit', $rhUnit);
         } else {
             $this->error[] = 'RH Unit error';
@@ -164,8 +161,8 @@ class DeviceUpdater
         $chartMin = trim($data['rh' . $entry . '_chart_min']);
         $chartMax = trim($data['rh' . $entry . '_chart_max']);
 
-        $device->setEntryData($entry, 'rh_chart_min', $chartMin ?? null);
-        $device->setEntryData($entry, 'rh_chart_max', $chartMax ?? null);
+        $device->setEntryData($entry, 'rh_chart_min', $chartMin);
+        $device->setEntryData($entry, 'rh_chart_max', $chartMax);
 
         $this->setImage($device, $entry, 'rh_image', $data['rh' . $entry . '_image']);
     }
@@ -215,9 +212,9 @@ class DeviceUpdater
         return $device;
     }
 
-    private function length(string $string, int $max = 1, int $min = 1): bool
+    private function length(string $string, int $max = 1, int $min = 0): bool
     {
-        $length = strlen(utf8_decode($string));
+        $length = strlen(mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8'));
 
         return $length >= $min && $length <= $max;
     }

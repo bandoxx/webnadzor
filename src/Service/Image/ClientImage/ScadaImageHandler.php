@@ -24,7 +24,7 @@ class ScadaImageHandler
 
     public function upload(UploadedFile $file, ClientStorage $clientStorage): string
     {
-        $upload = $this->clientStorageImageUploader->upload($file, $clientStorage->getId());
+        $upload = $this->clientStorageImageUploader->upload($file, (string) $clientStorage->getId());
 
         $this->resize($upload);
 
@@ -44,7 +44,10 @@ class ScadaImageHandler
         $scale = min(self::IMAGE_WIDTH / $width, self::IMAGE_HEIGHT / $height);
 
         if ($scale < 1) {
-            $this->imageResizer::resize($upload->getFileName(), $width * $scale, $height * $scale);
+            $width *= $scale;
+            $height *= $scale;
+
+            $this->imageResizer::resize($upload->getFullPath(), (int) $width, (int) $height);
         }
     }
 }

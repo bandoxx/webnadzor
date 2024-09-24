@@ -6,6 +6,7 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use JetBrains\PhpStorm\Deprecated;
 
 /**
  * @extends ServiceEntityRepository<DeviceData>
@@ -22,12 +23,12 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
-    public function getLast100Records(int $deviceId): array
+    public function getLast50Records(int $deviceId): array
     {
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :deviceId')->setParameter('deviceId', $deviceId)
             ->orderBy('dd.deviceDate', 'DESC')
-            ->setMaxResults(100)
+            ->setMaxResults(50)
             ->getQuery()
             ->getResult()
         ;
@@ -51,18 +52,6 @@ class DeviceDataRepository extends ServiceEntityRepository
             ->where('dd.device = :device_id')
             ->setParameter('device_id', $deviceId)
             ->orderBy('dd.deviceDate' , 'ASC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-
-    public function getLastRecord(int $deviceId): ?DeviceData
-    {
-        return $this->createQueryBuilder('dd')
-            ->where('dd.device = :device_id')
-            ->setParameter('device_id', $deviceId)
-            ->orderBy('dd.deviceDate' , 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult()
