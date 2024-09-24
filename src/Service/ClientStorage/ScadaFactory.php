@@ -138,7 +138,7 @@ class ScadaFactory
             $temperatureData = $deviceData->getTemperatureModel();
             $humidityData = $deviceData->getHumidityModel();
 
-            $text = sprintf("%s, %s <br>", $deviceData->getName(), $deviceData->getTemperatureModel()?->getName());
+            $text = sprintf("%s <br>", $deviceData->getTemperatureModel()?->getName());
 
             if ($temperatureData?->isUsed()) {
                 $text .= sprintf("Temp: %s <br> ", $temperatureData?->getCurrentWithUnit());
