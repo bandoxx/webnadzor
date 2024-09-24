@@ -21,14 +21,14 @@ class DeviceTypesDropdown
                 if ($isRhUsed || $isTUsed) {
                     $list[] = [
                         'value' => sprintf("%s-%s-all", $device->getId(), $entry),
-                        'text' => sprintf("%s - Sve", $text)
+                        'text' => sprintf("%s, %s - Sve", $text, $device->getEntryData($entry)['t_location'])
                     ];
                 }
 
                 if ($isTUsed) {
                     $list[] = [
                         'value' => sprintf("%s-%s-t", $device->getId(), $entry),
-                        'text' => sprintf("%s, %s - Temperatura", $text,  $device->getEntryData($entry)['t_name']),
+                        'text' => sprintf("%s, %s - Temperatura", $text, $device->getEntryData($entry)['t_name']),
                     ];
                 }
 
