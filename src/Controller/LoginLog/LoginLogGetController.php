@@ -24,7 +24,7 @@ class LoginLogGetController extends AbstractController
         $clientLogs = $loginLogRepository->findBy(['client' => $clientId], ['id' => 'DESC']);
         $logs = array_merge($logs, $clientLogs);
 
-        usort($logs, static fn($a, $b) => strcmp($b->getId(), $a->getId()));
+        usort($logs, static fn($a, $b) => strcmp($b->getServerDate()->format('U'), $a->getServerDate()->format('U')));
 
         return $this->render('v2/login_log/list.html.twig', [
             'logs' => $logs
