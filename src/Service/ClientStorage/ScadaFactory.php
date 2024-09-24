@@ -4,7 +4,9 @@ namespace App\Service\ClientStorage;
 
 use App\Entity\ClientStorage;
 use App\Entity\ClientStorageDevice;
+use App\Entity\ClientStorageDigitalEntry;
 use App\Entity\ClientStorageText;
+use App\Entity\Device;
 use App\Factory\DeviceOverviewFactory;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -31,6 +33,10 @@ class ScadaFactory
             $models[] = $this->createFromDeviceInput($deviceInput);
         }
 
+        foreach ($clientStorage->getDigitalEntryInput() as $digitalEntry) {
+            $models[] = $this->createFromDigitalEntry($digitalEntry);
+        }
+
         return $models;
     }
 
@@ -48,6 +54,47 @@ class ScadaFactory
         ;
     }
 
+    private function createFromDigitalEntry(ClientStorageDigitalEntry $digitalEntryInput): ScadaModel
+    {
+        $device = $digitalEntryInput->getDevice();
+        $entry = $digitalEntryInput->getEntry();
+
+        $deviceData = $this->deviceOverviewFactory->create($device, $entry);
+        $deviceShowUrl = $this->getUrl($device, $entry);
+
+        if (!$deviceData) {
+            return (new ScadaModel())
+                ->setType(ScadaModel::DEVICE)
+                ->setPositionX($digitalEntryInput->getPositionX())
+                ->setPositionY($digitalEntryInput->getPositionY())
+                ->setText("Nema podataka.")
+                ->setFontColor("#FF0000")
+                ->setFontSize($digitalEntryInput->getFontSize())
+                ->setActiveBackground(true)
+                ->setUrl($deviceShowUrl)
+            ;
+        }
+
+        if ($deviceData->getDigitalEntry()) {
+            $text = $digitalEntryInput->getTextOn();
+            $color = $digitalEntryInput->getFontColorOn();
+        } else {
+            $text = $digitalEntryInput->getTextOff();
+            $color = $digitalEntryInput->getFontColorOff();
+        }
+
+        return (new ScadaModel())
+            ->setType(ScadaModel::DEVICE)
+            ->setPositionX($digitalEntryInput->getPositionX())
+            ->setPositionY($digitalEntryInput->getPositionY())
+            ->setText($text)
+            ->setFontColor($color)
+            ->setFontSize($digitalEntryInput->getFontSize())
+            ->setActiveBackground($digitalEntryInput->isBackgroundActive())
+            ->setUrl($deviceShowUrl)
+        ;
+    }
+
     private function createFromDeviceInput(ClientStorageDevice $deviceInput): ScadaModel
     {
         $device = $deviceInput->getDevice();
@@ -56,11 +103,7 @@ class ScadaFactory
         $text = null;
 
         $deviceData = $this->deviceOverviewFactory->create($device, $entry);
-        $deviceShowUrl = $this->router->generate('app_device_entry_show', [
-            'clientId' => $device->getClient()->getId(),
-            'id' => $device->getId(),
-            'entry' => $entry
-        ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $deviceShowUrl = $this->getUrl($device, $entry);
 
         if (!$deviceData) {
             return (new ScadaModel())
@@ -103,5 +146,14 @@ class ScadaFactory
             ->setActiveBackground($deviceInput->isBackgroundActive())
             ->setUrl($deviceShowUrl)
         ;
+    }
+
+    private function getUrl(Device $device, int $entry): string
+    {
+        return $this->router->generate('app_device_entry_show', [
+            'clientId' => $device->getClient()->getId(),
+            'id' => $device->getId(),
+            'entry' => $entry
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
     }
 }

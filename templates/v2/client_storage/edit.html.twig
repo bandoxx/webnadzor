@@ -189,6 +189,14 @@
                                                   d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0ZM3.75 12h.007v.008H3.75V12Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm-.375 5.25h.007v.008H3.75v-.008Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/>
                                         </svg>
                                     </div>
+                                    <div class="add-onOff mb-10 cursor-pointer relative text-white mx-auto"
+                                         title="Dodaj polje sa on/off status tekstom">
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
+                                        <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+                                        </svg>
+                                    </div>
                                     <div class="transparent-switch mb-10 cursor-pointer relative text-white mx-auto"
                                          title="Prikazi tekst bez pozadine">
                                         <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full animate-pulse"></div>
@@ -288,8 +296,10 @@
         let isTransparencyToggled = false;
         let deviceNum = 0;
         let deviceDDNum = 0;
+        let deviceOnOffNum = 0;
         const $addTextInput = $(".add-textInput");
         const $addDDInput = $(".add-dropdown");
+        const $addOnOffInput = $(".add-onOff");
         const $transparentToggle = $(".transparent-switch");
         const $saveChanges = $(".save-changes");
         const $form = $("#imageForm");
@@ -335,7 +345,7 @@
                                     <div class="h-16 flex flex-col">
                                         <div class="userSelectedLocation relative z-20">
                                             <select name="device[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary {transparent}">
-                                                {% for option in dropdown %}
+                                                {% for option in deviceTypesDropdown %}
                                                 <option class="text-body" value="{{ option.value }}">{{ option.text }}</option>
                                                 {% endfor %}
                                             </select>
@@ -375,22 +385,123 @@
                                     <input type="hidden" class="deviceCoors" value="0,0" name="device[position][]"/>
                                 </div>`;
 
+
+        let onOffDeviceInputTemplate = `<div class='onOffInput relative' id='onOffInput{idNum}'>
+                                    <div class="h-16 flex flex-col">
+                                        <div class="userSelectedLocation relative z-20">
+                                            <select name="digitalEntry[option][]" class="textInputChange relative z-20 w-full appearance-none rounded border border-stroke bg-white py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary {transparent}">
+                                                {% for option in digitalEntryDropdown %}
+                                                <option class="text-body" value="{{ option.value }}">{{ option.text }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <span class="absolute right-10 top-1/2 z-20 -translate-y-1/2" style="right: 14px;">
+                                                <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                    <g opacity="0.8">
+                                                        <path clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381" fill-rule="evenodd"></path>
+                                                    </g>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="offText relative z-20">
+                                        <input name="digitalEntry[textOff][]" type="text" placeholder='Tekst za "off" polje' id="textInputChange_off{idNum}" class="textInputChange_off w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter {transparent}">
+                                        </div>
+                                        <div class="onText relative z-20 hidden">
+                                        <input name="digitalEntry[textOn][]" type="text" placeholder='Tekst za "on" polje' id="textInputChange_on{idNum}" class="textInputChange_on w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-white px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter {transparent}">
+                                        </div>
+                                        <div class="flex justify-center editButtons">
+                                        <div class="dragIcon mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                        </div>
+                                        <div class="dragIcon showBg cursor-pointer ml-3 mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
+                                                </svg>
+                                        </div>
+                                         <div class="dragIcon showOnOff cursor-pointer ml-3 mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                                                </svg>
+                                        </div>
+                                        <div class="dragIcon deleteBtn cursor-pointer ml-3 mr-3 text-white relative self-center">
+                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                              <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                            </svg>
+                                        </div>
+                                        </div>
+                                    </div>
+                                    <input type="text" id="colorPicker_off" class="colorPicker">
+                                    <input type="text" id="colorPicker_on" class="colorPicker">
+                                    <input type="number" value="16" min="1" max="30" class="fontSizer" name="digitalEntry[font][]">
+                                    <input type="hidden" class="colorPickerHiddenVal_off" value="#000000" name="digitalEntry[colorOff][]"/>
+                                    <input type="hidden" class="colorPickerHiddenVal_on" value="#000000" name="digitalEntry[colorOn][]"/>
+                                    <input type="hidden" class="showBackground" value="false" name=digitalEntry[background][]>
+                                    <input type="hidden" class="deviceCoors" value="0,0" name="digitalEntry[position][]"/>
+                                </div>`;
+
+        function addSpectrumAndDraggableDigitalEntry($elem, colorOn, colorOff, addExtraSpace = false) {
+          let $colorPickerOn = $elem.find('#colorPicker_on');
+          $colorPickerOn.spectrum({
+            color: colorOn,
+            change: function(colorOn) {
+                $(this).parent().find('.colorPickerHiddenVal_on').val(colorOn.toHexString());
+                $(this).parent().find('.textInputChange_on').css('color', colorOn.toHexString());
+            }
+          });
+
+          let $colorPickerOff = $elem.find('#colorPicker_off');
+          $colorPickerOff.spectrum({
+            color: colorOff,
+            change: function(colorOff) {
+              $(this).parent().find('.colorPickerHiddenVal_off').val(colorOff.toHexString());
+              $(this).parent().find('.textInputChange_off').css('color', colorOff.toHexString());
+            }
+          });
+
+          $elem.find('.sp-replacer').css({
+            "position": "absolute",
+            "top": $elem.hasClass("onOffInput") ? "47px" : addExtraSpace ? "2px" : "5px",
+            "right": "5px",
+            "z-index": "999"
+          });
+
+          if($elem.find('.sp-replacer').length > 1) {
+            $elem.find('.sp-replacer').last().addClass('hidden');
+          }
+
+          $elem.draggable({
+            containment: "parent",
+            drag: function(event, ui) {
+              $(this).find('.deviceCoors').val(ui.position.left + "," + ui.position.top);
+            }
+          });
+        }
+
         function addSpectrumAndDraggable($elem, color, addExtraSpace = false) {
             let $colorPicker = $elem.find('.colorPicker');
             $colorPicker.spectrum({
                 color: color,
                 change: function(color) {
-                    $(this).parent().find('.colorPickerHiddenVal').val(color.toHexString());
-                    $(this).parent().find('.textInputChange').css('color', color.toHexString());
+                  $(this).parent().find('.colorPickerHiddenVal').val(color.toHexString());
+                  $(this).parent().find('.textInputChange').css('color', color.toHexString());
                 }
             });
 
             $elem.find('.sp-replacer').css({
                 "position": "absolute",
-                "top": addExtraSpace ? "2px" : "5px",
+                "top": $elem.hasClass("onOffInput") ? "47px" : addExtraSpace ? "2px" : "5px",
                 "right": "5px",
                 "z-index": "999"
             });
+
+            if($elem.find('.sp-replacer').length > 1) {
+                $elem.find('.sp-replacer').last().addClass('hidden');
+            }
 
             $elem.draggable({
                 containment: "parent",
@@ -398,6 +509,45 @@
                     $(this).find('.deviceCoors').val(ui.position.left + "," + ui.position.top);
                 }
             });
+        }
+
+        function createDigitalInput(x, y, colorOn, colorOff, textOn, textOff, hasBg, fontSize = 16) {
+          let template = onOffDeviceInputTemplate;
+          let idNum = deviceOnOffNum;
+
+          let $elem = $(template.replace(/{idNum}/g, idNum));
+          $elem.css({ "left": x, "top": y});
+          $elem.find('.textInputChange_on').val(textOn);
+          $elem.find('.textInputChange_on').css("color", colorOn);
+          $elem.find('.colorPickerHiddenVal_on').val(colorOn);
+          $elem.find('.textInputChange_off').val(textOff);
+          $elem.find('.textInputChange_off').css("color", colorOff);
+          $elem.find('.colorPickerHiddenVal_off').val(colorOff);
+          $elem.find('.showBackground').val(hasBg);
+          if (hasBg == true) {
+            $elem.find('.showBg').html(`<div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                                </svg>
+                                `);
+            $elem.find('.showBg').attr("title", "Trenutno je prikazana pozadina za polje");
+          } else {
+            $elem.find('.showBg').html(`<div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 relative top-1 left-1 z-10">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-2.25-1.313M21 7.5v2.25m0-2.25-2.25 1.313M3 7.5l2.25-1.313M3 7.5l2.25 1.313M3 7.5v2.25m9 3 2.25-1.313M12 12.75l-2.25-1.313M12 12.75V15m0 6.75 2.25-1.313M12 21.75V19.5m0 2.25-2.25-1.313m0-16.875L12 2.25l2.25 1.313M21 14.25v2.25l-2.25 1.313m-13.5 0L3 16.5v-2.25" />
+                                </svg>
+                                `);
+            $elem.find('.showBg').attr("title", "Trenutno nije prikazana pozadina za polje");
+          }
+
+          $elem.find('.deviceCoors').val(x + ',' + y);
+
+          $imgContainer.append($elem);
+          $elem.find('.fontSizer').val(fontSize);
+          $elem.find('.fontSizer').trigger("change");
+          addSpectrumAndDraggableDigitalEntry($elem, colorOn, colorOff, false);
+
+          deviceOnOffNum++;
         }
 
         function createInput(type, x, y, color, text, hasBg, fontSize = 16) {
@@ -433,19 +583,23 @@
             $elem.find('.fontSizer').trigger("change");
             addSpectrumAndDraggable($elem, color, type !== 'text');
 
-            if (type === 'text') {
-                deviceNum++;
-            } else {
-                deviceDDNum++;
+            switch (type) {
+                case 'text':
+                    deviceNum++; break;
+                case 'onOff':
+                    deviceOnOffNum++; break;
+                default:
+                    deviceDDNum++; break;
             }
         }
 
         function toggleTransparency() {
             isTransparencyToggled = !isTransparencyToggled;
             const toggleClass = isTransparencyToggled ? 'transparent' : '{transparent}';
-            $(".textInput input[type='text'], .dropDownInput select").toggleClass("transparent");
+            $(".textInput input[type='text'], .dropDownInput select, .onOffInput select, .onOffInput input[type='text']").toggleClass("transparent");
             textInputTemplate = textInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
             dropDownInputTemplate = dropDownInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
+            onOffDeviceInputTemplate = onOffDeviceInputTemplate.replace(/{transparent}|transparent/g, toggleClass);
         }
 
         $addTextInput.click(function () {
@@ -454,6 +608,10 @@
 
         $addDDInput.click(function () {
             createInput("dropdown", 0, 0, "#000000", "", false, 16);
+        });
+
+        $addOnOffInput.click(function () {
+            // createDigitalInput(0, 0, "#000000", "#000000", "", "", false, 16);
         });
 
         $saveChanges.click(function (){
@@ -517,6 +675,13 @@
             }
         });
 
+        $(document).on("click", ".showOnOff", function () {
+            $(this).parent().parent().find(".offText").toggleClass("hidden");
+            $(this).parent().parent().find(".onText").toggleClass("hidden");
+            $(this).parent().parent().parent().find("#colorPicker_off").next(".sp-replacer").toggleClass("hidden");
+            $(this).parent().parent().parent().find("#colorPicker_on").next(".sp-replacer").toggleClass("hidden");
+        });
+
         $fileInput.change(function () {
             const file = this.files[0];
             const allowedFormats = ['image/png'];
@@ -558,6 +723,10 @@
 
         {% for input in clientStorage.deviceInput %}
             createInput("dropdown", {{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColor }}", "{{ input.device.id }}-{{ input.entry }}-{{ input.type }}", {{ input.backgroundActive ? 'true' : 'false' }}, {{ input.fontSize }});
+        {% endfor %}
+
+        {% for input in clientStorage.digitalEntryInput %}
+            createDigitalInput({{ input.positionX }}, {{ input.positionY }}, "{{ input.fontColorOn }}", "{{ input.fontColorOff }}", "{{ input.textOn }}", "{{ input.textOff }}", {{ input.backgroundActive ? 'true' : 'false' }}, {{ input.fontSize }});
         {% endfor %}
 
 

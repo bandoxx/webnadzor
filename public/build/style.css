@@ -2798,7 +2798,7 @@ body{
   --tw-bg-opacity: 1 !important;
   background-color: rgb(49 61 74 / var(--tw-bg-opacity)) !important;
 }
-:is(.dark .apexcharts-xaxistooltip),:is(.dark 
+:is(.dark .apexcharts-xaxistooltip),:is(.dark
 .apexcharts-yaxistooltip){
   --tw-border-opacity: 1 !important;
   border-color: rgb(49 61 74 / var(--tw-border-opacity)) !important;
@@ -2890,7 +2890,7 @@ body{
 .flatpickr-months .flatpickr-next-month{
   top: 1.75rem !important;
 }
-:is(.dark .flatpickr-months .flatpickr-prev-month),:is(.dark 
+:is(.dark .flatpickr-months .flatpickr-prev-month),:is(.dark
 .flatpickr-months .flatpickr-next-month){
   fill: #FFFFFF !important;
   --tw-text-opacity: 1 !important;
@@ -2904,7 +2904,7 @@ body{
 .flatpickr-months .flatpickr-next-month.flatpickr-next-month{
   right: 1.75rem !important;
 }
-:is(.dark span.flatpickr-weekday),:is(.dark 
+:is(.dark span.flatpickr-weekday),:is(.dark
 .flatpickr-months .flatpickr-month){
   fill: #FFFFFF !important;
   --tw-text-opacity: 1 !important;
@@ -2937,26 +2937,26 @@ body{
   --tw-bg-opacity: 1;
   background-color: rgb(239 244 251 / var(--tw-bg-opacity));
 }
-:is(.dark .flatpickr-day.inRange),:is(.dark 
-.flatpickr-day.prevMonthDay.inRange),:is(.dark 
-.flatpickr-day.nextMonthDay.inRange),:is(.dark 
-.flatpickr-day.today.inRange),:is(.dark 
-.flatpickr-day.prevMonthDay.today.inRange),:is(.dark 
-.flatpickr-day.nextMonthDay.today.inRange),:is(.dark 
-.flatpickr-day:hover),:is(.dark 
-.flatpickr-day.prevMonthDay:hover),:is(.dark 
-.flatpickr-day.nextMonthDay:hover),:is(.dark 
-.flatpickr-day:focus),:is(.dark 
-.flatpickr-day.prevMonthDay:focus),:is(.dark 
+:is(.dark .flatpickr-day.inRange),:is(.dark
+.flatpickr-day.prevMonthDay.inRange),:is(.dark
+.flatpickr-day.nextMonthDay.inRange),:is(.dark
+.flatpickr-day.today.inRange),:is(.dark
+.flatpickr-day.prevMonthDay.today.inRange),:is(.dark
+.flatpickr-day.nextMonthDay.today.inRange),:is(.dark
+.flatpickr-day:hover),:is(.dark
+.flatpickr-day.prevMonthDay:hover),:is(.dark
+.flatpickr-day.nextMonthDay:hover),:is(.dark
+.flatpickr-day:focus),:is(.dark
+.flatpickr-day.prevMonthDay:focus),:is(.dark
 .flatpickr-day.nextMonthDay:focus){
   --tw-border-opacity: 1 !important;
   border-color: rgb(49 61 74 / var(--tw-border-opacity)) !important;
   --tw-bg-opacity: 1 !important;
   background-color: rgb(49 61 74 / var(--tw-bg-opacity)) !important;
 }
-:is(.dark .flatpickr-day.selected),:is(.dark 
-.flatpickr-day.startRange),:is(.dark 
-.flatpickr-day.selected),:is(.dark 
+:is(.dark .flatpickr-day.selected),:is(.dark
+.flatpickr-day.startRange),:is(.dark
+.flatpickr-day.selected),:is(.dark
 .flatpickr-day.endRange){
   --tw-text-opacity: 1 !important;
   color: rgb(255 255 255 / var(--tw-text-opacity)) !important;
@@ -3137,9 +3137,9 @@ body{
   -webkit-box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
           box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
-:is(.dark .carouselOne .swiper-button-next),:is(.dark 
-.carouselOne .swiper-button-prev),:is(.dark 
-.carouselThree .swiper-button-next),:is(.dark 
+:is(.dark .carouselOne .swiper-button-next),:is(.dark
+.carouselOne .swiper-button-prev),:is(.dark
+.carouselThree .swiper-button-next),:is(.dark
 .carouselThree .swiper-button-prev){
   --tw-bg-opacity: 1;
   background-color: rgb(49 61 74 / var(--tw-bg-opacity));
@@ -3163,7 +3163,7 @@ body{
           box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
-:is(.dark .data-stats-slider-outer .swiper-button-next),:is(.dark 
+:is(.dark .data-stats-slider-outer .swiper-button-next),:is(.dark
 .data-stats-slider-outer .swiper-button-prev){
   --tw-bg-opacity: 1;
   background-color: rgb(49 61 74 / var(--tw-bg-opacity));
@@ -3764,9 +3764,13 @@ select:disabled, input:disabled{
   width: 10%;
 }
 
-.textInput, .dropDownInput{
+.textInput, .dropDownInput, .onOffInput{
   width: 250px;
   height: 100px;
+}
+
+.onOffInput{
+  height: 140px;
 }
 
 .tab-image{
@@ -3780,7 +3784,7 @@ select:disabled, input:disabled{
   max-height: 700px;
 }
 
-.textInput, .dropDownInput{
+.textInput, .dropDownInput, .onOffInput{
   cursor: -webkit-grab!important;
   cursor: grab!important;
   position: absolute!important;
@@ -3796,16 +3800,16 @@ select:disabled, input:disabled{
   color: black;
 }
 
-.textInput .transparent, .dropDownInput .transparent {
+.textInput .transparent, .dropDownInput .transparent, .onOffInput .transparent{
 background: transparent!important;
 }
 
-.textInput div, .textInput label, .dropDownInput div, .dropDownInput label {
+.textInput div, .textInput label, .dropDownInput div, .dropDownInput label, .onOffInput div, .onOffInput label{
   cursor: -webkit-grab !important;
   cursor: grab !important;
 }
 
-.add-textInput, .add-dropdown, .transparent-switch, .save-changes, .deleteStorage{
+.add-textInput, .add-dropdown, .transparent-switch, .save-changes, .deleteStorage, .add-onOff{
   width: 32px;
 }
 
@@ -3861,7 +3865,7 @@ margin-left: auto;
   visibility: hidden;
 }
 
-.textInput:hover .editButtons, .dropDownInput:hover .editButtons{
+.textInput:hover .editButtons, .dropDownInput:hover .editButtons, .onOffInput:hover .editButtons{
   visibility: visible;
 }
 
@@ -3891,6 +3895,10 @@ margin-left: auto;
 
 .max-h-52 {
   max-height: 13rem;
+}
+
+.hidden{
+  display: none!important;
 }
 
 .file\:mr-5::-webkit-file-upload-button{

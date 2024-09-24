@@ -316,6 +316,11 @@ class Device
         return (bool) $this->getEntryData($entry)['rh_use'];
     }
 
+    public function isDUsed($entry): bool
+    {
+        return (bool) $this->getEntryData($entry)['d_use'];
+    }
+
     public function getEntryData($entry)
     {
         $getter = "getEntry$entry";

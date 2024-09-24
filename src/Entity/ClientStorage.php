@@ -26,6 +26,9 @@ class ClientStorage
     #[ORM\OneToMany(targetEntity: ClientStorageDevice::class, mappedBy: 'clientStorage')]
     private Collection $deviceInput;
 
+    #[ORM\OneToMany(targetEntity: ClientStorageDigitalEntry::class, mappedBy: 'clientStorage')]
+    private Collection $digitalEntryInput;
+
     #[ORM\Column(type: "string", length: 255)]
     private $image;
 
@@ -44,6 +47,7 @@ class ClientStorage
         $this->updatedAt = new DateTime();
         $this->textInput = new ArrayCollection();
         $this->deviceInput = new ArrayCollection();
+        $this->digitalEntryInput = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,6 +169,36 @@ class ClientStorage
             // set the owning side to null (unless already changed)
             if ($deviceInput->getClientStorage() === $this) {
                 $deviceInput->setClientStorage(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ClientStorageDevice>
+     */
+    public function getDigitalEntryInput(): Collection
+    {
+        return $this->digitalEntryInput;
+    }
+
+    public function addDigitalEntryInput(ClientStorageDigitalEntry $digitalEntryInput): static
+    {
+        if (!$this->digitalEntryInput->contains($digitalEntryInput)) {
+            $this->digitalEntryInput->add($digitalEntryInput);
+            $digitalEntryInput->setClientStorage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDigitalEntryInput(ClientStorageDigitalEntry $digitalEntryInput): static
+    {
+        if ($this->digitalEntryInput->removeElement($digitalEntryInput)) {
+            // set the owning side to null (unless already changed)
+            if ($digitalEntryInput->getClientStorage() === $this) {
+                $digitalEntryInput->setClientStorage(null);
             }
         }
 

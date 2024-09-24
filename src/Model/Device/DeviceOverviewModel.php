@@ -14,6 +14,7 @@ class DeviceOverviewModel
     private ?float $power = null;
     private ?int $signal;
     private ?int $battery;
+    private ?bool $digitalEntry = null;
     private ?\DateTime $deviceDate = null;
     private ?TemperatureModel $temperatureModel = null;
     private ?HumidityModel $humidityModel = null;
@@ -180,5 +181,16 @@ class DeviceOverviewModel
     public function getOffline(): ?bool
     {
         return !$this->online;
+    }
+
+    public function getDigitalEntry(): ?bool
+    {
+        return $this->digitalEntry;
+    }
+
+    public function setDigitalEntry(?bool $digitalEntry): self
+    {
+        $this->digitalEntry = $digitalEntry;
+        return $this;
     }
 }

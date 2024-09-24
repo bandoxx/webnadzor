@@ -87,6 +87,7 @@ class DeviceOverviewFactory
             ->setNote($deviceEntryData['t_note'] ?? null)
             ->setAlarms($alarms)
             ->setDeviceDate($data->getDeviceDate())
+            ->setDigitalEntry($data->isD($entry))
             ->setTemperatureModel($temperatureModel)
             ->setHumidityModel($humidityModel)
         ;
