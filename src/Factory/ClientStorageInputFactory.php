@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\ClientStorage;
 use App\Entity\ClientStorageDevice;
+use App\Entity\ClientStorageDigitalEntry;
 use App\Entity\ClientStorageText;
 use App\Entity\Device;
 
@@ -37,4 +38,23 @@ class ClientStorageInputFactory
             ->setBackgroundActive($backgroundActive)
         ;
     }
+
+    public function createDigitalEntry(ClientStorage $clientStorage, Device $device, int $entry, int $fontSize, string $colorOn, string $colorOff, string $textOn, string $textOff, $positionX, $positionY, bool $backgroundActive): ClientStorageDigitalEntry
+    {
+        return (new ClientStorageDigitalEntry())
+            ->setClientStorage($clientStorage)
+            ->setDevice($device)
+            ->setEntry($entry)
+            ->setFontSize($fontSize)
+            ->setFontColorOn($colorOn)
+            ->setFontColorOff($colorOff)
+            ->setTextOn($textOn)
+            ->setTextOff($textOff)
+            ->setPositionX($positionX)
+            ->setPositionY($positionY)
+            ->setBackgroundActive($backgroundActive)
+        ;
+    }
+
+
 }

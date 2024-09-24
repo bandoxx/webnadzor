@@ -78,4 +78,41 @@ class ClientStorageUpdater
 
         $this->entityManager->flush();
     }
+
+    public function updateDigitalEntryInputs(ClientStorage $clientStorage, array $digitalEntries): void
+    {
+        $digitalEntriesCount = count($digitalEntries['option']);
+
+        foreach ($clientStorage->getDigitalEntryInput()->toArray() as $deviceInput) {
+            $this->entityManager->remove($deviceInput);
+        }
+
+        for ($i = 0; $i < $digitalEntriesCount; $i++) {
+            [$positionX, $positionY] = explode(',', $digitalEntries['position'][$i], 2);
+            [$deviceId, $entry] = explode('-', $digitalEntries['option'][$i], 2);
+
+            if (array_key_exists($deviceId, $this->devices) === false) {
+                $this->devices[$deviceId] = $this->deviceRepository->find($deviceId);
+            }
+
+            $entity = $this->clientStorageInputFactory->createDigitalEntry(
+                $clientStorage,
+                $this->devices[$deviceId],
+                $entry,
+                $digitalEntries['font'][$i],
+                $digitalEntries['colorOn'][$i],
+                $digitalEntries['colorOff'][$i],
+                $digitalEntries['textOn'][$i],
+                $digitalEntries['textOff'][$i],
+                $positionX,
+                $positionY,
+                $digitalEntries['background'][$i] === 'true'
+            );
+
+            $clientStorage->addDigitalEntryInput($entity);
+            $this->entityManager->persist($entity);
+        }
+
+        $this->entityManager->flush();
+    }
 }

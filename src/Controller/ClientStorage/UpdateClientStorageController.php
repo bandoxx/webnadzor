@@ -5,6 +5,8 @@ namespace App\Controller\ClientStorage;
 use App\Entity\Client;
 use App\Entity\User;
 use App\Service\ClientStorage\ClientStorageHandler;
+use App\Service\ClientStorage\Types\DeviceTypesDropdown;
+use App\Service\ClientStorage\Types\DigitalEntryDropdown;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,12 +34,14 @@ class UpdateClientStorageController extends AbstractController
             return $this->redirectToRoute('client_overview', ['clientId' => $client->getId()]);
         }
 
-        $dropDown = $clientStorageHandler->getDropDown($client);
+        $deviceTypesDropdown = DeviceTypesDropdown::get($client);
+        $digitalEntryDropdown = DigitalEntryDropdown::get($client);
 
         if ($request->isMethod('GET')) {
             return $this->render('v2/client_storage/edit.html.twig', [
                 'clientStorage' => $clientStorage,
-                'dropdown' => $dropDown
+                'deviceTypesDropdown' => $deviceTypesDropdown,
+                'digitalEntryDropdown' => $digitalEntryDropdown,
             ]);
         }
 
@@ -45,7 +49,8 @@ class UpdateClientStorageController extends AbstractController
 
         return $this->render('v2/client_storage/edit.html.twig', [
             'clientStorage' => $clientStorage,
-            'dropdown' => $dropDown
+            'deviceTypesDropdown' => $deviceTypesDropdown,
+            'digitalEntryDropdown' => $digitalEntryDropdown,
         ]);
     }
 }
