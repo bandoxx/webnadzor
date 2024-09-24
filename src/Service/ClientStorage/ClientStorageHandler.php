@@ -36,17 +36,9 @@ class ClientStorageHandler
             $this->entityManager->flush();
         }
 
-        if (isset($inputs['text']['option'])) {
-            $this->clientStorageUpdater->updateTextInputs($clientStorage, $inputs['text']);
-        }
-
-        if (isset($inputs['device']['option'])) {
-            $this->clientStorageUpdater->updateDeviceInputs($clientStorage, $inputs['device']);
-        }
-
-        if (isset($inputs['digitalEntry']['option'])) {
-            $this->clientStorageUpdater->updateDigitalEntryInputs($clientStorage, $inputs['digitalEntry']);
-        }
+        $this->clientStorageUpdater->updateTextInputs($clientStorage, isset($inputs['text']['option']) ? $inputs['text'] : []);
+        $this->clientStorageUpdater->updateDeviceInputs($clientStorage, isset($inputs['device']['option']) ? $inputs['device'] : []);
+        $this->clientStorageUpdater->updateDigitalEntryInputs($clientStorage, isset($inputs['digitalEntry']['option']) ? $inputs['digitalEntry'] : []);
     }
 
     public function removeClientStorage(ClientStorage $clientStorage): void

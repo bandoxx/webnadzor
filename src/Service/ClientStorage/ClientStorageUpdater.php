@@ -17,8 +17,17 @@ class ClientStorageUpdater
         private array $devices = []
     ) {}
 
-    public function updateDeviceInputs(ClientStorage $clientStorage, array $device): void
+    public function updateDeviceInputs(ClientStorage $clientStorage, ?array $device = []): void
     {
+        if (empty($device)) {
+            foreach ($clientStorage->getDeviceInput()->toArray() as $deviceInput) {
+                $this->entityManager->remove($deviceInput);
+            }
+
+            $this->entityManager->flush();
+            return;
+        }
+
         $deviceElementCount = count($device['option']);
 
         foreach ($clientStorage->getDeviceInput()->toArray() as $deviceInput) {
@@ -52,8 +61,17 @@ class ClientStorageUpdater
         $this->entityManager->flush();
     }
 
-    public function updateTextInputs(ClientStorage $clientStorage, array $text): void
+    public function updateTextInputs(ClientStorage $clientStorage, ?array $text = []): void
     {
+        if (empty($text)) {
+            foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
+                $this->entityManager->remove($textInput);
+            }
+
+            $this->entityManager->flush();
+            return;
+        }
+
         $textElementCount = count($text['option']);
 
         foreach ($clientStorage->getTextInput()->toArray() as $textInput) {
@@ -79,12 +97,21 @@ class ClientStorageUpdater
         $this->entityManager->flush();
     }
 
-    public function updateDigitalEntryInputs(ClientStorage $clientStorage, array $digitalEntries): void
+    public function updateDigitalEntryInputs(ClientStorage $clientStorage, ?array $digitalEntries = []): void
     {
+        if (empty($digitalEntries)) {
+            foreach ($clientStorage->getDigitalEntryInput()->toArray() as $digitalEntry) {
+                $this->entityManager->remove($digitalEntry);
+            }
+
+            $this->entityManager->flush();
+            return;
+        }
+
         $digitalEntriesCount = count($digitalEntries['option']);
 
-        foreach ($clientStorage->getDigitalEntryInput()->toArray() as $deviceInput) {
-            $this->entityManager->remove($deviceInput);
+        foreach ($clientStorage->getDigitalEntryInput()->toArray() as $digitalEntry) {
+            $this->entityManager->remove($digitalEntry);
         }
 
         for ($i = 0; $i < $digitalEntriesCount; $i++) {
