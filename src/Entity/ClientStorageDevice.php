@@ -8,6 +8,11 @@ use App\Repository\ClientStorageDeviceRepository;
 #[ORM\Entity(repositoryClass: ClientStorageDeviceRepository::class)]
 class ClientStorageDevice
 {
+
+    public const TEMPERATURE_TYPE = 't';
+    public const HUMIDITY_TYPE = 'rh';
+    public const ALL_TYPE = 'all';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]

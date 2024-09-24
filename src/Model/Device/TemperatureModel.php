@@ -130,7 +130,7 @@ class TemperatureModel
         return $this;
     }
 
-    public function getIsUsed(): bool
+    public function isUsed(): bool
     {
         return $this->isUsed;
     }

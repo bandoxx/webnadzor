@@ -118,7 +118,7 @@ class ScadaFactory
             ;
         }
 
-        if ($deviceInput->getType() === 't') {
+        if ($deviceInput->getType() === ClientStorageDevice::TEMPERATURE_TYPE) {
             $temperatureData = $deviceData->getTemperatureModel();
 
             if ($temperatureData->getIsInOffset()) {
@@ -126,7 +126,7 @@ class ScadaFactory
             }
 
             $text = $temperatureData->getCurrentWithUnit();
-        } elseif ($deviceInput->getType() === 'rh') {
+        } elseif ($deviceInput->getType() === ClientStorageDevice::HUMIDITY_TYPE) {
             $humidityData = $deviceData->getHumidityModel();
 
             if ($humidityData->isInOffset()) {
@@ -134,6 +134,21 @@ class ScadaFactory
             }
 
             $text = $humidityData->getCurrentWithUnit();
+        } elseif ($deviceInput->getType() === ClientStorageDevice::ALL_TYPE) {
+            $temperatureData = $deviceData->getTemperatureModel();
+            $humidityData = $deviceData->getHumidityModel();
+
+            $text = sprintf("%s, %s <br>", $deviceData->getName(), $deviceData->getTemperatureModel()?->getName());
+
+            if ($temperatureData?->isUsed()) {
+                $text .= sprintf("Temp: %s <br> ", $temperatureData?->getCurrentWithUnit());
+            }
+
+            if ($humidityData?->isUsed()) {
+                $text .= sprintf("Rh: %s", $humidityData?->getCurrentWithUnit());
+            }
+
+            $color = '#000000';
         }
 
         return (new ScadaModel())

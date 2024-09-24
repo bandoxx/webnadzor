@@ -1043,12 +1043,12 @@
                 let $inputContainer = $(".tab-image-" + tabKey);
                 let elementHTML = "";
 
-                if (type === "text" || type === "onOff") {
+                if (type === "text") {
                     elementHTML = textInputTemplate
                         .replace("{x}", x + Math.ceil(fontSize / 2) + 10)
                         .replace("{y}", y + Math.ceil(fontSize / 2))
                         .replace("{fontSize}", fontSize)
-                        .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px;" : "")
+                        .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px; opacity: 0.9;" : "")
                         .replace("{color}", color)
                         .replace("{text}", text);
                 } else {
@@ -1056,14 +1056,17 @@
                         .replace("{x}", x + Math.ceil(fontSize / 2) + 10)
                         .replace("{y}", y + Math.ceil(fontSize / 2))
                         .replace("{fontSize}", fontSize)
-                        .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px;" : "")
+                        .replace("{hasBg}", hasBg ? "background: #ffffff; padding:2px; opacity: 0.9;" : "")
                         .replace("{color}", color)
                         .replace("{text}", text)
                         .replace("{href}", href);
                 }
 
+                const txt = document.createElement('textarea');
+                txt.innerHTML = elementHTML;
+
                 // Append the generated element to the container
-                $inputContainer.append(elementHTML);
+                $inputContainer.append(txt.value);
             }
 
             {% for key, storage in client_storages %}
