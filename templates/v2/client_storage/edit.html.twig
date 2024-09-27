@@ -488,7 +488,7 @@
                 color: color,
                 change: function(color) {
                   $(this).parent().find('.colorPickerHiddenVal').val(color.toHexString());
-                  $(this).parent().find('.textInputChange').css('color', color.toHexString());
+                  // $(this).parent().find('.textInputChange').css('color', '#000000');
                 }
             });
 
@@ -557,7 +557,7 @@
             let $elem = $(template.replace(/{idNum}/g, idNum));
             $elem.css({ "left": x, "top": y});
             $elem.find('.textInputChange').val(text);
-            $elem.find('.textInputChange').css("color", color);
+            // $elem.find('.textInputChange').css("color", color);
             $elem.find('.colorPickerHiddenVal').val(color);
             $elem.find('.showBackground').val(hasBg);
             if (hasBg == true) {
