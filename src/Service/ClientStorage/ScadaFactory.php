@@ -148,7 +148,9 @@ class ScadaFactory
                 $text .= sprintf("Rh: %s", $humidityData?->getCurrentWithUnit());
             }
 
-            $color = '#000000';
+            if ($deviceInput->isBackgroundActive()) {
+                $color = '#FFFFFF';
+            }
         }
 
         return (new ScadaModel())
