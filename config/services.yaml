@@ -24,6 +24,7 @@ parameters:
     public_key_path: '%kernel.project_dir%/key/public.key'
     private_key_path: '%kernel.project_dir%/key/key.pem'
     aes_key_path: '%kernel.project_dir%/key/aes.json'
+    temporary_directory: '%kernel.project_dir%/var'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -81,3 +82,6 @@ services:
     App\Service\Crypto\PNG\Decrypt:
         $privateKeyPath: '%private_key_path%'
         $aesKeyPath: '%aes_key_path%'
+
+    App\Service\RawData\RawDataHandler:
+        $projectTemporaryDirectory: '%temporary_directory%'

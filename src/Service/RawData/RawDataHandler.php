@@ -2,7 +2,6 @@
 
 namespace App\Service\RawData;
 
-use App\Service\Crypto\PNG\Decrypt;
 use App\Service\Crypto\PNG\Encrypt;
 use App\Service\Image\PdfToPngConverter;
 
@@ -12,12 +11,12 @@ class RawDataHandler
     public function __construct(
         private PdfToPngConverter $pdfToPngConverter,
         private Encrypt $encrypt,
-        private Decrypt $decrypt,
+        private string $projectTemporaryDirectory,
     ) {}
 
-    public function encryptPdfToPng(string $pdfFilePath, string $outputPath): void
+    public function encryptPdfFile(string $pdfFilePath, string $outputPath): void
     {
-        $temporaryPNG = sys_get_temp_dir() . '/' . uniqid() . '.png';
+        $temporaryPNG = $this->projectTemporaryDirectory . '/image_' . uniqid() . '.png';
         $this->pdfToPngConverter->convert($pdfFilePath, $temporaryPNG);
         $this->encrypt->encrypt($temporaryPNG, $outputPath);
 
@@ -25,10 +24,4 @@ class RawDataHandler
             unlink($temporaryPNG);
         }
     }
-
-    public function decrypt()
-    {
-        // TODO:
-    }
-
 }

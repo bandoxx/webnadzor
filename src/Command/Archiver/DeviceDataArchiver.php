@@ -40,14 +40,14 @@ class DeviceDataArchiver extends Command
         $this
             ->addOption('daily', null, InputOption::VALUE_NONE, 'Daily report')
             ->addOption('monthly', null, InputOption::VALUE_NONE, 'Monthly report')
+            ->addOption('fromDate', null, InputOption::VALUE_OPTIONAL, 'From date', null)
+            ->addOption('toDate', null, InputOption::VALUE_OPTIONAL, 'To date', null)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
-
-        $date = (new \DateTime('-1 day'))->setTime(0, 0, 0);
 
         $daily = $input->getOption('daily');
         $monthly = $input->getOption('monthly');
@@ -59,23 +59,26 @@ class DeviceDataArchiver extends Command
         }
 
         $devices = $this->deviceRepository->findAll();
+        $dates = $this->getDates($input->getOption('fromDate'), $input->getOption('toDate'));
 
-        if ($daily) {
-            foreach ($devices as $device) {
-                $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
+        foreach ($dates as $date) {
+            if ($daily) {
+                foreach ($devices as $device) {
+                    $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
-                foreach([1, 2] as $entry) {
-                    $this->generateDailyReport($device, $data, $entry, $date);
+                    foreach([1, 2] as $entry) {
+                        $this->generateDailyReport($device, $data, $entry, $date);
+                    }
                 }
             }
-        }
 
-        if ($monthly) {
-            foreach ($devices as $device) {
-                $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
+            if ($monthly) {
+                foreach ($devices as $device) {
+                    $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
-                foreach([1, 2] as $entry) {
-                    $this->generateMonthlyReport($device, $data, $entry, $date);
+                    foreach([1, 2] as $entry) {
+                        $this->generateMonthlyReport($device, $data, $entry, $date);
+                    }
                 }
             }
         }
@@ -91,7 +94,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
 
-        //$this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        $this->rawDataHandler->encryptPdfFile($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
 
@@ -106,7 +109,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-        //$this->rawDataHandler->encryptPdfToPng($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        $this->rawDataHandler->encryptPdfFile($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
@@ -117,5 +120,28 @@ class DeviceDataArchiver extends Command
     private function generateFilename(string $xmlName, $entry, $date): string
     {
         return sprintf('%s_t%s_%s', $xmlName, $entry, $date);
+    }
+
+    private function getDates(?string $fromDate = null, ?string $toDate = null): \DatePeriod
+    {
+        if ($fromDate === null) {
+            $fromDate = new \DateTime('-1 day');
+            $toDate = new \DateTime();
+        } else if ($toDate === null) {
+            $fromDate = new \DateTime($fromDate);
+            $toDate = new \DateTime($toDate);
+        } else {
+            $fromDate = new \DateTime($fromDate);
+            $toDate = new \DateTime();
+        }
+
+        $fromDate->setTime(0, 0, 0);
+        $toDate->setTime(0, 0, 0);
+
+        return new \DatePeriod(
+            $fromDate,
+            new \DateInterval('P1D'),
+            $toDate
+        );
     }
 }

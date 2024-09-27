@@ -9,7 +9,9 @@ class PdfToPngConverter
 {
     public function convert(string $pdfFilePath, string $outputFilePath): void
     {
-        $image = $this->getImagick($pdfFilePath);
+        $image = new Imagick();
+        $image->readImage($pdfFilePath);
+
         $numberOfImages = $image->getNumberImages();
         $totalHeight = 0;
 
@@ -19,7 +21,7 @@ class PdfToPngConverter
 
         for ($i = 0; $i < $numberOfImages; $i++) {
             $page = new Imagick();
-            $page->setResolution(300, 300);
+            $page->setResolution(150, 150);
             $page->readImage($pdfFilePath . "[$i]");
 
             // Get the original dimensions of the second page
@@ -52,14 +54,6 @@ class PdfToPngConverter
 
         // Write the second page as a PNG image to the specified output path
         $newImage->writeImage($outputFilePath);
-    }
-
-    private function getImagick(string $pdfFilePath): Imagick
-    {
-        $imagick = new Imagick();
-        $imagick->readImage($pdfFilePath);
-
-        return $imagick;
     }
 
     private function destroyImagick(Imagick $imagick): void

@@ -29,6 +29,7 @@ class Encrypt
         $iv           = openssl_random_pseudo_bytes(16);
 
         $imageData = file_get_contents($inputFilePath);
+
         if ($imageData === false) {
             throw new \RuntimeException('Unable to read image file.');
         }
