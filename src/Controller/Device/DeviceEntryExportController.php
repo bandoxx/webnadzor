@@ -2,6 +2,7 @@
 
 namespace App\Controller\Device;
 
+use App\Factory\DeviceOverviewFactory;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
@@ -20,7 +21,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET|POST')]
 class DeviceEntryExportController extends AbstractController
 {
-    public function __invoke(int $clientId, int $id, int $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, DeviceDataPDFArchiver $PDFArchiver, DeviceDataXLSXArchiver $XLSXArchiver): StreamedResponse|Response|NotFoundHttpException
+    public function __invoke(int $clientId, int $id, int $entry, SluggerInterface $slugger, ClientRepository $clientRepository, Request $request, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceDataFormatter $deviceDataFormatter, DeviceDataPDFArchiver $PDFArchiver, DeviceDataXLSXArchiver $XLSXArchiver, DeviceOverviewFactory $deviceOverviewFactory): StreamedResponse|Response|NotFoundHttpException
     {
         $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);
@@ -67,7 +68,7 @@ class DeviceEntryExportController extends AbstractController
         $tableData = $deviceDataFormatter->getTable($device, $data, $entry);
 
         return $this->render('v2/device/device_sensor_export.html.twig',[
-            'device' => $device,
+            'device' => $deviceOverviewFactory->create($device, $entry),
             'table_data' => $tableData,
             'entry' => $entry,
             'date_from' => $dateFrom,

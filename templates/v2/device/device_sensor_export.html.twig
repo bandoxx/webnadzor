@@ -236,10 +236,11 @@
                 <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
 
                     <!-- Chart Start -->
+                    {% if device.temperatureModel.isShown %}
                         <div class="bg-white dark:bg-boxdark">
                             <div class="flex justify-between border border-stroke px-3 py-4 dark:border-strokedark">
                                 <h3 class="font-bold text-black dark:text-white">
-                                    Podaci za lokaciju { device.name }, { device.temperatureModel.name }
+                                    Podaci za lokaciju {{ device.name }}, {{ device.temperatureModel.name }}
                                 </h3>
                                 <p class="cursor-pointer closeable-btn mb-0">
                                     <svg class="size-6" fill="none" stroke="currentColor"
@@ -248,9 +249,26 @@
                                     </svg>
                                 </p>
                             </div>
-                            <div class="form-closeable highcharts-light" id="container_t" {# data-symbol="{{ device.temperatureModel.unit }}" #} data-path= "http://localhost:8080/api/chart/1286/1" {# "{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry}) }}" #}></div>
+                            <div class="form-closeable highcharts-light" id="container_t" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry}) }}"></div>
                         </div>
-                    <!-- Chart End -->
+                    {% endif %}
+
+                    {% if device.humidityModel.isShown %}
+                    <div class="bg-white dark:bg-boxdark">
+                        <div class="flex justify-between border border-stroke px-3 py-4 dark:border-strokedark">
+                            <h3 class="font-bold text-black dark:text-white">
+                                Podaci za lokaciju {{ device.name }}, {{ device.humidityModel.name }}
+                            </h3>
+                            <p class="cursor-pointer closeable-btn mb-0">
+                                <svg class="size-6" fill="none" stroke="currentColor"
+                                     stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12h14" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </p>
+                        </div>
+                        <div class="form-closeable highcharts-light" id="container_rh" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry}) }}"></div>
+                    </div>
+                    {% endif %}
 
                     <!-- ====== Data Table Start -->
                     <div
@@ -260,7 +278,7 @@
                                 class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
                         >
                             <h3 class="title-dt font-bold text-black dark:text-white">
-                                Izvoz podataka za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}
+                                Izvoz podataka za lokaciju {{ device.temperatureModel.location }}, mjerno mjesto {{ device.temperatureModel.name }}
                             </h3>
                             <table class="table w-full table-auto" id="dataTableDataExport">
                                 <thead>
