@@ -36,7 +36,7 @@ class DeviceDataRawDataFactory
         foreach ($deviceData as $data) {
             $dataset[] = [
                 $i,
-                $data->getServerDate()?->format("d.m.Y. H:i:s"),
+                $data->getDeviceDate()?->format("d.m.Y. H:i:s"),
                 $data->getNote($entry) ?: '',
                 sprintf("%s %s", $data->getT($entry), $tUnit),
                 sprintf("%s %s", $data->getTMax($entry), $tUnit),
