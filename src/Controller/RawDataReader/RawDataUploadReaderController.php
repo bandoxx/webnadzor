@@ -21,11 +21,15 @@ class RawDataUploadReaderController extends AbstractController
 
         $data = $rawDataHandler->decryptUploadedFile($file);
 
-        $header = $data[0];
-        unset($data[0]);
+        $header = [$data[0][0] ?? null, $data[1][0] ?? null];
+        unset($data[0], $data[1]);
+
+        $tableHeaders = $data[2];
+        unset($data[2]);
 
         return $this->render('v2/raw_data/table.html.twig', [
             'headers' => $header,
+            'table_header' => $tableHeaders,
             'dataset' => $data
         ]);
     }

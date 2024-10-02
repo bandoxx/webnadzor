@@ -28,6 +28,8 @@ class DeviceDataRawDataFactory
         $tUnit = $deviceEntryData['t_unit'];
         $rhUnit = $deviceEntryData['rh_unit'];
 
+        $dataset[] = [sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name'])];
+        $dataset[] = [sprintf("Podaci za: %s", $deviceData[0]->getDeviceDate()?->format("d.m.Y."))];
         $dataset[] = [
             'Br.', 'Datum', 'Napomena', 'Tren', 'Max', 'Min', 'MKT', 'R. vlažnost'
         ];

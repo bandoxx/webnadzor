@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Printable Table</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -40,10 +39,13 @@
     </style>
 </head>
 <body>
+{% for header in headers %}
+<p>{{ header }}</p>
+{% endfor %}
 <table>
     <thead>
     <tr>
-        {% for header in headers %}
+        {% for header in table_header %}
         <th>{{ header }}</th>
         {% endfor %}
     </tr>
