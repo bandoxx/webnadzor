@@ -9,6 +9,7 @@ use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
+use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -30,7 +31,8 @@ class DeviceDataArchiver extends Command
         private DeviceDataRepository     $deviceDataRepository,
         private DeviceDataArchiveFactory $deviceDataArchiveFactory,
         private RawDataHandler           $rawDataHandler,
-        private EntityManagerInterface   $entityManager
+        private DeviceDataRawDataFactory $deviceDataRawDataFactory,
+        private EntityManagerInterface   $entityManager,
     )
     {
         parent::__construct();
@@ -94,7 +96,8 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
 
-        $this->rawDataHandler->encryptPdfFile($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry), $archive->getFullPathWithoutExtension());
+
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
 
@@ -109,7 +112,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-        //$this->rawDataHandler->encryptPdfFile($archive->getFullPath(), $archive->getFullPathWithoutExtension().'.enc');
+        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 

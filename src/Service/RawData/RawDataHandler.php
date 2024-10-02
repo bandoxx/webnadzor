@@ -2,26 +2,39 @@
 
 namespace App\Service\RawData;
 
+use App\Service\Crypto\PNG\Decrypt;
 use App\Service\Crypto\PNG\Encrypt;
-use App\Service\Image\PdfToPngConverter;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class RawDataHandler
 {
 
     public function __construct(
-        private PdfToPngConverter $pdfToPngConverter,
-        private Encrypt $encrypt,
-        private string $projectTemporaryDirectory,
+        private CSVHandler $csvHandler,
+        private Encrypt    $encrypt,
+        private Decrypt    $decrypt,
+        private string     $projectTemporaryDirectory,
     ) {}
 
-    public function encryptPdfFile(string $pdfFilePath, string $outputPath): void
+    public function encrypt(array $data, string $outputPath): void
     {
-        $temporaryPNG = $this->projectTemporaryDirectory . '/image_' . uniqid() . '.png';
-        $this->pdfToPngConverter->convert($pdfFilePath, $temporaryPNG);
-        $this->encrypt->encrypt($temporaryPNG, $outputPath);
+        $csvPath = $outputPath . '.csv';
+        $this->csvHandler->write($data, $csvPath);
+        $this->encrypt->encrypt($csvPath, $outputPath . '.enc');
 
-        if (file_exists($temporaryPNG)) {
-            unlink($temporaryPNG);
+        if (file_exists($csvPath)) {
+            unlink($csvPath);
         }
+    }
+
+    public function decryptUploadedFile(UploadedFile $file): array
+    {
+        $outputFile = sys_get_temp_dir() . '/csv_'. uniqid() . '.csv';
+        $this->decrypt->decrypt($file->getPathname(), $outputFile);
+
+        $data = $this->csvHandler->read($outputFile);
+        unlink($outputFile);
+
+        return $data;
     }
 }

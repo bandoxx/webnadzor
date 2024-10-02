@@ -4,37 +4,29 @@ declare(strict_types=1);
 
 namespace App\Controller\RawDataReader;
 
-use App\Service\Crypto\PNG\Decrypt;
+use App\Service\RawData\RawDataHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/raw-data-reader', name: 'api_raw-data-reader', methods: 'POST')]
 class RawDataUploadReaderController extends AbstractController
 {
-    public function __invoke(Decrypt $decrypt, Request $request): Response
+    public function __invoke(Request $request, RawDataHandler $rawDataHandler): Response
     {
         /** @var UploadedFile $file */
         $file = $request->files->get('raw_data_file');
-        $outputFile = sys_get_temp_dir() . '/image_'. uniqid() . '.png';
-        $decrypt->decrypt($file->getPathname(), $outputFile);
 
-        $response = new StreamedResponse(
-            function () use ($outputFile) {
-                $stream = fopen($outputFile, 'rb');
-                fpassthru($stream);
-                fclose($stream);
-                unlink($outputFile);
-            }
-        );
+        $data = $rawDataHandler->decryptUploadedFile($file);
 
-        $response->headers->set('Content-Type', 'image/png');
-        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-        $response->setSharedMaxAge(60);
+        $header = $data[0];
+        unset($data[0]);
 
-        return $response;
+        return $this->render('v2/raw_data/table.html.twig', [
+            'headers' => $header,
+            'dataset' => $data
+        ]);
     }
 }
