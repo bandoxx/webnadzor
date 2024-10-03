@@ -53,11 +53,18 @@
         <div class="flex items-center justify-center gap-2 px-6 py-5.5 lg:py-6.5">
             {% if client is not null %}
                 <a href="{{ path('client_overview', {clientId: clientId}) }}">
-                    <img src="{{ asset('/assets/images/logo/' ~ client.mainLogo) }}" alt="Logo" />
+                    <img    id="desktop-logo"
+                            src="{{ asset('/assets/images/logo/' ~ client.mainLogo) }}"
+                            alt="Logo"
+                    />
                 </a>
             {% else %}
                 <a href="/">
-                    <img src="{{ asset('/assets/images/intelteh_logo.png') }}" alt="Logo" />
+                    <img
+                            src="{{ asset('/assets/images/intelteh_logo.png') }}"
+                            id="desktop-logo"
+                            alt="Logo"
+                    />
                 </a>
             {% endif %}
 
@@ -122,10 +129,26 @@
           </span>
         </span>
                     </button>
-                    <!-- Hamburger Toggle BTN -->
-                    <a class="block flex-shrink-0 lg:hidden" href="{{ path('app_index') }}">
-                        <img width="100" height="50" src="{{ asset('images/logo/intelteh_logo_black.png') }}" alt="Logo" />
-                    </a>
+                    {% if client is not null %}
+                        <a class="block flex-shrink-0 lg:hidden" href="{{ path('client_overview', {clientId: clientId}) }}">
+                            <img width="100"
+                                 height="50"
+                                 id="mobile-logo"
+                                 src="{{ asset('/assets/images/logo/' ~ client.mainLogo) }}"
+                                 alt="Logo"
+                            />
+                        </a>
+                    {% else %}
+                        <a class="block flex-shrink-0 lg:hidden" href="/">
+                            <img
+                                    width="100"
+                                    height="50"
+                                    id="mobile-logo"
+                                    src="{{ asset('images/logo/intelteh_logo_black.png') }}"
+                                    alt="Logo"
+                            />
+                        </a>
+                    {% endif %}
                 </div>
 
                 <div class="flex items-center gap-3 2xsm:gap-7">
@@ -282,6 +305,6 @@
         {% endif %}
     {% endblock %}
 {% endblock %}
-
+<script src="{{ asset('assets/js/custom/logo_background_checker.js') }}"></script>
 <script defer src="{{ asset('build/bundle.js') }}?v=1.2"></script>
 </html>
