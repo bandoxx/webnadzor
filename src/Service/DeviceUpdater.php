@@ -44,12 +44,12 @@ class DeviceUpdater
             }
         }
 
-        $location = trim($data['location']);
-        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
-            $lat_lng = explode(',', $location);
+        $location = str_replace(' ', '', $data['location']);
 
-            $device->setLatitude($lat_lng[0])
-                ->setLongitude($lat_lng[1])
+        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
+            [$latitude, $longitude] = explode(',', $location);
+            $device->setLatitude($latitude)
+                ->setLongitude($longitude)
             ;
         }
 
