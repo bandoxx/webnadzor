@@ -22,24 +22,7 @@ class DeviceOverviewFactory
 
     public function create(Device $device, int $entry): ?DeviceOverviewModel
     {
-        $deviceOverviewModel = new DeviceOverviewModel();
-
-        $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entry);
-        $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
-
-        if (!$data) {
-            return null;
-        }
-
-        $online = false;
-        if (time() - $data->getDeviceDate()?->format('U') < $device->getXmlIntervalInSeconds()) {
-            $online = true;
-        }
-
         $deviceEntryData = $device->getEntryData($entry);
-
-        $temperatureUnit = $deviceEntryData['t_unit'];
-        $humidityUnit = $deviceEntryData['rh_unit'];
 
         $icon = sprintf("%s/%s", $this->iconDirectory, 'frizider.png');
 
@@ -52,44 +35,65 @@ class DeviceOverviewFactory
         }
 
         $temperatureModel = (new TemperatureModel())
-            ->setUnit($temperatureUnit)
-            ->setAverage($data->getTAvrg($entry))
-            ->setMinimum($data->getTMin($entry))
-            ->setMaximum($data->getTMax($entry))
-            ->setMean($data->getMkt($entry))
-            ->setCurrent($data->getT($entry))
+            ->setUnit($deviceEntryData['t_unit'])
             ->setLocation($deviceEntryData['t_location'] ?? null)
             ->setName($deviceEntryData['t_name'] ?? null)
             ->setIsShown((bool) $deviceEntryData['t_show_chart'])
             ->setIsUsed((bool) $deviceEntryData['t_use'])
-            ->setIsInOffset($data->isTemperatureOutOfRange($entry))
             ->setImage($icon)
         ;
 
         $humidityModel = (new HumidityModel())
-            ->setUnit($humidityUnit)
-            ->setCurrent($data->getRh($entry))
+            ->setUnit($deviceEntryData['rh_unit'])
             ->setIsShown($deviceEntryData['rh_show_chart'])
-            ->setIsInOffset($data->isHumidityOutOfRange($entry))
             ->setIsUsed((bool) $deviceEntryData['rh_use'])
             ->setName($deviceEntryData['rh_name'] ?? null)
             ->setLocation($deviceEntryData['rh_location'] ?? null)
         ;
 
-        $deviceOverviewModel
+        $deviceOverviewModel = (new DeviceOverviewModel())
             ->setId($device->getId())
             ->setEntry($entry)
+            ->setNote($deviceEntryData['t_note'] ?? null)
             ->setName($device->getName())
+            ->setTemperatureModel($temperatureModel)
+            ->setHumidityModel($humidityModel)
+        ;
+
+        $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entry);
+        $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
+
+        if (!$data) {
+            return $deviceOverviewModel;
+        }
+
+        $online = false;
+        if (time() - $data->getDeviceDate()?->format('U') < $device->getXmlIntervalInSeconds()) {
+            $online = true;
+        }
+
+        $temperatureModel
+            ->setAverage($data->getTAvrg($entry))
+            ->setMinimum($data->getTMin($entry))
+            ->setMaximum($data->getTMax($entry))
+            ->setMean($data->getMkt($entry))
+            ->setCurrent($data->getT($entry))
+            ->setIsInOffset($data->isTemperatureOutOfRange($entry))
+        ;
+
+        $humidityModel
+            ->setCurrent($data->getRh($entry))
+            ->setIsInOffset($data->isHumidityOutOfRange($entry))
+        ;
+
+        $deviceOverviewModel
             ->setSignal($data->getGsmSignal())
             ->setPower($data->getVbat())
             ->setBattery($data->getBattery())
             ->setOnline($online)
-            ->setNote($deviceEntryData['t_note'] ?? null)
             ->setAlarms($alarms)
             ->setDeviceDate($data->getDeviceDate())
             ->setDigitalEntry($data->isD($entry))
-            ->setTemperatureModel($temperatureModel)
-            ->setHumidityModel($humidityModel)
         ;
 
         return $deviceOverviewModel;
