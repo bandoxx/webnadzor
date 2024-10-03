@@ -12,8 +12,8 @@ class DeviceOverviewModel
     private ?bool $alarm = null;
     private ?array $alarms = [];
     private ?float $power = null;
-    private ?int $signal;
-    private ?int $battery;
+    private ?int $signal = null;
+    private ?int $battery = null;
     private ?bool $digitalEntry = null;
     private ?\DateTime $deviceDate = null;
     private ?TemperatureModel $temperatureModel = null;
