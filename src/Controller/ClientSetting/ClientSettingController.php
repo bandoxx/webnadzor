@@ -2,7 +2,9 @@
 
 namespace App\Controller\ClientSetting;
 
+use App\Entity\Client;
 use App\Repository\ClientSettingRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,9 +14,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class ClientSettingController extends AbstractController
 {
 
-    public function __invoke(int $clientId, ClientSettingRepository $clientSettingRepository): Response
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        ClientSettingRepository $clientSettingRepository
+    ): Response
     {
-        $settings = $clientSettingRepository->findOneBy(['client' => $clientId]);
+        $settings = $clientSettingRepository->findOneBy(['client' => $client]);
         if (!$settings) {
             throw new BadRequestException();
         }

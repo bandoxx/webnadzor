@@ -2,8 +2,11 @@
 
 namespace App\Controller\DeviceArchive;
 
+use App\Entity\Client;
+use App\Entity\Device;
 use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -13,15 +16,16 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Route(path: '/admin/{clientId}/device/{deviceId}/{entry}/archive/monthly', name: 'app_devicedataarchive_getmonthlydata', methods: 'GET')]
 class DeviceDataMonthlyArchiveController extends AbstractController
 {
-
-    // TODO: Check client and device id
-    public function __invoke(int $clientId, int $deviceId, int $entry, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository, UrlGeneratorInterface $router): Response
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        #[MapEntity(id: 'deviceId')]
+        Device $device,
+        int $entry,
+        DeviceDataArchiveRepository $deviceDataArchiveRepository,
+        UrlGeneratorInterface $router
+    ): Response
     {
-        $device = $deviceRepository->find($deviceId);
-        if (!$device) {
-            throw new NotFoundHttpException('Device not found.');
-        }
-
         $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry);
         $result = [];
         $i = 0;

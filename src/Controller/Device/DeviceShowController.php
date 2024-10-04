@@ -2,7 +2,9 @@
 
 namespace App\Controller\Device;
 
-use App\Repository\DeviceRepository;
+use App\Entity\Client;
+use App\Entity\Device;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,10 +13,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class DeviceShowController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $deviceId, DeviceRepository $deviceRepository): Response
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        #[MapEntity(id: 'deviceId')]
+        Device $device
+    ): Response
     {
-        $device = $deviceRepository->find($deviceId);
-
         return $this->render('v1/device/edit.html.twig', [
             'device' => $device
         ]);

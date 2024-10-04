@@ -2,11 +2,13 @@
 
 namespace App\Controller\Device;
 
+use App\Entity\Client;
 use App\Entity\User;
 use App\Model\DeviceListModel;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,7 +17,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/admin/{clientId}/devices', name: 'app_device_list')]
 class DeviceReadController extends AbstractController
 {
-    public function __invoke(int $clientId, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceDataRepository $deviceDataRepository): Response|NotFoundHttpException
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        DeviceRepository $deviceRepository,
+        DeviceAlarmRepository $deviceAlarmRepository,
+        DeviceDataRepository $deviceDataRepository
+    ): Response|NotFoundHttpException
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -38,7 +46,7 @@ class DeviceReadController extends AbstractController
 
             $devices = array_values($devices);
         } else {
-            $devices = $deviceRepository->findBy(['client' => $clientId]);
+            $devices = $deviceRepository->findBy(['client' => $client]);
         }
 
         $deviceTable = [];

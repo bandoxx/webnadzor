@@ -2,8 +2,10 @@
 
 namespace App\Controller\ClientSetting\API;
 
+use App\Entity\Client;
 use App\Repository\ClientRepository;
 use App\Service\Client\ClientSettingsUpdater;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,16 +16,16 @@ use Symfony\Component\Routing\Attribute\Route;
 class ClientSettingUpdateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientSettingsUpdater $clientSettingsUpdater, ClientRepository $clientRepository): Response|NotFoundHttpException
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        Request $request,
+        ClientSettingsUpdater $clientSettingsUpdater
+    ): Response|NotFoundHttpException
     {
-        $client = $clientRepository->find($clientId);
-        if (!$client) {
-            return $this->createNotFoundException('Client not found');
-        }
-
         $clientSettingsUpdater->update($client, $request);
 
-        return $this->redirectToRoute('client_overview', ['clientId' => $clientId]);
+        return $this->redirectToRoute('client_overview', ['clientId' => $client->getId()]);
     }
 
 }

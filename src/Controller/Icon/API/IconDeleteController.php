@@ -2,8 +2,10 @@
 
 namespace App\Controller\Icon\API;
 
+use App\Entity\DeviceIcon;
 use App\Repository\DeviceIconRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,14 +14,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class IconDeleteController extends AbstractController
 {
 
-    public function __invoke(int $id, DeviceIconRepository $deviceIconRepository, EntityManagerInterface $entityManager): RedirectResponse
+    public function __invoke(
+        #[MapEntity(id: 'id')]
+        DeviceIcon $icon,
+        DeviceIconRepository $deviceIconRepository,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse
     {
-        $icon = $deviceIconRepository->find($id);
-
-        if (!$icon) {
-            return $this->redirectToRoute('app_icon_index');
-        }
-
         $entityManager->remove($icon);
         $entityManager->flush();
 

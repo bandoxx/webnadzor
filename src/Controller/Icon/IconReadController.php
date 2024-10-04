@@ -11,7 +11,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route(path: '/admin/icons', name: 'app_icon_index', methods: 'GET')]
 class IconReadController extends AbstractController
 {
-
     public function __invoke(DeviceIconRepository $deviceIconRepository, ParameterBagInterface $parameterBag): Response
     {
         $icons = $deviceIconRepository->findAll();

@@ -2,7 +2,9 @@
 
 namespace App\Controller\Image;
 
+use App\Entity\Device;
 use App\Service\Image\ImageGenerator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Routing\Attribute\Route;
@@ -11,8 +13,15 @@ use Symfony\Component\Routing\Attribute\Route;
 class ThermometerController extends AbstractController
 {
 
-    public function __invoke(int $deviceId, int $entry, ImageGenerator $imageGenerator): StreamedResponse
+    public function __invoke(
+        #[MapEntity(id: 'deviceId')]
+        Device $device,
+        int $entry,
+        ImageGenerator $imageGenerator
+    ): StreamedResponse
     {
+        $deviceId = $device->getId();
+
         $response = new StreamedResponse(
             function () use ($imageGenerator, $deviceId, $entry) {
                 $imageGenerator->generateThermometer($deviceId, $entry);

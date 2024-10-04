@@ -2,6 +2,7 @@
 
 namespace App\Controller\Archive;
 
+use App\Entity\Device;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\Alarm\DeviceAlarmPDFArchiver;
@@ -9,23 +10,22 @@ use App\Service\Archiver\Alarm\DeviceAlarmXLSXArchiver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/alarm/archive/{id}/{type}', name: 'api_device_alarm_archive_download')]
 class DownloadAlarmArchiveController extends AbstractController
 {
 
-    public function __invoke(int $id, string $type, string $archiveDirectory, DeviceRepository $deviceRepository, DeviceAlarmRepository $deviceAlarmRepository, DeviceAlarmPDFArchiver $deviceAlarmPDFArchiver, DeviceAlarmXLSXArchiver $deviceAlarmXLSXArchiver): StreamedResponse|BadRequestHttpException
+    public function __invoke(
+        Device $device,
+        string $type,
+        DeviceAlarmRepository $deviceAlarmRepository,
+        DeviceAlarmPDFArchiver $deviceAlarmPDFArchiver,
+        DeviceAlarmXLSXArchiver $deviceAlarmXLSXArchiver
+    ): StreamedResponse|BadRequestHttpException
     {
         if (!in_array($type, ['xlsx', 'pdf'])) {
             return new BadRequestHttpException();
-        }
-
-        $device = $deviceRepository->find($id);
-
-        if (!$device) {
-            throw new NotFoundHttpException();
         }
 
         if ($type === 'pdf') {

@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\DeviceData;
 use App\Entity\Device;
+use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 
 class ChartHandler
@@ -12,24 +13,31 @@ class ChartHandler
     public const TEMPERATURE = 'temperature';
     public const HUMIDITY = 'humidity';
 
-    public function __construct(private DeviceRepository $deviceRepository) {}
+    public function __construct(
+        private readonly DeviceDataRepository $deviceDataRepository,
+    ) {}
 
-    public function createChart(string $type, array $data, int $deviceId, int $entry): ?array
+    public function createChart(Device $device, int $entry, string $type, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): array
     {
+        $data = $this->deviceDataRepository->getChartData(
+            $device->getId(),
+            $fromDate,
+            $toDate
+        );
+
         if ($type === self::TEMPERATURE) {
-            return $this->createTemperatureChart($data, $deviceId, $entry);
+            return $this->createTemperatureChart($data, $device, $entry);
         }
 
         if ($type === self::HUMIDITY) {
-            return $this->createHumidityChart($data, $deviceId, $entry);
+            return $this->createHumidityChart($data, $device, $entry);
         }
 
-        return null;
+        return [];
     }
 
-    private function createTemperatureChart(array $data, int $deviceId, int $entry): array
+    private function createTemperatureChart(array $data, Device $device, int $entry): array
     {
-        $device = $this->deviceRepository->find($deviceId);
         $entryData = $device->getEntryData($entry);
 
         $result = [
@@ -51,9 +59,8 @@ class ChartHandler
         return $result;
     }
 
-    private function createHumidityChart(array $data, int $deviceId, int $entry): array
+    private function createHumidityChart(array $data, Device $device, int $entry): array
     {
-        $device = $this->deviceRepository->find($deviceId);
         $entryData = $device->getEntryData($entry);
 
         $result = [

@@ -2,7 +2,7 @@
 
 namespace App\Controller\Archive;
 
-use App\Repository\DeviceDataArchiveRepository;
+use App\Entity\DeviceDataArchive;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -13,16 +13,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class DownloadDeviceArchiveController extends AbstractController
 {
 
-    public function __invoke(int $id, string $type, string $archiveDirectory, DeviceDataArchiveRepository $archiveRepository): BinaryFileResponse|BadRequestHttpException
+    public function __invoke(
+        DeviceDataArchive $archive,
+        string $type,
+        string $archiveDirectory,
+    ): BinaryFileResponse|BadRequestHttpException
     {
         if (!in_array($type, ['xlsx', 'pdf', 'enc'])) {
             return new BadRequestHttpException();
-        }
-
-        $archive = $archiveRepository->find($id);
-
-        if (!$archive) {
-            throw new NotFoundHttpException();
         }
 
         $location = sprintf('%s/%s/%s/%s/%s.%s',

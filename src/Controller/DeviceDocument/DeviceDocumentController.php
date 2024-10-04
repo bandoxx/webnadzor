@@ -2,6 +2,7 @@
 
 namespace App\Controller\DeviceDocument;
 
+use App\Entity\Client;
 use App\Entity\Device;
 use App\Repository\DeviceDocumentRepository;
 use App\Service\Device\DeviceDocumentHandler;
@@ -16,7 +17,8 @@ class DeviceDocumentController extends AbstractController
 {
 
     public function __invoke(
-        int $clientId,
+        #[MapEntity(id: 'clientId')]
+        Client $client,
         #[MapEntity(id: 'deviceId')]
         Device $device,
         int $entry,

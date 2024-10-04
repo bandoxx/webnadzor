@@ -2,9 +2,9 @@
 
 namespace App\Controller\Api;
 
-use App\Model\ChartType;
-use App\Repository\DeviceDataRepository;
+use App\Entity\Device;
 use App\Service\ChartHandler;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,8 +15,20 @@ use Symfony\Component\Routing\Attribute\Route;
 class ChartController extends AbstractController
 {
 
-    public function __invoke(int $deviceId, int $entry, DeviceDataRepository $deviceDataRepository, Request $request, ChartHandler $chartHandler): JsonResponse
+    public function __invoke(
+        #[MapEntity(id: 'deviceId')]
+        Device $device,
+        int $entry,
+        Request $request,
+        ChartHandler $chartHandler
+    ): JsonResponse
     {
+        $type = $request->query->get('type');
+
+        if (in_array($type, [ChartHandler::HUMIDITY, ChartHandler::TEMPERATURE], true) === false) {
+            return $this->json('Type not valid.', Response::HTTP_BAD_REQUEST);
+        }
+
         if ($fromDate = $request->query->get('fromDate')) {
             $fromDate = (new \DateTime())->setTimestamp((int) $fromDate);
         }
@@ -25,15 +37,7 @@ class ChartController extends AbstractController
             $toDate = (new \DateTime())->setTimestamp((int) $toDate);
         }
 
-        $type = $request->query->get('type');
-
-        $data = $deviceDataRepository->getChartData(
-            $deviceId,
-            $fromDate,
-            $toDate
-        );
-
-        $result = $chartHandler->createChart($type, $data, $deviceId, $entry);
+        $result = $chartHandler->createChart($device, $entry, $type, $fromDate, $toDate);
 
         return $this->json($result, Response::HTTP_OK);
     }

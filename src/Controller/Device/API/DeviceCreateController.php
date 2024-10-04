@@ -2,13 +2,13 @@
 
 namespace App\Controller\Device\API;
 
+use App\Entity\Client;
 use App\Factory\DeviceFactory;
 use App\Repository\ClientRepository;
 use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -18,25 +18,27 @@ use Symfony\Component\Routing\Attribute\Route;
 class DeviceCreateController extends AbstractController
 {
 
-    public function __invoke(int $clientId, Request $request, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceFactory $deviceFactory, EntityManagerInterface $entityManager): RedirectResponse|NotFoundHttpException
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        Request $request,
+        DeviceRepository $deviceRepository,
+        DeviceFactory $deviceFactory,
+        EntityManagerInterface $entityManager
+    ): RedirectResponse|NotFoundHttpException
     {
         $xmlName = $request->request->get('xmlName', '');
 
         if ($deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
             $this->addFlash('error', sprintf("Xml naziv: `%s` već postoji!", $xmlName));
-            return $this->redirectToRoute('app_device_list', ['clientId' => $clientId]);
-        }
-
-        $client = $clientRepository->find($clientId);
-        if (!$client) {
-            return $this->createNotFoundException('Client not found');
+            return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
         }
 
         $device = $deviceFactory->create($client, $xmlName);
         $entityManager->persist($device);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_device_list', ['clientId' => $clientId]);
+        return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
 
     }
 

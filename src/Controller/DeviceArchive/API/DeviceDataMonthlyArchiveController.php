@@ -2,8 +2,9 @@
 
 namespace App\Controller\DeviceArchive\API;
 
+use App\Entity\Device;
 use App\Repository\DeviceDataArchiveRepository;
-use App\Repository\DeviceRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,9 +14,14 @@ use Symfony\Component\Routing\RouterInterface;
 class DeviceDataMonthlyArchiveController extends AbstractController
 {
 
-    public function __invoke(int $id, int $entry, DeviceRepository $deviceRepository, DeviceDataArchiveRepository $deviceDataArchiveRepository, RouterInterface $router): Response
+    public function __invoke(
+        #[MapEntity(id: 'id')]
+        Device $device,
+        int $entry,
+        DeviceDataArchiveRepository $deviceDataArchiveRepository,
+        RouterInterface $router
+    ): Response
     {
-        $device = $deviceRepository->find($id);
         $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry);
         $result = [];
         $i = 0;

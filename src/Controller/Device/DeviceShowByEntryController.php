@@ -2,11 +2,11 @@
 
 namespace App\Controller\Device;
 
+use App\Entity\Client;
+use App\Entity\Device;
 use App\Factory\DeviceOverviewFactory;
-use App\Repository\ClientRepository;
-use App\Repository\DeviceDataRepository;
-use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,12 +15,20 @@ use Symfony\Component\Routing\Attribute\Route;
 class DeviceShowByEntryController extends AbstractController
 {
 
-    public function __invoke(int $clientId, int $id, int $entry, DeviceOverviewFactory $deviceOverviewFactory, ClientRepository $clientRepository, DeviceRepository $deviceRepository, DeviceDataRepository $deviceDataRepository, DeviceIconRepository $deviceIconRepository): Response
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        #[MapEntity(id: 'id')]
+        Device $device,
+        int $entry,
+        DeviceOverviewFactory $deviceOverviewFactory,
+        DeviceRepository $deviceRepository,
+    ): Response
     {
-        $device = $deviceOverviewFactory->create($deviceRepository->find($id), $entry);
+        $deviceOverview = $deviceOverviewFactory->create($device, $entry);
 
         return $this->render('v2/device/device_sensor_show.html.twig', [
-            'device' => $device,
+            'device' => $deviceOverview,
             'entry' => $entry,
         ]);
     }

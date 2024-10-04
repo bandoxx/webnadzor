@@ -2,7 +2,9 @@
 
 namespace App\Controller\LoginLog;
 
+use App\Entity\Client;
 use App\Repository\LoginLogArchiveRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,9 +14,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 class LoginLogArchiveController extends AbstractController
 {
 
-    public function __invoke(int $clientId, LoginLogArchiveRepository $loginLogArchiveRepository, UrlGeneratorInterface $router): Response
+    public function __invoke(
+        #[MapEntity(id: 'clientId')]
+        Client $client,
+        LoginLogArchiveRepository $loginLogArchiveRepository,
+        UrlGeneratorInterface $router
+    ): Response
     {
-        $archiveData = $loginLogArchiveRepository->findBy(['client' => $clientId]);
+        $archiveData = $loginLogArchiveRepository->findBy(['client' => $client]);
         $result = [];
         $i = 0;
 
