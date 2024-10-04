@@ -199,7 +199,7 @@
                         <div class="rounded-sm flex flex-wrap justify-center lg:justify-around w-full lg:w-100 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                             <div class="flex w-full justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                 <h3 class="font-bold text-black dark:text-white">
-                                    {{ device.name }}, {{ device.temperatureModel.location }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                    {{ device.name }}, <br> {{ device.temperatureModel.location }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
                                 </h3>
                             </div>
                             <div class="text-center flex justify-center px-4 py-4">
@@ -230,7 +230,7 @@
                             <div class="rounded-sm mb-5 h-full flex flex-wrap justify-center lg:justify-around lg:mb-0 w-full lg:w-100 lg:mr-6 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full justify-between border-b h-fit border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        {{ device.name }}, {{ device.temperatureModel.location }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        {{ device.name }}, <br>{{ device.temperatureModel.location }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
                                     </h3>
                                 </div>
                                 <div class="text-center flex justify-center px-4 py-4">
@@ -257,7 +257,7 @@
                             <div class="rounded-sm w-full mb-5 h-fit lg:mb-0 lg:mr-6 lg:w-75 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        {{ device.name }}, {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        {{ device.name }}, <br> {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
                                     </h3>
                                 </div>
                                 <div class="text-center lg:text-left flex justify-center px-4 pt-4">
@@ -276,13 +276,13 @@
                             <div class="rounded-sm w-full lg:w-100 h-full border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        {{ device.name }}, {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        Stanje uređaja<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
                                     </h3>
                                 </div>
                                 <div class="flex justify-center items-center flex-col">
-                                    <div id="container_signal" data-value="50"  class="gauge-container"></div>
-                                    <div id="container_voltage" data-value="4" class="gauge-container"></div>
-                                    <div id="container_battery" data-value="50" class="gauge-container"></div>
+                                    <div id="container_signal" data-value="{{ device.signal }}"  class="gauge-container"></div>
+                                    <div id="container_voltage" data-value="{{ device.power }}" class="gauge-container"></div>
+                                    <div id="container_battery" data-value="{{ device.battery }}" class="gauge-container"></div>
                                 </div>
                             </div>
                         </div>
