@@ -6,6 +6,8 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!--HIGHCHARTS CODE IMPORT-->
     <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+    <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
     <script src="https://code.highcharts.com/stock/modules/stock.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
@@ -224,9 +226,9 @@
                             </div>
                         </div>
                         {% elseif client.devicePageView == constant('App\\Entity\\Client::DEVICE_OVERVIEW_DYNAMIC') %}
-                        <div class="flex flex-col lg:flex-row items-center">
+                        <div class="flex flex-col lg:flex-row w-full items-center">
                             <div class="rounded-sm mb-5 h-full flex flex-wrap justify-center lg:justify-around lg:mb-0 w-full lg:w-100 lg:mr-6 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                                <div class="flex w-full justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+                                <div class="flex w-full justify-between border-b h-fit border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
                                         {{ device.name }}, {{ device.temperatureModel.location }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
                                     </h3>
@@ -252,7 +254,7 @@
                                     </p>
                                 </div>
                             </div>
-                            <div class="rounded-sm w-full lg:w-75 h-full border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                            <div class="rounded-sm w-full mb-5 h-fit lg:mb-0 lg:mr-6 lg:w-75 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
                                         {{ device.name }}, {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
@@ -269,6 +271,18 @@
                                                     class="{% if device.offline %}text-red{% else %}text-black dark:text-white{% endif %}">{% if device.offline %}GREŠKA{% else %}{{ device.humidityModel.currentWithUnit }}{% endif %}</span></li>
                                     </ul>
                                     </p>
+                                </div>
+                            </div>
+                            <div class="rounded-sm w-full lg:w-100 h-full border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                                <div class="flex w-full flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
+                                    <h3 class="font-bold text-black dark:text-white">
+                                        {{ device.name }}, {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                    </h3>
+                                </div>
+                                <div class="flex justify-center items-center flex-col">
+                                    <div id="container_signal" data-value="50"  class="gauge-container"></div>
+                                    <div id="container_voltage" data-value="4" class="gauge-container"></div>
+                                    <div id="container_battery" data-value="50" class="gauge-container"></div>
                                 </div>
                             </div>
                         </div>
