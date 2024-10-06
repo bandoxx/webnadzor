@@ -34,7 +34,7 @@ class ChartController extends AbstractController
         }
 
         if ($toDate = $request->query->get('toDate')) {
-            $toDate = (new \DateTime())->setTimestamp((int) $toDate);
+            $toDate = (new \DateTime())->setTimestamp((int) $toDate)->setTime(23, 59, 59);
         }
 
         $result = $chartHandler->createChart($device, $entry, $type, $fromDate, $toDate);
