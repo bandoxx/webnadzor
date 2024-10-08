@@ -8,6 +8,8 @@ use App\Entity\ClientStorageDigitalEntry;
 use App\Entity\ClientStorageText;
 use App\Entity\Device;
 use App\Factory\DeviceOverviewFactory;
+use App\Model\Device\HumidityModel;
+use App\Model\Device\TemperatureModel;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ScadaFactory
@@ -118,6 +120,12 @@ class ScadaFactory
             ;
         }
 
+        /** @var TemperatureModel $temperatureData */
+        $temperatureData = $deviceData->getTemperatureModel();
+
+        /** @var HumidityModel $humidityData */
+        $humidityData = $deviceData->getHumidityModel();
+
         if ($deviceInput->getType() === ClientStorageDevice::TEMPERATURE_TYPE) {
             $temperatureData = $deviceData->getTemperatureModel();
 
@@ -125,20 +133,23 @@ class ScadaFactory
                 $color = '#FF0000';
             }
 
-            $text = $temperatureData->getCurrentWithUnit();
+            $text = sprintf("%s <br>%s",
+                $temperatureData->getName(),
+                $temperatureData->getCurrentWithUnit()
+            );
         } elseif ($deviceInput->getType() === ClientStorageDevice::HUMIDITY_TYPE) {
-            $humidityData = $deviceData->getHumidityModel();
-
             if ($humidityData->isInOffset()) {
                 $color = '#FF0000';
             }
 
-            $text = $humidityData->getCurrentWithUnit();
+            $text = sprintf("%s <br>%s",
+                $temperatureData->getName(),
+                $humidityData->getCurrentWithUnit()
+            );
         } elseif ($deviceInput->getType() === ClientStorageDevice::ALL_TYPE) {
-            $temperatureData = $deviceData->getTemperatureModel();
             $humidityData = $deviceData->getHumidityModel();
 
-            $text = sprintf("%s <br>", $deviceData->getTemperatureModel()?->getName());
+            $text = sprintf("%s <br>", $temperatureData?->getName());
 
             if ($temperatureData?->isUsed()) {
                 $text .= sprintf("Temp: %s <br> ", $temperatureData?->getCurrentWithUnit());
@@ -148,9 +159,9 @@ class ScadaFactory
                 $text .= sprintf("Rh: %s", $humidityData?->getCurrentWithUnit());
             }
 
-            if ($deviceInput->isBackgroundActive()) {
-                $color = '#FFFFFF';
-            }
+            //if ($deviceInput->isBackgroundActive()) {
+            //    $color = '#FFFFFF';
+            //}
         }
 
         return (new ScadaModel())
