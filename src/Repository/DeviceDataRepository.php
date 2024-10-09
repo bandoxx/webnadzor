@@ -93,6 +93,17 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    public function getDeviceChartData(int $deviceId, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('dd')
+            ->where('dd.device = :device')->setParameter('device', $deviceId)
+            ->orderBy('dd.deviceDate', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     public function getChartData(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): array
     {
         $numberOfRecords = $this->getNumberOfRecords($deviceId, $fromDate, $toDate);

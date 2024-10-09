@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\MapMarkers\API;
 
 use App\Entity\Client;
 use App\Entity\User;

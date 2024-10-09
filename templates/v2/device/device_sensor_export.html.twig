@@ -249,7 +249,7 @@
                                     </svg>
                                 </p>
                             </div>
-                            <div class="form-closeable highcharts-light" id="container_t" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry}) }}"></div>
+                            <div class="form-closeable highcharts-light" id="container_t" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('api_temperature_and_humidity_chart', { deviceId: device.id, entry: entry}) }}"></div>
                         </div>
                     {% endif %}
 
@@ -266,7 +266,7 @@
                                 </svg>
                             </p>
                         </div>
-                        <div class="form-closeable highcharts-light" id="container_rh" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('app_api_chart_getchartdata', { deviceId: device.id, entry: entry}) }}"></div>
+                        <div class="form-closeable highcharts-light" id="container_rh" data-symbol="{{ device.temperatureModel.unit }}" data-path="{{ path('api_temperature_and_humidity_chart', { deviceId: device.id, entry: entry}) }}"></div>
                     </div>
                     {% endif %}
 
