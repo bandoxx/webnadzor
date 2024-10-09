@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Controller\Api;
+namespace App\Controller\Chart;
 
 use App\Entity\Device;
-use App\Service\ChartHandler;
+use App\Service\Chart\ChartHandler;
+use App\Service\Chart\Type\DeviceData\HumidityType;
+use App\Service\Chart\Type\DeviceData\TemperatureType;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -11,8 +13,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route(path: '/api/chart/{deviceId}/{entry}', name: 'app_api_chart_getchartdata')]
-class ChartController extends AbstractController
+#[Route(path: '/api/chart/{deviceId}/{entry}/t-rh', name: 'api_temperature_and_humidity_chart')]
+class TemperatureAndHumidityChartController extends AbstractController
 {
 
     public function __invoke(
@@ -25,7 +27,7 @@ class ChartController extends AbstractController
     {
         $type = $request->query->get('type');
 
-        if (in_array($type, [ChartHandler::HUMIDITY, ChartHandler::TEMPERATURE], true) === false) {
+        if (in_array($type, [HumidityType::KEY, TemperatureType::TYPE], true) === false) {
             return $this->json('Type not valid.', Response::HTTP_BAD_REQUEST);
         }
 
@@ -37,7 +39,7 @@ class ChartController extends AbstractController
             $toDate = (new \DateTime())->setTimestamp((int) $toDate)->setTime(23, 59, 59);
         }
 
-        $result = $chartHandler->createChart($device, $entry, $type, $fromDate, $toDate);
+        $result = $chartHandler->createDeviceDataChart($device, $type, $entry, $fromDate, $toDate);
 
         return $this->json($result, Response::HTTP_OK);
     }

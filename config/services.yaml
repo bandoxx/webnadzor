@@ -42,7 +42,13 @@ services:
 
     _instanceof:
         App\Service\Alarm\AlarmHandlerInterface:
-            tags: [ 'app.alarm.validator' ]
+            tags: ['app.alarm.validator']
+
+        App\Service\Chart\Type\Device\DeviceChartInterface:
+            tags: ['app.device.chart.types']
+
+        App\Service\Chart\Type\DeviceData\DeviceDataChartInterface:
+            tags: ['app.device.data.chart.types']
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
@@ -59,6 +65,10 @@ services:
         arguments:
             $validators: !tagged_iterator app.alarm.validator
 
+    App\Service\Chart\ChartHandler:
+        arguments:
+            $deviceTypes: !tagged_iterator 'app.device.chart.types'
+            $deviceDataTypes: !tagged_iterator 'app.device.data.chart.types'
     ### File uploader target path
     App\Service\FileUploader\Types\ClientStorageImageUploader:
         $targetDirectory: '%client_storage_directory_full_path%'
