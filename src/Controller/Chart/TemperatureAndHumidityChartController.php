@@ -32,7 +32,7 @@ class TemperatureAndHumidityChartController extends AbstractController
         }
 
         if ($fromDate = $request->query->get('fromDate')) {
-            $fromDate = (new \DateTime())->setTimestamp((int) $fromDate);
+            $fromDate = (new \DateTime())->setTimestamp((int) $fromDate)->setTime(0, 0, 0);
         }
 
         if ($toDate = $request->query->get('toDate')) {
