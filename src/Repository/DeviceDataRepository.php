@@ -200,6 +200,9 @@ class DeviceDataRepository extends ServiceEntityRepository
 
     public function findByDeviceAndBetweenDates(Device $device, \DateTime $fromDate, \DateTime $toDate): array
     {
+        $fromDate->setTime(0, 0);
+        $toDate->setTime(23, 59);
+
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :device_id')
             ->andWhere('dd.deviceDate >= :start AND dd.deviceDate <= :end')

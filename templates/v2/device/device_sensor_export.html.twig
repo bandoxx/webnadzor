@@ -169,6 +169,22 @@
                                     Preuzmi PDF
                                 </a>
                             </li>
+                            <li class="cursor-pointer" id="exportPdf">
+                                <a
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                        href="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry, date_from: app.request.query.get('date_from'), date_to: app.request.query.get('date_to'), export: 'enc'}) }}"
+                                        referrerpolicy="no-referrer"
+                                        target="_blank"
+                                >
+                                    <svg class="size-6" fill="none" stroke="currentColor"
+                                         stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6"
+                                              stroke-linecap="round"
+                                              stroke-linejoin="round"/>
+                                    </svg>
+                                    Preuzmi Raw Data
+                                </a>
+                            </li>
                             <li class="cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -185,6 +201,7 @@
                             </li>
                             <form id="datesDataXlsxExport" method="POST" action="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry, date_from: app.request.query.get('date_from'), date_to: app.request.query.get('date_to'), export: 'xlsx'}) }}"></form>
                             <form id="datesDataPdfExport" method="POST" action="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry, date_from: app.request.query.get('date_from'), date_to: app.request.query.get('date_to'), export: 'pdf'}) }}"></form>
+                            <form id="datesDataEncExport" method="POST" action="{{ path('app_device_export', {clientId: clientId, id: device.id, entry:entry, date_from: app.request.query.get('date_from'), date_to: app.request.query.get('date_to'), export: 'enc'}) }}"></form>
                             <!-- Menu Item Messages -->
                         </ul>
                     </div>

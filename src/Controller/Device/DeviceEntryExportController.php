@@ -9,11 +9,15 @@ use App\Repository\DeviceDataRepository;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\DeviceDataFormatter;
+use App\Service\RawData\Factory\DeviceDataRawDataFactory;
+use App\Service\RawData\RawDataHandler;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -34,6 +38,8 @@ class DeviceEntryExportController extends AbstractController
         DeviceDataFormatter $deviceDataFormatter,
         DeviceDataPDFArchiver $PDFArchiver,
         DeviceDataXLSXArchiver $XLSXArchiver,
+        RawDataHandler $rawDataHandler,
+        DeviceDataRawDataFactory $deviceDataRawDataFactory,
         DeviceOverviewFactory $deviceOverviewFactory
     ): StreamedResponse|Response|NotFoundHttpException
     {
@@ -67,6 +73,22 @@ class DeviceEntryExportController extends AbstractController
                         $PDFArchiver->saveCustom($device, $data, $entry, $dateFrom, $dateTo);
                     }
                 );
+            } else if ($export === 'enc') {
+                $path = sprintf('/tmp/%s', random_int(1, 100));
+                $rawDataHandler->encrypt(
+                    $deviceDataRawDataFactory->create($data, $entry, $dateFrom, $dateTo),
+                    $path
+                );
+
+                $response = new BinaryFileResponse(sprintf("%s.enc", $path));
+                $response->setContentDisposition(
+                    ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+                    sprintf("%s_%s_%s_%s.enc", $device->getName(), $entry, $dateFrom->format('d-m-Y'), $dateTo->format('d-m-Y'))
+                );
+
+                $response->deleteFileAfterSend(true);
+
+                return $response;
             } else {
                 throw new BadRequestException("Export type doesn't exists!");
             }

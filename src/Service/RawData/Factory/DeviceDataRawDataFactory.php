@@ -12,7 +12,7 @@ class DeviceDataRawDataFactory
      * @param int $entry
      * @return array
      */
-    public function create(array $deviceData, int $entry): array
+    public function create(array $deviceData, int $entry, \DateTime $fromDate, ?\DateTime $toDate = null): array
     {
         if (!$deviceData) {
             return [['Nema podataka']];
@@ -29,7 +29,13 @@ class DeviceDataRawDataFactory
         $rhUnit = $deviceEntryData['rh_unit'];
 
         $dataset[] = [sprintf('Lokacija %s, mjerno mjesto %s', $device->getName(), $deviceEntryData['t_name'])];
-        $dataset[] = [sprintf("Podaci za: %s", $deviceData[0]->getDeviceDate()?->format("d.m.Y."))];
+
+        if ($fromDate && $toDate === null) {
+            $dataset[] = [sprintf("Podaci za: %s", $fromDate->format("d.m.Y."))];
+        } else {
+            $dataset[] = [sprintf("Podaci od %s do %s", $fromDate->format('d.m.Y.'), $toDate->format("d.m.Y."))];
+        }
+
         $dataset[] = [
             'Br.', 'Datum', 'Napomena', 'Tren', 'Max', 'Min', 'MKT', 'R. vlažnost'
         ];
