@@ -118,6 +118,9 @@
                             <li>
                                 <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
                             </li>
+                            <li>
+                                <a class="font-medium" href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}">{{ device.name }}, {{ device.temperatureModel.name }} /</a>
+                            </li>
                             <li class="font-medium text-primary">Pregled umjernica</li>
                         </ol>
                     </nav>

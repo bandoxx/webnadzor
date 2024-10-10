@@ -4,8 +4,8 @@ namespace App\Controller\DeviceArchive;
 
 use App\Entity\Client;
 use App\Entity\Device;
+use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDataArchiveRepository;
-use App\Repository\DeviceRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +22,8 @@ class DeviceDataDailyArchiveController extends AbstractController
         Device $device,
         int $entry,
         UrlGeneratorInterface $router,
-        DeviceDataArchiveRepository $deviceDataArchiveRepository
+        DeviceDataArchiveRepository $deviceDataArchiveRepository,
+        DeviceOverviewFactory $deviceOverviewFactory
     ): Response
     {
         $archiveData = $deviceDataArchiveRepository->getDailyArchives($device, $entry);
@@ -50,7 +51,7 @@ class DeviceDataDailyArchiveController extends AbstractController
 
         return $this->render('v2/device/device_sensor_archive_daily.html.twig', [
             'data' => $result,
-            'device' => $device,
+            'device' => $deviceOverviewFactory->create($device, $entry),
             'entry' => $entry
         ]);
     }
