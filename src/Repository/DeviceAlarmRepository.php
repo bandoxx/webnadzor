@@ -29,9 +29,9 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         )->free();
     }
 
-    public function findByDeviceOrderByEndDate(Device $device): array
+    public function findByDeviceOrderByEndDate(Device $device, int $entry): array
     {
-        return array_merge([...$this->findActiveAlarms($device), ...$this->findDeactivatedAlarms($device)]);
+        return array_merge([...$this->findActiveAlarms($device, $entry), ...$this->findDeactivatedAlarms($device, $entry)]);
     }
 
     public function findByDevice(Device $device): array

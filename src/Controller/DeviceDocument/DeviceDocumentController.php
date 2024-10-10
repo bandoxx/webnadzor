@@ -40,6 +40,8 @@ class DeviceDocumentController extends AbstractController
 
         return $this->render('v2/device/document.html.twig', [
             'documents' => $deviceDocumentRepository->findBy(['device' => $device, 'entry' => $entry]),
+            'device' => $device,
+            'entry' => $entry
         ]);
     }
 
