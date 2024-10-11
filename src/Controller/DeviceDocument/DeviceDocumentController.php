@@ -4,6 +4,7 @@ namespace App\Controller\DeviceDocument;
 
 use App\Entity\Client;
 use App\Entity\Device;
+use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDocumentRepository;
 use App\Service\Device\DeviceDocumentHandler;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -24,6 +25,7 @@ class DeviceDocumentController extends AbstractController
         int $entry,
         DeviceDocumentRepository $deviceDocumentRepository,
         DeviceDocumentHandler $deviceDocumentHandler,
+        DeviceOverviewFactory $deviceOverviewFactory,
         Request $request,
 
     ): Response
@@ -40,7 +42,7 @@ class DeviceDocumentController extends AbstractController
 
         return $this->render('v2/device/document.html.twig', [
             'documents' => $deviceDocumentRepository->findBy(['device' => $device, 'entry' => $entry]),
-            'device' => $device,
+            'device' => $deviceOverviewFactory->create($device, $entry),
             'entry' => $entry
         ]);
     }

@@ -4,6 +4,7 @@ namespace App\Controller\DeviceArchive;
 
 use App\Entity\Client;
 use App\Entity\Device;
+use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -23,7 +24,8 @@ class DeviceDataMonthlyArchiveController extends AbstractController
         Device $device,
         int $entry,
         DeviceDataArchiveRepository $deviceDataArchiveRepository,
-        UrlGeneratorInterface $router
+        UrlGeneratorInterface $router,
+        DeviceOverviewFactory $deviceOverviewFactory
     ): Response
     {
         $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry);
@@ -51,7 +53,7 @@ class DeviceDataMonthlyArchiveController extends AbstractController
 
         return $this->render('v2/device/device_sensor_archive_monthly.html.twig', [
             'data' => $result,
-            'device' => $device,
+            'device' => $deviceOverviewFactory->create($device, $entry),
             'entry' => $entry
         ]);
     }

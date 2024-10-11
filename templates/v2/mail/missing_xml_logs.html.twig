@@ -1,5 +1,5 @@
 <ul>
 {% for model in models %}
-    <li>Uređaj: <a href="{{ url('app_device_show', {clientId: model.device.client.id, deviceId: model.device.id}) }}">{{ model.device.name }}</a>, očekivano logova: {{ model.expectedNumberOfLogs }}, pristiglo: {{ model.numberOfLogs }}</li>
+    <li>Uređaj: <a href="{{ url('app_device_edit', {clientId: model.device.client.id, deviceId: model.device.id}) }}">{{ model.device.name }}</a>, očekivano logova: {{ model.expectedNumberOfLogs }}, pristiglo: {{ model.numberOfLogs }}</li>
 {% endfor %}
 </ul>

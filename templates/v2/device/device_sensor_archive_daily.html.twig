@@ -128,7 +128,7 @@
                                 <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
                             </li>
                             <li class="font-medium">
-                                <a class="font-medium" href="{{ path('app_device_list', { clientId: client.id }) }}">Pregled lokacije /
+                                <a class="font-medium" href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}">{{ device.name }}, {{ device.temperatureModel.name }} /
                                 </a>
                             </li>
                             <li class="font-medium text-primary">Dnevna arhiva</li>
@@ -146,7 +146,7 @@
                                 class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
                         >
                             <h3 class="title-dt font-bold text-black dark:text-white">
-                                Dnevna arhiva za lokaciju {{ device.getEntryData(entry).t_location }}, mjerno mjesto {{ device.getEntryData(entry).t_name }}
+                                Dnevna arhiva za lokaciju {{ device.name }}, mjerno mjesto {{ device.temperatureModel.name }}
                             </h3>
                             <table class="table w-full table-auto" id="dataTableArchive">
                                 <thead>

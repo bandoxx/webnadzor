@@ -74,15 +74,23 @@ class AdminOverview extends AbstractController
                     $activeAlarm = $deviceAlarmRepository->findActiveAlarms($device);
 
                     foreach ($activeAlarm as $alarm) {
-                        $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
-                            $router->generate('app_alarm_list', ['clientId' => $clientId, 'id' => $device->getId()], UrlGeneratorInterface::ABSOLUTE_URL)
-                        );
+                        $path = null;
 
-                        $data[$clientId]['alarms'][] = sprintf(
-                            "%s - %s",
-                            $alarm->getMessage(),
-                            $path
-                        );
+                        if ($alarm->getSensor()) {
+                            $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
+                                $router->generate('app_alarm_list', ['clientId' => $clientId, 'id' => $device->getId(), 'entry' => $alarm->getSensor()], UrlGeneratorInterface::ABSOLUTE_URL)
+                            );
+                        }
+
+                        if ($path) {
+                            $data[$clientId]['alarms'][] = sprintf(
+                                "%s - %s",
+                                $alarm->getMessage(),
+                                $path
+                            );
+                        } else {
+                            $data[$clientId]['alarms'][] = $alarm->getMessage();
+                        }
                     }
                 }
             }
