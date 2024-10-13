@@ -10,7 +10,6 @@
         "ext-iconv": "*",
         "ext-libxml": "*",
         "ext-pdo": "*",
-        "ext-imagick": "*",
         "ext-openssl": "*",
         "beberlei/doctrineextensions": "^1.5",
         "doctrine/dbal": "^3",
