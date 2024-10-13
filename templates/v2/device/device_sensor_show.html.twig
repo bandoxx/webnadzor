@@ -159,6 +159,7 @@
                         class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                     <h2 class="text-title-sm font-bold text-black dark:text-white">
+                        {{ device.name }} - {{ device.deviceDate|date("d.m.Y H:i:s") }}
                     </h2>
 
                     <nav>
@@ -199,7 +200,7 @@
                         <div class="rounded-sm flex flex-wrap justify-center lg:justify-around w-full lg:w-100 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                             <div class="flex w-full justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                 <h3 class="font-bold text-black dark:text-white">
-                                    {{ device.name }}, <br> {{ device.temperatureModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                    {{ device.temperatureModel.name }}
                                 </h3>
                             </div>
                             <div class="text-center flex justify-center px-4 py-4">
@@ -230,7 +231,7 @@
                             <div class="rounded-sm mb-5 h-full flex flex-wrap justify-center lg:justify-around lg:mb-0 w-full lg:w-100 lg:mr-6 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full lg-w-70 justify-between border-b h-fit border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        {{ device.name }}, <br>{{ device.temperatureModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        {{ device.temperatureModel.name }}
                                     </h3>
                                 </div>
                                 <div class="text-center flex justify-center px-4 py-4">
@@ -257,7 +258,7 @@
                             <div class="rounded-sm w-full mb-5 h-full lg:mb-0 lg:mr-6 lg:w-75 border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full lg-w-70 flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        {{ device.name }}, <br> {{ device.humidityModel.name }}<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        {{ device.humidityModel.name }}
                                     </h3>
                                 </div>
                                 <div class="text-center lg:text-left flex justify-center px-4 pt-4">
@@ -276,7 +277,7 @@
                             <div class="rounded-sm w-full h-full border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
                                 <div class="flex w-full flex-wrap justify-between border-b border-stroke px-6.5 py-4 dark:border-strokedark">
                                     <h3 class="font-bold text-black dark:text-white">
-                                        Stanje uređaja<br>{{ device.deviceDate|date("d.m.Y H:i:s") }}
+                                        Stanje uređaja
                                     </h3>
                                 </div>
                                 <div class="flex justify-between items-center flex-col flex-wrap">
