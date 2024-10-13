@@ -1,11 +1,10 @@
-FROM php:8.2-fpm
+FROM php:8.3-fpm
 
 RUN set -eux; \
     apt-get update; \
     apt-get upgrade -y; \
     apt-get install -y --no-install-recommends \
             nano \
-            ghostscript \
             curl \
             libmemcached-dev \
             libz-dev \
@@ -13,6 +12,7 @@ RUN set -eux; \
             libjpeg-dev \
             libpng-dev \
             unzip \
+            libicu-dev \
             libzip-dev \
             libfreetype6-dev \
             libssl-dev \
@@ -25,11 +25,6 @@ RUN set -eux; \
 RUN set -eux; \
     apt update; \
     apt install -y netcat-traditional
-
-RUN apt-get update && apt-get install -y \
-    libmagickwand-dev --no-install-recommends \
-    && pecl install imagick \
-	&& docker-php-ext-enable imagick
 
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php \
@@ -48,7 +43,9 @@ RUN set -eux; \
             --with-webp \
             --with-xpm \
             --with-freetype; \
-    docker-php-ext-install gd;
+    docker-php-ext-install gd; \
+    docker-php-ext-configure intl; \
+    docker-php-ext-install intl;
 
 COPY .docker/php/config/php.ini /usr/local/etc/php/php.ini
 
