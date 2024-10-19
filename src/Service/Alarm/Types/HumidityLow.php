@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class HumidityLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'humidity-low';
+    public const string TYPE = 'humidity-low';
 
     public function getType(): string
     {

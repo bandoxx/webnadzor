@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class TemperatureHigh extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'temperature-high';
+    public const string TYPE = 'temperature-high';
 
     public function getType(): string
     {

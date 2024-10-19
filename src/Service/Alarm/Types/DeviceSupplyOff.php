@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceSupplyOff extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-supply-off';
+    public const string TYPE = 'device-supply-off';
 
     public function getType(): string
     {

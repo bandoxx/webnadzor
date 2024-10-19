@@ -9,7 +9,7 @@ use App\Service\Alarm\Types\BaseType;
 
 class DeviceOffline extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-offline';
+    public const string TYPE = 'device-offline';
 
     public function getType(): string
     {
