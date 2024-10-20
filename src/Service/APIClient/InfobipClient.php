@@ -3,6 +3,7 @@
 namespace App\Service\APIClient;
 
 
+use App\Service\Model\InfoBipClient\AccountBalance;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class InfobipClient
@@ -45,8 +46,16 @@ class InfobipClient
         ]);
     }
 
+    public function checkBalance(): AccountBalance
+    {
+        $response = $this->infobipClient->request('GET', '/account/1/balance')->toArray();
+
+        return new AccountBalance($response['balance'], $response['currency']);
+    }
+
     public function sendVoiceMessage(array $phoneNumber, string $message)
     {
+        // TODO:
         if ($this->isClientActive === false) {
             return;
         }
