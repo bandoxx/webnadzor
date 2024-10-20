@@ -41,11 +41,8 @@ class DeviceFactory
 
         $device->setEntry1($emptyEntry);
         $device->setEntry2($emptyEntry);
-        $device->setAlarmEmail([
-            'smtp1' => null,
-            'smtp2' => null,
-            'smtp3' => null
-        ]);
+        $device->setAlarmEmail([]);
+        $device->setApplicationEmailList([]);
 
         return $device;
     }

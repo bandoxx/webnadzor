@@ -31,7 +31,7 @@ class DeviceUpdater
         if ($this->length($deviceName, 40)) {
             $device->setName($deviceName);
         } else {
-            $this->error[] = 'Device name too long.';
+            $this->error[] = 'Naziv uređaja je predugačko';
         }
 
         $xmlName = trim($data['xml_name']);
@@ -40,7 +40,7 @@ class DeviceUpdater
             if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
                 $device->setXmlName($xmlName);
             } else {
-                $this->error[] = 'XML exists already.';
+                $this->error[] = sprintf('%s - XML naziv se već koristi.', $xmlName);
             }
         }
 
@@ -54,13 +54,13 @@ class DeviceUpdater
         }
 
         foreach (range(1, 2) as $entry) {
-            $this->updateTemperature($device, $entry, $data);
-            $this->updateHumidity($device, $entry, $data);
-            $this->updateDigital($device, $entry, $data);
+            $this->updateTemperature($device, $entry, $data[sprintf("t%s", $entry)]);
+            $this->updateHumidity($device, $entry, $data[sprintf('rh%s', $entry)]);
+            $this->updateDigital($device, $entry, $data[sprintf("d%s", $entry)]);
         }
 
         $device->setAlarmEmail(array_values(array_unique(array_filter($data['smtp'] ?? []))));
-        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['applicationEmail'] ?? []))));
+        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['application_email'] ?? []))));
 
         if ($this->error) {
             return $this->error;
@@ -74,26 +74,25 @@ class DeviceUpdater
 
     private function updateTemperature(Device $device, int $entry, array $data): void
     {
-        $tUse = (empty($data['t' . $entry . '_use'])) ? '0' : $data['t' . $entry . '_use'];
-        $device->setEntryData($entry, 't_use', $tUse);
-        $device->setEntryData($entry, 't_show_chart', (empty($data['t' . $entry . '_show_chart'])) ? '0' : $data['t' . $entry . '_show_chart']);
+        $isUsed = $data['used'];
 
-        $tLocation = trim($data['t' . $entry . '_location']);
+        $device->setEntryData($entry, 't_use', $isUsed);
+        $device->setEntryData($entry, 't_show_chart', $data['show_chart']);
+        $device->setEntryData($entry, 't_location', trim($data['location']));
 
-        $device->setEntryData($entry, 't_location', $tLocation);
-
-        if ($tUse === '0') {
+        if ($isUsed === false) {
             return;
         }
 
-        $tName = trim($data['t' . $entry . '_name']);
-        $tUnit = trim($data['t' . $entry . '_unit']);
+        $tName = trim($data['name']);
 
         if ($this->length($tName, 50, 1)) {
             $device->setEntryData($entry, 't_name', $tName);
         } else {
-            $this->error[] = 'T name size';
+            $this->error[] = sprintf('Naziv lokacije za temperaturu je predugačko');
         }
+
+        $tUnit = trim($data['unit']);
 
         if ($this->length($tUnit, 8)) {
             $device->setEntryData($entry, 't_unit', $tUnit);
@@ -101,8 +100,9 @@ class DeviceUpdater
             $this->error[] = 'T unit length';
         }
 
-        $tMin = trim($data['t' . $entry . '_min']);
-        $tMax = trim($data['t' . $entry . '_max']);
+        $tMin = trim($data['min']);
+        $tMax = trim($data['max']);
+
         if ((!$tMin || preg_match('/^-?\d{1,2}(\.\d{1,2})?$/', $tMin)) && (!$tMax || preg_match('/^-?\d{1,2}(\.\d{1,2})?$/', $tMax))) {
             $device->setEntryData($entry, 't_min', $tMin);
             $device->setEntryData($entry, 't_max', $tMax);
@@ -110,37 +110,35 @@ class DeviceUpdater
             $this->error[] = 'T min max error';
         }
 
-        $chartMin = trim($data['t' . $entry . '_chart_min']);
-        $chartMax = trim($data['t' . $entry . '_chart_max']);
+        $chartMin = trim($data['chart_min']);
+        $chartMax = trim($data['chart_max']);
         $device->setEntryData($entry, 't_chart_min', $chartMin);
         $device->setEntryData($entry, 't_chart_max', $chartMax);
 
-        $noteKey = sprintf("t%s_note", $entry);
-
-        if (isset($data[$noteKey])) {
-            $device->setEntryData($entry, 't_note', trim($data[$noteKey]));
+        if (isset($data['note'])) {
+            $device->setEntryData($entry, 't_note', trim($data['note']));
         }
 
-        $this->setImage($device, $entry, 't_image', $data['t' . $entry . '_image']);
+        $this->setImage($device, $entry, 't_image', $data['image_id']);
     }
 
     private function updateHumidity(Device $device, int $entry, array $data): void
     {
-        $rhUse = (empty($data['rh' . $entry . '_use'])) ? '0' : $data['rh' . $entry . '_use'];
-        $device->setEntryData($entry, 'rh_show_chart', (empty($data['rh' . $entry . '_show_chart'])) ? '0' : $data['rh' . $entry . '_show_chart']);
+        $rhUse = $data['used'];
+        $device->setEntryData($entry, 'rh_show_chart', $data['show_chart']);
         $device->setEntryData($entry, 'rh_use', $rhUse);
 
-        if ($rhUse === '0') {
+        if ($rhUse === false) {
             return;
         }
 
-        $thName = trim($data['rh' . $entry . '_name']);
-        $rhUnit = trim($data['rh' . $entry . '_unit']);
+        $thName = trim($data['name']);
+        $rhUnit = trim($data['unit']);
 
         if ($this->length($thName, 50, 1)) {
             $device->setEntryData($entry, 'rh_name', $thName);
         } else {
-            $this->error[] = 'RH name error';
+            $this->error[] = 'Naziv lokacije za vlagu je predugačko.';
         }
 
         if ($this->length($rhUnit, 8)) {
@@ -149,8 +147,8 @@ class DeviceUpdater
             $this->error[] = 'RH Unit error';
         }
 
-        $rhMin = trim($data['rh' . $entry . '_min']);
-        $rhMax = trim($data['rh' . $entry . '_max']);
+        $rhMin = trim($data['min']);
+        $rhMax = trim($data['max']);
         if ((!$rhMin || preg_match('/^\d{1,2}(\.\d{1,2})?$/', $rhMin)) && (!$rhMax || preg_match('/^\d{1,2}(\.\d{1,2})?$/', $rhMax))) {
             $device->setEntryData($entry, 'rh_min', ($rhMin) ?: '');
             $device->setEntryData($entry, 'rh_max', ($rhMax) ?: '');
@@ -158,21 +156,21 @@ class DeviceUpdater
             $this->error[] = 'RH min/max error';
         }
 
-        $chartMin = trim($data['rh' . $entry . '_chart_min']);
-        $chartMax = trim($data['rh' . $entry . '_chart_max']);
+        $chartMin = trim($data['chart_min']);
+        $chartMax = trim($data['chart_max']);
 
         $device->setEntryData($entry, 'rh_chart_min', $chartMin);
         $device->setEntryData($entry, 'rh_chart_max', $chartMax);
 
-        $this->setImage($device, $entry, 'rh_image', $data['rh' . $entry . '_image']);
+        $this->setImage($device, $entry, 'rh_image', $data['image_id']);
     }
 
     private function updateDigital(Device $device, int $entry, array $data): void
     {
-        $dUse = (empty($data['d' . $entry . '_use'])) ? '0' : $data['d' . $entry . '_use'];
+        $dUse = $data['used'];
         $device->setEntryData($entry, 'd_use', $dUse);
 
-        if ($dUse === '0') {
+        if ($dUse === false) {
             return;
         }
 
@@ -193,8 +191,8 @@ class DeviceUpdater
             $this->error[] = 'D on off name error';
         }
 
-        $this->setImage($device, $entry, 'd_off_image', $data['d' . $entry . '_off_image']);
-        $this->setImage($device, $entry, 'd_on_image', $data['d' . $entry . '_on_image']);
+        $this->setImage($device, $entry, 'd_off_image', $data['off_image_id']);
+        $this->setImage($device, $entry, 'd_on_image', $data['on_image_id']);
     }
 
     private function setImage(Device $device, int $entry, string $field, int $imageId): Device
