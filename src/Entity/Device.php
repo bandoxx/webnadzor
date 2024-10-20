@@ -65,12 +65,27 @@ class Device
 
     #[ORM\Column]
     private ?bool $isDeleted = false;
+
+    /**
+     * @var Collection<int, DeviceAlarmSetupGeneral>
+     */
+    #[ORM\OneToMany(targetEntity: DeviceAlarmSetupGeneral::class, mappedBy: 'device', orphanRemoval: true)]
+    private Collection $deviceAlarmSetupGenerals;
+
+    /**
+     * @var Collection<int, DeviceAlarmSetupEntry>
+     */
+    #[ORM\OneToMany(targetEntity: DeviceAlarmSetupEntry::class, mappedBy: 'device', orphanRemoval: true)]
+    private Collection $deviceAlarmSetupEntries;
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
         $this->deviceAlarms = new ArrayCollection();
         $this->userDeviceAccesses = new ArrayCollection();
         $this->deviceDataArchives = new ArrayCollection();
+        $this->deviceAlarmSetupGenerals = new ArrayCollection();
+        $this->deviceAlarmSetupEntries = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -390,6 +405,66 @@ class Device
     public function setDeleted(bool $isDeleted): static
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DeviceAlarmSetupGeneral>
+     */
+    public function getDeviceAlarmSetupGenerals(): Collection
+    {
+        return $this->deviceAlarmSetupGenerals;
+    }
+
+    public function addDeviceAlarmSetupGeneral(DeviceAlarmSetupGeneral $deviceAlarmSetupGeneral): static
+    {
+        if (!$this->deviceAlarmSetupGenerals->contains($deviceAlarmSetupGeneral)) {
+            $this->deviceAlarmSetupGenerals->add($deviceAlarmSetupGeneral);
+            $deviceAlarmSetupGeneral->setDevice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeviceAlarmSetupGeneral(DeviceAlarmSetupGeneral $deviceAlarmSetupGeneral): static
+    {
+        if ($this->deviceAlarmSetupGenerals->removeElement($deviceAlarmSetupGeneral)) {
+            // set the owning side to null (unless already changed)
+            if ($deviceAlarmSetupGeneral->getDevice() === $this) {
+                $deviceAlarmSetupGeneral->setDevice(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, DeviceAlarmSetupEntry>
+     */
+    public function getDeviceAlarmSetupEntries(): Collection
+    {
+        return $this->deviceAlarmSetupEntries;
+    }
+
+    public function addDeviceAlarmSetupEntry(DeviceAlarmSetupEntry $deviceAlarmSetupEntry): static
+    {
+        if (!$this->deviceAlarmSetupEntries->contains($deviceAlarmSetupEntry)) {
+            $this->deviceAlarmSetupEntries->add($deviceAlarmSetupEntry);
+            $deviceAlarmSetupEntry->setDevice($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDeviceAlarmSetupEntry(DeviceAlarmSetupEntry $deviceAlarmSetupEntry): static
+    {
+        if ($this->deviceAlarmSetupEntries->removeElement($deviceAlarmSetupEntry)) {
+            // set the owning side to null (unless already changed)
+            if ($deviceAlarmSetupEntry->getDevice() === $this) {
+                $deviceAlarmSetupEntry->setDevice(null);
+            }
+        }
 
         return $this;
     }

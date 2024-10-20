@@ -4,21 +4,78 @@ namespace App\Service\Notify;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
+use App\Service\Alarm\AlarmRecipients;
+use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
 
 class AlarmNotifier
 {
 
-    public function __construct(private readonly Mailer $mailer, private readonly Environment $twig)
+    public function __construct(
+        private readonly Mailer $mailer,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly InfobipClient $infobipClient,
+        private readonly AlarmRecipients $alarmRecipients,
+        private readonly Environment $twig
+    )
     {}
+
+    public function notify(): void
+    {
+        $devices = $this->entityManager->getRepository(Device::class)->findAll();
+
+        foreach ($devices as $device) {
+            $alarms = $this->entityManager->getRepository(DeviceAlarm::class)->findAlarmsThatNeedsNotification($device);
+
+            if (!$alarms) {
+                continue;
+            }
+
+            $this->notifyByMail($device, $alarms);
+            $this->notifyBySMS($alarms);
+
+            foreach ($alarms as $alarm) {
+                $alarm->setIsNotified(true);
+            }
+
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * @param array<DeviceAlarm> $alarms
+     */
+    public function notifyBySMS(array $alarms): void
+    {
+        foreach ($alarms as $alarm) {
+            $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
+
+            $this->infobipClient->sendMessage($recipients, $alarm->getMessage());
+        }
+    }
 
     /**
      * @param Device $device
-     * @param DeviceAlarm[] $alarms
+     * @param array<DeviceAlarm> $alarms
      */
-    public function notify(Device $device, array $alarms): void
+    public function notifyByVoiceMessage(array $alarms)
+    {
+        // TODO:
+        //foreach ($alarms as $alarm) {
+        //    $recipients = $this->alarmRecipients->getRecipientsForVoiceMessage($alarm);
+        //
+        //    $this->infobipClient->sendVoiceMessage($recipients);
+        //}
+    }
+
+    /**
+     * @param Device $device
+     * @param array<DeviceAlarm> $alarms
+     */
+    private function notifyByMail(Device $device, array $alarms): void
     {
         $settings = $device->getClient()->getClientSetting();
 
@@ -30,15 +87,13 @@ class AlarmNotifier
             ->from('info@intelteh.hr')
             ->sender('info@intelteh.hr')
             ->to(...$emails)
-            ->cc('radivoje.pupovac98@gmail.com')
+            ->bcc('radivoje.pupovac98@gmail.com')
             ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
             ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
                 'device' => $device,
                 'alarms' => $alarms
-            ]))
-        ;
+            ]));
 
         $this->mailer->send($email);
     }
-
 }
