@@ -43,7 +43,7 @@ class AlarmListSummaryController extends AbstractController
         }
 
         return $this->render('v2/alarm/phone_alarm_list.html.twig', [
-            'table' => $table
+            'table' => array_values($table)
         ]);
     }
 
