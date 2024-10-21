@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceSignalLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-signal-low';
+    public const string TYPE = 'device-signal-low';
 
     public function getType(): string
     {

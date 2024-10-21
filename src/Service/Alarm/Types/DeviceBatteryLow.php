@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceBatteryLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-battery-low';
+    public const string TYPE = 'device-battery-low';
 
     public function getType(): string
     {

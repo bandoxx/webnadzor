@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceMissingData extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-sensor-missing-data';
+    public const string TYPE = 'device-sensor-missing-data';
 
     public function getType(): string
     {

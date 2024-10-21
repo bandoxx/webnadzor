@@ -33,6 +33,10 @@ class DeviceEditController extends AbstractController
         $user = $this->getUser();
         $icons = $deviceIconRepository->findAll();
 
+        if ($device->isParserActive() === false) {
+            $this->addFlash('error', 'Parser je isključen.');
+        }
+
         if ($request->getMethod() === 'POST') {
             try {
                 if ($user->isRoot() || $user->isAdministrator()) {
