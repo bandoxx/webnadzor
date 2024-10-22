@@ -67,7 +67,7 @@ class DeviceUpdater
         }
 
         $this->entityManager->flush();
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        //$this->deviceSettingsMaker->saveXml($oldDevice, $data); // TODO:
 
         return [];
     }
@@ -174,9 +174,9 @@ class DeviceUpdater
             return;
         }
 
-        $dName = trim($data['d' . $entry . '_name']);
-        $dOffName = trim($data['d' . $entry . '_off_name']);
-        $dOnName = trim($data['d' . $entry . '_on_name']);
+        $dName = trim($data['name']);
+        $dOffName = trim($data['off_name']);
+        $dOnName = trim($data['on_name']);
 
         if ($this->length($dName, 50)) {
             $device->setEntryData($entry, 'd_name', $dName);
