@@ -124,7 +124,7 @@
             <!-- ===== Main Content Start ===== -->
             <main>
                 <!--            Form that reads all the data-->
-                <form method="post" id="deviceForm">
+                <form method="post" id="deviceForm" data-url="{{ url('api_device_edit', { clientId: client.id, deviceId: device.id }) }}">
                     <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
                         <!-- Breadcrumb Start -->
                         <div
@@ -258,7 +258,7 @@
                                                     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                         Mapa - lokacija
                                                     </label>
-                                                    <input id="trueMapVals" type="hidden">
+{#                                                    <input id="trueMapVals" type="hidden">#}
                                                     <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                            id="deviceMapCoordinates" placeholder="Lokacija na mapi"
                                                            type="text"
@@ -315,7 +315,7 @@
                                                             <a class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry1.t_show_chart %}active{% endif %}"
                                                                href="#">Prikaži
                                                                 graf</a>
-                                                            <input type="hidden" value="" name="t1_use"/>
+                                                            <input type="hidden" value="" name="t1_used"/>
                                                             <input type="hidden" value="" name="t1_show_chart"/>
                                                         </div>
                                                         <div class="hidden" id="temp1Div">
@@ -363,7 +363,7 @@
                                                                 <select id="t1-image"
                                                                         :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="t1_image"
+                                                                        name="t1_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -498,7 +498,7 @@
                                                             <a class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry2.t_show_chart %}active{% endif %}"
                                                                href="#">Prikaži
                                                                 graf</a>
-                                                            <input type="hidden" value="" name="t2_use"/>
+                                                            <input type="hidden" value="" name="t2_used"/>
                                                             <input type="hidden" value="" name="t2_show_chart"/>
                                                         </div>
                                                         <div class="hidden" id="temp2Div">
@@ -539,7 +539,7 @@
                                                                 <select id="t2-image"
                                                                         :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="t2_image"
+                                                                        name="t2_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -683,7 +683,7 @@
                                                             <a class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry1.rh_show_chart %}active{% endif %}"
                                                                href="#">Prikaži
                                                                 graf</a>
-                                                            <input type="hidden" value="" name="rh1_use"/>
+                                                            <input type="hidden" value="" name="rh1_used"/>
                                                             <input type="hidden" value="" name="rh1_show_chart"/>
                                                         </div>
                                                         <div class="hidden" id="hum1Div">
@@ -719,7 +719,7 @@
                                                                 <select id="rh1-image"
                                                                         :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="rh1_image"
+                                                                        name="rh1_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -849,7 +849,7 @@
                                                             <a class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry2.rh_show_chart %}active{% endif %}"
                                                                href="#">Prikaži
                                                                 graf</a>
-                                                            <input type="hidden" value="" name="rh2_use"/>
+                                                            <input type="hidden" value="" name="rh2_used"/>
                                                             <input type="hidden" value="" name="rh2_show_chart"/>
 
                                                         </div>
@@ -882,7 +882,7 @@
                                                                 <select id="rh2-image"
                                                                         :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="rh2_image"
+                                                                        name="rh2_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -1017,7 +1017,7 @@
                                                             <a class="inline-flex rounded-l-full rounded-r-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry1.d_use %}active{% endif %}"
                                                                href="#">Koristi
                                                                 ulaz "D1"</a>
-                                                            <input type="hidden" value="" name="d1_use"/>
+                                                            <input type="hidden" value="" name="d1_used"/>
                                                         </div>
                                                         <div class="hidden" id="digital1Div">
                                                             <div class="w-3/4 mt-3">
@@ -1049,7 +1049,7 @@
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="d1_off_image"
+                                                                        name="d1_off_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -1077,7 +1077,7 @@
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="d1_on_image"
+                                                                        name="d1_on_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -1155,7 +1155,7 @@
                                                             <a class="inline-flex rounded-l-full rounded-r-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6 {% if device.entry2.d_use %}active{% endif %}"
                                                                href="#">Koristi
                                                                 ulaz "D2"</a>
-                                                            <input type="hidden" value="" name="d2_use"/>
+                                                            <input type="hidden" value="" name="d2_used"/>
                                                         </div>
                                                         <div class="hidden" id="digital2Div">
                                                             <div class="w-3/4 mt-3">
@@ -1184,7 +1184,7 @@
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="d2_off_image"
+                                                                        name="d2_off_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -1212,7 +1212,7 @@
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
-                                                                        name="d2_on_image"
+                                                                        name="d2_on_image_id"
                                                                         class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                                                                     <option class="text-body" value="0">Isključeno
                                                                     </option>
@@ -1298,10 +1298,10 @@
                                             <div id="emailSection"
                                                  class="mb-4.5 flex flex-col gap-6 xl:flex-row flex-wrap">
                                                 <div class="emailRow flex w-full">
-                                                    <div class="w-full xl:w-1/2">
-                                                        <div class="emailDevice w-full">
+                                                    <div class="xl:w-1/2 flex flex-col" id="emailDeviceCol">
+                                                        <div class="emailDevice w-full mb-4">
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                Email iz uređaja 1
+                                                                Email iz uređaja
                                                             </label>
                                                             <div class="flex">
                                                                 <div class="group relative w-3/4">
@@ -1338,17 +1338,17 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    <div class="emailApplication w-full xl:w-1/2">
+                                                    <div class="xl:w-1/2 flex flex-col" id="emailApplicationCol">
+                                                    <div class="emailApplication w-full mb-4">
                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Email iz aplikacije 1
+                                                            Email iz aplikacije
                                                         </label>
                                                         <div class="flex">
                                                             <div class="group relative w-3/4">
                                                                 <input type="email"
                                                                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                        placeholder="Email iz aplikacije"
-                                                                       name="applicationEmail[]"
+                                                                       name="application_email[]"
                                                                        value="{{ device.applicationEmailList[0] is defined ? device.applicationEmailList[0] : '' }}"
                                                                 >
                                                                 <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
@@ -1371,6 +1371,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1442,12 +1443,12 @@
                                                 <div class="sensorRow flex w-full">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 w-1/2 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm 1
+                                                            Broj telefona za alarm
                                                         </label>
                                                         <div class="group relative w-3/4">
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
-                                                                   name="phone[]"
+                                                                   name="phone_number"
                                                                    value=""
                                                                    data-maxchars="15"
                                                             >
@@ -1472,7 +1473,7 @@
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="smsAlarm[]"
+                                                                                        name="is_sms_active"
                                                                                         id="toggleSms1"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
@@ -1505,7 +1506,7 @@
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="voiceAlarm[]"
+                                                                                        name="is_voice_message_active"
                                                                                         id="toggleVoiceMessageSensor11"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
@@ -1546,7 +1547,7 @@
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="voltageAlarm[]"
+                                                                                        name="is_device_power_supply_active"
                                                                                         id="toggleVoltageActive1"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
@@ -1573,12 +1574,12 @@
                                                 <div class="sensorRow flex">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm 1
+                                                            Broj telefona za alarm&nbsp&nbsp
                                                         </label>
                                                         <div class="group relative w-3/4">
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
-                                                                   name="phone[]"
+                                                                   name="phone_number"
                                                                    value=""
                                                                    data-maxchars="15"
                                                             >
@@ -1603,8 +1604,227 @@
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="smsAlarm[]"
+                                                                                        name="is_sms_active"
                                                                                         id="toggleSmsSensor11"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex ml-4 justify-between">
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                        Glasovna poruka
+                                                                    </label>
+                                                                    <div class="mt-3"
+                                                                         x-data="{ switcherToggle: false }">
+                                                                        <label
+                                                                                for="toggleVoiceMessageSensor11"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_voice_message_active"
+                                                                                        id="toggleVoiceMessageSensor11"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="w-full xl:w-1/2">
+                                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                            Aktivan alarm za:
+                                                        </label>
+                                                        <div class="group relative">
+                                                            <div class="flex justify-between">
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                        Temperaturu
+                                                                    </label>
+                                                                    <div class="mt-3"
+                                                                         x-data="{ switcherToggle: false }">
+                                                                        <label
+                                                                                for="toggleTempActive1"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_temperature_active"
+                                                                                        id="toggleTempActiveSensor11"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                        Vlagu
+                                                                    </label>
+                                                                    <div class="mt-3"
+                                                                         x-data="{ switcherToggle: false }">
+                                                                        <label
+                                                                                for="toggleHumActive1"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_humidity_active"
+                                                                                        id="toggleHumActiveSensor11"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
+                                                                        Digitalni ulaz
+                                                                    </label>
+                                                                    <div class="mt-3"
+                                                                         x-data="{ switcherToggle: false }">
+                                                                        <label
+                                                                                for="toggleDigitalEntrySensor11"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_digital_entry_active"
+                                                                                        id="toggleDigitalEntrySensor11"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="ml-3">
+                                                                    <div>
+                                                                        <div x-data="{ isOptionSelected: false }"
+                                                                             class="relative z-20 bg-white dark:bg-form-input">
+                                                                            <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                                                    @change="isOptionSelected = true"
+                                                                                    name="digital_entry_alarm_value">
+                                                                    <option value="false" class="text-body">0
+                                                                                </option>
+                                                                                <option value="true" class="text-body">1
+                                                                                </option>
+                                                                            </select>
+                                                                            <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                               xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                    fill="#637381"></path>
+                            </g>
+                          </svg>
+                        </span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="sensor2Tab"
+                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
+                                                <div class="sensorRow flex">
+                                                    <div class="w-full flex flex-wrap xl:w-1/2">
+                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                            Broj telefona za alarm&nbsp&nbsp
+                                                        </label>
+                                                        <div class="group relative w-3/4">
+                                                            <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                   placeholder="Broj telefona za alarm"
+                                                                   name="phone_number"
+                                                                   value=""
+                                                                   data-maxchars="15"
+                                                            >
+                                                            <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                Broj telefona <br> za alarme, <br> maksimalno 20 znakova
+                                                            </div>
+                                                        </div>
+                                                        <div class="group flex relative w-full">
+                                                            <div class="flex justify-between">
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                        SMS
+                                                                    </label>
+                                                                    <div class="mt-3"
+                                                                         x-data="{ switcherToggle: false }">
+                                                                        <label
+                                                                                for="toggleSmsSensor21"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_sms_active"
+                                                                                        id="toggleSmsSensor21"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1636,7 +1856,7 @@
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="voiceAlarm[]"
+                                                                                        name="is_voice_message_active"
                                                                                         id="toggleVoiceMessageSensor21"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
@@ -1670,15 +1890,15 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleTempActive1"
+                                                                                for="toggleTempActiveSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="tempAlarm[]"
-                                                                                        id="toggleTempActive1"
+                                                                                        name="is_temperature_active"
+                                                                                        id="toggleTempActiveSensor21"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1701,15 +1921,15 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleHumActive1"
+                                                                                for="toggleHumActiveSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="humAlarm[]"
-                                                                                        id="toggleHumActive1"
+                                                                                        name="is_humidity_active"
+                                                                                        id="toggleHumActiveSensor21"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1732,15 +1952,15 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleDigitalEntry1"
+                                                                                for="toggleDigitalEntrySensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
                                                                                 <input
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
-                                                                                        name="digitalEntry[]"
-                                                                                        id="toggleDigitalEntry1"
+                                                                                        name="is_digital_entry_active"
+                                                                                        id="toggleDigitalEntrySensor21"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1763,229 +1983,10 @@
                                                                             <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                                                                                     :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                                     @change="isOptionSelected = true"
-                                                                                    name="digitalEntryVal[]">
-                                                                                <option value="0" class="text-body">0
+                                                                                    name="digital_entry_alarm_value">
+                                                                    <option value="false" class="text-body">0
                                                                                 </option>
-                                                                                <option value="1" class="text-body">1
-                                                                                </option>
-                                                                            </select>
-                                                                            <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                               xmlns="http://www.w3.org/2000/svg">
-                            <g opacity="0.8">
-                              <path fill-rule="evenodd" clip-rule="evenodd"
-                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                    fill="#637381"></path>
-                            </g>
-                          </svg>
-                        </span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div id="sensor2Tab"
-                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
-                                                <div class="sensorRow flex">
-                                                    <div class="w-full flex flex-wrap xl:w-1/2">
-                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm 1
-                                                        </label>
-                                                        <div class="group relative w-3/4">
-                                                            <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                   placeholder="Broj telefona za alarm"
-                                                                   name="phone[]"
-                                                                   value=""
-                                                                   data-maxchars="15"
-                                                            >
-                                                            <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                Broj telefona <br> za alarme, <br> maksimalno 20 znakova
-                                                            </div>
-                                                        </div>
-                                                        <div class="group flex relative w-full">
-                                                            <div class="flex justify-between">
-                                                                <div class="flex">
-                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
-                                                                        SMS
-                                                                    </label>
-                                                                    <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
-                                                                        <label
-                                                                                for="toggleSmsSensor21"
-                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
-                                                                        >
-                                                                            <div class="relative">
-                                                                                <input
-                                                                                        type="checkbox"
-                                                                                        :checked="switcherToggle"
-                                                                                        name="smsAlarm[]"
-                                                                                        id="toggleSmsSensor21"
-                                                                                        class="sr-only"
-                                                                                        @change="switcherToggle = !switcherToggle"
-                                                                                />
-                                                                                <div
-                                                                                        :class="switcherToggle && '!bg-primary'"
-                                                                                        class="block h-8 w-14 rounded-full bg-black"
-                                                                                ></div>
-                                                                                <div
-                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
-                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
-                                                                                ></div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <div class="flex ml-4 justify-between">
-                                                                <div class="flex">
-                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
-                                                                        Glasovna poruka
-                                                                    </label>
-                                                                    <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
-                                                                        <label
-                                                                                for="toggleVoiceMessage1"
-                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
-                                                                        >
-                                                                            <div class="relative">
-                                                                                <input
-                                                                                        type="checkbox"
-                                                                                        :checked="switcherToggle"
-                                                                                        name="voiceAlarm[]"
-                                                                                        id="toggleVoiceMessage1"
-                                                                                        class="sr-only"
-                                                                                        @change="switcherToggle = !switcherToggle"
-                                                                                />
-                                                                                <div
-                                                                                        :class="switcherToggle && '!bg-primary'"
-                                                                                        class="block h-8 w-14 rounded-full bg-black"
-                                                                                ></div>
-                                                                                <div
-                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
-                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
-                                                                                ></div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="w-full xl:w-1/2">
-                                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">
-                                                            Aktivan alarm za:
-                                                        </label>
-                                                        <div class="group relative">
-                                                            <div class="flex justify-between">
-                                                                <div class="flex">
-                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
-                                                                        Temperaturu
-                                                                    </label>
-                                                                    <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
-                                                                        <label
-                                                                                for="toggleTempActive1"
-                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
-                                                                        >
-                                                                            <div class="relative">
-                                                                                <input
-                                                                                        type="checkbox"
-                                                                                        :checked="switcherToggle"
-                                                                                        name="tempAlarm[]"
-                                                                                        id="toggleTempActive1"
-                                                                                        class="sr-only"
-                                                                                        @change="switcherToggle = !switcherToggle"
-                                                                                />
-                                                                                <div
-                                                                                        :class="switcherToggle && '!bg-primary'"
-                                                                                        class="block h-8 w-14 rounded-full bg-black"
-                                                                                ></div>
-                                                                                <div
-                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
-                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
-                                                                                ></div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="flex">
-                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
-                                                                        Vlagu
-                                                                    </label>
-                                                                    <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
-                                                                        <label
-                                                                                for="toggleHumActive1"
-                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
-                                                                        >
-                                                                            <div class="relative">
-                                                                                <input
-                                                                                        type="checkbox"
-                                                                                        :checked="switcherToggle"
-                                                                                        name="humAlarm[]"
-                                                                                        id="toggleHumActive1"
-                                                                                        class="sr-only"
-                                                                                        @change="switcherToggle = !switcherToggle"
-                                                                                />
-                                                                                <div
-                                                                                        :class="switcherToggle && '!bg-primary'"
-                                                                                        class="block h-8 w-14 rounded-full bg-black"
-                                                                                ></div>
-                                                                                <div
-                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
-                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
-                                                                                ></div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="flex">
-                                                                    <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
-                                                                        Digitalni ulaz
-                                                                    </label>
-                                                                    <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
-                                                                        <label
-                                                                                for="toggleDigitalEntry1"
-                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
-                                                                        >
-                                                                            <div class="relative">
-                                                                                <input
-                                                                                        type="checkbox"
-                                                                                        :checked="switcherToggle"
-                                                                                        name="digitalEntry[]"
-                                                                                        id="toggleDigitalEntry1"
-                                                                                        class="sr-only"
-                                                                                        @change="switcherToggle = !switcherToggle"
-                                                                                />
-                                                                                <div
-                                                                                        :class="switcherToggle && '!bg-primary'"
-                                                                                        class="block h-8 w-14 rounded-full bg-black"
-                                                                                ></div>
-                                                                                <div
-                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
-                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
-                                                                                ></div>
-                                                                            </div>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="ml-3">
-                                                                    <div>
-                                                                        <div x-data="{ isOptionSelected: false }"
-                                                                             class="relative z-20 bg-white dark:bg-form-input">
-                                                                            <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
-                                                                                    :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
-                                                                                    @change="isOptionSelected = true"
-                                                                                    name="digitalEntryVal[]">
-                                                                                <option value="0" class="text-body">0
-                                                                                </option>
-                                                                                <option value="1" class="text-body">1
+                                                                                <option value="true" class="text-body">1
                                                                                 </option>
                                                                             </select>
                                                                             <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
