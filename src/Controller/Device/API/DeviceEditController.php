@@ -28,7 +28,7 @@ class DeviceEditController extends AbstractController
         DeviceUpdater $deviceUpdater
     ): RedirectResponse|Response
     {
-        $errors = $deviceUpdater->update($device, $request->request->all());
+        $errors = $deviceUpdater->update($device, json_decode($request->getContent(), true));
 
         if ($errors) {
             return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
