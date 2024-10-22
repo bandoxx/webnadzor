@@ -1440,12 +1440,12 @@
                                         <div class="p-6.5">
                                             <div id="generalTab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row">
-                                                <div class="sensorRow flex w-full">
+                                                <div class="sensorRow flex w-full flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 w-1/2 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm
+                                                            Broj telefona za alarm&nbsp&nbsp&nbsp&nbsp
                                                         </label>
-                                                        <div class="group relative w-3/4">
+                                                        <div class="group relative w-2/3">
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
@@ -1456,6 +1456,18 @@
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                                                                 Broj telefona <br> za alarme, <br> maksimalno 20 znakova
                                                             </div>
+                                                        </div>
+                                                        <div
+                                                                title="Izbriši broj telefona"
+                                                                class="deletePhoneNum border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                 viewBox="0 0 24 24" stroke-width="1.5"
+                                                                 stroke="currentColor"
+                                                                 class="size-6 relative left-1 z-10">>
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                            </svg>
                                                         </div>
                                                         <div class="group flex relative w-full">
                                                             <div class="flex justify-between">
@@ -1499,7 +1511,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleVoiceMessageSensor11"
+                                                                                for="toggleVoiceMessage1"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1507,7 +1519,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_voice_message_active"
-                                                                                        id="toggleVoiceMessageSensor11"
+                                                                                        id="toggleVoiceMessage1"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1571,12 +1583,12 @@
                                             </div>
                                             <div id="sensor1Tab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
-                                                <div class="sensorRow flex">
+                                                <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
-                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm&nbsp&nbsp
+                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white w-1/2">
+                                                            Broj telefona za alarm&nbsp&nbsp&nbsp&nbsp
                                                         </label>
-                                                        <div class="group relative w-3/4">
+                                                        <div class="group relative w-2/3">
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
@@ -1587,6 +1599,18 @@
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                                                                 Broj telefona <br> za alarme, <br> maksimalno 20 znakova
                                                             </div>
+                                                        </div>
+                                                        <div
+                                                                title="Izbriši broj telefona"
+                                                                class="deletePhoneNum border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                 viewBox="0 0 24 24" stroke-width="1.5"
+                                                                 stroke="currentColor"
+                                                                 class="size-6 relative left-1 z-10">>
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                            </svg>
                                                         </div>
                                                         <div class="group flex relative w-full">
                                                             <div class="flex justify-between">
@@ -1663,7 +1687,7 @@
                                                             Aktivan alarm za:
                                                         </label>
                                                         <div class="group relative">
-                                                            <div class="flex justify-between">
+                                                            <div class="flex justify-between flex-col xl:flex-row">
                                                                 <div class="flex">
                                                                     <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                         Temperaturu
@@ -1671,7 +1695,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleTempActive1"
+                                                                                for="toggleTempActiveSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1702,7 +1726,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: false }">
                                                                         <label
-                                                                                for="toggleHumActive1"
+                                                                                for="toggleHumActiveSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1790,12 +1814,12 @@
                                             </div>
                                             <div id="sensor2Tab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
-                                                <div class="sensorRow flex">
+                                                <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
-                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Broj telefona za alarm&nbsp&nbsp
+                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white w-1/2">
+                                                            Broj telefona za alarm&nbsp&nbsp&nbsp&nbsp
                                                         </label>
-                                                        <div class="group relative w-3/4">
+                                                        <div class="group relative w-2/3">
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
@@ -1806,6 +1830,18 @@
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                                                                 Broj telefona <br> za alarme, <br> maksimalno 20 znakova
                                                             </div>
+                                                        </div>
+                                                        <div
+                                                                title="Izbriši broj telefona"
+                                                                class="deletePhoneNum border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                 viewBox="0 0 24 24" stroke-width="1.5"
+                                                                 stroke="currentColor"
+                                                                 class="size-6 relative left-1 z-10">>
+                                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                                      d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                            </svg>
                                                         </div>
                                                         <div class="group flex relative w-full">
                                                             <div class="flex justify-between">
@@ -1882,7 +1918,7 @@
                                                             Aktivan alarm za:
                                                         </label>
                                                         <div class="group relative">
-                                                            <div class="flex justify-between">
+                                                            <div class="flex justify-between flex-col xl:flex-row">
                                                                 <div class="flex">
                                                                     <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                         Temperaturu
@@ -2017,19 +2053,6 @@
                                                      class="size-6 relative left-1 z-10">
                                                     <path stroke-linecap="round" stroke-linejoin="round"
                                                           d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                                </svg>
-                                            </div>
-                                            <div
-                                                    id="deletePhoneNum"
-                                                    title="Izbriši broj telefona"
-                                                    class="border-b-2 w-7 ml-3 relative py-1 h-fit mt-4 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
-                                                <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                     viewBox="0 0 24 24" stroke-width="1.5"
-                                                     stroke="currentColor"
-                                                     class="size-6 relative left-1 z-10">>
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                          d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                                 </svg>
                                             </div>
                                             </div>
