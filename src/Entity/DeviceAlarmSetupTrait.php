@@ -10,7 +10,7 @@ trait DeviceAlarmSetupTrait
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'deviceAlarmSetupEntries')]

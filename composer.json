@@ -17,6 +17,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^3.1",
         "donatj/phpuseragentparser": "^1.8",
+        "giggsey/libphonenumber-for-php": "^8.13",
         "intervention/image": "^3.6",
         "mpdf/mpdf": "^8.2",
         "phpdocumentor/reflection-docblock": "^5.3",

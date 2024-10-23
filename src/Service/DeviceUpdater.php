@@ -5,21 +5,30 @@ namespace App\Service;
 use App\Entity\Device;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
+use App\Service\Device\Updater\DeviceAlarmSetupGeneralFactory;
+use App\Service\Device\Updater\DeviceAlarmSetupEntryFactory;
 use App\Service\XmlParser\DeviceSettingsMaker;
 use Doctrine\ORM\EntityManagerInterface;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberUtil;
 
 class DeviceUpdater
 {
 
+    private PhoneNumberUtil $phoneUtil;
+
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly DeviceRepository       $deviceRepository,
-        private readonly DeviceIconRepository   $deviceIconRepository,
-        private readonly DeviceSettingsMaker    $deviceSettingsMaker,
-        private readonly array                  $image = [],
-        private array                           $error = []
+        private readonly EntityManagerInterface         $entityManager,
+        private readonly DeviceRepository               $deviceRepository,
+        private readonly DeviceIconRepository           $deviceIconRepository,
+        private readonly DeviceAlarmSetupEntryFactory   $alarmSetupEntryFactory,
+        private readonly DeviceAlarmSetupGeneralFactory $alarmSetupGeneralFactory,
+        private readonly DeviceSettingsMaker            $deviceSettingsMaker,
+        private readonly array                          $image = [],
+        private array                                   $error = []
     )
     {
+        $this->phoneUtil = PhoneNumberUtil::getInstance();
     }
 
     public function update(Device $device, array $data): array
@@ -34,33 +43,18 @@ class DeviceUpdater
             $this->error[] = 'Naziv uređaja je predugačko';
         }
 
-        $xmlName = trim($data['xml_name']);
-
-        if ($device->getXmlName() !== $xmlName) {
-            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
-                $device->setXmlName($xmlName);
-            } else {
-                $this->error[] = sprintf('%s - XML naziv se već koristi.', $xmlName);
-            }
-        }
-
-        $location = str_replace(' ', '', $data['location']);
-
-        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
-            [$latitude, $longitude] = explode(',', $location);
-            $device->setLatitude($latitude)
-                ->setLongitude($longitude)
-            ;
-        }
+        $this->updateXmlName($device, trim($data['xml_name']));
+        $this->updateLocationCoordinates($device, $data['location']);
+        $this->updateSmtpEmails($device, $data['smtp'] ?? []);
+        $this->updateApplicationEmails($device, $data['application_email'] ?? []);
+        $this->updateAlarmSetupGeneral($device, $data['device_alarm_setup_general'] ?? []);
 
         foreach (range(1, 2) as $entry) {
             $this->updateTemperature($device, $entry, $data[sprintf("t%s", $entry)]);
             $this->updateHumidity($device, $entry, $data[sprintf('rh%s', $entry)]);
             $this->updateDigital($device, $entry, $data[sprintf("d%s", $entry)]);
+            $this->updateAlarmSetupEntry($device, $entry, $data[sprintf("device_alarm_setup_entry_%s", $entry)]);
         }
-
-        $device->setAlarmEmail(array_values(array_unique(array_filter($data['smtp'] ?? []))));
-        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['application_email'] ?? []))));
 
         if ($this->error) {
             return $this->error;
@@ -195,7 +189,7 @@ class DeviceUpdater
         $this->setImage($device, $entry, 'd_on_image', $data['on_image_id']);
     }
 
-    private function setImage(Device $device, int $entry, string $field, int $imageId): Device
+    private function setImage(Device $device, int $entry, string $field, int $imageId): void
     {
         if (empty($imageId)) {
             $device->setEntryData($entry, $field, null);
@@ -206,14 +200,133 @@ class DeviceUpdater
         } else {
             throw new \Exception(sprintf("%s image error", $field));
         }
-
-        return $device;
     }
+
+    private function updateXmlName(Device $device, string $xmlName): void
+    {
+        if ($device->getXmlName() !== $xmlName) {
+            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
+                $device->setXmlName($xmlName);
+            } else {
+                $this->error[] = sprintf('%s - XML naziv se već koristi.', $xmlName);
+            }
+        }
+    }
+
+    private function updateAlarmSetupGeneral(Device $device, array $data): void
+    {
+        $alarmSetupGenerals = $device->getDeviceAlarmSetupGenerals();
+
+        foreach ($alarmSetupGenerals as $alarmSetupGeneral) {
+            $this->entityManager->remove($alarmSetupGeneral);
+        }
+
+        foreach ($data as $generalEntry) {
+            $phoneNumber = $generalEntry['phone_number'];
+
+            $this->validatePhoneNumber($phoneNumber);
+
+            $prepare = $this->alarmSetupGeneralFactory->create(
+                $device,
+                $phoneNumber,
+                $generalEntry['is_device_power_supply_active'],
+                $generalEntry['is_sms_active'],
+                $generalEntry['is_voice_message_active']
+            );
+
+            $this->entityManager->persist($prepare);
+        }
+    }
+
+    private function updateAlarmSetupEntry(Device $device, int $entry, array $data): void
+    {
+        foreach ($device->getDeviceAlarmSetupEntries() as $alarmSetupEntry) {
+            $this->entityManager->remove($alarmSetupEntry);
+        }
+
+        foreach ($data as $entryData) {
+            $phoneNumber = $entryData['phone_number'];
+
+            if (empty($phoneNumber)) {
+                continue;
+            }
+
+            $this->validatePhoneNumber($phoneNumber);
+
+            $prepare = $this->alarmSetupEntryFactory->create(
+                $device,
+                $entry,
+                $phoneNumber,
+                $entryData['is_digital_entry_active'],
+                $entryData['digital_entry_alarm_value'],
+                $entryData['is_humidity_active'],
+                $entryData['is_temperature_active'],
+                $entryData['is_sms_active'],
+                $entryData['is_voice_message_active']
+            );
+
+            $this->entityManager->persist($prepare);
+        }
+    }
+
 
     private function length(string $string, int $max = 1, int $min = 0): bool
     {
         $length = strlen(mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8'));
 
         return $length >= $min && $length <= $max;
+    }
+
+    private function validateEmail(string $email): void
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $this->error[] = sprintf("%s email nije validan.", $email);
+        }
+    }
+
+    private function validatePhoneNumber(string $phoneNumber): void
+    {
+        try {
+            $parsed = $this->phoneUtil->parse($phoneNumber, 'HR');
+            if ($this->phoneUtil->isValidNumber($parsed) === false) {
+                $this->error[] = sprintf("Broj %s nije validan", $phoneNumber);
+            }
+        } catch (NumberParseException $e) {
+            $this->error[] = sprintf("Broj %s nije validan", $phoneNumber);
+        }
+    }
+
+    private function updateLocationCoordinates(Device $device, string $location): void
+    {
+        $location = str_replace(' ', '', $location);
+
+        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
+            [$latitude, $longitude] = explode(',', $location);
+            $device->setLatitude($latitude)
+                ->setLongitude($longitude)
+            ;
+        }
+    }
+
+    private function updateSmtpEmails(Device $device, ?array $smtp = []): void
+    {
+        $smtpEmails = array_values(array_unique(array_filter($smtp)));
+
+        foreach ($smtpEmails as $email) {
+            $this->validateEmail($email);
+        }
+
+        $device->setAlarmEmail($smtpEmails);
+    }
+
+    private function updateApplicationEmails(Device $device, ?array $applicationEmail = []): void
+    {
+        $applicationEmails = array_values(array_unique(array_filter($applicationEmail)));
+
+        foreach ($applicationEmails as $email) {
+            $this->validateEmail($email);
+        }
+
+        $device->setApplicationEmailList($applicationEmails);
     }
 }

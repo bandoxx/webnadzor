@@ -162,7 +162,7 @@
                                 </svg>
                             </div>
                                 <h5 class="text-sm font-bold text-black dark:text-[#34D399]">
-                                    Data updated succesfully
+                                    Uspešno ste sačuvali podešavanja.
                                 </h5>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                             </div>
                             <div class="w-full">
                                 <h5 class="font-bold text-[#B45454]">
-                                    There were errors with your submission
+                                    Postoji greška u formi
                                 </h5>
                                 <ul id="errorList">
                                 </ul>
@@ -1329,7 +1329,9 @@
                                                  class="mb-4.5 flex flex-col gap-6 xl:flex-row flex-wrap">
                                                 <div class="emailRow flex w-full">
                                                     <div class="xl:w-1/2 flex flex-col" id="emailDeviceCol">
-                                                        <div class="emailDevice w-full mb-4">
+                                                        {% if device.alarmEmail %}
+                                                        {% for email in device.alarmEmail %}
+                                                            <div class="emailDevice w-full mb-4">
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Email iz uređaja
                                                             </label>
@@ -1339,7 +1341,7 @@
                                                                            class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                            placeholder="Email iz uređaja"
                                                                            name="smtp[]"
-                                                                           value="{{ device.alarmEmail[0] is defined ? device.alarmEmail[0] : '' }}"
+                                                                           value="{{ email }}"
                                                                     >
                                                                     <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                                         <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
@@ -1367,8 +1369,51 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {% endfor %}
+                                                        {% else %}
+                                                            <div class="emailDevice w-full mb-4">
+                                                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                                Email iz uređaja
+                                                            </label>
+                                                            <div class="flex">
+                                                                <div class="group relative w-3/4">
+                                                                    <input type="email"
+                                                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                           placeholder="Email iz uređaja"
+                                                                           name="smtp[]"
+                                                                           value=""
+                                                                    >
+                                                                    <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                        E-mail adresa <br> za alarme, <br> maksimalno 40
+                                                                        znakova
+                                                                    </div>
+                                                                    <div class="absolute hidden xl:block left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                        E-mail adresa za alarme, <br> maksimalno 40
+                                                                        znakova
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                        title="Izbriši email iz uređaja"
+                                                                        class="deleteDevEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                                    <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                         viewBox="0 0 24 24" stroke-width="1.5"
+                                                                         stroke="currentColor"
+                                                                         class="size-6 relative left-1 z-10">>
+                                                                        <path stroke-linecap="round"
+                                                                              stroke-linejoin="round"
+                                                                              d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
                                                     </div>
                                                     <div class="xl:w-1/2 flex flex-col" id="emailApplicationCol">
+                                                    {% if device.applicationEmailList %}
+                                                    {% for email in device.applicationEmailList %}
                                                     <div class="emailApplication w-full mb-4">
                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                             Email iz aplikacije
@@ -1379,7 +1424,7 @@
                                                                        class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                        placeholder="Email iz aplikacije"
                                                                        name="application_email[]"
-                                                                       value="{{ device.applicationEmailList[0] is defined ? device.applicationEmailList[0] : '' }}"
+                                                                       value="{{ email }}"
                                                                 >
                                                                 <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                                     <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
@@ -1401,6 +1446,41 @@
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    {% endfor %}
+                                                    {% else %}
+                                                        <div class="emailApplication w-full mb-4">
+                                                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                                Email iz aplikacije
+                                                            </label>
+                                                            <div class="flex">
+                                                                <div class="group relative w-3/4">
+                                                                    <input type="email"
+                                                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                           placeholder="Email iz aplikacije"
+                                                                           name="application_email[]"
+                                                                           value=""
+                                                                    >
+                                                                    <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                        E-mail adresa <br> za alarme,<br> maksimalno 40
+                                                                        znakova
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                        title="Izbriši email iz aplikacije"
+                                                                        class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                                    <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                         viewBox="0 0 24 24" stroke-width="1.5"
+                                                                         stroke="currentColor"
+                                                                         class="size-6 relative left-1 z-10">>
+                                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                                              d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                                    </svg>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
                                                 </div>
                                                 </div>
                                             </div>
@@ -1469,7 +1549,9 @@
                                         </div>
                                         <div class="p-6.5">
                                             <div id="generalTab"
-                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row">
+                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row"
+                                            >
+                                                {% for general in device.deviceAlarmSetupGenerals %}
                                                 <div class="sensorRow flex w-full flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 w-1/2 block text-sm font-medium text-black dark:text-white">
@@ -1479,8 +1561,8 @@
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
-                                                                   value=""
-                                                                   data-maxchars="15"
+                                                                   value="{{ general.phoneNumber }}"
+                                                                   data-maxchars="20"
                                                             >
                                                             <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
@@ -1506,7 +1588,7 @@
                                                                         SMS
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ general.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleSms1"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1539,7 +1621,7 @@
                                                                         Glasovna poruka
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ general.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleVoiceMessage1"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1580,7 +1662,7 @@
                                                                         Isključeno napajanje
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ general.isDevicePowerSupplyOffActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleVoltageActive1"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1610,10 +1692,14 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% endfor %}
                                             </div>
                                             <div id="sensor1Tab"
-                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
-                                                <div class="sensorRow flex flex-wrap">
+                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden"
+                                            >
+                                                {% for entry in device.deviceAlarmSetupEntries %}
+                                                    {% if entry.entry == 1 %}
+                                                        <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white w-1/2">
                                                             Broj telefona za alarm&nbsp&nbsp&nbsp&nbsp
@@ -1622,8 +1708,8 @@
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
-                                                                   value=""
-                                                                   data-maxchars="15"
+                                                                   value="{{ entry.phoneNumber }}"
+                                                                   data-maxchars="20"
                                                             >
                                                             <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
@@ -1649,7 +1735,7 @@
                                                                         SMS
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleSmsSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1682,7 +1768,7 @@
                                                                         Glasovna poruka
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleVoiceMessageSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1723,7 +1809,7 @@
                                                                         Temperaturu
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isTemperatureActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleTempActiveSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1754,7 +1840,7 @@
                                                                         Vlagu
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isHumidityActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleHumActiveSensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1785,7 +1871,7 @@
                                                                         Digitalni ulaz
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isDigitalEntryActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleDigitalEntrySensor11"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1819,10 +1905,8 @@
                                                                                     :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                                     @change="isOptionSelected = true"
                                                                                     name="digital_entry_alarm_value">
-                                                                    <option value="false" class="text-body">0
-                                                                                </option>
-                                                                                <option value="true" class="text-body">1
-                                                                                </option>
+                                                                                <option value="false" class="text-body">0</option>
+                                                                                <option value="true" class="text-body">1</option>
                                                                             </select>
                                                                             <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -1841,10 +1925,15 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                    {% endif %}
+                                                {% endfor %}
                                             </div>
                                             <div id="sensor2Tab"
-                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden">
-                                                <div class="sensorRow flex flex-wrap">
+                                                 class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden"
+                                            >
+                                                {% for entry in device.deviceAlarmSetupEntries %}
+                                                    {% if entry.entry == 2 %}
+                                                        <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white w-1/2">
                                                             Broj telefona za alarm&nbsp&nbsp&nbsp&nbsp
@@ -1853,8 +1942,8 @@
                                                             <input class="number w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                                                    placeholder="Broj telefona za alarm"
                                                                    name="phone_number"
-                                                                   value=""
-                                                                   data-maxchars="15"
+                                                                   value="{{ entry.phoneNumber }}"
+                                                                   data-maxchars="20"
                                                             >
                                                             <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                                 <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
@@ -1880,7 +1969,7 @@
                                                                         SMS
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleSmsSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1913,7 +2002,7 @@
                                                                         Glasovna poruka
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleVoiceMessageSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1954,7 +2043,7 @@
                                                                         Temperaturu
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isTemperatureActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleTempActiveSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1985,7 +2074,7 @@
                                                                         Vlagu
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isHumidityActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleHumActiveSensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -2016,7 +2105,7 @@
                                                                         Digitalni ulaz
                                                                     </label>
                                                                     <div class="mt-3"
-                                                                         x-data="{ switcherToggle: false }">
+                                                                         x-data="{ switcherToggle: {{ entry.isDigitalEntryActive == true ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleDigitalEntrySensor21"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -2072,6 +2161,8 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                    {% endif %}
+                                                {% endfor %}
                                             </div>
                                             <div class="flex">
                                             <div id="newPhoneNum"
