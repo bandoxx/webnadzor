@@ -26,7 +26,7 @@ parameters:
     private_key_path: '%kernel.project_dir%/key/key.pem'
     aes_key_path: '%kernel.project_dir%/key/aes.json'
     temporary_directory: '%kernel.project_dir%/var'
-    is_infobip_client_active: true
+    is_infobip_client_active: false
 services:
     # default configuration for services in *this* file
     _defaults:
