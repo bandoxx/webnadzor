@@ -66,6 +66,11 @@ trait DeviceAlarmSetupTrait
         return $this->phoneNumber;
     }
 
+    public function getPhoneNumberWithoutPlus(): ?string
+    {
+        return ltrim($this->phoneNumber, '+');
+    }
+
     public function setPhoneNumber(?string $phoneNumber): static
     {
         $this->phoneNumber = $phoneNumber;

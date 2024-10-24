@@ -87,7 +87,7 @@ class AlarmRecipients
     private function getRecipientsForGeneralAlarms(DeviceAlarm $alarm, DeviceAlarmSetupGeneral $alarmSetting): ?string
     {
         if ($alarm->getType() === DeviceSupplyOff::TYPE && $alarmSetting->isDevicePowerSupplyOffActive()) {
-            return $alarmSetting->getPhoneNumber();
+            return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
         return null;
@@ -96,11 +96,11 @@ class AlarmRecipients
     private function getRecipientsForEntryAlarms(DeviceAlarm $alarm, DeviceAlarmSetupEntry $alarmSetting): ?string
     {
         if ($alarmSetting->isHumidityActive() && $alarmSetting->getEntry() == $alarm->getSensor() && in_array($alarm->getType(), [HumidityLow::TYPE, HumidityHigh::TYPE], true)) {
-            return $alarmSetting->getPhoneNumber();
+            return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
         if ($alarmSetting->isTemperatureActive() && $alarmSetting->getEntry() == $alarm->getSensor() && in_array($alarm->getType(), [TemperatureLow::TYPE, TemperatureHigh::TYPE], true)) {
-            return $alarmSetting->getPhoneNumber();
+            return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
         return null;
