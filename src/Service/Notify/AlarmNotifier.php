@@ -58,7 +58,7 @@ class AlarmNotifier
 
             $this->infobipClient->sendMessage($recipients, $alarm->getMessage());
 
-            $log = $this->alarmLogFactory->create($alarm->getDevice()->getClient(), $alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
+            $log = $this->alarmLogFactory->create($alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
 
             $this->entityManager->persist($log);
             $this->entityManager->flush();
