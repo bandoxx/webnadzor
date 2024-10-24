@@ -4,13 +4,10 @@ namespace App\Controller\Device\API;
 
 use App\Entity\Client;
 use App\Entity\Device;
-use App\Entity\User;
-use App\Model\TemperatureType;
-use App\Repository\DeviceIconRepository;
 use App\Service\DeviceUpdater;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,7 +23,7 @@ class DeviceEditController extends AbstractController
         Device $device,
         Request $request,
         DeviceUpdater $deviceUpdater
-    ): RedirectResponse|Response
+    ): JsonResponse
     {
         $errors = $deviceUpdater->update($device, json_decode($request->getContent(), true));
 

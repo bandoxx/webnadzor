@@ -4,6 +4,8 @@ namespace App\Service\Notify;
 
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
+use App\Entity\DeviceAlarmLog;
+use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
 use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
@@ -19,7 +21,8 @@ class AlarmNotifier
         private readonly EntityManagerInterface $entityManager,
         private readonly InfobipClient $infobipClient,
         private readonly AlarmRecipients $alarmRecipients,
-        private readonly Environment $twig
+        private readonly Environment $twig,
+        private readonly AlarmLogFactory $alarmLogFactory
     )
     {}
 
@@ -54,6 +57,11 @@ class AlarmNotifier
             $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
 
             $this->infobipClient->sendMessage($recipients, $alarm->getMessage());
+
+            $log = $this->alarmLogFactory->create($alarm->getDevice()->getClient(), $alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
+
+            $this->entityManager->persist($log);
+            $this->entityManager->flush();
         }
     }
 
