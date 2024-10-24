@@ -162,7 +162,7 @@
                                 </svg>
                             </div>
                                 <h5 class="text-sm font-bold text-black dark:text-[#34D399]">
-                                    Uspešno ste sačuvali podešavanja.
+                                    Uspješno ste sačuvali podešavanja.
                                 </h5>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                             </div>
                             <div class="w-full">
                                 <h5 class="font-bold text-[#B45454]">
-                                    Postoji greška u formi
+                                    Postoji griješka u formi
                                 </h5>
                                 <ul id="errorList">
                                 </ul>
@@ -376,10 +376,10 @@
                                                             </div>
                                                             <div class="w-3/4 mt-3">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                    Ograničenje vrednosti
+                                                                    Ograničenje vrijednosti
                                                                 </label>
                                                                 <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                       placeholder="Ograničenje vrednosti"
+                                                                       placeholder="Ograničenje vrijednosti"
                                                                        name="t1_note"
                                                                        type="text"
                                                                        value="{{ device.entry1.t_note ?? '' }}"
@@ -553,10 +553,10 @@
                                                             </div>
                                                             <div class="w-3/4 mt-3">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                    Ograničenje vrednosti
+                                                                    Ograničenje vrijednosti
                                                                 </label>
                                                                 <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                       placeholder="Ograničenje vrednosti"
+                                                                       placeholder="Ograničenje vrijednosti"
                                                                        name="t2_note"
                                                                        value="{{ device.entry2.t_note ?? '' }}"
                                                                        type="text">
@@ -1210,7 +1210,7 @@
                                                             <div class="w-3/4 mt-3 relative"
                                                                  x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                    Ikona za vrednost 0
+                                                                    Ikona za vrijednost 0
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
@@ -1238,7 +1238,7 @@
                                                             <div class="w-3/4 mt-3 relative"
                                                                  x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                    Ikona za vrednost 1
+                                                                    Ikona za vrijednost 1
                                                                 </label>
                                                                 <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
                                                                         @change="isOptionSelected = true"
@@ -1551,7 +1551,7 @@
                                             <div id="generalTab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row"
                                             >
-                                                {% for general in device.deviceAlarmSetupGenerals %}
+                                                {% for key, general in device.deviceAlarmSetupGenerals %}
                                                 <div class="sensorRow flex w-full flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
                                                         <label class="mb-3 w-1/2 block text-sm font-medium text-black dark:text-white">
@@ -1590,7 +1590,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ general.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleSms1"
+                                                                                for="toggleSms{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1598,7 +1598,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_sms_active"
-                                                                                        id="toggleSms1"
+                                                                                        id="toggleSms{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1623,7 +1623,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ general.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleVoiceMessage1"
+                                                                                for="toggleVoiceMessage{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1631,7 +1631,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_voice_message_active"
-                                                                                        id="toggleVoiceMessage1"
+                                                                                        id="toggleVoiceMessage{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1664,7 +1664,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ general.isDevicePowerSupplyOffActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleVoltageActive1"
+                                                                                for="toggleVoltageActive{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1672,7 +1672,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_device_power_supply_active"
-                                                                                        id="toggleVoltageActive1"
+                                                                                        id="toggleVoltageActive{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1697,7 +1697,7 @@
                                             <div id="sensor1Tab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden"
                                             >
-                                                {% for entry in device.deviceAlarmSetupEntries %}
+                                                {% for key, entry in device.deviceAlarmSetupEntries %}
                                                     {% if entry.entry == 1 %}
                                                         <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
@@ -1737,7 +1737,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleSmsSensor11"
+                                                                                for="toggleSmsSensor1{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1745,7 +1745,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_sms_active"
-                                                                                        id="toggleSmsSensor11"
+                                                                                        id="toggleSmsSensor1{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1770,7 +1770,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleVoiceMessageSensor11"
+                                                                                for="toggleVoiceMessageSensor1{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1778,7 +1778,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_voice_message_active"
-                                                                                        id="toggleVoiceMessageSensor11"
+                                                                                        id="toggleVoiceMessageSensor1{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1811,7 +1811,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isTemperatureActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleTempActiveSensor11"
+                                                                                for="toggleTempActiveSensor1{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1819,7 +1819,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_temperature_active"
-                                                                                        id="toggleTempActiveSensor11"
+                                                                                        id="toggleTempActiveSensor1{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1842,7 +1842,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isHumidityActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleHumActiveSensor11"
+                                                                                for="toggleHumActiveSensor1{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1850,7 +1850,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_humidity_active"
-                                                                                        id="toggleHumActiveSensor11"
+                                                                                        id="toggleHumActiveSensor1{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1873,7 +1873,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isDigitalEntryActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleDigitalEntrySensor11"
+                                                                                for="toggleDigitalEntrySensor1{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1881,7 +1881,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_digital_entry_active"
-                                                                                        id="toggleDigitalEntrySensor11"
+                                                                                        id="toggleDigitalEntrySensor1{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -1931,7 +1931,7 @@
                                             <div id="sensor2Tab"
                                                  class="mb-4.5 flex flex-wrap flex-col gap-6 xl:flex-row hidden"
                                             >
-                                                {% for entry in device.deviceAlarmSetupEntries %}
+                                                {% for key, entry in device.deviceAlarmSetupEntries %}
                                                     {% if entry.entry == 2 %}
                                                         <div class="sensorRow flex flex-wrap">
                                                     <div class="w-full flex flex-wrap xl:w-1/2">
@@ -1971,7 +1971,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isSmsActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleSmsSensor21"
+                                                                                for="toggleSmsSensor2{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -1979,7 +1979,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_sms_active"
-                                                                                        id="toggleSmsSensor21"
+                                                                                        id="toggleSmsSensor2{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -2004,7 +2004,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isVoiceMessageActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleVoiceMessageSensor21"
+                                                                                for="toggleVoiceMessageSensor2{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -2012,7 +2012,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_voice_message_active"
-                                                                                        id="toggleVoiceMessageSensor21"
+                                                                                        id="toggleVoiceMessageSensor2{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -2045,7 +2045,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isTemperatureActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleTempActiveSensor21"
+                                                                                for="toggleTempActiveSensor2{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -2053,7 +2053,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_temperature_active"
-                                                                                        id="toggleTempActiveSensor21"
+                                                                                        id="toggleTempActiveSensor2{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -2076,7 +2076,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isHumidityActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleHumActiveSensor21"
+                                                                                for="toggleHumActiveSensor2{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -2084,7 +2084,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_humidity_active"
-                                                                                        id="toggleHumActiveSensor21"
+                                                                                        id="toggleHumActiveSensor2{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
@@ -2107,7 +2107,7 @@
                                                                     <div class="mt-3"
                                                                          x-data="{ switcherToggle: {{ entry.isDigitalEntryActive == true ? 'true' : 'false' }} }">
                                                                         <label
-                                                                                for="toggleDigitalEntrySensor21"
+                                                                                for="toggleDigitalEntrySensor2{{ key }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
                                                                         >
                                                                             <div class="relative">
@@ -2115,7 +2115,7 @@
                                                                                         type="checkbox"
                                                                                         :checked="switcherToggle"
                                                                                         name="is_digital_entry_active"
-                                                                                        id="toggleDigitalEntrySensor21"
+                                                                                        id="toggleDigitalEntrySensor2{{ key }}"
                                                                                         class="sr-only"
                                                                                         @change="switcherToggle = !switcherToggle"
                                                                                 />
