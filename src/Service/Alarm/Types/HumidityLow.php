@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class HumidityLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'humidity-low';
+    public const string TYPE = 'humidity-low';
 
     public function getType(): string
     {
@@ -19,11 +19,10 @@ class HumidityLow extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s ima nisku vlagu: %s, minimalno dozvoljeno: %s. %s",
+        return sprintf("%s ima nisku vlagu: %s, minimalno dozvoljeno: %s.",
             $this->getLocationString($device, $sensor),
             $deviceData->getRh($sensor),
-            $device->getEntryData($sensor)['rh_min'],
-            $this->alarmActivatedString($deviceData)
+            $device->getEntryData($sensor)['rh_min']
         );
     }
 }

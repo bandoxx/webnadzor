@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceSupplyOff extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-supply-off';
+    public const string TYPE = 'device-supply-off';
 
     public function getType(): string
     {
@@ -19,9 +19,8 @@ class DeviceSupplyOff extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s je ostao bez napajanja. %s",
+        return sprintf("%s je ostao bez napajanja.",
             $this->getLocationString($device, $sensor),
-            $this->alarmActivatedString($deviceData)
         );
     }
 }

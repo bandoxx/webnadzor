@@ -20,6 +20,15 @@ framework:
 
     http_cache: true
 
+    http_client:
+        scoped_clients:
+            infobip.client:
+                base_uri: 'https://wggz3q.api.infobip.com'
+                headers:
+                    Authorization: 'App %env(INFOBIP_TOKEN)%'
+                    Accept: 'application/json'
+                    Content-Type: 'application/json'
+
 when@test:
     framework:
         test: true

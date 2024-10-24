@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class DeviceSignalLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-signal-low';
+    public const string TYPE = 'device-signal-low';
 
     public function getType(): string
     {
@@ -19,10 +19,9 @@ class DeviceSignalLow extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s ima nizak signal: %s%%. %s",
+        return sprintf("%s ima nizak signal: %s%%.",
             $this->getLocationString($device, $sensor),
-            $deviceData->getGsmSignal(),
-            $this->alarmActivatedString($deviceData)
+            $deviceData->getGsmSignal()
         );
     }
 }

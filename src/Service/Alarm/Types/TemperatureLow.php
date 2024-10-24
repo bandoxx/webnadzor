@@ -7,7 +7,7 @@ use App\Entity\DeviceData;
 
 class TemperatureLow extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'temperature-low';
+    public const string TYPE = 'temperature-low';
 
     public function getType(): string
     {
@@ -19,11 +19,10 @@ class TemperatureLow extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s ima nisku temperaturu: %s, minimalno dozvoljeno: %s. %s",
+        return sprintf("%s ima nisku temperaturu: %s, minimalno dozvoljeno: %s.",
             $this->getLocationString($device, $sensor),
             $deviceData->getT($sensor),
             $device->getEntryData($sensor)['t_min'],
-            $this->alarmActivatedString($deviceData)
         );
     }
 }

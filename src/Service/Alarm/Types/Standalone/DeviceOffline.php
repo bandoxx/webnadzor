@@ -9,7 +9,7 @@ use App\Service\Alarm\Types\BaseType;
 
 class DeviceOffline extends BaseType implements AlarmTypeInterface
 {
-    public const TYPE = 'device-offline';
+    public const string TYPE = 'device-offline';
 
     public function getType(): string
     {
@@ -21,9 +21,8 @@ class DeviceOffline extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s je offline. %s",
-            $this->getLocationString($device, $sensor),
-            $this->alarmActivatedString($deviceData)
+        return sprintf("%s je offline.",
+            $this->getLocationString($device, $sensor)
         );
     }
 }

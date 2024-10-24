@@ -84,12 +84,13 @@ class AdminOverview extends AbstractController
 
                         if ($path) {
                             $data[$clientId]['alarms'][] = sprintf(
-                                "%s - %s",
+                                "%s %s - %s",
                                 $alarm->getMessage(),
+                                $alarm->getTimeString(),
                                 $path
                             );
                         } else {
-                            $data[$clientId]['alarms'][] = $alarm->getMessage();
+                            $data[$clientId]['alarms'][] = $alarm->getMessage() . ' ' . $alarm->getTimeString();
                         }
                     }
                 }

@@ -31,3 +31,5 @@ deploy.php
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
+
+/src/Command/TestCommand.php

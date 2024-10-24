@@ -5,21 +5,30 @@ namespace App\Service;
 use App\Entity\Device;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
+use App\Service\Device\Updater\DeviceAlarmSetupGeneralFactory;
+use App\Service\Device\Updater\DeviceAlarmSetupEntryFactory;
 use App\Service\XmlParser\DeviceSettingsMaker;
 use Doctrine\ORM\EntityManagerInterface;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumberUtil;
 
 class DeviceUpdater
 {
 
+    private PhoneNumberUtil $phoneUtil;
+
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly DeviceRepository       $deviceRepository,
-        private readonly DeviceIconRepository   $deviceIconRepository,
-        private readonly DeviceSettingsMaker    $deviceSettingsMaker,
-        private readonly array                  $image = [],
-        private array                           $error = []
+        private readonly EntityManagerInterface         $entityManager,
+        private readonly DeviceRepository               $deviceRepository,
+        private readonly DeviceIconRepository           $deviceIconRepository,
+        private readonly DeviceAlarmSetupEntryFactory   $alarmSetupEntryFactory,
+        private readonly DeviceAlarmSetupGeneralFactory $alarmSetupGeneralFactory,
+        private readonly DeviceSettingsMaker            $deviceSettingsMaker,
+        private readonly array                          $image = [],
+        private array                                   $error = []
     )
     {
+        $this->phoneUtil = PhoneNumberUtil::getInstance();
     }
 
     public function update(Device $device, array $data): array
@@ -31,69 +40,53 @@ class DeviceUpdater
         if ($this->length($deviceName, 40)) {
             $device->setName($deviceName);
         } else {
-            $this->error[] = 'Device name too long.';
+            $this->error[] = 'Naziv uređaja je predugačko';
         }
 
-        $xmlName = trim($data['xml_name']);
-
-        if ($device->getXmlName() !== $xmlName) {
-            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
-                $device->setXmlName($xmlName);
-            } else {
-                $this->error[] = 'XML exists already.';
-            }
-        }
-
-        $location = str_replace(' ', '', $data['location']);
-
-        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
-            [$latitude, $longitude] = explode(',', $location);
-            $device->setLatitude($latitude)
-                ->setLongitude($longitude)
-            ;
-        }
+        $this->updateXmlName($device, trim($data['xml_name']));
+        $this->updateLocationCoordinates($device, $data['location']);
+        $this->updateSmtpEmails($device, $data['smtp'] ?? []);
+        $this->updateApplicationEmails($device, $data['application_email'] ?? []);
+        $this->updateAlarmSetupGeneral($device, $data['device_alarm_setup_general'] ?? []);
 
         foreach (range(1, 2) as $entry) {
-            $this->updateTemperature($device, $entry, $data);
-            $this->updateHumidity($device, $entry, $data);
-            $this->updateDigital($device, $entry, $data);
+            $this->updateTemperature($device, $entry, $data[sprintf("t%s", $entry)]);
+            $this->updateHumidity($device, $entry, $data[sprintf('rh%s', $entry)]);
+            $this->updateDigital($device, $entry, $data[sprintf("d%s", $entry)]);
+            $this->updateAlarmSetupEntry($device, $entry, $data[sprintf("device_alarm_setup_entry_%s", $entry)]);
         }
-
-        $device->setAlarmEmail(array_values(array_unique(array_filter($data['smtp'] ?? []))));
-        $device->setApplicationEmailList(array_values(array_unique(array_filter($data['applicationEmail'] ?? []))));
 
         if ($this->error) {
             return $this->error;
         }
 
         $this->entityManager->flush();
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        //$this->deviceSettingsMaker->saveXml($oldDevice, $data); // TODO:
 
         return [];
     }
 
     private function updateTemperature(Device $device, int $entry, array $data): void
     {
-        $tUse = (empty($data['t' . $entry . '_use'])) ? '0' : $data['t' . $entry . '_use'];
-        $device->setEntryData($entry, 't_use', $tUse);
-        $device->setEntryData($entry, 't_show_chart', (empty($data['t' . $entry . '_show_chart'])) ? '0' : $data['t' . $entry . '_show_chart']);
+        $isUsed = $data['used'];
 
-        $tLocation = trim($data['t' . $entry . '_location']);
+        $device->setEntryData($entry, 't_use', $isUsed);
+        $device->setEntryData($entry, 't_show_chart', $data['show_chart']);
+        $device->setEntryData($entry, 't_location', trim($data['location']));
 
-        $device->setEntryData($entry, 't_location', $tLocation);
-
-        if ($tUse === '0') {
+        if ($isUsed === false) {
             return;
         }
 
-        $tName = trim($data['t' . $entry . '_name']);
-        $tUnit = trim($data['t' . $entry . '_unit']);
+        $tName = trim($data['name']);
 
         if ($this->length($tName, 50, 1)) {
             $device->setEntryData($entry, 't_name', $tName);
         } else {
-            $this->error[] = 'T name size';
+            $this->error[] = sprintf('Naziv lokacije za temperaturu je predugačko');
         }
+
+        $tUnit = trim($data['unit']);
 
         if ($this->length($tUnit, 8)) {
             $device->setEntryData($entry, 't_unit', $tUnit);
@@ -101,8 +94,9 @@ class DeviceUpdater
             $this->error[] = 'T unit length';
         }
 
-        $tMin = trim($data['t' . $entry . '_min']);
-        $tMax = trim($data['t' . $entry . '_max']);
+        $tMin = trim($data['min']);
+        $tMax = trim($data['max']);
+
         if ((!$tMin || preg_match('/^-?\d{1,2}(\.\d{1,2})?$/', $tMin)) && (!$tMax || preg_match('/^-?\d{1,2}(\.\d{1,2})?$/', $tMax))) {
             $device->setEntryData($entry, 't_min', $tMin);
             $device->setEntryData($entry, 't_max', $tMax);
@@ -110,37 +104,35 @@ class DeviceUpdater
             $this->error[] = 'T min max error';
         }
 
-        $chartMin = trim($data['t' . $entry . '_chart_min']);
-        $chartMax = trim($data['t' . $entry . '_chart_max']);
+        $chartMin = trim($data['chart_min']);
+        $chartMax = trim($data['chart_max']);
         $device->setEntryData($entry, 't_chart_min', $chartMin);
         $device->setEntryData($entry, 't_chart_max', $chartMax);
 
-        $noteKey = sprintf("t%s_note", $entry);
-
-        if (isset($data[$noteKey])) {
-            $device->setEntryData($entry, 't_note', trim($data[$noteKey]));
+        if (isset($data['note'])) {
+            $device->setEntryData($entry, 't_note', trim($data['note']));
         }
 
-        $this->setImage($device, $entry, 't_image', $data['t' . $entry . '_image']);
+        $this->setImage($device, $entry, 't_image', $data['image_id']);
     }
 
     private function updateHumidity(Device $device, int $entry, array $data): void
     {
-        $rhUse = (empty($data['rh' . $entry . '_use'])) ? '0' : $data['rh' . $entry . '_use'];
-        $device->setEntryData($entry, 'rh_show_chart', (empty($data['rh' . $entry . '_show_chart'])) ? '0' : $data['rh' . $entry . '_show_chart']);
+        $rhUse = $data['used'];
+        $device->setEntryData($entry, 'rh_show_chart', $data['show_chart']);
         $device->setEntryData($entry, 'rh_use', $rhUse);
 
-        if ($rhUse === '0') {
+        if ($rhUse === false) {
             return;
         }
 
-        $thName = trim($data['rh' . $entry . '_name']);
-        $rhUnit = trim($data['rh' . $entry . '_unit']);
+        $thName = trim($data['name']);
+        $rhUnit = trim($data['unit']);
 
         if ($this->length($thName, 50, 1)) {
             $device->setEntryData($entry, 'rh_name', $thName);
         } else {
-            $this->error[] = 'RH name error';
+            $this->error[] = 'Naziv lokacije za vlagu je predugačko.';
         }
 
         if ($this->length($rhUnit, 8)) {
@@ -149,8 +141,8 @@ class DeviceUpdater
             $this->error[] = 'RH Unit error';
         }
 
-        $rhMin = trim($data['rh' . $entry . '_min']);
-        $rhMax = trim($data['rh' . $entry . '_max']);
+        $rhMin = trim($data['min']);
+        $rhMax = trim($data['max']);
         if ((!$rhMin || preg_match('/^\d{1,2}(\.\d{1,2})?$/', $rhMin)) && (!$rhMax || preg_match('/^\d{1,2}(\.\d{1,2})?$/', $rhMax))) {
             $device->setEntryData($entry, 'rh_min', ($rhMin) ?: '');
             $device->setEntryData($entry, 'rh_max', ($rhMax) ?: '');
@@ -158,27 +150,27 @@ class DeviceUpdater
             $this->error[] = 'RH min/max error';
         }
 
-        $chartMin = trim($data['rh' . $entry . '_chart_min']);
-        $chartMax = trim($data['rh' . $entry . '_chart_max']);
+        $chartMin = trim($data['chart_min']);
+        $chartMax = trim($data['chart_max']);
 
         $device->setEntryData($entry, 'rh_chart_min', $chartMin);
         $device->setEntryData($entry, 'rh_chart_max', $chartMax);
 
-        $this->setImage($device, $entry, 'rh_image', $data['rh' . $entry . '_image']);
+        $this->setImage($device, $entry, 'rh_image', $data['image_id']);
     }
 
     private function updateDigital(Device $device, int $entry, array $data): void
     {
-        $dUse = (empty($data['d' . $entry . '_use'])) ? '0' : $data['d' . $entry . '_use'];
+        $dUse = $data['used'];
         $device->setEntryData($entry, 'd_use', $dUse);
 
-        if ($dUse === '0') {
+        if ($dUse === false) {
             return;
         }
 
-        $dName = trim($data['d' . $entry . '_name']);
-        $dOffName = trim($data['d' . $entry . '_off_name']);
-        $dOnName = trim($data['d' . $entry . '_on_name']);
+        $dName = trim($data['name']);
+        $dOffName = trim($data['off_name']);
+        $dOnName = trim($data['on_name']);
 
         if ($this->length($dName, 50)) {
             $device->setEntryData($entry, 'd_name', $dName);
@@ -193,11 +185,11 @@ class DeviceUpdater
             $this->error[] = 'D on off name error';
         }
 
-        $this->setImage($device, $entry, 'd_off_image', $data['d' . $entry . '_off_image']);
-        $this->setImage($device, $entry, 'd_on_image', $data['d' . $entry . '_on_image']);
+        $this->setImage($device, $entry, 'd_off_image', $data['off_image_id']);
+        $this->setImage($device, $entry, 'd_on_image', $data['on_image_id']);
     }
 
-    private function setImage(Device $device, int $entry, string $field, int $imageId): Device
+    private function setImage(Device $device, int $entry, string $field, int $imageId): void
     {
         if (empty($imageId)) {
             $device->setEntryData($entry, $field, null);
@@ -208,14 +200,133 @@ class DeviceUpdater
         } else {
             throw new \Exception(sprintf("%s image error", $field));
         }
-
-        return $device;
     }
+
+    private function updateXmlName(Device $device, string $xmlName): void
+    {
+        if ($device->getXmlName() !== $xmlName) {
+            if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
+                $device->setXmlName($xmlName);
+            } else {
+                $this->error[] = sprintf('%s - XML naziv se već koristi.', $xmlName);
+            }
+        }
+    }
+
+    private function updateAlarmSetupGeneral(Device $device, array $data): void
+    {
+        $alarmSetupGenerals = $device->getDeviceAlarmSetupGenerals();
+
+        foreach ($alarmSetupGenerals as $alarmSetupGeneral) {
+            $this->entityManager->remove($alarmSetupGeneral);
+        }
+
+        foreach ($data as $generalEntry) {
+            $phoneNumber = $generalEntry['phone_number'];
+
+            $this->validatePhoneNumber($phoneNumber);
+
+            $prepare = $this->alarmSetupGeneralFactory->create(
+                $device,
+                $phoneNumber,
+                $generalEntry['is_device_power_supply_active'],
+                $generalEntry['is_sms_active'],
+                $generalEntry['is_voice_message_active']
+            );
+
+            $this->entityManager->persist($prepare);
+        }
+    }
+
+    private function updateAlarmSetupEntry(Device $device, int $entry, array $data): void
+    {
+        foreach ($device->getDeviceAlarmSetupEntries() as $alarmSetupEntry) {
+            $this->entityManager->remove($alarmSetupEntry);
+        }
+
+        foreach ($data as $entryData) {
+            $phoneNumber = $entryData['phone_number'];
+
+            if (empty($phoneNumber)) {
+                continue;
+            }
+
+            $this->validatePhoneNumber($phoneNumber);
+
+            $prepare = $this->alarmSetupEntryFactory->create(
+                $device,
+                $entry,
+                $phoneNumber,
+                $entryData['is_digital_entry_active'],
+                $entryData['digital_entry_alarm_value'],
+                $entryData['is_humidity_active'],
+                $entryData['is_temperature_active'],
+                $entryData['is_sms_active'],
+                $entryData['is_voice_message_active']
+            );
+
+            $this->entityManager->persist($prepare);
+        }
+    }
+
 
     private function length(string $string, int $max = 1, int $min = 0): bool
     {
         $length = strlen(mb_convert_encoding($string, 'ISO-8859-1', 'UTF-8'));
 
         return $length >= $min && $length <= $max;
+    }
+
+    private function validateEmail(string $email): void
+    {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            $this->error[] = sprintf("%s email nije validan.", $email);
+        }
+    }
+
+    private function validatePhoneNumber(string $phoneNumber): void
+    {
+        try {
+            $parsed = $this->phoneUtil->parse($phoneNumber, 'HR');
+            if ($this->phoneUtil->isValidNumber($parsed) === false) {
+                $this->error[] = sprintf("Broj %s nije validan", $phoneNumber);
+            }
+        } catch (NumberParseException $e) {
+            $this->error[] = sprintf("Broj %s nije validan", $phoneNumber);
+        }
+    }
+
+    private function updateLocationCoordinates(Device $device, string $location): void
+    {
+        $location = str_replace(' ', '', $location);
+
+        if (preg_match('/^\d{1,4}(\.\d{1,6})?,\d{1,4}(\.\d{1,6})?$/', $location)) {
+            [$latitude, $longitude] = explode(',', $location);
+            $device->setLatitude($latitude)
+                ->setLongitude($longitude)
+            ;
+        }
+    }
+
+    private function updateSmtpEmails(Device $device, ?array $smtp = []): void
+    {
+        $smtpEmails = array_values(array_unique(array_filter($smtp)));
+
+        foreach ($smtpEmails as $email) {
+            $this->validateEmail($email);
+        }
+
+        $device->setAlarmEmail($smtpEmails);
+    }
+
+    private function updateApplicationEmails(Device $device, ?array $applicationEmail = []): void
+    {
+        $applicationEmails = array_values(array_unique(array_filter($applicationEmail)));
+
+        foreach ($applicationEmails as $email) {
+            $this->validateEmail($email);
+        }
+
+        $device->setApplicationEmailList($applicationEmails);
     }
 }
