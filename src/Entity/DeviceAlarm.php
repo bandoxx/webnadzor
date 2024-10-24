@@ -187,6 +187,11 @@ class DeviceAlarm
         return $this->message;
     }
 
+    public function getTimeString(): string
+    {
+        return sprintf("Alarm aktiviran: %s", $this->deviceData->getDeviceDate()->format('d.m.Y H:i:s'));
+    }
+
     public function setMessage(?string $message): static
     {
         $this->message = $message;

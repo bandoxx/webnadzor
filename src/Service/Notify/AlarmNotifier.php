@@ -34,7 +34,7 @@ class AlarmNotifier
                 continue;
             }
 
-            $this->notifyByMail($device, $alarms);
+            $this->notifyByMail($alarms);
             $this->notifyBySMS($alarms);
 
             foreach ($alarms as $alarm) {
@@ -72,11 +72,17 @@ class AlarmNotifier
     }
 
     /**
-     * @param Device $device
      * @param array<DeviceAlarm> $alarms
      */
-    private function notifyByMail(Device $device, array $alarms): void
+    private function notifyByMail(array $alarms): void
     {
+        if (empty($alarms)) {
+            return;
+        }
+
+        /** @var Device $device */
+        $device = $alarms[0]->getDevice();
+
         $settings = $device->getClient()->getClientSetting();
 
         $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];

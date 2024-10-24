@@ -19,10 +19,9 @@ class DeviceBatteryLow extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s ima nizak nivo baterije %s%%. %s",
+        return sprintf("%s ima nizak nivo baterije %s%%.",
             $this->getLocationString($device, $sensor),
-            $deviceData->getBattery(),
-            $this->alarmActivatedString($deviceData)
+            $deviceData->getBattery()
         );
     }
 }

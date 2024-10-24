@@ -24,10 +24,4 @@ class BaseType
             $sensorData['t_name']
         );
     }
-
-    public function alarmActivatedString(DeviceData $deviceData): string
-    {
-        return sprintf("Alarm aktiviran: %s", $deviceData->getDeviceDate()->format('d.m.Y H:i:s'));
-    }
-
 }

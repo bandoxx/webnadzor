@@ -19,9 +19,8 @@ class DeviceMissingData extends BaseType implements AlarmTypeInterface
         /** @var Device $device */
         $device = $deviceData->getDevice();
 
-        return sprintf("%s postoji greška na senzoru/loši podaci. %s",
+        return sprintf("%s postoji greška na senzoru/loši podaci.",
             $this->getLocationString($device, $sensor),
-            $this->alarmActivatedString($deviceData)
         );
     }
 }
