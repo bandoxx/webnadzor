@@ -44,6 +44,7 @@ class DeviceDataArchiver extends Command
             ->addOption('monthly', null, InputOption::VALUE_NONE, 'Monthly report')
             ->addOption('fromDate', null, InputOption::VALUE_OPTIONAL, 'From date', null)
             ->addOption('toDate', null, InputOption::VALUE_OPTIONAL, 'To date', null)
+            ->addOption('deviceId', null, InputOption::VALUE_OPTIONAL, 'Device id', null)
         ;
     }
 
@@ -60,7 +61,12 @@ class DeviceDataArchiver extends Command
             return Command::FAILURE;
         }
 
-        $devices = $this->deviceRepository->findAll();
+        if ($deviceId = $input->getOption('deviceId')) {
+            $devices[] = $this->deviceRepository->find($deviceId);
+        } else {
+            $devices = $this->deviceRepository->findAll();
+        }
+
         $dates = $this->getDates($input->getOption('fromDate'), $input->getOption('toDate'));
 
         foreach ($dates as $date) {
