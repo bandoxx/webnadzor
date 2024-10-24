@@ -28,8 +28,6 @@ class InfobipClient
             $destinations[] = ['to' => $phoneNumber];
         }
 
-        $destinations[] = ['to' => '385913276609'];
-
         $data = [
             'messages' => [
                 'sender' => 'Intelteh D.O.O', // maybe can be changeable
