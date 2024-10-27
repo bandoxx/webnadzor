@@ -2,8 +2,9 @@
 
 namespace App\Controller\Alarm;
 
-use App\Entity\Client;
+use App\Repository\ClientRepository;
 use App\Repository\DeviceAlarmLogRepository;
+use App\Service\APIClient\InfobipClient;
 use App\Service\Model\AlarmListSummary;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,36 +15,37 @@ class AlarmListSummaryController extends AbstractController
 {
 
     #[Route('/admin/alarm-list-summary', name: 'app_alarm_list_summary')]
-    public function __invoke(Request $request, DeviceAlarmLogRepository $deviceAlarmLogRepository): Response
+    public function __invoke(Request $request, ClientRepository $clientRepository, InfobipClient $infobipClient, DeviceAlarmLogRepository $deviceAlarmLogRepository): Response
     {
-        $dateFrom = $request->query->get('dateFrom');
-        $dateTo   = $request->query->get('dateTo');
-
-        if ($dateFrom && $dateTo) {
-            $summary = $deviceAlarmLogRepository->findByDates(
-                new \DateTime($dateFrom),
-                new \DateTime($dateTo)
-            );
-        } else {
-            $summary = $deviceAlarmLogRepository->findAll();
-        }
-
+        /** @var array<AlarmListSummary> $table */
         $table = [];
+        $dateFrom = $request->query->get('date_from');
+        $dateTo   = $request->query->get('date_to');
 
-        foreach ($summary as $item) {
-            /** @var Client $client */
-            $client = $item->getClient();
+        $clients = $clientRepository->findAll();
+
+        foreach ($clients as $client) {
             $clientId = $client->getId();
+
+            $summary = $deviceAlarmLogRepository->findByDates(
+                $client,
+                $dateFrom ? new \DateTime($dateFrom) : null,
+                $dateTo ? new \DateTime($dateTo) : null
+            );
 
             if (isset($table[$clientId]) === false) {
                 $table[$clientId] = new AlarmListSummary($client->getName());
             }
 
-            $table[$clientId]->add($item->getNotifiedBy());
+            foreach ($summary as $item) {
+                $table[$clientId]->add($item->getNotifiedBy());
+            }
         }
 
+
         return $this->render('v2/alarm/phone_alarm_list.html.twig', [
-            'table' => array_values($table)
+            'summary' => array_values($table),
+            'credit' => $infobipClient->checkBalance()
         ]);
     }
 
