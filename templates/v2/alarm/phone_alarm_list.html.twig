@@ -181,7 +181,7 @@
                             class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                            SMS podaci
+                            Alarm statistka
                         </h2>
 
                         <nav>
@@ -189,7 +189,7 @@
                                 <li>
                                     <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
                                 </li>
-                                <li class="font-medium text-primary">SMS podaci</li>
+                                <li class="font-medium text-primary">Alarm statistka</li>
                             </ol>
                         </nav>
                     </div>
@@ -197,7 +197,7 @@
                     <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
                         <!-- CREDIT DESCRIPTION -->
                         <h3 class="text-title-sm font-bold text-black dark:text-white">
-                            Preostali kredit iznosi: {iznos kredita}
+                            Infobip kredit: {{ credit.balance }} {{ credit.currency }}
                         </h3>
                         <!--END OF CREDIT DESCRIPTION-->
                         <!-- ====== Data Table Start -->
@@ -208,7 +208,7 @@
                                     class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
                             >
                                 <h3 class="title-dt font-bold text-black dark:text-white">
-                                    SMS podaci za klijente
+                                    Statistika po klijentima
                                 </h3>
                                 <table class="table w-full table-auto" id="dataTablePhoneNum">
                                     <thead>
@@ -324,21 +324,13 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    {% for row in summary %}
                                         <tr>
-                                            <td>Ime Klijenta 1</td>
-                                            <td>123124124</td>
-                                            <td>123124124</td>
+                                            <td>{{ row.name }}</td>
+                                            <td>{{ row.phoneSms }}</td>
+                                            <td>{{ row.phoneVoice }}</td>
                                         </tr>
-                                        <tr>
-                                            <td>Ime Klijenta 2</td>
-                                            <td>123124123</td>
-                                            <td>123124123</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Ime Klijenta 3</td>
-                                            <td>123124122</td>
-                                            <td>123124122</td>
-                                        </tr>
+                                    {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
