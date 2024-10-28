@@ -27,13 +27,18 @@ class DeviceAlarmLogRepository extends ServiceEntityRepository
             ->setParameter('client', $client)
         ;
 
-        if ($dateFrom && $dateTo) {
+        if ($dateFrom) {
             $dateFrom->setTime(0, 0, 0);
-            $dateTo->setTime(23, 59, 59);
 
             $queryBuilder->andWhere('a.createdAt >= :dateFrom')
                 ->setParameter('dateFrom', $dateFrom)
-                ->andWhere('a.createdAt <= :dateTo')
+            ;
+        }
+
+        if ($dateFrom && $dateTo) {
+            $dateTo->setTime(23, 59, 59);
+
+            $queryBuilder->andWhere('a.createdAt <= :dateTo')
                 ->setParameter('dateTo', $dateTo)
             ;
         }
