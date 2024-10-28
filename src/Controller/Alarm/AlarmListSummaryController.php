@@ -33,12 +33,15 @@ class AlarmListSummaryController extends AbstractController
                 $dateTo ? new \DateTime($dateTo) : null
             );
 
+            if (empty($summary)) {
+                continue;
+            }
+
             $table[$clientId] = new AlarmListSummary($client->getName());
             foreach ($summary as $item) {
                 $table[$clientId]->add($item->getNotifiedBy());
             }
         }
-
 
         return $this->render('v2/alarm/phone_alarm_list.html.twig', [
             'summary' => array_values($table),
