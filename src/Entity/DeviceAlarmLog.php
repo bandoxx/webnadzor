@@ -38,6 +38,9 @@ class DeviceAlarmLog
     #[ORM\Column]
     private ?string $recipient = null;
 
+    #[ORM\Column]
+    private ?string $message = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -123,6 +126,17 @@ class DeviceAlarmLog
     public function setRecipient(?string $recipient): static
     {
         $this->recipient = $recipient;
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?string $message): static
+    {
+        $this->message = $message;
         return $this;
     }
 }

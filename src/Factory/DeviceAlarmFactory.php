@@ -20,6 +20,7 @@ class DeviceAlarmFactory
             ->setSensor($sensor)
             ->setDeviceData($deviceData)
             ->setMessage($alarmType->getMessage($deviceData, $sensor))
+            ->setShortMessage($alarmType->getShortMessage($deviceData, $sensor))
         ;
 
         return $alarm;
