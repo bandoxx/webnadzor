@@ -24,4 +24,9 @@ class DeviceBatteryLow extends BaseType implements AlarmTypeInterface
             $deviceData->getBattery()
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        return $this->getMessage($deviceData, $sensor);
+    }
 }

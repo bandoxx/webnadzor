@@ -23,4 +23,9 @@ class DeviceSupplyOff extends BaseType implements AlarmTypeInterface
             $this->getLocationString($device, $sensor),
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        return $this->getMessage($deviceData, $sensor);
+    }
 }

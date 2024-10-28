@@ -42,6 +42,9 @@ class DeviceAlarm
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $shortMessage = null;
+
     #[ORM\Column]
     private bool $isNotified = false;
 
@@ -196,6 +199,17 @@ class DeviceAlarm
     {
         $this->message = $message;
 
+        return $this;
+    }
+
+    public function getShortMessage(): ?string
+    {
+        return $this->shortMessage;
+    }
+
+    public function setShortMessage(?string $shortMessage): static
+    {
+        $this->shortMessage = $shortMessage;
         return $this;
     }
 }

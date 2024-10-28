@@ -25,4 +25,15 @@ class TemperatureHigh extends BaseType implements AlarmTypeInterface
             $device->getEntryData($sensor)['t_max']
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        /** @var Device $device */
+        $device = $deviceData->getDevice();
+
+        return sprintf("%s ima visoku temperaturu: %s.",
+            $this->getLocationString($device, $sensor),
+            $deviceData->getT($sensor)
+        );
+    }
 }

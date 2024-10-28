@@ -25,4 +25,15 @@ class TemperatureLow extends BaseType implements AlarmTypeInterface
             $device->getEntryData($sensor)['t_min'],
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor)
+    {
+        /** @var Device $device */
+        $device = $deviceData->getDevice();
+
+        return sprintf("%s ima nisku temperaturu: %s.",
+            $this->getLocationString($device, $sensor),
+            $deviceData->getT($sensor)
+        );
+    }
 }
