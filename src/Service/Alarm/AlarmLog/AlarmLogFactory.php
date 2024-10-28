@@ -8,12 +8,13 @@ use App\Entity\DeviceAlarmLog;
 class AlarmLogFactory
 {
 
-    public function create(DeviceAlarm $deviceAlarm, string $type): DeviceAlarmLog
+    public function create(DeviceAlarm $deviceAlarm, string $recipient, string $type): DeviceAlarmLog
     {
         return (new DeviceAlarmLog())
             ->setClient($deviceAlarm->getDevice()->getClient())
             ->setDeviceAlarm($deviceAlarm)
             ->setNotifiedBy($type)
+            ->setRecipient($recipient)
         ;
     }
 
