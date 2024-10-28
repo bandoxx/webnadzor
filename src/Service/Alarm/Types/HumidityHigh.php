@@ -25,4 +25,15 @@ class HumidityHigh extends BaseType implements AlarmTypeInterface
             $device->getEntryData($sensor)['rh_max'],
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        /** @var Device $device */
+        $device = $deviceData->getDevice();
+
+        return sprintf("%s ima visoku vlagu: %s.",
+            $this->getLocationString($device, $sensor),
+            $deviceData->getRh($sensor),
+        );
+    }
 }

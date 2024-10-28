@@ -24,4 +24,9 @@ class DeviceSignalLow extends BaseType implements AlarmTypeInterface
             $deviceData->getGsmSignal()
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        return $this->getMessage($deviceData, $sensor);
+    }
 }

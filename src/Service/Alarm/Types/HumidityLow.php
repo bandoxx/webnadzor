@@ -25,4 +25,15 @@ class HumidityLow extends BaseType implements AlarmTypeInterface
             $device->getEntryData($sensor)['rh_min']
         );
     }
+
+    public function getShortMessage(DeviceData $deviceData, ?int $sensor = null): string
+    {
+        /** @var Device $device */
+        $device = $deviceData->getDevice();
+
+        return sprintf("%s ima nisku vlagu: %s.",
+            $this->getLocationString($device, $sensor),
+            $deviceData->getRh($sensor),
+        );
+    }
 }

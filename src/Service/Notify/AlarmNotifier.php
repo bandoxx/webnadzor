@@ -60,11 +60,14 @@ class AlarmNotifier
                 return;
             }
 
-            $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $alarm->getMessage()));
+            $message = sprintf("%s Intelteh D.O.O", $alarm->getShortMessage());
+            $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $message));
 
-            $log = $this->alarmLogFactory->create($alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
+            foreach ($recipients as $recipient) {
+                $log = $this->alarmLogFactory->create($alarm, $recipient, DeviceAlarmLog::TYPE_PHONE_SMS, $message);
+                $this->entityManager->persist($log);
+            }
 
-            $this->entityManager->persist($log);
             $this->entityManager->flush();
         }
     }
