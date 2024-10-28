@@ -15,6 +15,7 @@ class AlarmLogFactory
             ->setDeviceAlarm($deviceAlarm)
             ->setNotifiedBy($type)
             ->setRecipient($recipient)
+            ->setMessage($deviceAlarm->getShortMessage() . ' Intelteh D.O.O')
         ;
     }
 
