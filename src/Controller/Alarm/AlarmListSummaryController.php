@@ -33,10 +33,7 @@ class AlarmListSummaryController extends AbstractController
                 $dateTo ? new \DateTime($dateTo) : null
             );
 
-            if (isset($table[$clientId]) === false) {
-                $table[$clientId] = new AlarmListSummary($client->getName());
-            }
-
+            $table[$clientId] = new AlarmListSummary($client->getName());
             foreach ($summary as $item) {
                 $table[$clientId]->add($item->getNotifiedBy());
             }
