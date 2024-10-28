@@ -56,12 +56,14 @@ class AlarmNotifier
         foreach ($alarms as $alarm) {
             $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
 
-            $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $alarm->getMessage()));
+            if ($recipients) {
+                $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $alarm->getMessage()));
 
-            $log = $this->alarmLogFactory->create($alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
+                $log = $this->alarmLogFactory->create($alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
 
-            $this->entityManager->persist($log);
-            $this->entityManager->flush();
+                $this->entityManager->persist($log);
+                $this->entityManager->flush();
+            }
         }
     }
 
