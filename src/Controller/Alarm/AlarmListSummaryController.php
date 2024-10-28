@@ -22,7 +22,7 @@ class AlarmListSummaryController extends AbstractController
         $dateFrom = $request->query->get('date_from');
         $dateTo   = $request->query->get('date_to');
 
-        $clients = $clientRepository->findAll();
+        $clients = $clientRepository->findAllActive();
 
         foreach ($clients as $client) {
             $clientId = $client->getId();
