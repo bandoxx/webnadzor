@@ -22,7 +22,7 @@ class AlarmListSummaryController extends AbstractController
         $dateFrom = $request->query->get('date_from');
         $dateTo   = $request->query->get('date_to');
 
-        $clients = $clientRepository->findAll();
+        $clients = $clientRepository->findAllActive();
 
         foreach ($clients as $client) {
             $clientId = $client->getId();
@@ -33,15 +33,15 @@ class AlarmListSummaryController extends AbstractController
                 $dateTo ? new \DateTime($dateTo) : null
             );
 
-            if (isset($table[$clientId]) === false) {
-                $table[$clientId] = new AlarmListSummary($client->getName());
+            if (empty($summary)) {
+                continue;
             }
 
+            $table[$clientId] = new AlarmListSummary($client->getName());
             foreach ($summary as $item) {
                 $table[$clientId]->add($item->getNotifiedBy());
             }
         }
-
 
         return $this->render('v2/alarm/phone_alarm_list.html.twig', [
             'summary' => array_values($table),

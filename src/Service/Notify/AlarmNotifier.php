@@ -56,6 +56,10 @@ class AlarmNotifier
         foreach ($alarms as $alarm) {
             $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
 
+            if (empty($recipients)) {
+                return;
+            }
+
             $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $alarm->getMessage()));
 
             $log = $this->alarmLogFactory->create($alarm, DeviceAlarmLog::TYPE_PHONE_SMS);
