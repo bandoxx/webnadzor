@@ -24,4 +24,19 @@ class BaseType
             $sensorData['t_name']
         );
     }
+
+    public function getLocationStringForDigitalEntry(Device $device, bool $onOff, int $sensor): string
+    {
+        $address = $device->getName();
+        $sensorData = $device->getEntryData($sensor);
+
+        $text = $onOff === true ? $sensorData['d_on_name'] : $sensorData['d_off_name'];
+
+        return sprintf("Adresa: %s, Lokacija: %s, Digitalni ulaz: %s, Status: %s",
+            $address,
+            $sensorData['t_location'],
+            $sensorData['d_name'],
+            $text
+        );
+    }
 }
