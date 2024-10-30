@@ -46,6 +46,7 @@ class ClientSettingsUpdater
             ->setIsTemperatureAlarmActive(isset($data['is_temperature_alarm_active']))
             ->setIsHumidityAlarmActive(isset($data['is_humidity_alarm_active']))
             ->setBatteryLevelAlert($data['battery_level_alarm'])
+            ->setIsDigitalEntryAlarmActive(isset($data['is_digital_entry_alarm_active']))
         ;
 
         $emailList = [];

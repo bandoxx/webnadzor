@@ -45,6 +45,9 @@ class ClientSetting
     #[ORM\Column]
     private ?bool $isHumidityAlarmActive = null;
 
+    #[ORM\Column]
+    private ?bool $isDigitalEntryAlarmActive = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -165,6 +168,17 @@ class ClientSetting
     public function setIsHumidityAlarmActive(?bool $isHumidityAlarmActive): static
     {
         $this->isHumidityAlarmActive = $isHumidityAlarmActive;
+        return $this;
+    }
+
+    public function getIsDigitalEntryAlarmActive(): ?bool
+    {
+        return $this->isDigitalEntryAlarmActive;
+    }
+
+    public function setIsDigitalEntryAlarmActive(?bool $isDigitalEntryAlarmActive): static
+    {
+        $this->isDigitalEntryAlarmActive = $isDigitalEntryAlarmActive;
         return $this;
     }
 }
