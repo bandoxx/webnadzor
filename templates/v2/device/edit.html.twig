@@ -1128,53 +1128,109 @@
                           </svg>
                         </span>
                                                             </div>
-                                                            <div class="w-3/4 mt-3">
+                                                            <div class="w-3/4 mt-3 relative"
+                                                                 x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                     Naziv za vrijednost 0
                                                                 </label>
-                                                                <div class="group relative">
-                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                           placeholder="Minimalna vrijednost"
-                                                                           type="text"
-                                                                           data-maxchars="8"
-                                                                           name="d1_off_name"
-                                                                           value="{{ device.entry1.d_off_name }}"
-                                                                    >
-                                                                    <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv za vr. 0<br> za ulaz "D1"<br>maksimalno 8
-                                                                        znakova
-                                                                    </div>
-                                                                    <div class="absolute hidden xl:block left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv vr. 0 za ulaz "D1"<br>maksimalno 8 znakova
-                                                                    </div>
-                                                                </div>
+                                                                <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                                        @change="isOptionSelected = true"
+                                                                        name="d1_off_name"
+                                                                        class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
+{#                                                                    {% for icon in icons %}#}
+{#                                                                        <option class="text-body" value="{{ icon.id }}"#}
+{#                                                                                {% if device.entry1.d_off_image == icon.id %}selected="selected"{% endif %}>{{ icon.title }}</option>#}
+{#                                                                    {% endfor %}#}
+                                                                    <option class="text-body" value="Zatvoreno">Zatvoreno
+                                                                    </option>
+                                                                    <option class="text-body" value="Otvoreno">Otvoreno
+                                                                    </option>
+                                                                </select>
+                                                                <span class="absolute right-4 top-10 z-20">
+                          <svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+                               xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path clip-rule="evenodd"
+                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                    fill="#637381"
+                                    fill-rule="evenodd"></path>
+                            </g>
+                          </svg>
+                        </span>
                                                             </div>
-                                                            <div class="w-3/4 mt-3">
+{#                                                            <div class="w-3/4 mt-3">#}
+{#                                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white">#}
+{#                                                                    Naziv za vrijednost 0#}
+{#                                                                </label>#}
+{#                                                                <div class="group relative">#}
+{#                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"#}
+{#                                                                           placeholder="Minimalna vrijednost"#}
+{#                                                                           type="text"#}
+{#                                                                           data-maxchars="8"#}
+{#                                                                           name="d1_off_name"#}
+{#                                                                           value="{{ device.entry1.d_off_name }}"#}
+{#                                                                    >#}
+{#                                                                    <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">#}
+{#                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>#}
+{#                                                                        Naziv za vr. 0<br> za ulaz "D1"<br>maksimalno 8#}
+{#                                                                        znakova#}
+{#                                                                    </div>#}
+{#                                                                    <div class="absolute hidden xl:block left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">#}
+{#                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>#}
+{#                                                                        Naziv vr. 0 za ulaz "D1"<br>maksimalno 8 znakova#}
+{#                                                                    </div>#}
+{#                                                                </div>#}
+{#                                                            </div>#}
+                                                            <div class="w-3/4 mt-3 relative"
+                                                                 x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                     Naziv za vrijednost 1
                                                                 </label>
-                                                                <div class="group relative">
-                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                           placeholder="Minimalna vrijednost"
-                                                                           type="text"
-                                                                           data-maxchars="8"
-                                                                           name="d1_on_name"
-                                                                           value="{{ device.entry1.d_on_name }}"
-                                                                    >
-                                                                    <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv za vr. 1<br> za ulaz "D1"<br>maksimalno 8
-                                                                        znakova
-                                                                    </div>
-                                                                    <div class="absolute hidden xl:block left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv za vr. 1 za ulaz "D1"<br>maksimalno 8
-                                                                        znakova
-                                                                    </div>
-                                                                </div>
+                                                                <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                                        @change="isOptionSelected = true"
+                                                                        name="d1_on_name"
+                                                                        class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
+                                                                    <option class="text-body" value="Otvoreno">Otvoreno
+                                                                    </option>
+                                                                    <option class="text-body" value="Zatvoreno">Zatvoreno
+                                                                    </option>
+                                                                </select>
+                                                                <span class="absolute right-4 top-10 z-20">
+                          <svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+                               xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path clip-rule="evenodd"
+                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                    fill="#637381"
+                                    fill-rule="evenodd"></path>
+                            </g>
+                          </svg>
+                        </span>
                                                             </div>
+{#                                                            <div class="w-3/4 mt-3">#}
+{#                                                                <label class="mb-3 block text-sm font-medium text-black dark:text-white">#}
+{#                                                                    Naziv za vrijednost 1#}
+{#                                                                </label>#}
+{#                                                                <div class="group relative">#}
+{#                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"#}
+{#                                                                           placeholder="Minimalna vrijednost"#}
+{#                                                                           type="text"#}
+{#                                                                           data-maxchars="8"#}
+{#                                                                           name="d1_on_name"#}
+{#                                                                           value="{{ device.entry1.d_on_name }}"#}
+{#                                                                    >#}
+{#                                                                    <div class="absolute block xl:hidden left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">#}
+{#                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>#}
+{#                                                                        Naziv za vr. 1<br> za ulaz "D1"<br>maksimalno 8#}
+{#                                                                        znakova#}
+{#                                                                    </div>#}
+{#                                                                    <div class="absolute hidden xl:block left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">#}
+{#                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>#}
+{#                                                                        Naziv za vr. 1 za ulaz "D1"<br>maksimalno 8#}
+{#                                                                        znakova#}
+{#                                                                    </div>#}
+{#                                                                </div>#}
+{#                                                            </div>#}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1263,43 +1319,57 @@
                           </svg>
                         </span>
                                                             </div>
-                                                            <div class="w-3/4 mt-3">
+                                                            <div class="w-3/4 mt-3 relative"
+                                                                 x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                     Naziv za vrijednost 0
                                                                 </label>
-                                                                <div class="group relative">
-                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                           placeholder="Minimalna vrijednost"
-                                                                           type="text"
-                                                                           data-maxchars="8"
-                                                                           value="{{ device.entry2.d_off_name }}"
-                                                                           name="d2_off_name"
-                                                                    >
-                                                                    <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv za vr. 0<br>za ulaz "D2"<br>maksimalno 8
-                                                                        znakova
-                                                                    </div>
-                                                                </div>
+                                                                <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                                        @change="isOptionSelected = true"
+                                                                        name="d2_off_name"
+                                                                        class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
+                                                                    <option class="text-body" value="Zatvoreno">Zatvoreno
+                                                                    </option>
+                                                                    <option class="text-body" value="Otvoreno">Otvoreno
+                                                                    </option>
+                                                                </select>
+                                                                <span class="absolute right-4 top-10 z-20">
+                          <svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+                               xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path clip-rule="evenodd"
+                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                    fill="#637381"
+                                    fill-rule="evenodd"></path>
+                            </g>
+                          </svg>
+                        </span>
                                                             </div>
-                                                            <div class="w-3/4 mt-3">
+                                                            <div class="w-3/4 mt-3 relative"
+                                                                 x-data="{ isOptionSelected: false }">
                                                                 <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                     Naziv za vrijednost 1
                                                                 </label>
-                                                                <div class="group relative">
-                                                                    <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                           placeholder="Minimalna vrijednost"
-                                                                           type="text"
-                                                                           data-maxchars="8"
-                                                                           value="{{ device.entry2.d_on_name }}"
-                                                                           name="d2_on_name"
-                                                                    >
-                                                                    <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                        Naziv za vr. 1<br>za ulaz "D2"<br>maksimalno 8
-                                                                        znakova
-                                                                    </div>
-                                                                </div>
+                                                                <select :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'"
+                                                                        @change="isOptionSelected = true"
+                                                                        name="d2_on_name"
+                                                                        class="relative select-option z-20 w-full appearance-none rounded border border-stroke bg-transparent py-2 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
+                                                                    <option class="text-body" value="Otvoreno">Otvoreno
+                                                                    </option>
+                                                                    <option class="text-body" value="Zatvoreno">Zatvoreno
+                                                                    </option>
+                                                                </select>
+                                                                <span class="absolute right-4 top-10 z-20">
+                          <svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+                               xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path clip-rule="evenodd"
+                                    d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
+                                    fill="#637381"
+                                    fill-rule="evenodd"></path>
+                            </g>
+                          </svg>
+                        </span>
                                                             </div>
                                                         </div>
                                                     </div>
