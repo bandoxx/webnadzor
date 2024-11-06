@@ -876,6 +876,37 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="lg:flex lg:mt-5">
+                                                <label
+                                                        class="mb-2 pr-1 mr-5 mt-1 block text-sm text-left font-medium text-black dark:text-white"
+                                                >
+                                                    Digitalni ulaz:
+                                                </label>
+                                                <div x-data="{ switcherToggle: {{ settings.isDigitalEntryAlarmActive == true ? 'true' : 'false' }} }">
+                                                    <label
+                                                            for="toggleDigitalEntryAlarm"
+                                                            class="flex cursor-pointer select-none items-center"
+                                                    >
+                                                        <div class="relative">
+                                                            <input
+                                                                    type="checkbox" :checked="switcherToggle"
+                                                                    name="is_digital_entry_alarm_active"
+                                                                    id="toggleDigitalEntryAlarm"
+                                                                    class="sr-only"
+                                                                    @change="switcherToggle = !switcherToggle"
+                                                            />
+                                                            <div
+                                                                    :class="switcherToggle && '!bg-primary'"
+                                                                    class="block h-8 w-14 rounded-full bg-black"
+                                                            ></div>
+                                                            <div
+                                                                    :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                    class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                            ></div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                         <!--      END OF FIRST SECTION-->
                                         <!--      START OF SECOND SECTION-->

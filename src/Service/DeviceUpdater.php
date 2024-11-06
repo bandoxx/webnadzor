@@ -178,7 +178,7 @@ class DeviceUpdater
             $this->error[] = 'D Error';
         }
 
-        if ($this->length($dOffName, 8) && $this->length($dOnName, 8)) {
+        if ($this->length($dOffName, 10) && $this->length($dOnName, 10)) {
             $device->setEntryData($entry, 'd_off_name', $dOffName);
             $device->setEntryData($entry, 'd_on_name', $dOnName);
         } else {
