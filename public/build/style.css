@@ -2024,6 +2024,9 @@ body{
 .w-screen{
   width: 100vw;
 }
+.min-w-125{
+  min-width: 31.25rem;
+}
 .min-w-60{
   min-width: 15rem;
 }
