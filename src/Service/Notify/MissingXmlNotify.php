@@ -23,7 +23,7 @@ class MissingXmlNotify
             ->from('info@intelteh.hr')
             ->sender('info@intelteh.hr')
             ->to(...$emails)
-            ->cc('radivoje.pupovac98@gmail.com')
+            ->cc('logs@banox.dev')
             ->subject(sprintf('Lista uređaja kojima fale logovi za dan: %s', (new \DateTime('-1 day'))->format('d.m.Y')))
             ->html($this->environment->render('v2/mail/missing_xml_logs.html.twig', [
                 'models' => $notifications
