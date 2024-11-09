@@ -30,9 +30,12 @@ class UserUpdateController extends AbstractController
         $passwordConfirm = $request->request->get('password_again');
 
         if ($password !== null && $passwordConfirm !== null && $password === $passwordConfirm) {
-            $passwordSetter->setPassword($user, $password);
+            $this->addFlash('error', 'Zaporke se ne podudaraju.');
+
+            $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
         }
 
+        $passwordSetter->setPassword($user, $password);
         $overviewViews = $request->request->get('overview_views');
 
         $user->setOverviewViews(is_numeric($overviewViews) ? $overviewViews : null);

@@ -97,6 +97,9 @@
             <!-- ===== Main Content Start ===== -->
             <main>
                 <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    {% block flashMessages %}
+                        {{ parent() }}
+                    {% endblock %}
                     <!-- Breadcrumb Start -->
                     <div
                             class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
@@ -272,8 +275,7 @@
                                 x-transition
                                 class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
                         >
-{#                            <form action="{{ path('app_user_createuser', { clientId: client.id }) }}" method="POST">#}
-                            <form action="/" method="POST">
+                            <form action="{{ path('app_root_user_create') }}" method="POST">
                                 <div
                                         @click.outside="modalOpenAddNew = false"
                                         class="modal w-full max-w-10 min-w-125 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
@@ -318,6 +320,7 @@
                                         </label>
                                         <input
                                                 type="password"
+                                                name="password_again"
                                                 placeholder="•••••••••••"
                                                 class="w-full mb-4 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                         />
