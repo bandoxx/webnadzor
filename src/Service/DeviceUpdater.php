@@ -114,6 +114,9 @@ class DeviceUpdater
         }
 
         $this->setImage($device, $entry, 't_image', $data['image_id']);
+
+        $device->setSimCardProvider($data['sim_card_provider'] ?? null);
+        $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
     }
 
     private function updateHumidity(Device $device, int $entry, array $data): void
