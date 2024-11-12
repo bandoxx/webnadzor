@@ -204,7 +204,7 @@
                                     <div class="form-closeable">
                                         <div class="p-6.5">
                                             <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                                <div class="w-full xl:w-1/2">
+                                                <div class="w-full xl:w-1/3">
                                                     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                         Naziv lokacije
                                                     </label>
@@ -225,7 +225,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="w-full xl:w-1/2">
+                                                <div class="w-full xl:w-1/3">
                                                     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                         Lokacija senzora 1
                                                     </label>
@@ -241,10 +241,27 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                <div class="w-full xl:w-1/3">
+                                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                        Broj telefona (SMS)
+                                                    </label>
+                                                    <div class="group relative w-3/4">
+                                                        <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                               placeholder="Broj telefona (SMS)" type="text"
+                                                               data-maxchars="12"
+                                                               name="sim_phone_number"
+                                                               value="{{ device.simPhoneNumber }}">
+                                                        <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                            <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                            Broj telefona,<br> maksimalno <br>12 znakova
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                                <div class="w-full xl:w-1/2">
+                                                <div class="w-full xl:w-1/3">
                                                     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                         Naziv XML datoteke
                                                     </label>
@@ -265,7 +282,7 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="w-full xl:w-1/2">
+                                                <div class="w-full xl:w-1/3">
                                                     <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                         Lokacija senzora 2
                                                     </label>
@@ -278,6 +295,23 @@
                                                         <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                                                             <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                                                             Lokacija senzora 2, <br>maksimalno <br>50 znakova
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="w-full xl:w-1/3">
+                                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                        Operater
+                                                    </label>
+                                                    <div class="group relative w-3/4">
+                                                        <input class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                               placeholder="Operater" type="text"
+                                                               data-maxchars="12"
+                                                               name="sim_card_provider"
+                                                               value="{{ device.simCardProvider }}">
+                                                        <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                            <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                            Operater, <br>maksimalno <br>12 znakova
                                                         </div>
                                                     </div>
                                                 </div>
@@ -312,7 +346,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="w-full xl:w-1/2">
+                                                <div class="w-full xl:w-1/3">
                                                 </div>
                                             </div>
                                         </div>
