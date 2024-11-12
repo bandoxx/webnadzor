@@ -78,6 +78,12 @@ class Device
     #[ORM\OneToMany(targetEntity: DeviceAlarmSetupEntry::class, mappedBy: 'device', orphanRemoval: true)]
     private Collection $deviceAlarmSetupEntries;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $simPhoneNumber = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $simCardProvider = null;
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -465,6 +471,30 @@ class Device
                 $deviceAlarmSetupEntry->setDevice(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSimPhoneNumber(): ?string
+    {
+        return $this->simPhoneNumber;
+    }
+
+    public function setSimPhoneNumber(?string $simPhoneNumber): static
+    {
+        $this->simPhoneNumber = $simPhoneNumber;
+
+        return $this;
+    }
+
+    public function getSimCardProvider(): ?string
+    {
+        return $this->simCardProvider;
+    }
+
+    public function setSimCardProvider(?string $simCardProvider): static
+    {
+        $this->simCardProvider = $simCardProvider;
 
         return $this;
     }
