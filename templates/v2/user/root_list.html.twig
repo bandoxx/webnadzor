@@ -1,0 +1,498 @@
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
+    <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <meta charset="UTF-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+{% endblock %}
+
+{% block body %}
+    <body
+            :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+            x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+            x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+    >
+    <!-- ===== Preloader Start ===== -->
+    {% block preloader %}
+        {{ parent() }}
+    {% endblock %}
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside
+                :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+                class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+                @click.outside="sidebarToggle = false"
+        >
+            <!-- SIDEBAR HEADER -->
+            {% block sidebar_header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- SIDEBAR HEADER -->
+
+            <div
+                    class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+            >
+                <!-- Sidebar Menu -->
+                <nav
+                        class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+                        x-data="{selected: $persist('Dashboard')}"
+                >
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                        <!-- Support Group -->
+                        <div>
+                            <ul class="mb-6 flex flex-col gap-1.5">
+                                <!-- Menu Item Messages -->
+                                <li @click="modalOpenAddNew = true" class="reload-tags cursor-pointer">
+                                    <a
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                        Dodaj korisnika
+                                    </a>
+                                </li>
+                                <li class="cursor-pointer">
+                                    <a
+                                            href="/"
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                        </svg>
+                                        Povratak
+                                    </a>
+                                </li>
+                                <!-- Menu Item Messages -->
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+
+        <!-- ===== Sidebar End ===== -->
+
+        <!-- ===== Content Area Start ===== -->
+        <div
+                class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+        >
+            <!-- ===== Header Start ===== -->
+            {% block header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- ===== Header End ===== -->
+
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    {% block flashMessages %}
+                        {{ parent() }}
+                    {% endblock %}
+                    <!-- Breadcrumb Start -->
+                    <div
+                            class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                            Popis root korisnika
+                        </h2>
+
+                        <nav>
+                            <ol class="flex items-center gap-2">
+                                <li>
+                                    <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                                </li>
+                                <li class="font-medium text-primary">Popis root korisnika</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- Breadcrumb End -->
+                    <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+
+                        <!-- ====== Data Table Start -->
+                        <div
+                                class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+                        >
+                            <div
+                                    class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
+                            >
+                                <h3 class="title-dt font-bold text-black dark:text-white">
+                                    Root Korisnici
+                                </h3>
+                                <table class="table w-full table-auto" id="dataTableRootUsers">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>BR.</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>KOR. IME</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        fill="none"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        width="10"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>DOZVOLE</p>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>OPCIJE</p>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for user in users %}
+                                        <tr>
+                                            <td>{{ user.id }}</td>
+                                            <td>{{ user.username }}</td>
+                                            <td>{{ user.permissionName }}</td>
+                                            <td>
+                                                <div class="flex justify-evenly">
+                                                        <div class="edit-btn mr-5"
+                                                             data-id="{{ user.id }}"
+                                                             data-permission="{{ user.permission }}"
+                                                             data-overview="{{ user.overviewViews }}"
+{#                                                             data-path="{{ path('api_user_update', { clientId: client.id, userId: user.id }) }}"#}
+                                                             data-path="/"
+                                                             data-index="0"
+                                                                {% if user.permission == 1 %}
+                                                                    data-location="{{ user.availableLocations|map(location => "#{location.client_id}-#{location.device_id}-#{location.entry}")|join(',') }}"
+                                                                {% endif %}
+                                                             x-on:click="modalOpenEdit = true"
+                                                        >
+                                                            <div class="cursor-pointer" title="Uredi">
+                                                                <svg class="size-6" fill="none"
+                                                                     stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                                                     xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" stroke-linecap="round"
+                                                                          stroke-linejoin="round"/>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="delete-btn" data-path="{{ path('api_user_delete', { userId: user.id }) }}" data-index="0" x-on:click="modalOpenDelete = true">
+                                                            <div class="cursor-pointer" title=Obriši">
+                                                                <svg class="size-6" fill="none"
+                                                                     stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                                                     xmlns="http://www.w3.org/2000/svg">
+                                                                    <path d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" stroke-linecap="round"
+                                                                          stroke-linejoin="round"/>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- ====== Data Table End -->
+                        <div
+                                x-cloak
+                                x-show="modalOpenAddNew"
+                                x-transition
+                                class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                        >
+                            <form action="{{ path('app_root_user_create') }}" method="POST">
+                                <div
+                                        @click.outside="modalOpenAddNew = false"
+                                        class="modal w-full max-w-10 min-w-125 rounded-lg bg-white px-8 py-8 text-center dark:bg-boxdark md:px-17.5 md:py-10"
+                                >
+                                    <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl">
+                                        Dodaj root korisnika
+                                    </h3>
+                                    <div>
+                                        <label
+                                                class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                        >
+                                            Korisničko ime
+                                        </label>
+                                        <input
+                                                type="text"
+                                                name="username"
+                                                required
+                                                placeholder="Unesite korisničko ime"
+                                                class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label
+                                                class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                        >
+                                            Zaporka
+                                        </label>
+                                        <input
+                                                type="password"
+                                                name="password"
+                                                placeholder="•••••••••••"
+                                                class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label
+                                                class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                        >
+                                            Zaporka (Ponoviti)
+                                        </label>
+                                        <input
+                                                type="password"
+                                                name="password_again"
+                                                placeholder="•••••••••••"
+                                                class="w-full mb-4 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                        <div class="w-full px-3 2xsm:w-1/2">
+                                            <button
+                                                    type="submit"
+                                                    class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                            >
+                                                Spremi promjene
+                                            </button>
+                                        </div>
+                                        <div class="w-full px-3 2xsm:w-1/2">
+                                            <button
+                                                    type="button"
+                                                    @click="modalOpenAddNew = false"
+                                                    class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                            >
+                                                Odustani
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div
+                                x-cloak
+                                x-show="modalOpenEdit"
+                                x-transition
+                                class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                        >
+                            <form action="" method="POST" id="editUserForm">
+                                <div
+                                        @click.outside="modalOpenEdit = false"
+                                        class="modal w-full max-w-10 min-w-125 rounded-lg bg-white px-8 py-8 dark:bg-boxdark md:px-17.5 md:py-10"
+                                >
+                                    <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl" id="userName">
+
+                                    </h3>
+                                    <div class="my-4">
+                                        <a href="#" id="changeRootPasswordButton" class="rounded-md bg-black px-5 py-2 font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                                            Promjeni zaporku
+                                        </a>
+                                    </div>
+
+                                    <div>
+                                        <label
+                                                class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                        >
+                                            Zaporka
+                                        </label>
+                                        <input
+                                                id="changeRootPasswordInput"
+                                                disabled
+                                                name="password"
+                                                type="password"
+                                                placeholder="•••••••••••"
+                                                class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label
+                                                class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                        >
+                                            Zaporka (Ponoviti)
+                                        </label>
+                                        <input
+                                                id="changeRootPasswordInputRepeat"
+                                                disabled
+                                                name="password_again"
+                                                type="password"
+                                                placeholder="•••••••••••"
+                                                class="w-full mb-4 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                        />
+                                    </div>
+
+                                    <div class="-mx-3 pt-3 flex flex-wrap gap-y-4 border-t-2">
+                                        <div class="w-full px-3 2xsm:w-1/2">
+                                            <button
+                                                    type="submit"
+                                                    class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
+                                            >
+                                                Spremi promjene
+                                            </button>
+                                        </div>
+                                        <div class="w-full px-3 2xsm:w-1/2">
+                                            <button
+                                                    type="button"
+                                                    @click="modalOpenEdit = false"
+                                                    class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
+                                            >
+                                                Odustani
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div
+                                x-cloak
+                                x-show="modalOpenDelete"
+                                x-transition
+                                class="fixed left-0 top-0 z-999999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5"
+                        >
+                            <div
+                                    @click.outside="modalOpenDelete = false"
+                                    class="modal relative w-full max-w-142.5 rounded-lg bg-danger px-8 py-12 text-center md:px-17.5 md:py-15"
+                            >
+                        <span class="mx-auto inline-block">
+                          <svg
+                                  width="78"
+                                  height="78"
+                                  viewBox="0 0 78 78"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <rect opacity="0.1" width="78" height="78" rx="37" fill="white"></rect>
+                            <path
+                                    d="M39 16C26.7452 16 16 26.7452 16 39C16 51.2548 26.7452 62 39 62C51.2548 62 62 51.2548 62 39C62 26.7452 51.2548 16 39 16ZM39 58C28.5066 58 20 49.4934 20 39C20 28.5066 28.5066 20 39 20C49.4934 20 58 28.5066 58 39C58 49.4934 49.4934 58 39 58Z"
+                                    fill="white"></path>
+                            <path
+                                    d="M39 23C38.1716 23 37.5 23.6716 37.5 24.5V44.5C37.5 45.3284 38.1716 46 39 46C39.8284 46 40.5 45.3284 40.5 44.5V24.5C40.5 23.6716 39.8284 23 39 23ZM39 50C38.1716 50 37.5 50.6716 37.5 51.5C37.5 52.3284 38.1716 53 39 53C39.8284 53 40.5 52.3284 40.5 51.5C40.5 50.6716 39.8284 50 39 50Z"
+                                    fill="white"></path>
+                          </svg>
+                        </span>
+                                <h3 class="mt-5.5 text-left pb-2 text-lg font-bold text-white">
+                                    Obriši root korisnika?
+                                </h3>
+                                <form action="" method="POST" id="formDeleteUser">
+                                    <p class="mb-7.5 text-left font-medium text-white" id="clientDeleteMessage">
+                                        Korisnik <span id="userName">user_name</span> će biti trajno obrisan. Jeste li sigurni?
+                                    </p>
+                                    <button
+                                            type="submit"
+                                            class="inline-block rounded border border-white px-12.5 py-3 text-center font-medium text-white transition hover:bg-white hover:text-black"
+                                    >
+                                        Obriši root korisnika
+                                    </button>
+                                    <button
+                                            type="button"
+                                            @click="modalOpenDelete = false"
+                                            class="absolute right-6 top-6 flex h-7 w-7 items-center justify-center rounded-full bg-white/45 text-white transition hover:bg-white hover:text-black"
+                                    >
+                                        <svg
+                                                width="10"
+                                                height="10"
+                                                viewBox="0 0 13 13"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                    d="M6.4917 7.65579L11.106 12.2645C11.2545 12.4128 11.4715 12.5 11.6738 12.5C11.8762 12.5 12.0931 12.4128 12.2416 12.2645C12.5621 11.9445 12.5623 11.4317 12.2423 11.1114C12.2422 11.1113 12.2422 11.1113 12.2422 11.1113C12.242 11.1111 12.2418 11.1109 12.2416 11.1107L7.64539 6.50351L12.2589 1.91221L12.2595 1.91158C12.5802 1.59132 12.5802 1.07805 12.2595 0.757793C11.9393 0.437994 11.4268 0.437869 11.1064 0.757418C11.1063 0.757543 11.1062 0.757668 11.106 0.757793L6.49234 5.34931L1.89459 0.740581L1.89396 0.739942C1.57364 0.420019 1.0608 0.420019 0.740487 0.739944C0.42005 1.05999 0.419837 1.57279 0.73985 1.89309L6.4917 7.65579ZM6.4917 7.65579L1.89459 12.2639L1.89395 12.2645C1.74546 12.4128 1.52854 12.5 1.32616 12.5C1.12377 12.5 0.906853 12.4128 0.758361 12.2645L1.1117 11.9108L0.758358 12.2645C0.437984 11.9445 0.437708 11.4319 0.757539 11.1116C0.757812 11.1113 0.758086 11.111 0.75836 11.1107L5.33864 6.50287L0.740487 1.89373L6.4917 7.65579Z"
+                                                    class="fill-current stroke-current"
+                                            />
+                                        </svg>
+                                    </button>
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    </body>
+{% endblock %}

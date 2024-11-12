@@ -15,7 +15,7 @@ class UserFactory
     )
     {}
 
-    public function create(string $username, string $password, int $permission, ?int $overviewViews): User
+    public function create(string $username, string $password, int $permission, ?int $overviewViews = null): User
     {
         $user = new User();
 

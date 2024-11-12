@@ -13,11 +13,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    public const ROLE_ROOT = 4;
-    public const ROLE_ADMINISTRATOR = 3;
-    public const ROLE_MODERATOR = 2;
-    public const ROLE_USER = 1;
-    public const PERMISSIONS = [
+    public const int ROLE_ROOT = 4;
+    public const int ROLE_ADMINISTRATOR = 3;
+    public const int ROLE_MODERATOR = 2;
+    public const int ROLE_USER = 1;
+    public const array PERMISSIONS = [
         self::ROLE_USER => 'Korisnik',
         self::ROLE_MODERATOR => 'Moderator',
         self::ROLE_ADMINISTRATOR => 'Administrator',
