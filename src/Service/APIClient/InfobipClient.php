@@ -30,7 +30,7 @@ class InfobipClient
 
         $data = [
             'messages' => [
-                'sender' => 'Intelteh D.O.O', // maybe can be changeable
+                'sender' => 'Intelteh', // maybe can be changeable
                 'destinations' => $destinations,
                 'from' => $this->sender,
                 'content' => [
