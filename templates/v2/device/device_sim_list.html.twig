@@ -1,5 +1,5 @@
 {% extends 'v2/base.html.twig' %}
-
+{% set isAdminPage = app.request.attributes.has('clientId') == false %}
 {% block head %}
     <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet"/>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -53,7 +53,7 @@
                                 <!-- Menu Item Messages -->
                                 <li class="cursor-pointer">
                                     <a
-                                            href="{{ path('client_overview', { clientId: client.id }) }}"
+                                            href="{% if isAdminPage %}{{ path('admin_overview') }}{% else %}{{ path('client_overview', { clientId: client.id }) }}{% endif %}"
                                             class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
@@ -97,11 +97,13 @@
                         <nav>
                             <ol class="flex items-center gap-2">
                                 <li>
-                                    <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                                    <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard {% if isAdminPage == false %}/{% endif %}</a>
                                 </li>
+                                {% if isAdminPage == false %}
                                 <li>
                                     <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
                                 </li>
+                                {% endif %}
                                 <li class="font-medium text-primary">SIM pregled</li>
                             </ol>
                         </nav>

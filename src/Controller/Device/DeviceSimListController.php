@@ -4,13 +4,14 @@ namespace App\Controller\Device;
 
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/admin/{clientId}/device/sim-list', name: 'app_client_device_sim_list', methods: 'GET')]
-class DeviceSimList extends AbstractController
+class DeviceSimListController extends AbstractController
 {
 
-    public function __invoke(int $clientId, DeviceRepository $deviceRepository)
+    public function __invoke(int $clientId, DeviceRepository $deviceRepository): Response
     {
         $devices = $deviceRepository->findDevicesByClient($clientId);
         $table = [];
