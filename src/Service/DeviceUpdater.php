@@ -64,7 +64,7 @@ class DeviceUpdater
         $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
 
         $this->entityManager->flush();
-        //$this->deviceSettingsMaker->saveXml($oldDevice, $data); // TODO:
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
 
         return [];
     }
@@ -83,7 +83,7 @@ class DeviceUpdater
 
         $tName = trim($data['name']);
 
-        if ($this->length($tName, 50, 1)) {
+        if ($this->length($tName, 50)) {
             $device->setEntryData($entry, 't_name', $tName);
         } else {
             $this->error[] = sprintf('Naziv lokacije za temperaturu je predugačko');
@@ -132,7 +132,7 @@ class DeviceUpdater
         $thName = trim($data['name']);
         $rhUnit = trim($data['unit']);
 
-        if ($this->length($thName, 50, 1)) {
+        if ($this->length($thName, 50)) {
             $device->setEntryData($entry, 'rh_name', $thName);
         } else {
             $this->error[] = 'Naziv lokacije za vlagu je predugačko.';
