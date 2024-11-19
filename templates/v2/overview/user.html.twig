@@ -58,7 +58,7 @@
                         <!-- Support Group -->
                         <div>
                             <ul class="mb-6 flex flex-col gap-1.5">
-                                {% if app.user.permission == 4 %}
+                                {% if app.user.isRoot %}
                                     <!-- Menu Item Messages -->
                                     <li @click="modalOpenAddClientSettings = true" class="cursor-pointer">
                                         <a
@@ -126,6 +126,7 @@
                                             Dnevnik Prijava
                                         </a>
                                     </li>
+                                {% endif %}
                                     <li class="cursor-pointer" @click="modalRawDataReader = true">
                                         <a
                                                 class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -136,6 +137,7 @@
                                             Raw data čitač
                                         </a>
                                     </li>
+                                {% if app.user.isRoot %}
                                     <li class="cursor-pointer">
                                         <a
                                                 href="{{ path('app_client_device_sim_list', { clientId: client.id }) }}"

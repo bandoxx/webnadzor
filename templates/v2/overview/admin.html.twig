@@ -51,7 +51,7 @@
                     class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
                     x-data="{selected: $persist('Dashboard')}"
             >
-                {% if app.user.permission == 4 %}
+                {% if app.user.isRoot %}
                 <!-- Menu Group -->
                 <div>
                     <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
@@ -367,7 +367,7 @@
                                                         </div>
                                                     </div>
                                                 </a>
-                                                {% if app.user.permission == 4 %}
+                                                {% if app.user.isRoot %}
                                                 <div class="edit-btn"
                                                      data-id="{{ client.id }}"
                                                      data-name="{{ client.name }}"

@@ -52,7 +52,7 @@
                     <div>
                         <ul class="mb-6 flex flex-col gap-1.5">
                             <!-- Menu Item Messages -->
-                            {% if app.user.permission == 4 %}
+                            {% if app.user.isRoot %}
                             <li @click="modalOpenAddNew = true" class="reload-tags cursor-pointer">
                                 <a
                                         class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
@@ -312,7 +312,7 @@
                                                     </div>
                                                 </div>
                                             </a>
-                                            {% if app.user.permission == 4 %}
+                                            {% if app.user.isRoot %}
                                             <div class="edit-btn" data-index="0" x-on:click="modalOpenEdit = true" data-path="{{ path('api_device_document_update', { id: document.id }) }}">
                                                 <div class="cursor-pointer" title="Uredi">
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
