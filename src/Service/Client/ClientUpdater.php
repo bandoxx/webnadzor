@@ -51,7 +51,7 @@ class ClientUpdater
             $this->entityManager->persist($clientFtp);
             $this->entityManager->flush();
 
-            $users = $this->userRepository->findBy(['permission' => 4]);
+            $users = $this->userRepository->findRootUsers();
             foreach ($users as $user) {
                 $user->addClient($client);
             }
@@ -66,7 +66,7 @@ class ClientUpdater
 
         if ($pdfLogo = $request->files->get('pdf_logo')) {
             $fileName = $this->pdfLogoHandler->upload($pdfLogo, $client);
-            $this->mainLogoHandler->save($client, $fileName);
+            $this->pdfLogoHandler->save($client, $fileName);
         }
 
         if ($mapIcon = $request->files->get('map_marker_icon')) {
