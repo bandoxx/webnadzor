@@ -74,10 +74,10 @@ class ParseXmlsCommand extends Command
                 continue;
             }
 
-            $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
-
-            if (!$deviceData) {
-                $this->logger->error(sprintf("XML Parser failed for %s", $xmlPath));
+            try {
+                $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
+            } catch (\Exception $e) {
+                $this->logger->error($e->getMessage());
                 continue;
             }
 

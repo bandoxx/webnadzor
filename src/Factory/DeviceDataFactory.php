@@ -4,15 +4,22 @@ namespace App\Factory;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
+use App\Exception\XmlParserException;
 use App\Service\XmlParser\ParserTemperatureChecker;
 
 class DeviceDataFactory
 {
-    public function createFromXml(Device $device, string $filePath): ?DeviceData
-    {
-        $xmlData = @file_get_contents($filePath);
 
-        if ($xml = @simplexml_load_string($xmlData)) {
+    /**
+     * @throws \DateMalformedStringException
+     * @throws XmlParserException
+     */
+    public function createFromXml(Device $device, string $filePath): DeviceData
+    {
+        $xmlData = file_get_contents($filePath);
+        $xml = simplexml_load_string($xmlData);
+
+        if ($xml) {
             $created = @$xml->Created;
             $status = @$xml->Status;
 
@@ -44,6 +51,6 @@ class DeviceDataFactory
             return $deviceData;
         }
 
-        return null;
+        throw new XmlParserException(sprintf('XML Parser failed for %s, content of file: %s', $filePath, @file_get_contents($filePath)));
     }
 }
