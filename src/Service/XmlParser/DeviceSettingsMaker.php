@@ -44,8 +44,8 @@ class DeviceSettingsMaker
             $currentMin = $currentEntryData['t_min'];
             $currentMax = $currentEntryData['t_max'];
 
-            $newMin = $data["t{$i}_min"];
-            $newMax = $data["t{$i}_max"];
+            $newMin = $data["t$i"]['min'];
+            $newMax = $data["t$i"]['max'];
 
             if ($currentMin != $newMin) {
                 $newList["A{$i}L"] = $this->formatTemperature($newMin);
