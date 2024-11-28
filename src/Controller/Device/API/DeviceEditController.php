@@ -37,6 +37,8 @@ class DeviceEditController extends AbstractController
             $logger->error($exception->getMessage(), [
                 'data' => $data
             ]);
+
+            return $this->json(['errors' => 'Doslo je do greske u sistemu!'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($errors) {
