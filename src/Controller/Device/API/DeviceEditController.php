@@ -5,6 +5,7 @@ namespace App\Controller\Device\API;
 use App\Entity\Client;
 use App\Entity\Device;
 use App\Service\DeviceUpdater;
+use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,10 +23,21 @@ class DeviceEditController extends AbstractController
         #[MapEntity(id: 'deviceId')]
         Device $device,
         Request $request,
-        DeviceUpdater $deviceUpdater
+        DeviceUpdater $deviceUpdater,
+        LoggerInterface $logger
     ): JsonResponse
     {
-        $errors = $deviceUpdater->update($device, json_decode($request->getContent(), true));
+        $data = $request->getContent();
+
+        $logger->error($data);
+
+        try {
+            $errors = $deviceUpdater->update($device, json_decode($data, true, 512, JSON_THROW_ON_ERROR));
+        } catch (\Throwable $exception) {
+            $logger->error($exception->getMessage(), [
+                'data' => $data
+            ]);
+        }
 
         if ($errors) {
             return $this->json(['errors' => $errors], Response::HTTP_BAD_REQUEST);
