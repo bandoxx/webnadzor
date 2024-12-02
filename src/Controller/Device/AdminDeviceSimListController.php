@@ -4,6 +4,7 @@ namespace App\Controller\Device;
 
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -11,9 +12,10 @@ use Symfony\Component\Routing\Attribute\Route;
 class AdminDeviceSimListController extends AbstractController
 {
 
-    public function __invoke(DeviceRepository $deviceRepository): Response
+    public function __invoke(DeviceRepository $deviceRepository, Request $request): Response
     {
-        $devices = $deviceRepository->findActiveDevices();
+        $filled = $request->query->getBoolean('filled', false);
+        $devices = $deviceRepository->findActiveDevices($filled ?? false);
         $table = [];
 
         foreach ($devices as $device) {
@@ -29,5 +31,6 @@ class AdminDeviceSimListController extends AbstractController
             'list' => $table
         ]);
     }
+
 
 }

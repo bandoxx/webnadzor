@@ -38,10 +38,24 @@ class DeviceRepository extends ServiceEntityRepository
         )->free();
     }
 
-    public function findDevicesByClient(int $clientId): array
+    public function findDevicesByClient(int $clientId, bool $filled = false): array
     {
-        return $this->findBy(['client' => $clientId, 'isDeleted' => false]);
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.client = :clientId')
+            ->andWhere('d.isDeleted = :isDeleted')
+            ->setParameter('clientId', $clientId)
+            ->setParameter('isDeleted', false);
+        if ($filled) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->isNotNull('d.simCardProvider'),
+                    $qb->expr()->isNotNull('d.simPhoneNumber')
+                )
+            );
+        }
+        return $qb->getQuery()->getResult();
     }
+
 
     public function doesMoreThenOneXmlNameExists(string $xmlName): bool
     {
@@ -55,8 +69,20 @@ class DeviceRepository extends ServiceEntityRepository
         return $numberOfDevicesWithName > 0;
     }
 
-    public function findActiveDevices(): array
+    public function findActiveDevices(bool $filled = false): array
     {
-        return $this->findBy(['isDeleted' => false]);
+        $qb = $this->createQueryBuilder('d')
+            ->where('d.isDeleted = :isDeleted')
+            ->setParameter('isDeleted', false);
+        if ($filled) {
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->isNotNull('d.simCardProvider'),
+                    $qb->expr()->isNotNull('d.simPhoneNumber')
+                )
+            );
+        }
+        return $qb->getQuery()->getResult();
     }
+
 }

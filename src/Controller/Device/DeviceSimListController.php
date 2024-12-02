@@ -6,16 +6,17 @@ use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 #[Route('/admin/{clientId}/device/sim-list', name: 'app_client_device_sim_list', methods: 'GET')]
 class DeviceSimListController extends AbstractController
 {
 
-    public function __invoke(int $clientId, DeviceRepository $deviceRepository): Response
+    public function __invoke(int $clientId, DeviceRepository $deviceRepository, Request $request): Response
     {
-        $devices = $deviceRepository->findDevicesByClient($clientId);
+        $filled = $request->query->getBoolean('filled', false);
+        $devices = $deviceRepository->findDevicesByClient($clientId, $filled ?? false);
         $table = [];
-
         foreach ($devices as $device) {
             $table[] = [
                 'xml' => $device->getXmlName(),
