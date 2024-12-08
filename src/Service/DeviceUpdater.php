@@ -60,8 +60,8 @@ class DeviceUpdater
             return $this->error;
         }
 
-        $device->setSimCardProvider($data['sim_card_provider'] ?? null);
-        $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
+        $device->setSimCardProvider(!empty($data['sim_card_provider']) ? $data['sim_card_provider'] : null);
+        $device->setSimPhoneNumber(!empty($data['sim_phone_number']) ? $data['sim_phone_number'] : null);
 
         $this->entityManager->flush();
         $this->deviceSettingsMaker->saveXml($oldDevice, $data);
