@@ -2,6 +2,7 @@
 
 namespace App\Command\Archiver;
 
+use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
@@ -9,6 +10,7 @@ use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
+use App\Service\Chart\ChartHandler;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +19,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
     name: 'app:device-data-archiver',
@@ -33,10 +36,24 @@ class DeviceDataArchiver extends Command
         private RawDataHandler           $rawDataHandler,
         private DeviceDataRawDataFactory $deviceDataRawDataFactory,
         private EntityManagerInterface   $entityManager,
+        private ChartHandler  $ChartHandler
     )
     {
         parent::__construct();
     }
+
+    private $projectDir;
+    //get the current project dir
+    public function __construct(ParameterBagInterface $params)
+    {
+        $this->projectDir = $params->get('kernel.project_dir');
+    }
+
+    public function getProjectDir(): string
+    {
+        return $this->projectDir;
+    }
+
     protected function configure(): void
     {
         $this
@@ -73,8 +90,8 @@ class DeviceDataArchiver extends Command
             if ($daily) {
                 foreach ($devices as $device) {
                     $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
-
                     foreach([1, 2] as $entry) {
+                        $this->generateJsonAndChartImage($device, $entry, $date);
                         $this->generateDailyReport($device, $data, $entry, $date);
                     }
                 }
@@ -85,6 +102,7 @@ class DeviceDataArchiver extends Command
                     $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                     foreach([1, 2] as $entry) {
+                        $this->generateJsonAndChartImage($device, $entry, $date);
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     }
                 }
@@ -93,6 +111,55 @@ class DeviceDataArchiver extends Command
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
         return Command::SUCCESS;
+    }
+
+    private function generateJsonAndChartImage(Device $device, $entry, \DateTime $dateTime): void
+    {
+        $start = (clone ($dateTime))->setTime(0, 0);
+        $end = (clone ($dateTime))->setTime(23, 59);
+        //generating chart image
+        $chartDataHum = $this->ChartHandler->createDeviceDataChart($device, "humidity", $entry, $start, $end);
+        $chartDataTemp = $this->ChartHandler->createDeviceDataChart($device, "temperature", $entry, $start, $end);
+
+        //creating json for chart
+        $chartConfig = [
+            'chart' => [
+                'type' => 'line',
+            ],
+            'title' => [
+                'text' => 'Primer grafikona',
+            ],
+            'xAxis' => [
+                'categories' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            ],
+            'yAxis' => [
+                'title' => [
+                    'text' => 'Brojke',
+                ],
+            ],
+            'series' => [
+                [
+                    'name' => 'Serija 1',
+                    'data' => [1, 3, 2, 4, 6, 5],
+                ],
+                [
+                    'name' => 'Serija 2',
+                    'data' => [2, 4, 3, 5, 7, 6],
+                ],
+            ],
+        ];
+
+        $root  = $this->getProjectDir();
+        $jsonConfig = json_encode($chartConfig, JSON_PRETTY_PRINT);
+        $jsonFilePath = $root . '/chartConfigData.json';
+        file_put_contents($jsonFilePath, $jsonConfig);
+
+        //generating the image command
+//                $outputFilePath = $root  . '/chart.png';
+//                $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
+//
+//                $process = new Process($command, $root);
+//                $process->mustRun();
     }
 
     private function generateDailyReport($device, $data, $entry, $date): void

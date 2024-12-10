@@ -6,14 +6,27 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Service\Archiver\Model\ArchiveModel;
 use App\Service\Archiver\PDFArchiver;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use TCPDF;
 
 class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInterface
 {
+    private $projectDir;
+    //get the current project dir
+    public function __construct(ParameterBagInterface $params)
+    {
+        $this->projectDir = $params->get('kernel.project_dir');
+    }
+
+    public function getProjectDir(): string
+    {
+        return $this->projectDir;
+    }
+
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
-        $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
+        $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle, 0);
 
         $this->saveInMemory($pdf);
     }
@@ -42,7 +55,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         return $this->save($pdf, $path, $fileName);
     }
 
-    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): TCPDF
+    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle, int $showImage = 1): TCPDF
     {
         $deviceEntryData = $device->getEntryData($entry);
         $tUnit = $deviceEntryData['t_unit'];
@@ -86,6 +99,18 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $pdf->SetLineWidth(0.25);
         $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
+        $imagePath = $this->getProjectDir() . '/chart.png';
+        //check if image exists then add
+        if (file_exists($imagePath) && $showImage) {
+            $imageWidth = 180;
+            $imageHeight = 120;
+
+            $pdf->Cell($pdf->pixelsToUnits(180), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'PNG');
+
+            $pdf->Ln($imageHeight + 5);
+        }
+
         // Header
         $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
         $pdf->Cell($pdf->pixelsToUnits(280), 4, $deviceEntryData['t_name'], 1, 0, 'C', true);
@@ -105,6 +130,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $fill = true;
 
         $pdf->SetFillColor(238, 238, 238);
+
         /** @var DeviceData $data */
         foreach ($deviceData as $data) {
             if (!$data->getT($entry) && !$data->getRh($entry)) {

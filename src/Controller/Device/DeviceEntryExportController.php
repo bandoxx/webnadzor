@@ -45,7 +45,6 @@ class DeviceEntryExportController extends AbstractController
     {
         $dateFrom = new \DateTime($request->get('date_from'));
         $dateFrom->setTime(0, 0);
-
         $dateTo = (new \DateTime($request->get('date_to')));
         $dateTo->setTime(23, 59);
 
