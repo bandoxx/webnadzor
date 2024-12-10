@@ -37,6 +37,7 @@ services:
             $mapMarkerFullPathDirectory: '%map_marker_directory_full_path%'
             $xmlDirectory: '%xml_directory%'
             $archiveDirectory: '%archive_directory%'
+            $projectDirectory: '%kernel.project_dir%'
             $iconDirectory: '%icon_directory%'
             $clientStorageDirectory: '%client_storage_directory_full_path%'
             $iconFullDirectory: '%icon_directory_full_path%'

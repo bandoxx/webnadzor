@@ -9,7 +9,13 @@ class Archiver
 
     public function __construct(
         private readonly string $archiveDirectory,
+        private readonly string $projectDirectory
     ) {}
+
+    public function getProjectDirectory(): string
+    {
+        return $this->projectDirectory;
+    }
 
     public function getArchiveDirectory(): string
     {

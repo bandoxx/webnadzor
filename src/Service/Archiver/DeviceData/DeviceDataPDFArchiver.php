@@ -6,22 +6,10 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Service\Archiver\Model\ArchiveModel;
 use App\Service\Archiver\PDFArchiver;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use TCPDF;
 
 class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInterface
 {
-    private $projectDir;
-    //get the current project dir
-    public function __construct(ParameterBagInterface $params)
-    {
-        $this->projectDir = $params->get('kernel.project_dir');
-    }
-
-    public function getProjectDir(): string
-    {
-        return $this->projectDir;
-    }
 
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
@@ -99,7 +87,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $pdf->SetLineWidth(0.25);
         $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
-        $imagePath = $this->getProjectDir() . '/chart.png';
+        $imagePath = $this->getProjectDirectory() . '/chart.png';
         //check if image exists then add
         if (file_exists($imagePath) && $showImage) {
             $imageWidth = 180;

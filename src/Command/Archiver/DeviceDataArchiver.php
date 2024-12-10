@@ -19,7 +19,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[AsCommand(
     name: 'app:device-data-archiver',
@@ -36,22 +35,11 @@ class DeviceDataArchiver extends Command
         private RawDataHandler           $rawDataHandler,
         private DeviceDataRawDataFactory $deviceDataRawDataFactory,
         private EntityManagerInterface   $entityManager,
-        private ChartHandler  $ChartHandler
+        private ChartHandler             $chartHandler,
+        private string                   $projectDirectory
     )
     {
         parent::__construct();
-    }
-
-    private $projectDir;
-    //get the current project dir
-    public function __construct(ParameterBagInterface $params)
-    {
-        $this->projectDir = $params->get('kernel.project_dir');
-    }
-
-    public function getProjectDir(): string
-    {
-        return $this->projectDir;
     }
 
     protected function configure(): void
@@ -118,8 +106,8 @@ class DeviceDataArchiver extends Command
         $start = (clone ($dateTime))->setTime(0, 0);
         $end = (clone ($dateTime))->setTime(23, 59);
         //generating chart image
-        $chartDataHum = $this->ChartHandler->createDeviceDataChart($device, "humidity", $entry, $start, $end);
-        $chartDataTemp = $this->ChartHandler->createDeviceDataChart($device, "temperature", $entry, $start, $end);
+        $chartDataHum = $this->chartHandler->createDeviceDataChart($device, "humidity", $entry, $start, $end);
+        $chartDataTemp = $this->chartHandler->createDeviceDataChart($device, "temperature", $entry, $start, $end);
 
         //creating json for chart
         $chartConfig = [
@@ -149,7 +137,7 @@ class DeviceDataArchiver extends Command
             ],
         ];
 
-        $root  = $this->getProjectDir();
+        $root  = $this->projectDirectory;
         $jsonConfig = json_encode($chartConfig, JSON_PRETTY_PRINT);
         $jsonFilePath = $root . '/chartConfigData.json';
         file_put_contents($jsonFilePath, $jsonConfig);
