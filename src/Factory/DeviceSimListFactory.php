@@ -15,12 +15,12 @@ class DeviceSimListFactory
         $client = $device->getClient();
         $overview = $this->deviceOverviewFactory->create($device, 1);
 
-        if ($overview->getTemperatureModel()->getLocation()) {
-            $location = $overview->getTemperatureModel()->getLocation();
+        if ($overview?->getTemperatureModel()?->getLocation()) {
+            $location = $overview?->getTemperatureModel()?->getLocation();
         } else {
             $overview = $this->deviceOverviewFactory->create($device, 2);
 
-            $location = $overview->getTemperatureModel()->getLocation();
+            $location = $overview?->getTemperatureModel()?->getLocation();
         }
 
         $address = sprintf("%s, %s", $client->getAddress(), $location);
