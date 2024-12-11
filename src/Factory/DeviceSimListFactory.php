@@ -12,20 +12,26 @@ class DeviceSimListFactory
 
     public function create(Device $device): DeviceSimListItem
     {
-        $overview1 = $this->deviceOverviewFactory->create($device, 1);
-        $overview2 = $this->deviceOverviewFactory->create($device, 2);
-
         $client = $device->getClient();
+        $overview = $this->deviceOverviewFactory->create($device, 1);
+
+        if ($overview->getTemperatureModel()->getLocation()) {
+            $location = $overview->getTemperatureModel()->getLocation();
+        } else {
+            $overview = $this->deviceOverviewFactory->create($device, 2);
+
+            $location = $overview->getTemperatureModel()->getLocation();
+        }
+
+        $address = sprintf("%s, %s", $client->getAddress(), $location);
+        if (substr($address, -2) === ", ") {
+            $address = substr($address, 0, -2);
+        }
+
         return (new DeviceSimListItem())
             ->setXml($device->getXmlName())
             ->setClientName($client->getName())
-            ->setAddress(rtrim(
-                sprintf("%s, %s", $client->getAddress(),
-                    $overview1->getTemperatureModel()->getLocation() ??
-                    $overview2->getTemperatureModel()->getLocation() ?? null
-                ),
-            ',')
-            )
+            ->setAddress($address)
             ->setSimNumber($device->getSimPhoneNumber())
             ->setSimProvider($device->getSimCardProvider())
         ;
