@@ -14,18 +14,19 @@ class DeviceSimListFactory
     {
         $client = $device->getClient();
         $overview = $this->deviceOverviewFactory->create($device, 1);
-
-        if ($overview?->getTemperatureModel()?->getLocation()) {
-            $location = $overview?->getTemperatureModel()?->getLocation();
+        $model = $overview?->getTemperatureModel();
+        if ($model?->getName() && $model?->getLocation()) {
+            $address = sprintf("%s, %s", $model->getName(), $model->getLocation());
         } else {
             $overview = $this->deviceOverviewFactory->create($device, 2);
-
-            $location = $overview?->getTemperatureModel()?->getLocation();
+            $model = $overview?->getTemperatureModel();
+            $address = sprintf("%s, %s", $model->getName(), $model->getLocation());
         }
 
-        $address = sprintf("%s, %s", $client->getAddress(), $location);
-        if (substr($address, -2) === ", ") {
-            $address = substr($address, 0, -2);
+        if ($address) {
+            if (substr($address, -2) === ", ") {
+                $address = substr($address, 0, -2);
+            }
         }
 
         return (new DeviceSimListItem())
