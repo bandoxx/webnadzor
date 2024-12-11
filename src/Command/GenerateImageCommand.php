@@ -31,7 +31,14 @@ class GenerateImageCommand extends Command
         $inputFile = $input->getArgument('inputFile');
         $outputFile = $input->getArgument('outputFile');
 
-        $command = ['highcharts-export-server', '--infile', $inputFile, '--outfile', $outputFile];
+        $command = [
+            'highcharts-export-server',
+            '--infile', $inputFile,
+            '--outfile', $outputFile,
+            '--logLevel', 2,
+            '--logDest', 'var/log'
+        ];
+
         $process = new Process($command);
         $process->setTimeout(120);
 
