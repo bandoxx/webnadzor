@@ -11,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 class DeviceDataArchive
 {
 
-    public const PERIOD_DAY = 'daily';
-    public const PERIOD_MONTH = 'monthly';
+    public const string PERIOD_DAY = 'daily';
+    public const string PERIOD_MONTH = 'monthly';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

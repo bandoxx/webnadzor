@@ -80,8 +80,8 @@ class DeviceDataArchiver extends Command
                 foreach ($devices as $device) {
                     $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
                     foreach([1, 2] as $entry) {
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity');
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature');
+                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity', DeviceDataArchive::PERIOD_DAY);
+                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature', DeviceDataArchive::PERIOD_DAY);
                         $this->generateDailyReport($device, $data, $entry, $date);
                     }
                 }
@@ -92,8 +92,8 @@ class DeviceDataArchiver extends Command
                     $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                     foreach([1, 2] as $entry) {
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity', "monthly");
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature', "monthly");
+                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity', DeviceDataArchive::PERIOD_MONTH);
+                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature', DeviceDataArchive::PERIOD_MONTH);
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     }
                 }
@@ -104,15 +104,15 @@ class DeviceDataArchiver extends Command
         return Command::SUCCESS;
     }
 
-    private function generateJsonAndChartImage(Device $device, $entry, \DateTime $dateTime, $type, $dateType = "daily"): void
+    private function generateJsonAndChartImage(Device $device, $entry, \DateTime $dateTime, $type, $dateType = DeviceDataArchive::PERIOD_DAY): void
     {
         $start = null;
         $end = null;
 
-        if ($dateType === "daily") {
+        if ($dateType === DeviceDataArchive::PERIOD_DAY) {
             $start = (clone $dateTime)->setTime(0, 0);
             $end = (clone $dateTime)->setTime(23, 59);
-        } elseif ($dateType === "monthly") {
+        } elseif ($dateType === DeviceDataArchive::PERIOD_MONTH) {
             $start = (clone $dateTime)->modify('first day of this month')->setTime(0, 0);
             $end = (clone $dateTime)->modify('last day of this month')->setTime(23, 59);
         }
@@ -245,11 +245,11 @@ class DeviceDataArchiver extends Command
 
         $root  = $this->projectDirectory;
         $jsonConfig = json_encode($chartConfig, JSON_PRETTY_PRINT);
-        $jsonFilePath = $root . '/chartConfigData_' . $type . '.json';
+        $jsonFilePath = sprintf("%s/archive/chartConfigData_%s.json", $root, $type);
         file_put_contents($jsonFilePath, $jsonConfig);
 
         //generating the image command
-        $outputFilePath = $root  . '/chart_' . $type . '.png';
+        $outputFilePath = sprintf("%s/archive/chart_%s.png", $root, $type);
         $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
 
         $process = new Process($command, $root);
@@ -263,7 +263,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
 
-//        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
+        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
 
@@ -278,7 +278,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-//        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
+        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
