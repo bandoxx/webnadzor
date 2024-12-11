@@ -87,7 +87,19 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $pdf->SetLineWidth(0.25);
         $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
-        $imagePath = $this->getProjectDirectory() . '/chart.png';
+        $imagePath = $this->getProjectDirectory() . '/chart_temperature.png';
+        //check if image exists then add
+        if (file_exists($imagePath) && $showImage) {
+            $imageWidth = 180;
+            $imageHeight = 120;
+
+            $pdf->Cell($pdf->pixelsToUnits(180), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'PNG');
+
+            $pdf->Ln($imageHeight + 5);
+        }
+
+        $imagePath = $this->getProjectDirectory() . '/chart_humidity.png';
         //check if image exists then add
         if (file_exists($imagePath) && $showImage) {
             $imageWidth = 180;

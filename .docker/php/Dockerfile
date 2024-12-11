@@ -21,7 +21,9 @@ RUN set -eux; \
         libxpm-dev \
         libmcrypt-dev \
         libonig-dev \
-        netcat-traditional; \
+        netcat-traditional \
+        chromium \
+        chromium-driver; \
     rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -49,6 +51,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
 
+# Install Highcharts Export Server
 RUN npm install -g highcharts-export-server
 
 # Copy custom PHP configuration
@@ -57,7 +60,7 @@ COPY .docker/php/config/php.ini /usr/local/etc/php/php.ini
 # Set the working directory
 WORKDIR /var/www/html
 
-# Copy application files (adjust as needed)
+# Copy application files
 COPY . .
 
 # Run npm install in the application directory
