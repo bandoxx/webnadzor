@@ -194,7 +194,7 @@ class DeviceDataArchiver extends Command
                 'zoomType' => 'x',
             ],
             'title' => [
-                'text' => $type === 'temperature' ? 'Temperatura' : 'Vlaga',
+                'text' => $type === 'temperature' ? 'Temperatura' : 'Relativna vlaga',
             ],
             'time' => [
                 'timezone' => 'Europe/Zagreb',
