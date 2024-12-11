@@ -21,8 +21,8 @@ class DeviceSimListFactory
             ->setClientName($client->getName())
             ->setAddress(rtrim(
                 sprintf("%s, %s", $client->getAddress(),
-                    $overview1->getTemperatureModel()->getName() ??
-                    $overview2->getTemperatureModel()->getName() ?? null
+                    $overview1->getTemperatureModel()->getLocation() ??
+                    $overview2->getTemperatureModel()->getLocation() ?? null
                 ),
             ',')
             )
