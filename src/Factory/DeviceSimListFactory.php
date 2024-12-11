@@ -16,11 +16,11 @@ class DeviceSimListFactory
         $overview = $this->deviceOverviewFactory->create($device, 1);
         $model = $overview?->getTemperatureModel();
         if ($model?->getName() && $model?->getLocation()) {
-            $address = sprintf("%s, %s", $model->getName(), $model->getLocation());
+            $address = sprintf("%s, %s", $device->getName(), $model->getLocation());
         } else {
             $overview = $this->deviceOverviewFactory->create($device, 2);
             $model = $overview?->getTemperatureModel();
-            $address = sprintf("%s, %s", $model->getName(), $model->getLocation());
+            $address = sprintf("%s, %s", $device->getName(), $model->getLocation());
         }
 
         if ($address) {
