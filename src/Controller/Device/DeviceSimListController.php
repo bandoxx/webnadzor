@@ -2,6 +2,8 @@
 
 namespace App\Controller\Device;
 
+use App\Factory\DeviceSimListFactory;
+use App\Model\Device\DeviceSimListItem;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,18 +14,16 @@ use Symfony\Component\HttpFoundation\Request;
 class DeviceSimListController extends AbstractController
 {
 
-    public function __invoke(int $clientId, DeviceRepository $deviceRepository, Request $request): Response
+    public function __invoke(int $clientId, DeviceRepository $deviceRepository, DeviceSimListFactory $deviceSimListFactory, Request $request): Response
     {
         $filled = $request->query->getBoolean('filled', false);
         $devices = $deviceRepository->findDevicesByClient($clientId, $filled ?? false);
+
+        /** @var DeviceSimListItem[] $table */
         $table = [];
+
         foreach ($devices as $device) {
-            $table[] = [
-                'xml' => $device->getXmlName(),
-                'address' => $device->getClient()->getAddress(),
-                'sim_number' => $device->getSimPhoneNumber(),
-                'sim_provider' => $device->getSimCardProvider()
-            ];
+            $table[] = $deviceSimListFactory->create($device);
         }
 
         return $this->render('v2/device/device_sim_list.html.twig', [

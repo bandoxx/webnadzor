@@ -40,23 +40,26 @@ class SIMXSLXArchiver extends XLSXArchiver implements SIMArchiverInterface
             $objPHPExcel->getActiveSheet()->mergeCells('A3:C3');
 
             $objPHPExcel->getActiveSheet()->setCellValue('A5', 'Br.');
-            $objPHPExcel->getActiveSheet()->setCellValue('B5', 'XML Naziv');
-            $objPHPExcel->getActiveSheet()->setCellValue('C5', 'Adresa');
-            $objPHPExcel->getActiveSheet()->setCellValue('D5', 'Broj kartice');
-            $objPHPExcel->getActiveSheet()->setCellValue('E5', 'Operater');
+            $objPHPExcel->getActiveSheet()->setCellValue('B5', 'Klijent');
+            $objPHPExcel->getActiveSheet()->setCellValue('C5', 'XML Naziv');
+            $objPHPExcel->getActiveSheet()->setCellValue('D5', 'Adresa');
+            $objPHPExcel->getActiveSheet()->setCellValue('E5', 'Broj kartice');
+            $objPHPExcel->getActiveSheet()->setCellValue('F5', 'Operater');
 
             $i = 5;
             $row = 0;
 
-            /** @var Device $sim */
-            foreach ($data as $sim) {
+            /** @var Device $device */
+            foreach ($data as $device) {
                 $i++;
 
+                $detail = $this->getDeviceSimListFactory()->create($device);
                 $objPHPExcel->getActiveSheet()->setCellValue("A$i", ++$row);
-                $objPHPExcel->getActiveSheet()->setCellValue("B$i", $sim->getXmlName());
-                $objPHPExcel->getActiveSheet()->setCellValue("C$i", $sim->getClient()->getAddress());
-                $objPHPExcel->getActiveSheet()->setCellValue("D$i", $sim->getSimPhoneNumber());
-                $objPHPExcel->getActiveSheet()->setCellValue("E$i", $sim->getSimCardProvider());
+                $objPHPExcel->getActiveSheet()->setCellValue("B$i", $detail->getClientName());
+                $objPHPExcel->getActiveSheet()->setCellValue("C$i", $detail->getXml());
+                $objPHPExcel->getActiveSheet()->setCellValue("D$i", $detail->getAddress());
+                $objPHPExcel->getActiveSheet()->setCellValue("E$i", $detail->getSimNumber());
+                $objPHPExcel->getActiveSheet()->setCellValue("F$i", $detail->getSimProvider());
             }
 
             if (empty($row)) {
@@ -94,23 +97,26 @@ class SIMXSLXArchiver extends XLSXArchiver implements SIMArchiverInterface
             $objPHPExcel->getActiveSheet()->mergeCells('A3:C3');
 
             $objPHPExcel->getActiveSheet()->setCellValue('A5', 'Br.');
-            $objPHPExcel->getActiveSheet()->setCellValue('B5', 'XML Naziv');
-            $objPHPExcel->getActiveSheet()->setCellValue('C5', 'Adresa');
-            $objPHPExcel->getActiveSheet()->setCellValue('D5', 'Broj kartice');
-            $objPHPExcel->getActiveSheet()->setCellValue('E5', 'Operater');
+            $objPHPExcel->getActiveSheet()->setCellValue('B5', 'Klijent');
+            $objPHPExcel->getActiveSheet()->setCellValue('C5', 'XML Naziv');
+            $objPHPExcel->getActiveSheet()->setCellValue('D5', 'Adresa');
+            $objPHPExcel->getActiveSheet()->setCellValue('E5', 'Broj kartice');
+            $objPHPExcel->getActiveSheet()->setCellValue('F5', 'Operater');
 
             $i = 5;
             $row = 0;
 
-            /** @var Device $sim */
-            foreach ($data as $sim) {
+            /** @var Device $device */
+            foreach ($data as $device) {
                 $i++;
 
+                $detail = $this->getDeviceSimListFactory()->create($device);
                 $objPHPExcel->getActiveSheet()->setCellValue("A$i", ++$row);
-                $objPHPExcel->getActiveSheet()->setCellValue("B$i", $sim->getXmlName());
-                $objPHPExcel->getActiveSheet()->setCellValue("C$i", $sim->getClient()->getAddress());
-                $objPHPExcel->getActiveSheet()->setCellValue("D$i", $sim->getSimPhoneNumber());
-                $objPHPExcel->getActiveSheet()->setCellValue("E$i", $sim->getSimCardProvider());
+                $objPHPExcel->getActiveSheet()->setCellValue("B$i", $detail->getClientName());
+                $objPHPExcel->getActiveSheet()->setCellValue("C$i", $detail->getXml());
+                $objPHPExcel->getActiveSheet()->setCellValue("D$i", $detail->getAddress());
+                $objPHPExcel->getActiveSheet()->setCellValue("E$i", $detail->getSimNumber());
+                $objPHPExcel->getActiveSheet()->setCellValue("F$i", $detail->getSimProvider());
             }
 
             if (empty($row)) {

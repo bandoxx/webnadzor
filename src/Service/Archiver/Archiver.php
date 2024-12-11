@@ -2,6 +2,7 @@
 
 namespace App\Service\Archiver;
 
+use App\Factory\DeviceSimListFactory;
 use App\Service\Archiver\Model\ArchiveModel;
 
 class Archiver
@@ -9,7 +10,13 @@ class Archiver
 
     public function __construct(
         private readonly string $archiveDirectory,
+        private DeviceSimListFactory $deviceSimListFactory
     ) {}
+
+    public function getDeviceSimListFactory(): DeviceSimListFactory
+    {
+        return $this->deviceSimListFactory;
+    }
 
     public function getArchiveDirectory(): string
     {
