@@ -23,7 +23,7 @@ class GenerateImageCommand extends Command
     {
         $this
             ->addArgument('inputFile', InputArgument::REQUIRED, 'Path to the input JSON file (e.g., my-chart-config.json)')
-            ->addArgument('outputFile', InputArgument::REQUIRED, 'Path to the output image file (e.g., /path/to/output.png)');
+            ->addArgument('outputFile', InputArgument::REQUIRED, 'Path to the output image file (e.g., /path/to/output.jpg)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -36,7 +36,11 @@ class GenerateImageCommand extends Command
             '--infile', $inputFile,
             '--outfile', $outputFile,
             '--logLevel', 2,
-            '--logDest', 'var/log'
+            '--logDest', 'var/log',
+            '--type jpg',
+            '--width 1200',
+            '--height 800',
+            '--scale', '2'
         ];
 
         $process = new Process($command);

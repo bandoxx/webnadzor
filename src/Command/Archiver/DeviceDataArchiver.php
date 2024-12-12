@@ -249,11 +249,13 @@ class DeviceDataArchiver extends Command
         file_put_contents($jsonFilePath, $jsonConfig);
 
         //generating the image command
-        $outputFilePath = sprintf("%s/archive/chart_%s.png", $root, $type);
+        $outputFilePath = sprintf("%s/archive/chart_%s.jpg", $root, $type);
         $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
 
         $process = new Process($command, $root);
         $process->mustRun();
+        //remove json from archive
+        unlink($jsonFilePath);
     }
 
     private function generateDailyReport($device, $data, $entry, $date): void
@@ -278,7 +280,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
+//        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 

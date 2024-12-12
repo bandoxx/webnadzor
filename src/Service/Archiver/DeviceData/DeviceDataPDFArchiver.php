@@ -14,7 +14,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
-        $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle, 0);
+        $pdf = $this->generateBody($device, $deviceData, $entry, $subtitle);
 
         $this->saveInMemory($pdf);
     }
@@ -43,7 +43,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         return $this->save($pdf, $path, $fileName);
     }
 
-    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle, int $showImage = 1): TCPDF
+    private function generateBody(Device $device, array $deviceData, int $entry, string $subtitle): TCPDF
     {
         $deviceEntryData = $device->getEntryData($entry);
         $tUnit = $deviceEntryData['t_unit'];
@@ -87,28 +87,32 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $pdf->SetLineWidth(0.25);
         $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
-        $imagePath = sprintf('%s/archive/chart_temperature.png', $this->getProjectDirectory());
+        $pdf->setJPEGQuality(100);
+
+        $imagePath = sprintf('%s/archive/chart_temperature.jpg', $this->getProjectDirectory());
         //check if image exists then add
-        if (file_exists($imagePath) && $showImage) {
+        if (file_exists($imagePath)) {
             $imageWidth = 180;
             $imageHeight = 120;
 
-            $pdf->Cell($pdf->pixelsToUnits(180), $imageHeight, '', 0, 0, 'C');
-            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'PNG');
+            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
 
             $pdf->Ln($imageHeight + 5);
+            unlink($imagePath);
         }
 
-        $imagePath = sprintf("%s/archive/chart_humidity.png", $this->getProjectDirectory());
+        $imagePath = sprintf("%s/archive/chart_humidity.jpg", $this->getProjectDirectory());
         //check if image exists then add
-        if (file_exists($imagePath) && $showImage) {
+        if (file_exists($imagePath)) {
             $imageWidth = 180;
             $imageHeight = 120;
 
-            $pdf->Cell($pdf->pixelsToUnits(180), $imageHeight, '', 0, 0, 'C');
-            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'PNG');
+            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
 
             $pdf->Ln($imageHeight + 5);
+            unlink($imagePath);
         }
 
         // Header
