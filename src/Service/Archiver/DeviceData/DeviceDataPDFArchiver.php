@@ -6,10 +6,20 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Service\Archiver\Model\ArchiveModel;
 use App\Service\Archiver\PDFArchiver;
+use App\Service\Chart\ChartImageGenerator;
 use TCPDF;
 
 class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInterface
 {
+
+    public function __construct(
+        private readonly string $archiveDirectory,
+        private readonly string $projectDirectory,
+        private ChartImageGenerator $chartImageGenerator
+    )
+    {
+        parent::__construct($this->archiveDirectory, $this->projectDirectory);
+    }
 
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
@@ -89,31 +99,8 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
 
         $pdf->setJPEGQuality(100);
 
-        $imagePath = sprintf('%s/archive/chart_temperature.jpg', $this->getProjectDirectory());
-        //check if image exists then add
-        if (file_exists($imagePath)) {
-            $imageWidth = 180;
-            $imageHeight = 120;
-
-            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
-            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
-
-            $pdf->Ln($imageHeight + 5);
-            unlink($imagePath);
-        }
-
-        $imagePath = sprintf("%s/archive/chart_humidity.jpg", $this->getProjectDirectory());
-        //check if image exists then add
-        if (file_exists($imagePath)) {
-            $imageWidth = 180;
-            $imageHeight = 120;
-
-            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
-            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
-
-            $pdf->Ln($imageHeight + 5);
-            unlink($imagePath);
-        }
+        $this->includeImage($pdf, $this->chartImageGenerator->getTemperatureImageChartPath());
+        $this->includeImage($pdf, $this->chartImageGenerator->getHumidityImageChartPath());
 
         // Header
         $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
@@ -172,5 +159,19 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         }
 
         return $pdf;
+    }
+
+    private function includeImage(TCPDF $pdf, string $imagePath): void
+    {
+        if (file_exists($imagePath)) {
+            $imageWidth = 180;
+            $imageHeight = 120;
+
+            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
+
+            $pdf->Ln($imageHeight + 5);
+            unlink($imagePath);
+        }
     }
 }

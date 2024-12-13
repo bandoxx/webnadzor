@@ -10,7 +10,7 @@ use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
-use App\Service\Chart\ChartHandler;
+use App\Service\Chart\ChartImageGenerator;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,7 +19,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'app:device-data-archiver',
@@ -36,8 +35,7 @@ class DeviceDataArchiver extends Command
         private RawDataHandler           $rawDataHandler,
         private DeviceDataRawDataFactory $deviceDataRawDataFactory,
         private EntityManagerInterface   $entityManager,
-        private ChartHandler             $chartHandler,
-        private string                   $projectDirectory
+        private ChartImageGenerator      $chartImageGenerator
     )
     {
         parent::__construct();
@@ -80,8 +78,10 @@ class DeviceDataArchiver extends Command
                 foreach ($devices as $device) {
                     $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
                     foreach([1, 2] as $entry) {
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity', DeviceDataArchive::PERIOD_DAY);
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature', DeviceDataArchive::PERIOD_DAY);
+                        $fromDate = (clone $date)->setTime(0, 0, 0);
+                        $toDate = (clone $date)->setTime(23, 59, 59);
+
+                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateDailyReport($device, $data, $entry, $date);
                     }
                 }
@@ -92,8 +92,10 @@ class DeviceDataArchiver extends Command
                     $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                     foreach([1, 2] as $entry) {
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'humidity', DeviceDataArchive::PERIOD_MONTH);
-                        $this->generateJsonAndChartImage($device, $entry, $date, 'temperature', DeviceDataArchive::PERIOD_MONTH);
+                        $fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+                        $toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
+
+                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     }
                 }
@@ -102,160 +104,6 @@ class DeviceDataArchiver extends Command
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
         return Command::SUCCESS;
-    }
-
-    private function generateJsonAndChartImage(Device $device, $entry, \DateTime $dateTime, $type, $dateType = DeviceDataArchive::PERIOD_DAY): void
-    {
-        $start = null;
-        $end = null;
-
-        if ($dateType === DeviceDataArchive::PERIOD_DAY) {
-            $start = (clone $dateTime)->setTime(0, 0);
-            $end = (clone $dateTime)->setTime(23, 59);
-        } elseif ($dateType === DeviceDataArchive::PERIOD_MONTH) {
-            $start = (clone $dateTime)->modify('first day of this month')->setTime(0, 0);
-            $end = (clone $dateTime)->modify('last day of this month')->setTime(23, 59);
-        }
-
-        $fromTimestamp = $start->getTimestamp() * 1000;
-        $toTimestamp = $end->getTimestamp() * 1000;
-
-        //generating chart image
-        $chartData = $this->chartHandler->createDeviceDataChart($device, $type, $entry, $start, $end);
-
-        $plots = [];
-        if (isset($chartData['min']) && is_numeric($chartData['min'])) {
-            $plots[] = [
-                'color' => 'white',
-                'width' => 2,
-                'value' => $chartData['min'],
-                'label' => [
-                    'style' => [
-                        'color' => 'white',
-                    ],
-                    'text' => 'Minimum',
-                    'align' => 'right',
-                    'x' => -10,
-                    'y' => 12,
-                ],
-            ];
-        }
-
-        if (isset($chartData['max']) && is_numeric($chartData['max'])) {
-            $plots[] = [
-                'color' => 'white',
-                'width' => 2,
-                'value' => $chartData['max'],
-                'label' => [
-                    'style' => [
-                        'color' => 'white',
-                    ],
-                    'text' => 'Maksimum',
-                    'align' => 'right',
-                    'x' => -10,
-                ],
-            ];
-        }
-
-        if ($type === 'temperature') {
-            $navigationSeries = [
-                'data' => $chartData['t'],
-                'name' => 'Temperatura',
-            ];
-
-            $series = [
-                [
-                    'name' => 'Temperatura',
-                    'data' => $chartData['t'],
-                ],
-                [
-                    'name' => 'MKT',
-                    'data' => $chartData['mkt'],
-                    'color' => '#e20074',
-                ],
-            ];
-        } else {
-            $navigationSeries = [
-                'data' => $chartData['rh'],
-                'name' => 'Vlaznost',
-            ];
-
-            $series = [
-                [
-                    'name' => 'Vlaznost',
-                    'data' => $chartData['rh'],
-                ],
-            ];
-        }
-
-        //generate the final chart configuration
-        $chartConfig = [
-            'chart' => [
-                'zoomType' => 'x',
-            ],
-            'title' => [
-                'text' => $type === 'temperature' ? 'Temperatura' : 'Relativna vlaga',
-            ],
-            'time' => [
-                'timezone' => 'Europe/Zagreb',
-            ],
-            'navigator' => [
-                'adaptToUpdatedData' => false,
-                'series' => $navigationSeries,
-            ],
-            'rangeSelector' => [
-                'enabled' => false,
-            ],
-            'scrollbar' => [
-                'liveRedraw' => false,
-            ],
-            'xAxis' => [
-                'type' => 'datetime',
-                'min' => $fromTimestamp,
-                'max' => $toTimestamp,
-                'dateTimeLabelFormats' => [
-                    'millisecond' => '%H:%M:%S.%L',
-                    'second' => '%H:%M:%S',
-                    'minute' => '%H:%M',
-                    'hour' => '%H:%M',
-                    'day' => '%e. %b',
-                    'week' => '%e. %b',
-                    'month' => '%b \'%y',
-                    'year' => '%Y',
-                ],
-            ],
-            'yAxis' => [
-                'plotLines' => $plots,
-                'title' => [
-                    'text' => '',
-                    'rotation' => 0,
-                ],
-            ],
-            'legend' => [
-                'enabled' => false,
-            ],
-            'series' => $series,
-            'tooltip' => [
-                'valueDecimals' => 2,
-            ],
-            'dataGrouping' => [
-                'enabled' => false,
-            ],
-        ];
-
-        $root  = $this->projectDirectory;
-        $jsonConfig = json_encode($chartConfig, JSON_PRETTY_PRINT);
-        $jsonFilePath = sprintf("%s/archive/chartConfigData_%s.json", $root, $type);
-        file_put_contents($jsonFilePath, $jsonConfig);
-
-        //generating the image command
-        $outputFilePath = sprintf("%s/archive/chart_%s.jpg", $root, $type);
-        $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
-
-        $process = new Process($command, $root);
-        $process->mustRun();
-        //remove json from archive
-        unlink($jsonFilePath);
     }
 
     private function generateDailyReport($device, $data, $entry, $date): void
@@ -280,7 +128,7 @@ class DeviceDataArchiver extends Command
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
-//        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
+        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
@@ -300,10 +148,10 @@ class DeviceDataArchiver extends Command
             $toDate = new \DateTime();
         } else if ($toDate === null) {
             $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime($toDate);
+            $toDate = new \DateTime();
         } else {
             $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime();
+            $toDate = new \DateTime($toDate);
         }
 
         $fromDate->setTime(0, 0, 0);

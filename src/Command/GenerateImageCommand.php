@@ -49,7 +49,7 @@ class GenerateImageCommand extends Command
         try {
             $process->mustRun();
             $output->writeln("<info>Image generated successfully:</info> $outputFile");
-
+            unlink($inputFile);
             return Command::SUCCESS;
         } catch (ProcessFailedException $exception) {
             $output->writeln("<error>Failed to generate image:</error>");

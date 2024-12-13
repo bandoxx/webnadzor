@@ -4,12 +4,12 @@ namespace App\Controller\Device;
 
 use App\Entity\Client;
 use App\Entity\Device;
-use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDataRepository;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\Chart\ChartHandler;
+use App\Service\Chart\ChartImageGenerator;
 use App\Service\DeviceDataFormatter;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
@@ -52,6 +52,7 @@ class DeviceEntryExportController extends AbstractController
         RawDataHandler $rawDataHandler,
         DeviceDataRawDataFactory $deviceDataRawDataFactory,
         DeviceOverviewFactory $deviceOverviewFactory,
+        ChartImageGenerator $chartImageGenerator
     ): StreamedResponse|Response|NotFoundHttpException
     {
         $dateFrom = new \DateTime($request->get('date_from'));
@@ -78,13 +79,14 @@ class DeviceEntryExportController extends AbstractController
                 $response->headers->set('Content-Type', 'application/vnd.ms-excel');
                 $response->headers->set('Content-Disposition', sprintf('attachment;filename="%s.xlsx"', $fileName));
             } else if ($export === 'pdf') {
+                $chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $dateFrom, $dateTo);
+
                 $response = new StreamedResponse(
                     function () use ($PDFArchiver, $device, $data, $entry, $dateFrom, $dateTo) {
-                        $this->generateJsonAndChartImage($device, $entry, $dateFrom, $dateTo, 'humidity');
-                        $this->generateJsonAndChartImage($device, $entry, $dateFrom, $dateTo, 'temperature');
                         $PDFArchiver->saveCustom($device, $data, $entry, $dateFrom, $dateTo);
                     }
                 );
+
             } else if ($export === 'enc') {
                 $path = sprintf('/tmp/%s', random_int(1, 100));
                 $rawDataHandler->encrypt(
