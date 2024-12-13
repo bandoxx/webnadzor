@@ -8,7 +8,6 @@ use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDataRepository;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
-use App\Service\Chart\ChartHandler;
 use App\Service\Chart\ChartImageGenerator;
 use App\Service\DeviceDataFormatter;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
@@ -22,21 +21,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Process\Process;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route(path: '/admin/{clientId}/device/{id}/{entry}/export', name: 'app_device_export', methods: 'GET|POST')]
 class DeviceEntryExportController extends AbstractController
 {
-    private ChartHandler $chartHandler;
-
-    public function __construct(ChartHandler $chartHandler)
-    {
-        $this->chartHandler = $chartHandler;
-    }
-
-
     public function __invoke(
         #[MapEntity(id: 'clientId')]
         Client $client,
@@ -121,148 +111,4 @@ class DeviceEntryExportController extends AbstractController
         ]);
 
     }
-
-    private function generateJsonAndChartImage(Device $device, $entry, \DateTime $dateFrom, \DateTime $dateThru,  $type): void
-    {
-        $fromTimestamp = $dateFrom->getTimestamp() * 1000;
-        $toTimestamp = $dateThru->getTimestamp() * 1000;
-
-        //generating chart image
-        $chartData = $this->chartHandler->createDeviceDataChart($device, $type, $entry, $dateFrom, $dateThru);
-
-        $plots = [];
-        if (isset($chartData['min']) && is_numeric($chartData['min'])) {
-            $plots[] = [
-                'color' => 'white',
-                'width' => 2,
-                'value' => $chartData['min'],
-                'label' => [
-                    'style' => [
-                        'color' => 'white',
-                    ],
-                    'text' => 'Minimum',
-                    'align' => 'right',
-                    'x' => -10,
-                    'y' => 12,
-                ],
-            ];
-        }
-
-        if (isset($chartData['max']) && is_numeric($chartData['max'])) {
-            $plots[] = [
-                'color' => 'white',
-                'width' => 2,
-                'value' => $chartData['max'],
-                'label' => [
-                    'style' => [
-                        'color' => 'white',
-                    ],
-                    'text' => 'Maksimum',
-                    'align' => 'right',
-                    'x' => -10,
-                ],
-            ];
-        }
-
-        if ($type === 'temperature') {
-            $navigationSeries = [
-                'data' => $chartData['t'],
-                'name' => 'Temperatura',
-            ];
-
-            $series = [
-                [
-                    'name' => 'Temperatura',
-                    'data' => $chartData['t'],
-                ],
-                [
-                    'name' => 'MKT',
-                    'data' => $chartData['mkt'],
-                    'color' => '#e20074',
-                ],
-            ];
-        } else {
-            $navigationSeries = [
-                'data' => $chartData['rh'],
-                'name' => 'Vlaznost',
-            ];
-
-            $series = [
-                [
-                    'name' => 'Vlaznost',
-                    'data' => $chartData['rh'],
-                ],
-            ];
-        }
-
-        //generate the final chart configuration
-        $chartConfig = [
-            'chart' => [
-                'zoomType' => 'x',
-            ],
-            'title' => [
-                'text' => $type === 'temperature' ? 'Temperatura' : 'Relativna vlaga',
-            ],
-            'time' => [
-                'timezone' => 'Europe/Zagreb',
-            ],
-            'navigator' => [
-                'adaptToUpdatedData' => false,
-                'series' => $navigationSeries,
-            ],
-            'rangeSelector' => [
-                'enabled' => false,
-            ],
-            'scrollbar' => [
-                'liveRedraw' => false,
-            ],
-            'xAxis' => [
-                'type' => 'datetime',
-                'min' => $fromTimestamp,
-                'max' => $toTimestamp,
-                'dateTimeLabelFormats' => [
-                    'millisecond' => '%H:%M:%S.%L',
-                    'second' => '%H:%M:%S',
-                    'minute' => '%H:%M',
-                    'hour' => '%H:%M',
-                    'day' => '%e. %b',
-                    'week' => '%e. %b',
-                    'month' => '%b \'%y',
-                    'year' => '%Y',
-                ],
-            ],
-            'yAxis' => [
-                'plotLines' => $plots,
-                'title' => [
-                    'text' => '',
-                    'rotation' => 0,
-                ],
-            ],
-            'legend' => [
-                'enabled' => false,
-            ],
-            'series' => $series,
-            'tooltip' => [
-                'valueDecimals' => 2,
-            ],
-            'dataGrouping' => [
-                'enabled' => false,
-            ],
-        ];
-
-        $root = $this->getParameter('kernel.project_dir');
-        $jsonConfig = json_encode($chartConfig, JSON_PRETTY_PRINT);
-        $jsonFilePath = sprintf("%s/archive/chartConfigData_%s.json", $root, $type);
-        file_put_contents($jsonFilePath, $jsonConfig);
-
-        //generating the image command
-        $outputFilePath = sprintf("%s/archive/chart_%s.jpg", $root, $type);
-        $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
-
-        $process = new Process($command, $root);
-        $process->mustRun();
-        //remove json from archive
-        unlink($jsonFilePath);
-    }
-
 }
