@@ -54,6 +54,14 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 # Install Highcharts Export Server
 RUN npm install -g highcharts-export-server
 
+# Configure Puppeteer cache directory
+RUN mkdir -p /var/www/html/puppeteer_cache && \
+    chown -R www-data:www-data /var/www/html/puppeteer_cache && \
+    chmod -R 755 /var/www/html/puppeteer_cache
+
+# Set environment variable for Puppeteer cache
+ENV PUPPETEER_CACHE_DIR=/var/www/html/puppeteer_cache
+
 # Copy custom PHP configuration
 COPY .docker/php/config/php.ini /usr/local/etc/php/php.ini
 

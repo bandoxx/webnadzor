@@ -167,6 +167,7 @@ class ChartImageGenerator
         $command = ['php', 'bin/console', 'app:generate-image', $jsonFilePath, $outputFilePath];
 
         $process = new Process($command, $root);
+        $process->setTimeout(1080); //18 mins timeout
         $process->mustRun();
     }
 }
