@@ -47,6 +47,7 @@ security:
     access_control:
          - { route: 'api_temperature_and_humidity_chart', roles: PUBLIC_ACCESS }
          - { route: 'api_device_signal_chart', roles: PUBLIC_ACCESS }
+         - { route: 'api_device_data_get_uploader', roles: PUBLIC_ACCESS }
          - { route: 'api_device_battery_chart', roles: PUBLIC_ACCESS }
          - { route: 'app_image_rh', roles: PUBLIC_ACCESS }
          - { route: 'app_image_getimage', roles: PUBLIC_ACCESS }
