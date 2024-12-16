@@ -21,7 +21,7 @@ class DeviceDataGetUploaderController extends AbstractController
         }
 
         $filename = sprintf("%s.xml", $request->query->get('filename'));
-        $content = htmlspecialchars(urldecode($request->query->get('content')), ENT_QUOTES, 'UTF-8');
+        $content = urldecode($request->query->get('content'));
 
         if (empty($filename) || empty($content)) {
             return $this->json('Invalid request.', Response::HTTP_BAD_REQUEST);
