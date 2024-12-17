@@ -10,18 +10,21 @@ class ChartImageGenerator
 {
     public function __construct(private ChartHandler $chartHandler, private string $projectDirectory) {}
 
-    public function getTemperatureImageChartPath(): string
+    public function getTemperatureImageChartPath(): ?string
     {
-        return sprintf("%s/archive/chart_temperature.jpg", $this->projectDirectory);
+        return null;
+        //return sprintf("%s/archive/chart_temperature.jpg", $this->projectDirectory);
     }
 
-    public function getHumidityImageChartPath(): string
+    public function getHumidityImageChartPath(): ?string
     {
-        return sprintf("%s/archive/chart_humidity.jpg", $this->projectDirectory);
+        return null;
+        //return sprintf("%s/archive/chart_humidity.jpg", $this->projectDirectory);
     }
 
     public function generateTemperatureAndHumidityChartImage(Device $device, int $entry, \DateTime $fromDate, \DateTime $toDate): void
     {
+        return;
         $this->generateDeviceChartImage($device, ChartType::TEMPERATURE, $entry, $fromDate, $toDate);
         $this->generateDeviceChartImage($device, ChartType::HUMIDITY, $entry, $fromDate, $toDate);
     }
