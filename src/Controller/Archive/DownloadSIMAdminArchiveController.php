@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api/sim/archive/admin/xslx', name: 'api_sim_archive_admin_download')]
+#[Route('/api/sim/archive/admin/xlsx', name: 'api_sim_archive_admin_download')]
 class DownloadSIMAdminArchiveController extends AbstractController
 {
 

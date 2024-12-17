@@ -168,6 +168,11 @@
                                     <tr>
                                         <th>
                                             <div class="flex items-center justify-between gap-1.5">
+                                                <p>Klijent</p>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div class="flex items-center justify-between gap-1.5">
                                                 <p>XML Naziv</p>
                                             </div>
                                         </th>
@@ -191,10 +196,11 @@
                                     <tbody>
                                     {% for listItem in list %}
                                         <tr>
+                                            <td>{{ listItem.clientName }}</td>
                                             <td>{{ listItem.xml }}</td>
                                             <td>{{ listItem.address }}</td>
-                                            <td>{{ listItem.sim_number }}</td>
-                                            <td>{{ listItem.sim_provider }}</td>
+                                            <td>{{ listItem.simNumber }}</td>
+                                            <td>{{ listItem.simProvider }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>

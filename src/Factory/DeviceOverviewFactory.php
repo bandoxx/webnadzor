@@ -45,7 +45,7 @@ class DeviceOverviewFactory
 
         $humidityModel = (new HumidityModel())
             ->setUnit($deviceEntryData['rh_unit'])
-            ->setIsShown($deviceEntryData['rh_show_chart'])
+            ->setIsShown($deviceEntryData['rh_show_chart'] ?? false)
             ->setIsUsed((bool) $deviceEntryData['rh_use'])
             ->setName($deviceEntryData['rh_name'] ?? null)
             ->setLocation($deviceEntryData['rh_location'] ?? null)
