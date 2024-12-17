@@ -10,12 +10,18 @@ class Archiver
 
     public function __construct(
         private readonly string $archiveDirectory,
-        private DeviceSimListFactory $deviceSimListFactory
+        private DeviceSimListFactory $deviceSimListFactory,
+        private readonly string $projectDirectory
     ) {}
 
     public function getDeviceSimListFactory(): DeviceSimListFactory
     {
         return $this->deviceSimListFactory;
+    }
+
+    public function getProjectDirectory(): string
+    {
+        return $this->projectDirectory;
     }
 
     public function getArchiveDirectory(): string

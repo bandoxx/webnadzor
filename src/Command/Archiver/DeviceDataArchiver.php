@@ -2,6 +2,7 @@
 
 namespace App\Command\Archiver;
 
+use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
@@ -9,6 +10,7 @@ use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
 use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
+use App\Service\Chart\ChartImageGenerator;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,10 +35,12 @@ class DeviceDataArchiver extends Command
         private RawDataHandler           $rawDataHandler,
         private DeviceDataRawDataFactory $deviceDataRawDataFactory,
         private EntityManagerInterface   $entityManager,
+        private ChartImageGenerator      $chartImageGenerator
     )
     {
         parent::__construct();
     }
+
     protected function configure(): void
     {
         $this
@@ -73,8 +77,11 @@ class DeviceDataArchiver extends Command
             if ($daily) {
                 foreach ($devices as $device) {
                     $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
-
                     foreach([1, 2] as $entry) {
+                        $fromDate = (clone $date)->setTime(0, 0, 0);
+                        $toDate = (clone $date)->setTime(23, 59, 59);
+
+                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateDailyReport($device, $data, $entry, $date);
                     }
                 }
@@ -85,6 +92,10 @@ class DeviceDataArchiver extends Command
                     $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                     foreach([1, 2] as $entry) {
+                        $fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+                        $toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
+
+                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     }
                 }
@@ -137,10 +148,10 @@ class DeviceDataArchiver extends Command
             $toDate = new \DateTime();
         } else if ($toDate === null) {
             $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime($toDate);
+            $toDate = new \DateTime();
         } else {
             $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime();
+            $toDate = new \DateTime($toDate);
         }
 
         $fromDate->setTime(0, 0, 0);

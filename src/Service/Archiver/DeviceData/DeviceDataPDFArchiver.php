@@ -6,10 +6,21 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Service\Archiver\Model\ArchiveModel;
 use App\Service\Archiver\PDFArchiver;
+use App\Service\Chart\ChartImageGenerator;
 use TCPDF;
 
 class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInterface
 {
+
+    public function __construct(
+        private readonly string $archiveDirectory,
+        private readonly string $projectDirectory,
+        private ChartImageGenerator $chartImageGenerator
+    )
+    {
+        parent::__construct($this->archiveDirectory, $this->projectDirectory);
+    }
+
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
     {
         $subtitle = sprintf("Podaci od %s do %s", $fromDate->format(self::DAILY_FORMAT), $toDate->format(self::DAILY_FORMAT));
@@ -86,6 +97,11 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $pdf->SetLineWidth(0.25);
         $pdf->setLineStyle(['color' => [128, 128, 128]]);
 
+        $pdf->setJPEGQuality(100);
+
+        $this->includeImage($pdf, $this->chartImageGenerator->getTemperatureImageChartPath());
+        $this->includeImage($pdf, $this->chartImageGenerator->getHumidityImageChartPath());
+
         // Header
         $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
         $pdf->Cell($pdf->pixelsToUnits(280), 4, $deviceEntryData['t_name'], 1, 0, 'C', true);
@@ -105,6 +121,7 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         $fill = true;
 
         $pdf->SetFillColor(238, 238, 238);
+
         /** @var DeviceData $data */
         foreach ($deviceData as $data) {
             if (!$data->getT($entry) && !$data->getRh($entry)) {
@@ -142,5 +159,19 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
         }
 
         return $pdf;
+    }
+
+    private function includeImage(TCPDF $pdf, string $imagePath): void
+    {
+        if (file_exists($imagePath)) {
+            $imageWidth = 180;
+            $imageHeight = 120;
+
+            $pdf->Cell($pdf->pixelsToUnits($imageWidth), $imageHeight, '', 0, 0, 'C');
+            $pdf->Image($imagePath, 10, $pdf->GetY(), $imageWidth, $imageHeight, 'JPG');
+
+            $pdf->Ln($imageHeight + 5);
+            unlink($imagePath);
+        }
     }
 }
