@@ -78,10 +78,10 @@ class DeviceDataArchiver extends Command
                 foreach ($devices as $device) {
                     $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
                     foreach([1, 2] as $entry) {
-                        $fromDate = (clone $date)->setTime(0, 0, 0);
-                        $toDate = (clone $date)->setTime(23, 59, 59);
+                        //$fromDate = (clone $date)->setTime(0, 0, 0);
+                        //$toDate = (clone $date)->setTime(23, 59, 59);
 
-                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
+                        //$this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateDailyReport($device, $data, $entry, $date);
                     }
                 }
@@ -92,10 +92,10 @@ class DeviceDataArchiver extends Command
                     $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
                     foreach([1, 2] as $entry) {
-                        $fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
-                        $toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
+                        //$fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+                        //$toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
-                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
+                        //$this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
                         $this->generateMonthlyReport($device, $data, $entry, $date);
                     }
                 }

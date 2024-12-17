@@ -101,8 +101,8 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
 
         $pdf->setJPEGQuality(100);
 
-        $this->includeImage($pdf, $this->chartImageGenerator->getTemperatureImageChartPath());
-        $this->includeImage($pdf, $this->chartImageGenerator->getHumidityImageChartPath());
+        //$this->includeImage($pdf, $this->chartImageGenerator->getTemperatureImageChartPath());
+        //$this->includeImage($pdf, $this->chartImageGenerator->getHumidityImageChartPath());
 
         // Header
         $pdf->Cell($pdf->pixelsToUnits(380), 4, '', 1, 0, 'C', true);
