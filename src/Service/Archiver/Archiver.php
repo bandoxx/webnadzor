@@ -10,8 +10,8 @@ class Archiver
 
     public function __construct(
         private readonly string $archiveDirectory,
+        private readonly string $projectDirectory,
         private DeviceSimListFactory $deviceSimListFactory,
-        private readonly string $projectDirectory
     ) {}
 
     public function getDeviceSimListFactory(): DeviceSimListFactory

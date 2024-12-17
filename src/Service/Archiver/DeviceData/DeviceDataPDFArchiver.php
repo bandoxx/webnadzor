@@ -4,6 +4,7 @@ namespace App\Service\Archiver\DeviceData;
 
 use App\Entity\Device;
 use App\Entity\DeviceData;
+use App\Factory\DeviceSimListFactory;
 use App\Service\Archiver\Model\ArchiveModel;
 use App\Service\Archiver\PDFArchiver;
 use App\Service\Chart\ChartImageGenerator;
@@ -15,10 +16,11 @@ class DeviceDataPDFArchiver extends PDFArchiver implements DeviceDataArchiverInt
     public function __construct(
         private readonly string $archiveDirectory,
         private readonly string $projectDirectory,
-        private ChartImageGenerator $chartImageGenerator
+        private ChartImageGenerator $chartImageGenerator,
+        private DeviceSimListFactory $deviceSimListFactory
     )
     {
-        parent::__construct($this->archiveDirectory, $this->projectDirectory);
+        parent::__construct($this->archiveDirectory, $this->projectDirectory, $this->deviceSimListFactory);
     }
 
     public function saveCustom(Device $device, array $deviceData, $entry, \DateTime $fromDate, \DateTime $toDate, ?string $fileName = null): void
