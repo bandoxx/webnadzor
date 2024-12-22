@@ -32,7 +32,7 @@ class SmsDeliveryReport
     #[ORM\Column(length: 255)]
     private ?string $errorDescription = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTime $sentAt = null;
 
     #[ORM\Column]

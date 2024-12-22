@@ -7,7 +7,7 @@ use App\Entity\SmsDeliveryReport;
 class SmsDeliveryFactory
 {
 
-    public function create(string $messageId, string $sentTo, string $statusDescription, string $statusName, string $errorDescription, string $errorName, string $sentAt): SmsDeliveryReport
+    public function create(string $messageId, string $sentTo, string $statusDescription, string $statusName, string $errorDescription, string $errorName, ?string $sentAt = null): SmsDeliveryReport
     {
         try {
             $sentAt = new \DateTime($sentAt);
