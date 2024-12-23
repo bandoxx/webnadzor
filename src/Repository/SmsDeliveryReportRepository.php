@@ -16,28 +16,29 @@ class SmsDeliveryReportRepository extends ServiceEntityRepository
         parent::__construct($registry, SmsDeliveryReport::class);
     }
 
-    //    /**
-    //     * @return SMSDeliveryReport[] Returns an array of SMSDeliveryReport objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * @return array<SmsDeliveryReport>
+     */
+    public function findByDates(?\DateTime $dateFrom = null, ?\DateTime $dateTo = null): array
+    {
+        $queryBuilder = $this->createQueryBuilder('a');
 
-    //    public function findOneBySomeField($value): ?SMSDeliveryReport
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($dateFrom) {
+            $dateFrom->setTime(0, 0, 0);
+
+            $queryBuilder->andWhere('a.createdAt >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateFrom && $dateTo) {
+            $dateTo->setTime(23, 59, 59);
+
+            $queryBuilder->andWhere('a.createdAt <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
+    }
 }
