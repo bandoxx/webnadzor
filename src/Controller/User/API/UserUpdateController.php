@@ -26,16 +26,25 @@ class UserUpdateController extends AbstractController
             throw new BadRequestHttpException('User doesnt exist');
         }
 
-        $password = $request->request->get('password');
-        $passwordConfirm = $request->request->get('password_again');
+        if ($request->request->has('password') && $request->request->has('password_again')) {
+            $password = $request->request->get('password');
+            $passwordConfirm = $request->request->get('password_again');
 
-        if ($password !== null && $passwordConfirm !== null && $password === $passwordConfirm) {
-            $this->addFlash('error', 'Zaporke se ne podudaraju.');
+            if (empty($password) || empty($passwordConfirm)) {
+                $this->addFlash('error', 'Zaporka je pogrešno uneta.');
 
-            $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
+                return $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
+            }
+
+            if ($password !== $passwordConfirm) {
+                $this->addFlash('error', 'Zaporke se ne podudaraju.');
+
+                return $this->redirectToRoute('app_user_getusers', ['clientId' => $clientId]);
+            }
+
+            $passwordSetter->setPassword($user, $password);
         }
 
-        $passwordSetter->setPassword($user, $password);
         $overviewViews = $request->request->get('overview_views');
 
         $user->setOverviewViews(is_numeric($overviewViews) ? $overviewViews : null);
