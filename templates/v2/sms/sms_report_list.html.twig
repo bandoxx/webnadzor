@@ -60,7 +60,7 @@
                                 <!-- Menu Item Messages -->
                                 <li>
                                     <div class="flex flex-col ml-4">
-                                        <form id="datePhoneDataExport" method="GET">
+                                        <form id="dateSmsDataForm" method="GET">
                                             <div class="relative mb-3">
                                                 <input
                                                         class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -69,7 +69,7 @@
                                                         name="date_from"
                                                         onkeydown="return false"
                                                         placeholder="dd.mm.yyyy"
-{#                                                        value="{{ date_from ? date_from|date('d.m.Y') : '' }}"#}
+                                                        {#                                                        value="{{ date_from ? date_from|date('d.m.Y') : '' }}"#}
                                                 />
 
                                                 <div
@@ -98,7 +98,7 @@
                                                         name="date_to"
                                                         onkeydown="return false"
                                                         placeholder="dd.mm.yyyy"
-{#                                                        value="{{ date_to ? date_to|date('d.m.Y') : '' }}"#}
+                                                        {#                                                        value="{{ date_to ? date_to|date('d.m.Y') : '' }}"#}
                                                 />
 
                                                 <div
@@ -181,7 +181,7 @@
                             class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                            Broj poslatih SMS
+                            Izveštaj poslatih SMS
                         </h2>
 
                         <nav>
@@ -189,7 +189,7 @@
                                 <li>
                                     <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
                                 </li>
-                                <li class="font-medium text-primary">Broj poslatih SMS</li>
+                                <li class="font-medium text-primary">Izveštaj poslatih SMS</li>
                             </ol>
                         </nav>
                     </div>
@@ -210,14 +210,14 @@
                                 <h3 class="title-dt font-bold text-black dark:text-white">
                                     Statistika po klijentima
                                 </h3>
-                                <table class="table w-full table-auto" id="dataTablePhoneNum">
+                                <table class="table w-full table-auto" id="dataTableSmsReportList">
                                     <thead>
                                     <tr>
                                         <th>
                                             <div
                                                     class="flex items-center justify-between gap-1.5"
                                             >
-                                                <p>Ime klijenta</p>
+                                                <p>RBR.</p>
                                                 <div class="inline-flex flex-col space-y-[2px]">
                               <span class="inline-block">
                                 <svg
@@ -253,7 +253,7 @@
                                             <div
                                                     class="flex items-center justify-between gap-1.5"
                                             >
-                                                <p>SMS</p>
+                                                <p>Broj Telefona</p>
                                                 <div class="inline-flex flex-col space-y-[2px]">
                               <span class="inline-block">
                                 <svg
@@ -289,7 +289,79 @@
                                             <div
                                                     class="flex items-center justify-between gap-1.5"
                                             >
-                                                <p>Glasovna poruka</p>
+                                                <p>Status</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>Greška</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>Poslato</p>
                                                 <div class="inline-flex flex-col space-y-[2px]">
                               <span class="inline-block">
                                 <svg
@@ -326,9 +398,11 @@
                                     <tbody>
                                     {% for row in summary %}
                                         <tr>
-                                            <td>{{ row.name }}</td>
-                                            <td>{{ row.phoneSms }}</td>
-                                            <td>{{ row.phoneVoice }}</td>
+                                            <td>{{ row.id }}</td>
+                                            <td>{{ row.sentTo }}</td>
+                                            <td>{{ row.statusName }}</td>
+                                            <td>{{ row.errorName }}</td>
+                                            <td>{{ row.sentAt|date('d.m.Y') }}</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
