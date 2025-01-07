@@ -20,7 +20,6 @@ class UsersGetController extends AbstractController
         foreach ($users as $user) {
             $deviceLocations = $deviceLocationHandler->getUserDeviceLocations($user);
             $user->setAvailableLocations($deviceLocations);
-            $user->getClientsInArray();
         }
 
         $clients = $clientRepository->findAllActive();
