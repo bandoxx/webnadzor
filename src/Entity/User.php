@@ -63,6 +63,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     private ?array $availableLocations = null;
 
+    private ?array $availableClients = null;
+
     #[ORM\Column(nullable: true)]
     private ?int $overviewViews = null;
 
@@ -336,6 +338,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->clients;
     }
+
+    public function getClientsInArray(): self
+    {
+        $this->availableClients = $this->clients->toArray();
+
+        return $this;
+    }
+
+    public function getAvailableClients(): ?array
+    {
+        return $this->availableClients;
+    }
+
+
 
     public function addClient(Client $client): static
     {
