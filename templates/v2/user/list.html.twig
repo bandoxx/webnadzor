@@ -675,8 +675,6 @@
                                         this.selected.splice(index, 1);
                                     },
                                     loadOptions() {
-                                        this.options = [];
-                                        this.selected = [];
                                         const options = document.getElementById(clientSelectId).options;
                                         for (let i = 0; i < options.length; i++) {
                                             this.options.push({
@@ -704,7 +702,14 @@
                                     },
                                     handleEditTriggered() {
                                         //load options again with new options with selected for that user
-                                        this.loadOptions();
+                                        //temporarily clear options and selected arrays to force Alpine.js to rebuild
+                                        this.options = [];
+                                        this.selected = [];
+
+                                        //use a timeout to ensure DOM updates before reloading options
+                                        setTimeout(() => {
+                                            this.loadOptions();
+                                        }, 0);
                                     },
                                     selectedValues() {
                                         return this.selected.map((option) => {
@@ -750,8 +755,6 @@
                                         this.selected.splice(index, 1);
                                     },
                                     loadOptions() {
-                                        this.options = [];
-                                        this.selected = [];
                                         const options = document.getElementById(locationId).options;
                                         for (let i = 0; i < options.length; i++) {
                                             this.options.push({
@@ -779,7 +782,14 @@
                                     },
                                     handleEditTriggered() {
                                         //load options again with new options with selected for that user
-                                    this.loadOptions();
+                                        //temporarily clear options and selected arrays to force Alpine.js to rebuild
+                                        this.options = [];
+                                        this.selected = [];
+
+                                        //use a timeout to ensure DOM updates before reloading options
+                                        setTimeout(() => {
+                                            this.loadOptions();
+                                        }, 0);
                                     },
                                     selectedValues() {
                                         return this.selected.map((option) => {
@@ -923,7 +933,7 @@
                                                                     <template id="editClientTemplate" x-for="(option,index) in selected" :key="index">
                                                                         <div
                                                                                 class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option].text"></div>
+                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option] ? options[option].text : ''"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
                                                                                 <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
                                                                                     <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
@@ -1007,7 +1017,7 @@
                                                                     <template id="editTemplateLocations" x-for="(option,index) in selected" :key="index">
                                                                         <div
                                                                                 class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option].text"></div>
+                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option] ? options[option].text : ''"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
                                                                                 <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
                                                                                     <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
