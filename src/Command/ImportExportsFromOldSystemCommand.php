@@ -40,15 +40,17 @@ class ImportExportsFromOldSystemCommand extends Command
         $devices = $this->deviceRepository->findDevicesByClient($clientId);
 
         foreach ($devices as $device) {
-            $deviceDataDaily = $this->deviceDataArchiveRepository->getDailyArchives($device, 2);
-            $deviceDataMonthly = $this->deviceDataArchiveRepository->getMonthlyArchives($device, 2);
+            for ($entry = 1; $entry <= 2; $entry++) {
+                $deviceDataDaily = $this->deviceDataArchiveRepository->getDailyArchives($device, $entry);
+                $deviceDataMonthly = $this->deviceDataArchiveRepository->getMonthlyArchives($device, $entry);
 
-            foreach ($deviceDataDaily as $deviceData) {
-                $this->checkIfDeviceExists($deviceData, $clientId, $output, 'daily');
-            }
+                foreach ($deviceDataDaily as $deviceData) {
+                    $this->checkIfDeviceExists($deviceData, $clientId, $output, 'daily');
+                }
 
-            foreach ($deviceDataMonthly as $deviceData) {
-                $this->checkIfDeviceExists($deviceData, $clientId, $output, 'monthly');
+                foreach ($deviceDataMonthly as $deviceData) {
+                    $this->checkIfDeviceExists($deviceData, $clientId, $output, 'monthly');
+                }
             }
         }
 
