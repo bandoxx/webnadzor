@@ -23,7 +23,8 @@ class DownloadDeviceArchiveController extends AbstractController
             return new BadRequestHttpException();
         }
 
-        $location = sprintf('%s/%s/%s/%s/%s.%s',
+        $location = sprintf(
+            '%s/%s/%s/%s/%s.%s',
             $archiveDirectory,
             $archive->getDevice()->getClient()->getId(),
             $archive->getPeriod(),
@@ -32,10 +33,24 @@ class DownloadDeviceArchiveController extends AbstractController
             $type
         );
 
-        if (!file_exists($location)) {
-            throw new NotFoundHttpException();
+        if (file_exists($location)) {
+            return $this->file($location);
         }
 
-        return $this->file($location);
+        $location = sprintf(
+            '%s/%s/%s/%s/%s.%s',
+            $archiveDirectory,
+            $archive->getDevice()->getClient()->getId(),
+            $archive->getPeriod(),
+            $archive->getArchiveDate()->format('Y/m'),
+            $archive->getFilename(),
+            $type
+        );
+
+        if (file_exists($location)) {
+            return $this->file($location);
+        }
+
+        throw new NotFoundHttpException();
     }
 }
