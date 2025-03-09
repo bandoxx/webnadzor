@@ -12,327 +12,407 @@
 {% endblock %}
 
 {% block body %}
-<body
-        x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
-        x-init="
+    <body
+            x-data="{ page: 'dataTables', modalOpenEdit: false, modalOpenAddNew: false, modalOpenDelete: false, 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+            x-init="
           darkMode = JSON.parse(localStorage.getItem('darkMode'));
           $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
-        :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
->
-<!-- ===== Preloader Start ===== -->
-{% block preloader %}
-    {{ parent() }}
-{% endblock %}
-<!-- ===== Preloader End ===== -->
-
-<!-- ===== Page Wrapper Start ===== -->
-<div class="flex h-screen overflow-hidden">
-    <!-- ===== Sidebar Start ===== -->
-    <aside
-            :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
-            class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
-            @click.outside="sidebarToggle = false"
+            :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
     >
-        <!-- SIDEBAR HEADER -->
-        {% block sidebar_header %}
-            {{ parent() }}
-        {% endblock %}
-        <!-- SIDEBAR HEADER -->
+    <!-- ===== Preloader Start ===== -->
+    {% block preloader %}
+        {{ parent() }}
+    {% endblock %}
+    <!-- ===== Preloader End ===== -->
 
-        <div
-                class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside
+                :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+                @click.outside="sidebarToggle = false"
+                class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
         >
-            <!-- Sidebar Menu -->
-            <nav
-                    class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
-                    x-data="{selected: $persist('Dashboard')}"
+            <!-- SIDEBAR HEADER -->
+            {% block sidebar_header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- SIDEBAR HEADER -->
+
+            <div
+                    class="no-scrollbar flex flex-col duration-300 ease-linear"
             >
-                <!-- Menu Group -->
-                <div>
-                    <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
-                    <!-- Support Group -->
-                    <div>
-                        <ul class="mb-6 flex flex-col gap-1.5">
-                            <!-- Menu Item Messages -->
-                            <li class="cursor-pointer">
-                                <a
-                                        href="{{ path('app_devicedataarchive_getdailydata', { clientId: client.id, deviceId: device.id, entry: entry }) }}"
-                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-                                    </svg>
-                                    Dnevna arhiva
-                                </a>
-                            </li>
-                            <li class="cursor-pointer">
-                                <a
-                                        href="{{ path('app_devicedataarchive_getmonthlydata', { clientId: client.id, deviceId: device.id, entry: entry }) }}"
-                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
-                                    </svg>
-                                    Mjesečna arhiva
-                                </a>
-                            </li>
-                            <li class="cursor-pointer">
-                                <a
-                                        href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}"
-                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
-                                    </svg>
-                                    Povratak
-                                </a>
-                            </li>
-                            <!-- Menu Item Messages -->
-                        </ul>
-                    </div>
-                </div>
-            </nav>
-            <!-- Sidebar Menu -->
-        </div>
-    </aside>
-
-    <!-- ===== Sidebar End ===== -->
-
-    <!-- ===== Content Area Start ===== -->
-    <div
-            class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
-    >
-        <!-- ===== Header Start ===== -->
-        {% block header %}
-            {{ parent() }}
-        {% endblock %}
-        <!-- ===== Header End ===== -->
-
-        <!-- ===== Main Content Start ===== -->
-        <main>
-            <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-                <!-- Breadcrumb Start -->
-                <div
-                        class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                <!-- Sidebar Menu -->
+                <nav
+                        class="mt-5 px-4 py-4 lg:mt-9 lg:px-6 min-h-screen"
+                        x-data="{selected: $persist('Dashboard')}"
                 >
-                    <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                        Dnevna arhiva
-                    </h2>
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                        <!-- Support Group -->
+                        <div>
+                            <ul class="mb-6 flex flex-col gap-1.5">
+                                <!-- Menu Item Messages -->
+                                <li>
+                                    <div class="flex flex-col ml-4">
+                                        <form id="datesArchive" method="GET">
+                                            <div class="relative mb-3">
+                                                <input
+                                                        class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        data-class="flatpickr-right"
+                                                        id="datesDateFrom"
+                                                        name="date_from"
+                                                        onkeydown="return false"
+                                                        placeholder="dd.mm.yyyy"
+                                                        value="{{ date_from ? date_from|date('d.m.Y') : '' }}"
+                                                />
 
-                    <nav>
-                        <ol class="flex items-center gap-2">
-                            <li>
-                                <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
-                            </li>
-                            <li>
-                                <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
-                            </li>
-                            <li class="font-medium">
-                                <a class="font-medium" href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}">{{ device.name }}, {{ device.temperatureModel.name }} /
-                                </a>
-                            </li>
-                            <li class="font-medium text-primary">Dnevna arhiva</li>
-                        </ol>
-                    </nav>
-                </div>
-                <!-- Breadcrumb End -->
-                <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+                                                <div
+                                                        class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center"
+                                                >
+                                                    <svg
+                                                            fill="none"
+                                                            height="18"
+                                                            viewBox="0 0 18 18"
+                                                            width="18"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                                d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                                fill="#64748B"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                            </div>
 
-                    <!-- ====== Data Table Start -->
-                    <div
-                            class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
-                    >
-                        <div
-                                class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
-                        >
-                            <h3 class="title-dt font-bold text-black dark:text-white">
-                                Dnevna arhiva za lokaciju {{ device.name }}, mjerno mjesto {{ device.temperatureModel.name }}
-                            </h3>
-                            <table class="table w-full table-auto" id="dataTableArchive">
-                                <thead>
-                                <tr>
-                                    <th>
-                                        <div
-                                                class="flex items-center justify-between gap-1.5"
-                                        >
-                                            <p>BR.</p>
-                                            <div class="inline-flex flex-col space-y-[2px]">
-                              <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
-                                </svg>
-                              </span>
-                                                <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
-                                          fill=""
-                                  />
-                                </svg>
-                              </span>
+                                            <div class="relative">
+                                                <input
+                                                        class="form-datepicker w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        data-class="flatpickr-right"
+                                                        id="datesDateThru"
+                                                        name="date_to"
+                                                        onkeydown="return false"
+                                                        placeholder="dd.mm.yyyy"
+                                                        value="{{ date_to ? date_to|date('d.m.Y') : '' }}"
+                                                />
+
+                                                <div
+                                                        class="pointer-events-none absolute inset-0 left-auto right-5 flex items-center"
+                                                >
+                                                    <svg
+                                                            fill="none"
+                                                            height="18"
+                                                            viewBox="0 0 18 18"
+                                                            width="18"
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                    >
+                                                        <path
+                                                                d="M15.7504 2.9812H14.2879V2.36245C14.2879 2.02495 14.0066 1.71558 13.641 1.71558C13.2754 1.71558 12.9941 1.99683 12.9941 2.36245V2.9812H4.97852V2.36245C4.97852 2.02495 4.69727 1.71558 4.33164 1.71558C3.96602 1.71558 3.68477 1.99683 3.68477 2.36245V2.9812H2.25039C1.29414 2.9812 0.478516 3.7687 0.478516 4.75308V14.5406C0.478516 15.4968 1.26602 16.3125 2.25039 16.3125H15.7504C16.7066 16.3125 17.5223 15.525 17.5223 14.5406V4.72495C17.5223 3.7687 16.7066 2.9812 15.7504 2.9812ZM1.77227 8.21245H4.16289V10.9968H1.77227V8.21245ZM5.42852 8.21245H8.38164V10.9968H5.42852V8.21245ZM8.38164 12.2625V15.0187H5.42852V12.2625H8.38164V12.2625ZM9.64727 12.2625H12.6004V15.0187H9.64727V12.2625ZM9.64727 10.9968V8.21245H12.6004V10.9968H9.64727ZM13.8379 8.21245H16.2285V10.9968H13.8379V8.21245ZM2.25039 4.24683H3.71289V4.83745C3.71289 5.17495 3.99414 5.48433 4.35977 5.48433C4.72539 5.48433 5.00664 5.20308 5.00664 4.83745V4.24683H13.0504V4.83745C13.0504 5.17495 13.3316 5.48433 13.6973 5.48433C14.0629 5.48433 14.3441 5.20308 14.3441 4.83745V4.24683H15.7504C16.0316 4.24683 16.2566 4.47183 16.2566 4.75308V6.94683H1.77227V4.75308C1.77227 4.47183 1.96914 4.24683 2.25039 4.24683ZM1.77227 14.5125V12.2343H4.16289V14.9906H2.25039C1.96914 15.0187 1.77227 14.7937 1.77227 14.5125ZM15.7504 15.0187H13.8379V12.2625H16.2285V14.5406C16.2566 14.7937 16.0316 15.0187 15.7504 15.0187Z"
+                                                                fill="#64748B"
+                                                        />
+                                                    </svg>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </th>
-                                    <th data-type="date" data-format="DD.MM.YYYY.">
-                                        <div class="flex items-center justify-between gap-1.5">
-                                            <p>Datum arhive</p>
-                                            <div class="inline-flex flex-col space-y-[2px]">
-                              <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
-                                </svg>
-                              </span>
-                                                <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
-                                          fill=""
-                                  />
-                                </svg>
-                              </span>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th data-type="date" data-format="DD.MM.YYYY. HH:mm:ss">
-                                        <div class="flex items-center justify-between gap-1.5">
-                                            <p>Datum izrade</p>
-                                            <div class="inline-flex flex-col space-y-[2px]">
-                              <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
-                                </svg>
-                              </span>
-                                                <span class="inline-block">
-                                <svg
-                                        class="fill-current"
-                                        width="10"
-                                        height="5"
-                                        viewBox="0 0 10 5"
-                                        fill="none"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
-                                          fill=""
-                                  />
-                                </svg>
-                              </span>
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div
-                                                class="flex items-center justify-between gap-1.5"
-                                        >
-                                            <p>Excel</p>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div
-                                                class="flex items-center justify-between gap-1.5"
-                                        >
-                                            <p>PDF</p>
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div
-                                                class="flex items-center justify-between gap-1.5"
-                                        >
-                                            <p>Raw data</p>
-                                        </div>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {% for archive in data %}
-                                    <tr>
-                                        <td>{{ archive.row }}</td>
-                                        <td>{{ archive.archive_date }}</td>
-                                        <td>{{ archive.server_date }}</td>
-                                        <td>
-                                            <div class="flex ml-1.5">
-                                                <a href="{{ archive.xlsx_path }}" target="_blank"><div class="summary-btn" data-index="0">
-                                                        <div class="cursor-pointer" title="Preuzmi Excel">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex ml-0.5">
-                                                <a href="{{ archive.pdf_path }}" target="_blank"><div class="summary-btn" data-index="0">
-                                                        <div class="cursor-pointer" title="Preuzmi PDF">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="flex ml-0.5">
-                                                <a href="{{ archive.raw_data_path }}" target="_blank"><div class="summary-btn" data-index="0">
-                                                        <div class="cursor-pointer" title="Preuzmi Raw data">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+
+                                        </form>
+                                        <hr class="border-t border-gray-300 mt-4">
+                                    </div>
+                                </li>
+                                <li class="cursor-pointer" id="showArchive">
+                                    <a
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg class="size-6" fill="none" stroke="currentColor"
+                                             stroke-width="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                                                  stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                            <path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke-linecap="round"
+                                                  stroke-linejoin="round"/>
+                                        </svg>
+                                        Prikaži
+                                    </a>
+                                </li>
+                                <li class="cursor-pointer">
+                                    <a
+                                            href="{{ path('app_devicedataarchive_getdailydata', { clientId: client.id, deviceId: device.id, entry: entry }) }}"
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                        </svg>
+                                        Dnevna arhiva
+                                    </a>
+                                </li>
+                                <li class="cursor-pointer">
+                                    <a
+                                            href="{{ path('app_devicedataarchive_getmonthlydata', { clientId: client.id, deviceId: device.id, entry: entry }) }}"
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                                        </svg>
+                                        Mjesečna arhiva
+                                    </a>
+                                </li>
+                                <li class="cursor-pointer">
+                                    <a
+                                            href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}"
+                                            class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                        </svg>
+                                        Povratak
+                                    </a>
+                                </li>
+                                <!-- Menu Item Messages -->
+                            </ul>
                         </div>
                     </div>
-                    <!-- ====== Data Table End -->
-                </div>
+                </nav>
+                <!-- Sidebar Menu -->
             </div>
-        </main>
-        <!-- ===== Main Content End ===== -->
+        </aside>
+
+        <!-- ===== Sidebar End ===== -->
+
+        <!-- ===== Content Area Start ===== -->
+        <div
+                class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+        >
+            <!-- ===== Header Start ===== -->
+            {% block header %}
+                {{ parent() }}
+            {% endblock %}
+            <!-- ===== Header End ===== -->
+
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    <!-- Breadcrumb Start -->
+                    <div
+                            class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                    >
+                        <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                            Dnevna arhiva
+                        </h2>
+
+                        <nav>
+                            <ol class="flex items-center gap-2">
+                                <li>
+                                    <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                                </li>
+                                <li>
+                                    <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
+                                </li>
+                                <li class="font-medium">
+                                    <a class="font-medium" href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}">{{ device.name }}, {{ device.temperatureModel.name }} /
+                                    </a>
+                                </li>
+                                <li class="font-medium text-primary">Dnevna arhiva</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    <!-- Breadcrumb End -->
+                    <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+
+                        <!-- ====== Data Table Start -->
+                        <div
+                                class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+                        >
+                            <div
+                                    class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
+                            >
+                                <h3 class="title-dt font-bold text-black dark:text-white">
+                                    Dnevna arhiva za lokaciju {{ device.name }}, mjerno mjesto {{ device.temperatureModel.name }}
+                                </h3>
+                                <table class="table w-full table-auto" id="dataTableArchive">
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>BR.</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th data-type="date" data-format="DD.MM.YYYY.">
+                                            <div class="flex items-center justify-between gap-1.5">
+                                                <p>Datum arhive</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th data-type="date" data-format="DD.MM.YYYY. HH:mm:ss">
+                                            <div class="flex items-center justify-between gap-1.5">
+                                                <p>Datum izrade</p>
+                                                <div class="inline-flex flex-col space-y-[2px]">
+                              <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path d="M5 0L0 5H10L5 0Z" fill="" />
+                                </svg>
+                              </span>
+                                                    <span class="inline-block">
+                                <svg
+                                        class="fill-current"
+                                        width="10"
+                                        height="5"
+                                        viewBox="0 0 10 5"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                          d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z"
+                                          fill=""
+                                  />
+                                </svg>
+                              </span>
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>Excel</p>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>PDF</p>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <div
+                                                    class="flex items-center justify-between gap-1.5"
+                                            >
+                                                <p>Raw data</p>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for archive in data %}
+                                        <tr>
+                                            <td>{{ archive.row }}</td>
+                                            <td>{{ archive.archive_date }}</td>
+                                            <td>{{ archive.server_date }}</td>
+                                            <td>
+                                                <div class="flex ml-1.5">
+                                                    <a href="{{ archive.xlsx_path }}" target="_blank"><div class="summary-btn" data-index="0">
+                                                            <div class="cursor-pointer" title="Preuzmi Excel">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h7.5c.621 0 1.125-.504 1.125-1.125m-9.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-7.5A1.125 1.125 0 0 1 12 18.375m9.75-12.75c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125m19.5 0v1.5c0 .621-.504 1.125-1.125 1.125M2.25 5.625v1.5c0 .621.504 1.125 1.125 1.125m0 0h17.25m-17.25 0h7.5c.621 0 1.125.504 1.125 1.125M3.375 8.25c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m17.25-3.75h-7.5c-.621 0-1.125.504-1.125 1.125m8.625-1.125c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M12 10.875v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125M13.125 12h7.5m-7.5 0c-.621 0-1.125.504-1.125 1.125M20.625 12c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h7.5M12 14.625v-1.5m0 1.5c0 .621-.504 1.125-1.125 1.125M12 14.625c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m0 1.5v-1.5m0 0c0-.621.504-1.125 1.125-1.125m0 0h7.5" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex ml-0.5">
+                                                    <a href="{{ archive.pdf_path }}" target="_blank"><div class="summary-btn" data-index="0">
+                                                            <div class="cursor-pointer" title="Preuzmi PDF">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="flex ml-0.5">
+                                                    <a href="{{ archive.raw_data_path }}" target="_blank"><div class="summary-btn" data-index="0">
+                                                            <div class="cursor-pointer" title="Preuzmi Raw data">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"></path>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- ====== Data Table End -->
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
     </div>
-    <!-- ===== Content Area End ===== -->
-</div>
-</body>
+    </body>
 {% endblock %}

@@ -8,7 +8,10 @@ use App\Factory\DeviceOverviewFactory;
 use App\Repository\DeviceDataArchiveRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -20,13 +23,19 @@ class DeviceDataDailyArchiveController extends AbstractController
         Client $client,
         #[MapEntity(id: 'deviceId')]
         Device $device,
+        Request $request,
         int $entry,
         UrlGeneratorInterface $router,
         DeviceDataArchiveRepository $deviceDataArchiveRepository,
         DeviceOverviewFactory $deviceOverviewFactory
-    ): Response
+    ): StreamedResponse|Response|NotFoundHttpException
     {
-        $archiveData = $deviceDataArchiveRepository->getDailyArchives($device, $entry);
+        $dateFrom = new \DateTime($request->get('date_from'));
+        $dateFrom->setTime(0, 0);
+        $dateTo = (new \DateTime($request->get('date_to')));
+        $dateTo->setTime(23, 59);
+
+        $archiveData = $deviceDataArchiveRepository->getDailyArchives($device, $entry, $dateFrom, $dateTo);
         $result = [];
         $i = 0;
         foreach ($archiveData as $data) {
@@ -52,7 +61,9 @@ class DeviceDataDailyArchiveController extends AbstractController
         return $this->render('v2/device/device_sensor_archive_daily.html.twig', [
             'data' => $result,
             'device' => $deviceOverviewFactory->create($device, $entry),
-            'entry' => $entry
+            'entry' => $entry,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo
         ]);
     }
 
