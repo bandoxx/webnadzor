@@ -9,7 +9,9 @@ use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,13 +24,19 @@ class DeviceDataMonthlyArchiveController extends AbstractController
         Client $client,
         #[MapEntity(id: 'deviceId')]
         Device $device,
+        Request $request,
         int $entry,
         DeviceDataArchiveRepository $deviceDataArchiveRepository,
         UrlGeneratorInterface $router,
         DeviceOverviewFactory $deviceOverviewFactory
-    ): Response
+    ): StreamedResponse|Response|NotFoundHttpException
     {
-        $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry);
+        $dateFrom = new \DateTime($request->get('date_from'));
+        $dateFrom->setTime(0, 0);
+        $dateTo = (new \DateTime($request->get('date_to')));
+        $dateTo->setTime(23, 59);
+
+        $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry, $dateFrom, $dateTo);
         $result = [];
         $i = 0;
         foreach ($archiveData as $data) {
@@ -54,7 +62,9 @@ class DeviceDataMonthlyArchiveController extends AbstractController
         return $this->render('v2/device/device_sensor_archive_monthly.html.twig', [
             'data' => $result,
             'device' => $deviceOverviewFactory->create($device, $entry),
-            'entry' => $entry
+            'entry' => $entry,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo
         ]);
     }
 
