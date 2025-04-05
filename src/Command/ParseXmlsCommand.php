@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Factory\DeviceDataFactory;
 use App\Factory\LockFactory;
+use App\Factory\UnresolvedXMLFactory;
 use App\Repository\DeviceRepository;
 use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,6 +31,7 @@ class ParseXmlsCommand extends Command
         private LoggerInterface        $logger,
         private ValidatorCollection    $alarmValidator,
         private LockFactory            $lockFactory,
+        private UnresolvedXMLFactory   $unresolvedXMLFactory,
         private string                 $xmlDirectory
     )
     {
@@ -58,12 +60,16 @@ class ParseXmlsCommand extends Command
             $device = $this->deviceRepository->binaryFindOneByName($name);
 
             if (!$device) {
+                $this->saveUnresolvedXml($xmlPath);
+
                 $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
                 unlink($xmlPath);
                 continue;
             }
 
             if ($device->isParserActive() === false) {
+                $this->saveUnresolvedXml($xmlPath);
+
                 $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
                 unlink($xmlPath);
 
@@ -94,5 +100,12 @@ class ParseXmlsCommand extends Command
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         return Command::SUCCESS;
+    }
+
+    private function saveUnresolvedXml(string $xmlPath): void
+    {
+        $unresolvedXML = $this->unresolvedXMLFactory->create($xmlPath);
+        $this->entityManager->persist($unresolvedXML);
+        $this->entityManager->flush();
     }
 }

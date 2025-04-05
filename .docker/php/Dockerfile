@@ -47,9 +47,13 @@ RUN set -eux; \
     docker-php-ext-install intl;
 
 # Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm@latest
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh \
+    && bash nodesource_setup.sh
+
+RUN apt-get update && apt-get install -y nodejs
+
+RUN npm install -g npm@10.2.4
+
 
 # Install Highcharts Export Server
 RUN npm install -g highcharts-export-server
