@@ -28,7 +28,7 @@ class UnresolvedXMLRepository extends ServiceEntityRepository
     public function findOlderThen(int $days)
     {
         return $this->createQueryBuilder('u')
-            ->where('u.createdAt >= :date')
+            ->where('u.createdAt <= :date')
             ->setParameter('date', new \DateTime("-$days days"))
             ->getQuery()
             ->getResult()
