@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\LoginLogRepository;
+use App\Repository\UnresolvedXMLRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DatabaseGarbageCollector
@@ -12,7 +13,8 @@ class DatabaseGarbageCollector
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoginLogRepository     $loginLogRepository,
-        private readonly DeviceAlarmRepository $deviceAlarmRepository
+        private readonly DeviceAlarmRepository $deviceAlarmRepository,
+        private readonly UnresolvedXMLRepository $unresolvedXMLRepository
     )
     {}
 
@@ -20,6 +22,7 @@ class DatabaseGarbageCollector
     {
         $this->cleanLoginList();
         $this->cleanAlarmList();
+        $this->cleanUnresolvedXmlList();
     }
 
     private function cleanAlarmList(): void
@@ -32,6 +35,13 @@ class DatabaseGarbageCollector
     private function cleanLoginList(): void
     {
         $records = $this->loginLogRepository->findOlderThen(6);
+
+        $this->remove($records);
+    }
+
+    private function cleanUnresolvedXmlList(): void
+    {
+        $records = $this->unresolvedXMLRepository->findOlderThen(5);
 
         $this->remove($records);
     }
