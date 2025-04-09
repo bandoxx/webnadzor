@@ -22,6 +22,7 @@ class ClientSettingFactory
             ->setDeviceSensorErrorAlarmActive(true)
             ->setIsTemperatureAlarmActive(true)
             ->setIsHumidityAlarmActive(true)
+            ->setIsDigitalEntryAlarmActive(isset($data['is_digital_entry_alarm_active']))
         ;
 
         return $clientSettings;
