@@ -84,6 +84,9 @@ class Device
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $simCardProvider = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $serialNumber = null;
+
     public function __construct()
     {
         $this->deviceData = new ArrayCollection();
@@ -495,6 +498,18 @@ class Device
     public function setSimCardProvider(?string $simCardProvider): static
     {
         $this->simCardProvider = $simCardProvider;
+
+        return $this;
+    }
+
+    public function getSerialNumber(): ?string
+    {
+        return $this->serialNumber;
+    }
+
+    public function setSerialNumber(?string $serialNumber): static
+    {
+        $this->serialNumber = $serialNumber;
 
         return $this;
     }
