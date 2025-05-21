@@ -61,6 +61,7 @@ class DeviceUpdater
         }
 
         $device->setSimCardProvider($data['sim_card_provider'] ?? null);
+        $device->setSerialNumber($data['serial_number'] ?? null);
         $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
 
         $this->entityManager->flush();
