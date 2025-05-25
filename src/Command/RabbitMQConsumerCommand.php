@@ -57,18 +57,83 @@ class RabbitMQConsumerCommand extends Command
             return Command::FAILURE;
         }
 
-        try {
-            $connection = new AMQPStreamConnection(
-                $this->rabbitmqHost,
-                $this->rabbitmqPort,
-                $this->rabbitmqUser,
-                $this->rabbitmqPassword
-            );
+        $connection = new AMQPStreamConnection(
+            $this->rabbitmqHost,
+            $this->rabbitmqPort,
+            $this->rabbitmqUser,
+            $this->rabbitmqPassword,
+            '/',     // vhost
+            false,   // insist
+            'AMQPLAIN', // login method
+            null,    // login response
+            'en_US', // locale
+            10.0,    // connection timeout
+            10.0,    // read timeout
+            null,    // write timeout
+        );
 
-            $channel = $connection->channel();
+        $channel = $connection->channel();
+        // Set prefetch count to 1 to process one message at a time
+        $channel->basic_qos(null, 1, null);
 
-            // Check if queue exists
-            $channel->queue_declare(
+        // Check if queue exists and get message count
+        $queueInfo = $channel->queue_declare(
+            self::QUEUE_NAME,
+            true,   // passive - only check if queue exists
+            false,  // durable
+            false,  // exclusive
+            false,  // auto delete
+            false   // nowait
+        );
+
+        // If queue is empty, close connection and exit
+        if ($queueInfo[1] == 0) {
+            $io->info('Queue is empty. Closing consumer.');
+            $channel->close();
+            $connection->close();
+            return Command::SUCCESS;
+        }
+
+        $io->info(sprintf('Found %d messages in queue. Starting consumption...', $queueInfo[1]));
+
+        $callback = function (AMQPMessage $msg) use ($io, $channel) {
+            try {
+                $data = json_decode($msg->body, true, 512, JSON_THROW_ON_ERROR);
+
+                $device = $this->deviceRepository->findOneBy(['serialNumber' => $data['ID']]);
+
+                if (!$device) {
+                    $this->saveUnresolvedDeviceData($data);
+                } else {
+                    $this->processMessage($device, $data);
+                }
+
+                // Acknowledge the message
+                $channel->basic_ack($msg->delivery_info['delivery_tag']);
+            } catch (\Exception $e) {
+                $io->error(sprintf('Error processing message: %s', $e->getMessage()));
+                // Reject the message and requeue
+                $channel->basic_nack($msg->delivery_info['delivery_tag'], false, true);
+            }
+        };
+
+        // Start consuming
+        $channel->basic_consume(
+            self::QUEUE_NAME,
+            '',     // consumer tag
+            false,  // no local
+            false,  // no ack
+            false,  // exclusive
+            false,  // no wait
+            $callback
+        );
+
+        // Consume messages until queue is empty
+        while (count($channel->callbacks)) {
+            $channel->wait();
+
+            // Check if queue is empty after each message
+            $queueInfo = $channel->queue_declare(
                 self::QUEUE_NAME,
                 true,   // passive - only check if queue exists
                 false,  // durable
@@ -77,59 +142,16 @@ class RabbitMQConsumerCommand extends Command
                 false   // nowait
             );
 
-            $io->success('Connected to RabbitMQ');
-            $io->info('Waiting for messages...');
-
-            $callback = function (AMQPMessage $msg) use ($io, $channel) {
-                try {
-                    $data = json_decode($msg->body, true, 512, JSON_THROW_ON_ERROR);
-
-                    $device = $this->deviceRepository->findOneBy(['serialNumber' => $data['ID']]);
-
-                    if (!$device) {
-                        $this->saveUnresolvedDeviceData($data);
-                    } else {
-                        $this->processMessage($device, $data);
-                    }
-
-                    // Acknowledge the message
-                    $channel->basic_ack($msg->delivery_info['delivery_tag']);
-                } catch (\Exception $e) {
-                    $io->error(sprintf('Error processing message: %s', $e->getMessage()));
-                    // Reject the message and requeue
-                    $channel->basic_nack($msg->delivery_info['delivery_tag'], false, true);
-                }
-            };
-
-            // Set prefetch count to 1 to process one message at a time
-            $channel->basic_qos(null, 1, null);
-
-            // Start consuming
-            $channel->basic_consume(
-                self::QUEUE_NAME,
-                '',     // consumer tag
-                false,  // no local
-                false,  // no ack
-                false,  // exclusive
-                false,  // no wait
-                $callback
-            );
-
-            while (count($channel->callbacks)) {
-                $channel->wait();
+            if ($queueInfo[1] == 0) {
+                $io->info('Queue is now empty. Stopping consumer.');
+                break;
             }
-
-            $channel->close();
-            $connection->close();
-
-            return Command::SUCCESS;
-        } catch (\Exception $e) {
-            $io->error(sprintf('Error: %s', $e->getMessage()));
-            return Command::FAILURE;
-        } finally {
-            // Release the lock when the command finishes
-            $lock->release();
         }
+
+        $channel->close();
+        $connection->close();
+
+        return Command::SUCCESS;
     }
 
     private function processMessage(Device $device, array $data): void
