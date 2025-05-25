@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Factory\DeviceDataFactory;
 use App\Factory\LockFactory;
-use App\Factory\UnresolvedXMLFactory;
+use App\Factory\UnresolvedDeviceDataFactory;
 use App\Repository\DeviceRepository;
 use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,7 +31,7 @@ class ParseXmlsCommand extends Command
         private LoggerInterface        $logger,
         private ValidatorCollection    $alarmValidator,
         private LockFactory            $lockFactory,
-        private UnresolvedXMLFactory   $unresolvedXMLFactory,
+        private UnresolvedDeviceDataFactory   $unresolvedXMLFactory,
         private string                 $xmlDirectory
     )
     {
@@ -104,7 +104,7 @@ class ParseXmlsCommand extends Command
 
     private function saveUnresolvedXml(string $xmlPath): void
     {
-        $unresolvedXML = $this->unresolvedXMLFactory->create($xmlPath);
+        $unresolvedXML = $this->unresolvedXMLFactory->createFromXml($xmlPath);
         $this->entityManager->persist($unresolvedXML);
         $this->entityManager->flush();
     }
