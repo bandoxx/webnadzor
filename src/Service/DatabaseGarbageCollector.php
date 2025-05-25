@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\LoginLogRepository;
-use App\Repository\UnresolvedXMLRepository;
+use App\Repository\UnresolvedDeviceDataRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class DatabaseGarbageCollector
@@ -14,7 +14,7 @@ class DatabaseGarbageCollector
         private readonly EntityManagerInterface $entityManager,
         private readonly LoginLogRepository     $loginLogRepository,
         private readonly DeviceAlarmRepository $deviceAlarmRepository,
-        private readonly UnresolvedXMLRepository $unresolvedXMLRepository
+        private readonly UnresolvedDeviceDataRepository $unresolvedXMLRepository
     )
     {}
 

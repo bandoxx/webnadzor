@@ -44,8 +44,8 @@ RUN set -eux; \
         --with-freetype; \
     docker-php-ext-install gd; \
     docker-php-ext-configure intl; \
-    docker-php-ext-install intl;
-
+    docker-php-ext-install intl; \
+    docker-php-ext-install bcmath;
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh \
     && bash nodesource_setup.sh

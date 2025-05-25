@@ -102,3 +102,10 @@ services:
     App\Service\APIClient\InfobipClient:
         $sender: '%env(INFOBIP_SENDER)%'
         $isClientActive: '%is_infobip_client_active%'
+
+    App\Command\RabbitMQConsumerCommand:
+        arguments:
+            $rabbitmqHost: '%env(RABBITMQ_HOST)%'
+            $rabbitmqPort: '%env(int:RABBITMQ_PORT)%'
+            $rabbitmqUser: '%env(RABBITMQ_USER)%'
+            $rabbitmqPassword: '%env(RABBITMQ_PASSWORD)%'
