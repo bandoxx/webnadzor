@@ -2,12 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\UnresolvedXMLRepository;
+use App\Repository\UnresolvedDeviceDataRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: UnresolvedXMLRepository::class)]
-class UnresolvedXML
+#[ORM\Entity(repositoryClass: UnresolvedDeviceDataRepository::class)]
+class UnresolvedDeviceData
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -17,7 +17,7 @@ class UnresolvedXML
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $xmlName = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -45,7 +45,7 @@ class UnresolvedXML
         return $this->xmlName;
     }
 
-    public function setXmlName(string $xmlName): static
+    public function setXmlName(?string $xmlName): static
     {
         $this->xmlName = $xmlName;
 

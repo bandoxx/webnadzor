@@ -53,4 +53,34 @@ class DeviceDataFactory
 
         throw new XmlParserException(sprintf('XML Parser failed for %s, content of file: %s', $filePath, @file_get_contents($filePath)));
     }
+
+    public function createFromArray(Device $device, array $data): DeviceData
+    {
+        $deviceData = new DeviceData();
+        $deviceData
+            ->setDevice($device)
+            ->setServerDate(new \DateTime())
+            ->setDeviceDate((new \DateTime())->setTimestamp($data['UTC']))
+            ->setSupply($data['PI'])
+            ->setGsmSignal($data['SS'])
+            ->setVbat($data['BV'])
+            ->setBattery($data['BP'])
+            ->setT1($data['T1'])
+            ->setRh1($data['RH1'])
+            ->setMkt1($data['MKT1'])
+            ->setTMin1($data['T1min'])
+            ->setTMax1($data['T1max'])
+            ->setTAvrg1($data['T1avg'])
+            ->setD1(0)
+            ->setT2($data['T2'])
+            ->setRh2($data['RH2'])
+            ->setMkt2($data['MKT2'])
+            ->setTMin2($data['T2min'])
+            ->setTMax2($data['T2max'])
+            ->setTAvrg2($data['T2avg'])
+            ->setD2(0)
+        ;
+
+        return $deviceData;
+    }
 }

@@ -2,18 +2,18 @@
 
 namespace App\Repository;
 
-use App\Entity\UnresolvedXML;
+use App\Entity\UnresolvedDeviceData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<UnresolvedXML>
+ * @extends ServiceEntityRepository<UnresolvedDeviceData>
  */
-class UnresolvedXMLRepository extends ServiceEntityRepository
+class UnresolvedDeviceDataRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UnresolvedXML::class);
+        parent::__construct($registry, UnresolvedDeviceData::class);
     }
 
     public function findWithoutContent(): array
