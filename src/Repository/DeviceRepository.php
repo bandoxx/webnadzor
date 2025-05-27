@@ -69,6 +69,18 @@ class DeviceRepository extends ServiceEntityRepository
         return $numberOfDevicesWithName > 0;
     }
 
+    public function doesMoreThanOneSerialNumberExists(string $serialNumber): bool
+    {
+        $numberOfDevicesWithName = $this->createQueryBuilder('d')
+            ->select('COUNT(d)')
+            ->where('BINARY(d.serialNumber) = :name')->setParameter('name', $serialNumber)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+
+        return $numberOfDevicesWithName > 0;
+    }
+
     public function findActiveDevices(bool $filled = false): array
     {
         $qb = $this->createQueryBuilder('d')

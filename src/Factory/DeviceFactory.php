@@ -8,13 +8,13 @@ use App\Entity\Device;
 class DeviceFactory
 {
 
-    public function create(Client $client, string $xmlName): Device
+    public function create(Client $client, string $xmlName, string $serialNumber): Device
     {
         $device = new Device();
         $device
             ->setClient($client)
             ->setXmlName($xmlName)
-        ;
+            ->setSerialNumber($serialNumber);
 
         $emptyEntry = [
             't_location' => null,
