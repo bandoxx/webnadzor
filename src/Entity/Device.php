@@ -18,7 +18,7 @@ class Device
     #[ORM\ManyToOne(inversedBy: 'device')]
     private ?Client $client = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $xmlName = null;
 
     #[ORM\Column]
