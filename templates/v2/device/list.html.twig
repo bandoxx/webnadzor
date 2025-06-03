@@ -142,7 +142,7 @@
                                         <div
                                                 class="flex items-center justify-between gap-1.5"
                                         >
-                                            <p>XML</p>
+                                            <p>XML | Serijski broj</p>
                                             <div class="inline-flex flex-col space-y-[2px]">
                               <span class="inline-block">
                                 <svg
@@ -373,7 +373,7 @@
                                 <tbody>
                                 {% for device in devices_table %}
                                 <tr>
-                                    <td>{{ device.xml }}</td>
+                                    <td>{{ device.xml ?? device.serialNumer ?? '' }}</td>
                                     <td>{{ device.name }}</td>
                                     <td>
                                         {% if device.online %}
@@ -448,7 +448,7 @@
                                     Dodaj novu lokaciju
                                 </h3>
                                 <h4 class="mb-2 text-base text-left font-bold text-black dark:text-white">
-                                    Naziv XML datoteke mora biti jedinstven za svaku lokaciju
+                                    Popunite XML ili Serijski broj kako bi napravili lokaciju.
                                 </h4>
                                 <div class="mb-4">
                                     <label
@@ -460,6 +460,19 @@
                                             type="text"
                                             name="xmlName"
                                             placeholder="Naziv XML datoteke"
+                                            class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                    />
+                                </div>
+                                <div class="mb-4">
+                                    <label
+                                            class="mb-2 block text-sm text-left font-medium text-black dark:text-white"
+                                    >
+                                        Serijski broj
+                                    </label>
+                                    <input
+                                            type="text"
+                                            name="serialNumber"
+                                            placeholder="Serijski broj"
                                             class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                     />
                                 </div>
