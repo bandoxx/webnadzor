@@ -30,6 +30,11 @@ class DeviceCreateController extends AbstractController
         $xmlName = $request->request->get('xmlName', '');
         $serialNumber = $request->request->get('serialNumber', '');
 
+        if (empty($xmlName) && empty($serialNumber)) {
+            $this->addFlash('error', "Popunite bar jedno od dva polja da bi dodali lokaciju!");
+            return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
+        }
+
         if (!empty($xmlName) && $deviceRepository->doesMoreThenOneXmlNameExists($xmlName)) {
             $this->addFlash('error', sprintf("Xml naziv: `%s` već postoji!", $xmlName));
             return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
@@ -37,11 +42,6 @@ class DeviceCreateController extends AbstractController
 
         if (!empty($serialNumber) && $deviceRepository->doesMoreThanOneSerialNumberExists($serialNumber)) {
             $this->addFlash('error', sprintf("Serijski broj: `%s` već postoji!", $serialNumber));
-            return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
-        }
-
-        if (empty($xmlName) && empty($serialNumber)) {
-            $this->addFlash('error', "Popunite bar jedno od dva polja da bi dodali lokaciju!");
             return $this->redirectToRoute('app_device_list', ['clientId' => $client->getId()]);
         }
 
