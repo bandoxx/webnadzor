@@ -164,9 +164,9 @@ class RabbitMQConsumerCommand extends Command
         $this->validatorCollection->validate($deviceData, $device->getClient()->getClientSetting());
     }
 
-    private function saveUnresolvedDeviceData($data): void
+    private function saveUnresolvedDeviceData(array $data): void
     {
-        $unresolvedDeviceData = $this->unresolvedDeviceDataFactory->createFromJson($data);
+        $unresolvedDeviceData = $this->unresolvedDeviceDataFactory->createFromArray($data);
         $this->entityManager->persist($unresolvedDeviceData);
         $this->entityManager->flush();
     }
