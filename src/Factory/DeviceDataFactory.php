@@ -6,9 +6,12 @@ use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Exception\XmlParserException;
 use App\Service\XmlParser\ParserTemperatureChecker;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DeviceDataFactory
 {
+
+    public function __construct(public ValidatorInterface $validator) {}
 
     /**
      * @throws \DateMalformedStringException
@@ -48,6 +51,8 @@ class DeviceDataFactory
                 ->setD2((int) @$xml->D2)
             ;
 
+            $this->validate($deviceData);
+
             return $deviceData;
         }
 
@@ -81,6 +86,17 @@ class DeviceDataFactory
             ->setD2(0)
         ;
 
+        $this->validate($deviceData);
+
         return $deviceData;
+    }
+
+    private function validate(DeviceData $deviceData): void
+    {
+        $errors = $this->validator->validate($deviceData);
+
+        if (count($errors) > 0) {
+            throw new \RuntimeException('Validation failed');
+        }
     }
 }

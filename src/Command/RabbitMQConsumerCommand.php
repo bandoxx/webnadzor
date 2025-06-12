@@ -44,7 +44,6 @@ class RabbitMQConsumerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $io->title('RabbitMQ Consumer');
 
         // Create lock factory
         $store = new FlockStore(sys_get_temp_dir());
@@ -108,9 +107,8 @@ class RabbitMQConsumerCommand extends Command
                 // Acknowledge the message
                 $channel->basic_ack($msg->delivery_info['delivery_tag']);
             } catch (\Exception $e) {
-                $io->error(sprintf('Error processing message: %s, Content: %s', $e->getMessage(), $msg->body));
-                // Reject the message and requeue
-                $channel->basic_nack($msg->delivery_info['delivery_tag'], false, true);
+                $this->saveUnresolvedDeviceDataFromString($msg->body);
+                $channel->basic_ack($msg->delivery_info['delivery_tag']);
             }
         };
 
@@ -158,6 +156,13 @@ class RabbitMQConsumerCommand extends Command
         $this->entityManager->flush();
 
         $this->validatorCollection->validate($deviceData, $device->getClient()->getClientSetting());
+    }
+
+    private function saveUnresolvedDeviceDataFromString(string $content): void
+    {
+        $unresolvedDeviceData = $this->unresolvedDeviceDataFactory->createFromString($content);
+        $this->entityManager->persist($unresolvedDeviceData);
+        $this->entityManager->flush();
     }
 
     private function saveUnresolvedDeviceData(array $data): void

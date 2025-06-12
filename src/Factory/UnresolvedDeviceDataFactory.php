@@ -6,6 +6,11 @@ use App\Entity\UnresolvedDeviceData;
 
 class UnresolvedDeviceDataFactory
 {
+    public function createFromString(string $data): UnresolvedDeviceData
+    {
+        return $this->create($data);
+    }
+
     public function createFromArray(array $content): UnresolvedDeviceData
     {
         return $this->create(json_encode($content));

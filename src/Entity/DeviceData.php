@@ -6,6 +6,7 @@ use App\Repository\DeviceDataRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DeviceDataRepository::class)]
 #[ORM\Index(name: 'idx_search', fields: ['device', 'deviceDate'])]
@@ -49,21 +50,27 @@ class DeviceData
     private bool $d1;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $t1 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Assert\Range(min: -999.99, max: 999.99)]
     private ?string $rh1 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Assert\Range(min: -999.99, max: 999.99)]
     private ?string $mkt1 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tAvrg1 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tMin1 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tMax1 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -73,21 +80,27 @@ class DeviceData
     private bool $d2;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $t2 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Assert\Range(min: -999.99, max: 999.99)]
     private ?string $rh2 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2, nullable: true)]
+    #[Assert\Range(min: -999.99, max: 999.99)]
     private ?string $mkt2 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tAvrg2 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tMin2 = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 4, scale: 2, nullable: true)]
+    #[Assert\Range(min: -99.99, max: 99.99)]
     private ?string $tMax2 = null;
 
     #[ORM\Column(length: 255, nullable: true)]
