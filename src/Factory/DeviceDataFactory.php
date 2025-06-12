@@ -51,8 +51,6 @@ class DeviceDataFactory
                 ->setD2((int) @$xml->D2)
             ;
 
-            $this->validate($deviceData);
-
             return $deviceData;
         }
 
