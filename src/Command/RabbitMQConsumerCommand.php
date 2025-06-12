@@ -88,13 +88,10 @@ class RabbitMQConsumerCommand extends Command
 
         // If queue is empty, close connection and exit
         if ($queueInfo[1] == 0) {
-            $io->info('Queue is empty. Closing consumer.');
             $channel->close();
             $connection->close();
             return Command::SUCCESS;
         }
-
-        $io->info(sprintf('Found %d messages in queue. Starting consumption...', $queueInfo[1]));
 
         $callback = function (AMQPMessage $msg) use ($io, $channel) {
             try {
@@ -111,7 +108,7 @@ class RabbitMQConsumerCommand extends Command
                 // Acknowledge the message
                 $channel->basic_ack($msg->delivery_info['delivery_tag']);
             } catch (\Exception $e) {
-                $io->error(sprintf('Error processing message: %s', $e->getMessage()));
+                $io->error(sprintf('Error processing message: %s, Content: %s', $e->getMessage(), $msg->body));
                 // Reject the message and requeue
                 $channel->basic_nack($msg->delivery_info['delivery_tag'], false, true);
             }
@@ -143,7 +140,6 @@ class RabbitMQConsumerCommand extends Command
             );
 
             if ($queueInfo[1] == 0) {
-                $io->info('Queue is now empty. Stopping consumer.');
                 break;
             }
         }
