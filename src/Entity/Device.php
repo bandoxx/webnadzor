@@ -394,7 +394,7 @@ class Device
 
     public function getIntervalTrashholdInSeconds(): ?int
     {
-        return (int) round($this->getXmlIntervalInSeconds() * 1.8); // 90% of the interval
+        return (int) round($this->getXmlIntervalInSeconds() * 1.9); // 90% of the interval
     }
 
     public function setXmlInterval(int $xmlInterval): static
