@@ -54,10 +54,11 @@ class DeviceReadController extends AbstractController
         foreach ($devices as $device) {
             $data = $deviceDataRepository->findLastRecordForDevice($device);
             $numberOfAlarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+
             $online = false;
 
-            if ($data && time() - $data->getDeviceDate()?->format('U') < $device->getIntervalTrashholdInSeconds()) {
-                $online = true;
+            if ($data !== null && $data->getDeviceDate() !== null) {
+                $online = (time() - $data->getDeviceDate()->getTimestamp()) < $device->getIntervalTrashholdInSeconds();
             }
 
             if (empty($device->getXmlName()) === false) {

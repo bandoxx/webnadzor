@@ -68,8 +68,9 @@ class DeviceOverviewFactory
         }
 
         $online = false;
-        if (time() - $data->getDeviceDate()?->format('U') < $device->getIntervalTrashholdInSeconds()) {
-            $online = true;
+
+        if ($data->getDeviceDate() !== null) {
+            $online = (time() - $data->getDeviceDate()->getTimestamp()) < $device->getIntervalTrashholdInSeconds();
         }
 
         $temperatureModel
