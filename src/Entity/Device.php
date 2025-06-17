@@ -382,9 +382,19 @@ class Device
         return $this->xmlInterval;
     }
 
+    public function getIntervalInMinutes(): ?int
+    {
+        return $this->xmlInterval > 0 ? $this->xmlInterval : 60; // Default to 60 minute if not set
+    }
+
     public function getXmlIntervalInSeconds(): ?int
     {
-        return $this->xmlInterval * 60 + 8 * 60; // 8 minutes threshold
+        return $this->getIntervalInMinutes() * 60;
+    }
+
+    public function getIntervalTrashholdInSeconds(): ?int
+    {
+        return (int) round($this->getXmlIntervalInSeconds() * 1.8); // 90% of the interval
     }
 
     public function setXmlInterval(int $xmlInterval): static

@@ -68,7 +68,7 @@ class DeviceOverviewFactory
         }
 
         $online = false;
-        if (time() - $data->getDeviceDate()?->format('U') < $device->getXmlIntervalInSeconds()) {
+        if (time() - $data->getDeviceDate()?->format('U') < $device->getIntervalTrashholdInSeconds()) {
             $online = true;
         }
 
