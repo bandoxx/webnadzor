@@ -69,7 +69,7 @@ class DeviceUpdater
         $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
 
         $this->entityManager->flush();
-        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
 
         return [];
     }
