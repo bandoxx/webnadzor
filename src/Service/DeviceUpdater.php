@@ -43,7 +43,12 @@ class DeviceUpdater
             $this->error[] = 'Naziv uređaja je predugačko';
         }
 
+        if (empty($data['xml_name']) && empty($data['serial_number'])) {
+            $this->error[] = 'Popunite bar jedno od dva polja da bi dodali lokaciju! (XML naziv ili Serijski broj)';
+        }
+
         $this->updateXmlName($device, trim($data['xml_name']));
+        $this->updateSerialNumber($device, trim($data['serial_number']));
         $this->updateLocationCoordinates($device, $data['location']);
         $this->updateSmtpEmails($device, $data['smtp'] ?? []);
         $this->updateApplicationEmails($device, $data['application_email'] ?? []);
@@ -61,11 +66,10 @@ class DeviceUpdater
         }
 
         $device->setSimCardProvider($data['sim_card_provider'] ?? null);
-        $device->setSerialNumber($data['serial_number'] ?? null);
         $device->setSimPhoneNumber($data['sim_phone_number'] ?? null);
 
         $this->entityManager->flush();
-        $this->deviceSettingsMaker->saveXml($oldDevice, $data);
+        //$this->deviceSettingsMaker->saveXml($oldDevice, $data);
 
         return [];
     }
@@ -206,9 +210,14 @@ class DeviceUpdater
         }
     }
 
-    private function updateXmlName(Device $device, string $xmlName): void
+    private function updateXmlName(Device $device, ?string $xmlName): void
     {
         if ($device->getXmlName() !== $xmlName) {
+            if (empty($xmlName)) {
+                $device->setXmlName(null);
+                return;
+            }
+
             if ($this->deviceRepository->doesMoreThenOneXmlNameExists($xmlName) === false) {
                 $device->setXmlName($xmlName);
             } else {
@@ -216,6 +225,24 @@ class DeviceUpdater
             }
         }
     }
+
+    private function updateSerialNumber(Device $device, ?string $serialNumber): void
+    {
+        if ($device->getSerialNumber() !== $serialNumber) {
+            if (empty($serialNumber)) {
+                $device->setSerialNumber(null);
+                return;
+            }
+
+            if ($this->deviceRepository->doesMoreThanOneSerialNumberExists($serialNumber) === false) {
+                $device->setSerialNumber($serialNumber);
+            } else {
+                $this->error[] = sprintf('%s - Serijski broj se već koristi.', $serialNumber);
+            }
+        }
+    }
+
+
 
     private function updateAlarmSetupGeneral(Device $device, array $data): void
     {

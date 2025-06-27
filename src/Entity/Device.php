@@ -119,7 +119,7 @@ class Device
         return $this->xmlName;
     }
 
-    public function setXmlName(string $xmlName): static
+    public function setXmlName(?string $xmlName): static
     {
         $this->xmlName = $xmlName;
 
