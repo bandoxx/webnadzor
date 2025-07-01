@@ -196,7 +196,7 @@
                             class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <h2 class="text-title-md2 font-bold text-black dark:text-white">
-                            Dnevna arhiva
+                            Mjesečna arhiva
                         </h2>
 
                         <nav>
@@ -211,7 +211,7 @@
                                     <a class="font-medium" href="{{ path('app_device_entry_show', { clientId: client.id, id: device.id, entry: entry }) }}">{{ device.name }}, {{ device.temperatureModel.name }} /
                                     </a>
                                 </li>
-                                <li class="font-medium text-primary">Dnevna arhiva</li>
+                                <li class="font-medium text-primary">Mjesečna arhiva</li>
                             </ol>
                         </nav>
                     </div>
@@ -226,7 +226,7 @@
                                     class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
                             >
                                 <h3 class="title-dt font-bold text-black dark:text-white">
-                                    Dnevna arhiva za lokaciju {{ device.name }}, mjerno mjesto {{ device.temperatureModel.name }}
+                                    Mjesečna arhiva za lokaciju {{ device.name }}, mjerno mjesto {{ device.temperatureModel.name }}
                                 </h3>
                                 <table class="table w-full table-auto" id="dataTableArchive">
                                     <thead>
