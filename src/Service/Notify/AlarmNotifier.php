@@ -12,6 +12,9 @@ use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 class AlarmNotifier
 {
@@ -30,14 +33,17 @@ class AlarmNotifier
     {
         $devices = $this->entityManager->getRepository(Device::class)->findAll();
 
+        $deviceAlarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
         foreach ($devices as $device) {
-            $alarms = $this->entityManager->getRepository(DeviceAlarm::class)->findAlarmsThatNeedsNotification($device);
-
-            if (!$alarms) {
-                continue;
-            }
+            $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
 
             $this->notifyByMail($alarms);
+
+            for ($entry = 1; $entry <= 2; $entry++) {
+                $alarms = array_merge($alarms, $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry));
+                $this->notifyByMail($alarms, $entry);
+            }
+
             $this->notifyBySMS($alarms);
 
             foreach ($alarms as $alarm) {
@@ -88,8 +94,12 @@ class AlarmNotifier
 
     /**
      * @param array<DeviceAlarm> $alarms
+     * @param int|null $entry
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    private function notifyByMail(array $alarms): void
+    private function notifyByMail(array $alarms, ?int $entry = null): void
     {
         if (empty($alarms)) {
             return;
@@ -102,6 +112,11 @@ class AlarmNotifier
 
         $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
         $emails = array_merge($device->getApplicationEmailList(), $settings->getAlarmNotificationList(), $emails);
+
+        if ($entry) {
+            $emails = array_merge($emails, [$device->getEntryData($entry)['applicationEmailList'] ?? []]);
+        }
+
         $emails = array_unique($emails);
 
         $email = (new Email())

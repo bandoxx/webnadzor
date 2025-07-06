@@ -50,6 +50,7 @@ class DeviceUpdater
         $this->updateAlarmSetupGeneral($device, $data['device_alarm_setup_general'] ?? []);
 
         foreach (range(1, 2) as $entry) {
+            $this->updateApplicationEmailsForEntry($device, $entry, $data[sprintf('application_email_entry_%s', $entry)] ?? []);
             $this->updateTemperature($device, $entry, $data[sprintf("t%s", $entry)]);
             $this->updateHumidity($device, $entry, $data[sprintf('rh%s', $entry)]);
             $this->updateDigital($device, $entry, $data[sprintf("d%s", $entry)]);
@@ -332,5 +333,16 @@ class DeviceUpdater
         }
 
         $device->setApplicationEmailList($applicationEmails);
+    }
+
+    private function updateApplicationEmailsForEntry(Device $device, int $entry, ?array $applicationEmail = []): void
+    {
+        $applicationEmails = array_values(array_unique(array_filter($applicationEmail)));
+
+        foreach ($applicationEmails as $email) {
+            $this->validateEmail($email);
+        }
+
+        $device->setEntryData($entry, 'applicationEmailList', $applicationEmails);
     }
 }
