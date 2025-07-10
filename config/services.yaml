@@ -109,3 +109,8 @@ services:
             $rabbitmqPort: '%env(int:RABBITMQ_PORT)%'
             $rabbitmqUser: '%env(RABBITMQ_USER)%'
             $rabbitmqPassword: '%env(RABBITMQ_PASSWORD)%'
+
+    # Device updater services
+    App\Service\Device\Handler\DeviceImageHandler:
+        arguments:
+            $image: []
