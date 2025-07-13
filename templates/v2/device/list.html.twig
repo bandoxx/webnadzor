@@ -142,7 +142,7 @@
                                         <div
                                                 class="flex items-center justify-between gap-1.5"
                                         >
-                                            <p>XML</p>
+                                            <p>XML | Serijski broj</p>
                                             <div class="inline-flex flex-col space-y-[2px]">
                               <span class="inline-block">
                                 <svg
@@ -373,7 +373,7 @@
                                 <tbody>
                                 {% for device in devices_table %}
                                 <tr>
-                                    <td>{{ device.xml }}</td>
+                                    <td>{{ device.xml ?? device.serialNumer ?? '' }}</td>
                                     <td>{{ device.name }}</td>
                                     <td>
                                         {% if device.online %}

@@ -31,10 +31,10 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
             ->setParameter('device_id', $device->getId())
             ->setParameter('entry', $entry)
             ->setParameter('period', DeviceDataArchive::PERIOD_DAY)
-            ->orderBy('dda.archiveDate', 'DESC');
+            ->orderBy('dda.serverDate', 'DESC');
 
         if ($dateFrom !== null && $dateTo !== null) {
-            $qb->andWhere('dda.archiveDate BETWEEN :date_from AND :date_to')
+            $qb->andWhere('dda.serverDate BETWEEN :date_from AND :date_to')
                 ->setParameter('date_from', $dateFrom)
                 ->setParameter('date_to', $dateTo);
         }

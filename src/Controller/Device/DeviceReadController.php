@@ -50,19 +50,27 @@ class DeviceReadController extends AbstractController
         }
 
         $deviceTable = [];
+
         foreach ($devices as $device) {
             $data = $deviceDataRepository->findLastRecordForDevice($device);
             $numberOfAlarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+
             $online = false;
 
-            if ($data && time() - $data->getDeviceDate()?->format('U') < $device->getXmlIntervalInSeconds()) {
-                $online = true;
+            if ($data !== null && $data->getDeviceDate() !== null) {
+                $online = (time() - $data->getDeviceDate()->getTimestamp()) < $device->getIntervalTrashholdInSeconds();
+            }
+
+            if (empty($device->getXmlName()) === false) {
+                $identifier = $device->getXmlName();
+            } else {
+                $identifier = $device->getSerialNumber();
             }
 
             $deviceListModel = new DeviceListModel();
             $deviceListModel
                 ->setId($device->getId())
-                ->setXml($device->getXmlName())
+                ->setXml($identifier)
                 ->setName($device->getName())
                 ->setOnline($online)
                 ->setAlarm($numberOfAlarms > 0)

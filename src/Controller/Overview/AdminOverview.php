@@ -64,7 +64,7 @@ class AdminOverview extends AbstractController
                     continue;
                 }
 
-                if (time() - $deviceData->getDeviceDate()->format('U') < $device->getXmlIntervalInSeconds()) {
+                if (time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalTrashholdInSeconds()) {
                     $onlineDevices++;
                 }
 

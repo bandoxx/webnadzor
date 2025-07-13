@@ -8,7 +8,7 @@ use App\Entity\Device;
 class DeviceFactory
 {
 
-    public function create(Client $client, string $xmlName, string $serialNumber): Device
+    public function create(Client $client, ?string $xmlName, ?string $serialNumber): Device
     {
         $device = new Device();
         $device

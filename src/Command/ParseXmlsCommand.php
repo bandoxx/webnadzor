@@ -60,18 +60,25 @@ class ParseXmlsCommand extends Command
             $device = $this->deviceRepository->binaryFindOneByName($name);
 
             if (!$device) {
-                $this->saveUnresolvedXml($xmlPath);
+                try {
+                    $this->saveUnresolvedXml($xmlPath);
+                    $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
+                } catch (\Throwable $e) {
+                } finally {
+                    unlink($xmlPath);
+                }
 
-                $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
-                unlink($xmlPath);
                 continue;
             }
 
             if ($device->isParserActive() === false) {
-                $this->saveUnresolvedXml($xmlPath);
-
-                $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
-                unlink($xmlPath);
+                try {
+                    $this->saveUnresolvedXml($xmlPath);
+                    $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
+                } catch (\Throwable $e) {
+                } finally {
+                    unlink($xmlPath);
+                }
 
                 continue;
             }

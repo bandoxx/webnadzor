@@ -21,6 +21,7 @@ class UnresolvedDeviceDataRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->select('u.id, u.xmlName, u.createdAt')
             ->orderBy('u.createdAt', 'DESC')
+            ->setMaxResults(1000)
             ->getQuery()
             ->getResult();
     }
