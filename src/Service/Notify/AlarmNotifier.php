@@ -114,7 +114,7 @@ class AlarmNotifier
         $emails = array_merge($device->getApplicationEmailList(), $settings->getAlarmNotificationList(), $emails);
 
         if ($entry) {
-            $emails = array_merge($emails, [$device->getEntryData($entry)['applicationEmailList'] ?? []]);
+            $emails = array_merge($emails, [$device->getEntryData($entry)['application_email'] ?? []]);
         }
 
         $emails = array_unique($emails);
