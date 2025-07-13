@@ -41,7 +41,7 @@ class DeviceUpdater
 
         // Update email configurations
         $this->emailConfigUpdater->updateSmtpEmails($device, $data['smtp'] ?? []);
-        $this->emailConfigUpdater->updateApplicationEmails($device, $data['application_email'] ?? []);
+        $this->emailConfigUpdater->updateApplicationEmails($device, $data['device_email_alarm_setup_general']['application_email'] ?? []);
 
         // Update alarm configurations
         $this->alarmUpdater->updateAlarmSetupGeneral($device, $data['device_alarm_setup_general'] ?? []);
@@ -50,6 +50,7 @@ class DeviceUpdater
         foreach (range(1, 2) as $entry) {
             $this->sensorUpdater->updateTemperature($device, $entry, $data[sprintf("t%s", $entry)]);
             $this->sensorUpdater->updateHumidity($device, $entry, $data[sprintf('rh%s', $entry)]);
+            $this->emailConfigUpdater->updateApplicationEmailsForSensor($device, $entry, $data[sprintf("device_email_alarm_setup_entry_%s", $entry)]['application_email']);
             $this->digitalInputUpdater->updateDigitalInput($device, $entry, $data[sprintf("d%s", $entry)]);
             $this->alarmUpdater->updateAlarmSetupEntry($device, $entry, $data[sprintf("device_alarm_setup_entry_%s", $entry)]);
         }

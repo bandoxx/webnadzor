@@ -45,4 +45,15 @@ class DeviceEmailConfigUpdater
 
         $device->setApplicationEmailList($applicationEmails);
     }
+
+    public function updateApplicationEmailsForSensor(Device $device, int $sensor, ?array $applicationEmail = []): void
+    {
+        $applicationEmails = array_values(array_unique(array_filter($applicationEmail)));
+
+        foreach ($applicationEmails as $email) {
+            $this->validator->validateEmail($email);
+        }
+
+        $device->setEntryData($sensor, 'application_email', $applicationEmails);
+    }
 }
