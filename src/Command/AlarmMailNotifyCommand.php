@@ -26,6 +26,8 @@ class AlarmMailNotifyCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $store = new FlockStore(sys_get_temp_dir());
         $factory = new \Symfony\Component\Lock\LockFactory($store);
         $lock = $factory->createLock('alarm-notify');
@@ -35,8 +37,6 @@ class AlarmMailNotifyCommand extends Command
             $output->writeln(sprintf("%s - %s lock is active", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
             return Command::FAILURE;
         }
-
-        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         $this->alarmNotifier->notify();
 
