@@ -32,31 +32,30 @@ class AlarmNotifier
     public function notify(): void
     {
         $devices = $this->entityManager->getRepository(Device::class)->findAll();
-
         $deviceAlarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
-        foreach ($devices as $device) {
-            $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
 
+        foreach ($devices as $device) {
+            // Process main alarms (no sensor)
+            $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
             $this->notifyByMail($alarms);
             $this->notifyBySMS($alarms);
 
             foreach ($alarms as $alarm) {
                 $alarm->setIsNotified(true);
             }
-
             $this->entityManager->flush();
 
+            // Process alarms for entries 1 and 2
             for ($entry = 1; $entry <= 2; $entry++) {
-                $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
-                $this->notifyByMail($alarms, $entry);
-                $this->notifyBySMS($alarms);
-            }
+                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+                $this->notifyByMail($entryAlarms, $entry);
+                $this->notifyBySMS($entryAlarms);
 
-            foreach ($alarms as $alarm) {
-                $alarm->setIsNotified(true);
+                foreach ($entryAlarms as $alarm) {
+                    $alarm->setIsNotified(true);
+                }
+                $this->entityManager->flush();
             }
-
-            $this->entityManager->flush();
         }
     }
 
