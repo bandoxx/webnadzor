@@ -38,13 +38,19 @@ class AlarmNotifier
             $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
 
             $this->notifyByMail($alarms);
+            $this->notifyBySMS($alarms);
 
-            for ($entry = 1; $entry <= 2; $entry++) {
-                $alarms = array_merge($alarms, $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry));
-                $this->notifyByMail($alarms, $entry);
+            foreach ($alarms as $alarm) {
+                $alarm->setIsNotified(true);
             }
 
-            $this->notifyBySMS($alarms);
+            $this->entityManager->flush();
+
+            for ($entry = 1; $entry <= 2; $entry++) {
+                $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+                $this->notifyByMail($alarms, $entry);
+                $this->notifyBySMS($alarms);
+            }
 
             foreach ($alarms as $alarm) {
                 $alarm->setIsNotified(true);
