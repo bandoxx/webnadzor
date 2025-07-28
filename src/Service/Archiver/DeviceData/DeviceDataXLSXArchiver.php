@@ -103,9 +103,9 @@ class DeviceDataXLSXArchiver extends XLSXArchiver implements DeviceDataArchiverI
             } else {
                 $objPHPExcel->getActiveSheet()->setCellValue("D$i", $data->getT($entry));
             }
-            $objPHPExcel->getActiveSheet()->setCellValue("G$i", $data->getTMax($entry));
-            $objPHPExcel->getActiveSheet()->setCellValue("E$i", $data->getTMin($entry));
-            $objPHPExcel->getActiveSheet()->setCellValue("F$i", $data->getTAvrg($entry));
+            $objPHPExcel->getActiveSheet()->setCellValue("E$i", $data->getTMax($entry));
+            $objPHPExcel->getActiveSheet()->setCellValue("F$i", $data->getTMin($entry));
+            $objPHPExcel->getActiveSheet()->setCellValue("G$i", $data->getTAvrg($entry));
 
             if ($data->isHumidityOutOfRange($entry)) {
                 $objPHPExcel->getActiveSheet()->setCellValue("H$i", $data->getRh($entry))->getStyle("D$i")->getFont()->getColor()->setRGB('FF0000');

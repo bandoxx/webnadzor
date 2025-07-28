@@ -18,7 +18,7 @@ class Device
     #[ORM\ManyToOne(inversedBy: 'device')]
     private ?Client $client = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $xmlName = null;
 
     #[ORM\Column]
@@ -119,7 +119,7 @@ class Device
         return $this->xmlName;
     }
 
-    public function setXmlName(string $xmlName): static
+    public function setXmlName(?string $xmlName): static
     {
         $this->xmlName = $xmlName;
 
@@ -382,9 +382,19 @@ class Device
         return $this->xmlInterval;
     }
 
+    public function getIntervalInMinutes(): ?int
+    {
+        return $this->xmlInterval > 0 ? $this->xmlInterval : 60; // Default to 60 minute if not set
+    }
+
     public function getXmlIntervalInSeconds(): ?int
     {
-        return $this->xmlInterval * 60 + 8 * 60; // 8 minutes threshold
+        return $this->getIntervalInMinutes() * 60;
+    }
+
+    public function getIntervalTrashholdInSeconds(): ?int
+    {
+        return (int) round($this->getXmlIntervalInSeconds() * 1.8); // 180% of the interval
     }
 
     public function setXmlInterval(int $xmlInterval): static

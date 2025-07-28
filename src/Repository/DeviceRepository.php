@@ -38,6 +38,9 @@ class DeviceRepository extends ServiceEntityRepository
         )->free();
     }
 
+    /**
+     * @return array<Device>
+     */
     public function findDevicesByClient(int $clientId, bool $filled = false): array
     {
         $qb = $this->createQueryBuilder('d')
