@@ -68,4 +68,20 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
             "DELETE FROM device_data_archive WHERE device_id = $deviceId",
         )->free();
     }
+
+    public function archiveExists(Device $device, int $entry, \DateTime $archiveDate, string $period): bool
+    {
+        $qb = $this->createQueryBuilder('dda')
+            ->select('COUNT(dda.id)')
+            ->where('dda.device = :device_id')
+            ->andWhere('dda.entry = :entry')
+            ->andWhere('dda.period = :period')
+            ->andWhere('dda.archiveDate = :archive_date')
+            ->setParameter('device_id', $device->getId())
+            ->setParameter('entry', $entry)
+            ->setParameter('period', $period)
+            ->setParameter('archive_date', $archiveDate);
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+    }
 }

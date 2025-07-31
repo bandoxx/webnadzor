@@ -100,4 +100,32 @@ class DeviceRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Finds all devices that have either xmlName or serialNumber (not empty and not null)
+     *
+     * @return array<Device>
+     */
+    public function findDevicesWithIdentifiers(): array
+    {
+        $qb = $this->createQueryBuilder('d');
+        return $qb
+            ->where('d.isDeleted = :isDeleted')
+            ->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->andX(
+                        $qb->expr()->isNotNull('d.xmlName'),
+                        $qb->expr()->neq('d.xmlName', ':emptyString')
+                    ),
+                    $qb->expr()->andX(
+                        $qb->expr()->isNotNull('d.serialNumber'),
+                        $qb->expr()->neq('d.serialNumber', ':emptyString')
+                    )
+                )
+            )
+            ->setParameter('isDeleted', false)
+            ->setParameter('emptyString', '')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

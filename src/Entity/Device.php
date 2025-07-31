@@ -523,4 +523,9 @@ class Device
 
         return $this;
     }
+
+    public function getDeviceIdentifier(): ?string
+    {
+        return $this->xmlName ?? $this->serialNumber;
+    }
 }

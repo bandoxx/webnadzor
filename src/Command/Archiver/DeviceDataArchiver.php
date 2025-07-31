@@ -5,6 +5,7 @@ namespace App\Command\Archiver;
 use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;
+use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use App\Service\Archiver\ArchiverInterface;
@@ -27,15 +28,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeviceDataArchiver extends Command
 {
     public function __construct(
-        private DeviceDataXLSXArchiver   $XLSXArchiver,
-        private DeviceDataPDFArchiver    $PDFArchiver,
-        private DeviceRepository         $deviceRepository,
-        private DeviceDataRepository     $deviceDataRepository,
-        private DeviceDataArchiveFactory $deviceDataArchiveFactory,
-        private RawDataHandler           $rawDataHandler,
-        private DeviceDataRawDataFactory $deviceDataRawDataFactory,
-        private EntityManagerInterface   $entityManager,
-        private ChartImageGenerator      $chartImageGenerator
+        private DeviceDataXLSXArchiver       $XLSXArchiver,
+        private DeviceDataPDFArchiver        $PDFArchiver,
+        private DeviceRepository             $deviceRepository,
+        private DeviceDataRepository         $deviceDataRepository,
+        private DeviceDataArchiveFactory     $deviceDataArchiveFactory,
+        private DeviceDataArchiveRepository  $deviceDataArchiveRepository,
+        private RawDataHandler               $rawDataHandler,
+        private DeviceDataRawDataFactory     $deviceDataRawDataFactory,
+        private EntityManagerInterface       $entityManager,
+        private ChartImageGenerator          $chartImageGenerator
     )
     {
         parent::__construct();
@@ -68,7 +70,7 @@ class DeviceDataArchiver extends Command
         if ($deviceId = $input->getOption('deviceId')) {
             $devices[] = $this->deviceRepository->find($deviceId);
         } else {
-            $devices = $this->deviceRepository->findAll();
+            $devices = $this->deviceRepository->findDevicesWithIdentifiers();
         }
 
         $dates = $this->getDates($input->getOption('fromDate'), $input->getOption('toDate'));
@@ -106,9 +108,14 @@ class DeviceDataArchiver extends Command
         return Command::SUCCESS;
     }
 
-    private function generateDailyReport($device, $data, $entry, $date): void
+    private function generateDailyReport(Device $device, $data, $entry, $date): void
     {
-        $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
+        // Check if archive already exists
+        if ($this->deviceDataArchiveRepository->archiveExists($device, $entry, $date, DeviceDataArchive::PERIOD_DAY)) {
+            return;
+        }
+
+        $fileName = $this->generateFilename($device->getDeviceIdentifier(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
@@ -121,9 +128,14 @@ class DeviceDataArchiver extends Command
         $this->entityManager->flush();
     }
 
-    private function generateMonthlyReport($device, $data, $entry, $date): void
+    private function generateMonthlyReport(Device $device, $data, $entry, $date): void
     {
-        $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
+        // Check if archive already exists
+        if ($this->deviceDataArchiveRepository->archiveExists($device, $entry, $date, DeviceDataArchive::PERIOD_MONTH)) {
+            return;
+        }
+
+        $fileName = $this->generateFilename($device->getDeviceIdentifier(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
@@ -136,9 +148,14 @@ class DeviceDataArchiver extends Command
         $this->entityManager->flush();
     }
 
-    private function generateFilename(string $xmlName, $entry, $date): string
+    private function generateFilename(string $identifier, $entry, $date): string
     {
-        return sprintf('%s_t%s_%s', $xmlName, $entry, $date);
+        $text = sprintf('%s_t%s_%s', $identifier, $entry, $date);
+        $text = preg_replace('/[^a-zA-Z0-9]+/u', '_', $text);
+
+        // Trim and lowercase
+        $text = trim($text, '-');
+        return mb_strtolower($text, 'UTF-8');
     }
 
     private function getDates(?string $fromDate = null, ?string $toDate = null): \DatePeriod
