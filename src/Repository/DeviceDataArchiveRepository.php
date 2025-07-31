@@ -71,8 +71,9 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
 
     public function archiveExists(Device $device, int $entry, \DateTime $archiveDate, string $period): bool
     {
+        // Use DQL EXISTS for better performance
         $qb = $this->createQueryBuilder('dda')
-            ->select('COUNT(dda.id)')
+            ->select('1')
             ->where('dda.device = :device_id')
             ->andWhere('dda.entry = :entry')
             ->andWhere('dda.period = :period')
@@ -80,8 +81,9 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
             ->setParameter('device_id', $device->getId())
             ->setParameter('entry', $entry)
             ->setParameter('period', $period)
-            ->setParameter('archive_date', $archiveDate);
+            ->setParameter('archive_date', $archiveDate)
+            ->setMaxResults(1);
 
-        return (int) $qb->getQuery()->getSingleScalarResult() > 0;
+        return count($qb->getQuery()->getResult()) > 0;
     }
 }
