@@ -123,10 +123,12 @@ class DeviceAlarmRepository extends ServiceEntityRepository
             $builder->andWhere('a.sensor IS NULL');
         }
 
-        return $builder
+        $result = $builder
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
+        
+        return !empty($result) ? $result[0] : null;
     }
 
     public function findNumberOfActiveAlarmsForDevice(Device $device, ?int $entry = null): int
