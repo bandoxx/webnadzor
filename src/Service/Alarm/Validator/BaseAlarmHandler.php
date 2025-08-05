@@ -15,15 +15,9 @@ class BaseAlarmHandler
     public function __construct(protected DeviceAlarmFactory $alarmFactory, protected DeviceAlarmRepository $deviceAlarmRepository, protected EntityManagerInterface $entityManager)
     {}
 
-    protected function findAlarm(Device $device, string $type, ?int $sensor = null, ?string $message = null): ?DeviceAlarm
+    protected function findAlarm(Device $device, string $type, ?int $sensor = null): ?DeviceAlarm
     {
-        return $this->deviceAlarmRepository->findActiveAlarm($device, $type, $sensor, $message);
-    }
-    
-    protected function findDuplicateAlarm(DeviceData $deviceData, AlarmTypeInterface $alarmType, ?int $sensor = null): ?DeviceAlarm
-    {
-        $message = $alarmType->getMessage($deviceData, $sensor);
-        return $this->findAlarm($deviceData->getDevice(), $alarmType->getType(), $sensor, $message);
+        return $this->deviceAlarmRepository->findActiveAlarm($device, $type, $sensor);
     }
 
     protected function closeAlarm(DeviceData $deviceData, AlarmTypeInterface $alarmType, ?int $sensor = null): void
@@ -42,8 +36,7 @@ class BaseAlarmHandler
 
     protected function createAlarm(DeviceData $deviceData, AlarmTypeInterface $alarmType, ?int $sensor = null): void
     {
-        // Check if an active alarm with the same type, device, sensor, and message already exists
-        $alarm = $this->findDuplicateAlarm($deviceData, $alarmType, $sensor);
+        $alarm = $this->findAlarm($deviceData->getDevice(), $alarmType->getType(), $sensor);
 
         if ($alarm) {
             return;
