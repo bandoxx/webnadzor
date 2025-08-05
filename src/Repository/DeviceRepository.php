@@ -24,11 +24,13 @@ class DeviceRepository extends ServiceEntityRepository
 
     public function binaryFindOneByName(string $xmlName): ?Device
     {
-        return $this->createQueryBuilder('d')
+        $result = $this->createQueryBuilder('d')
             ->where('BINARY(d.xmlName) = :xmlName')->setParameter('xmlName', $xmlName)
             ->getQuery()
-            ->getOneOrNullResult()
+            ->getResult()
         ;
+    
+        return !empty($result) ? $result[0] : null;
     }
 
     public function deleteDevice(int $deviceId): void
