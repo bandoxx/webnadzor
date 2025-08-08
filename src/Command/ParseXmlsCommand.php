@@ -62,8 +62,9 @@ class ParseXmlsCommand extends Command
             if (!$device) {
                 try {
                     $this->saveUnresolvedXml($xmlPath);
-                    $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
                 } catch (\Throwable $e) {
+                    $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
+                    $output->writeln($e->getMessage());
                 } finally {
                     unlink($xmlPath);
                 }
@@ -74,8 +75,9 @@ class ParseXmlsCommand extends Command
             if ($device->isParserActive() === false) {
                 try {
                     $this->saveUnresolvedXml($xmlPath);
-                    $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
                 } catch (\Throwable $e) {
+                    $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
+                    $output->writeln($e->getMessage());
                 } finally {
                     unlink($xmlPath);
                 }
