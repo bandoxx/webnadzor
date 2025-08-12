@@ -3,6 +3,7 @@
 namespace App\Controller\DeviceData;
 
 use App\Entity\Device;
+use App\Entity\DeviceData;
 use App\Factory\DeviceDataFactory;
 use App\Factory\UnresolvedDeviceDataFactory;
 use App\Repository\DeviceRepository;
@@ -69,6 +70,22 @@ class DeviceDataGetUploaderController extends AbstractController
             
             // Remove temporary file
             unlink($tempFile);
+            
+            // Check if a record with the same device_id and device_date already exists
+            $existingData = $this->entityManager->getRepository(DeviceData::class)->findOneBy([
+                'device' => $device,
+                'deviceDate' => $deviceData->getDeviceDate()
+            ]);
+            
+            if ($existingData) {
+                // Skip insertion if a duplicate is found
+                $this->logger->info(sprintf(
+                    "Skipping duplicate data for device %s with date %s", 
+                    $deviceName, 
+                    $deviceData->getDeviceDate()->format('Y-m-d H:i:s')
+                ));
+                return $this->json('Duplicate data skipped.', Response::HTTP_OK);
+            }
             
             // Persist the DeviceData entity
             $this->entityManager->persist($deviceData);
