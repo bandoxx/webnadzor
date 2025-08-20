@@ -53,8 +53,9 @@ class DeviceEntryExportController extends AbstractController
         $data = $deviceDataRepository->findByDeviceAndBetweenDates($device, $dateFrom, $dateTo);
 
         if ($export = $request->get('export')) {
+            $baseName = $device->getXmlName() ?? $device->getName() ?? ($device->getId() !== null ? 'device-'.$device->getId() : 'device');
             $fileName = sprintf('export_%s_%s_%s',
-                $slugger->slug($device->getXmlName()),
+                $slugger->slug((string) $baseName),
                 $dateFrom->format('d-m-Y'),
                 $dateTo->format('d-m-Y'),
             );
