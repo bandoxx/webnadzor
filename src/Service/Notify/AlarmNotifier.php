@@ -7,6 +7,12 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmLog;
 use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
+use App\Service\Alarm\Types\HumidityHigh;
+use App\Service\Alarm\Types\HumidityLow;
+use App\Service\Alarm\Types\Standalone\DeviceOffline;
+use App\Service\Alarm\Types\TemperatureHigh;
+use App\Service\Alarm\Types\TemperatureLow;
+use App\Service\Alarm\Types\DeviceSupplyOff;
 use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,8 +46,10 @@ class AlarmNotifier
             $this->notifyByMail($alarms);
 
             for ($entry = 1; $entry <= 2; $entry++) {
-                $alarms = array_merge($alarms, $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry));
-                $this->notifyByMail($alarms, $entry);
+                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+                $alarms = array_merge($alarms, $entryAlarms);
+
+                $this->notifyByMail($entryAlarms, $entry);
             }
 
             $this->notifyBySMS($alarms);
@@ -105,31 +113,70 @@ class AlarmNotifier
             return;
         }
 
-        /** @var Device $device */
-        $device = $alarms[0]->getDevice();
+        foreach ($alarms as $alarm) {
+            /** @var Device $device */
+            $device = $alarm->getDevice();
 
-        $settings = $device->getClient()->getClientSetting();
+            $settings = $device->getClient()->getClientSetting();
 
-        $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
-        $emails = array_merge($device->getApplicationEmailList(), $settings->getAlarmNotificationList(), $emails);
+            $alarmType = $alarm->getType();
 
-        if ($entry) {
-            $emails = array_merge($emails, [$device->getEntryData($entry)['application_email'] ?? []]);
+            // Start with internal recipients
+            $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
+
+            // Client-level notification list (already a flat list of emails)
+            $clientEmails = $settings->getAlarmNotificationList() ?? [];
+            if (!empty($clientEmails)) {
+                foreach ($clientEmails as $ce) {
+                    if (is_string($ce) && $ce !== '') {
+                        $emails[] = $ce;
+                    }
+                }
+            }
+
+            // General application emails (email => settings)
+            foreach ($device->getApplicationEmailList() as $applicationEmail => $emailSettings) {
+                $powerSupplyAlarm = in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true);
+                $isActive = (bool)($emailSettings['is_device_power_supply_active'] ?? false);
+                if ($powerSupplyAlarm && $isActive) {
+                    $emails[] = $applicationEmail;
+                }
+            }
+
+            // Entry-specific application emails (email => settings)
+            if ($entry) {
+                $entryData = $device->getEntryData($entry) ?? [];
+                $entryAppEmails = $entryData['application_email'] ?? [];
+                foreach ($entryAppEmails as $applicationEmail => $emailSettings) {
+                    if (in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true) && (bool)($emailSettings['is_temperature_active'] ?? false)) {
+                        $emails[] = $applicationEmail;
+                    }
+
+                    if (in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true) && (bool)($emailSettings['is_humidity_active'] ?? false)) {
+                        $emails[] = $applicationEmail;
+                    }
+                }
+            }
+
+            // Keep only unique, non-empty strings
+            $emails = array_values(array_unique(array_filter($emails, static fn($e) => is_string($e) && $e !== '')));
+
+            if (empty($emails)) {
+                continue;
+            }
+
+            $email = (new Email())
+                ->from('info@intelteh.hr')
+                ->sender('info@intelteh.hr')
+                ->to(...$emails)
+                ->bcc('logs@banox.dev')
+                ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
+                ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
+                    'device' => $device,
+                    'alarms' => $alarms
+                ]));
+
+            $this->mailer->send($email);
         }
-
-        $emails = array_unique($emails);
-
-        $email = (new Email())
-            ->from('info@intelteh.hr')
-            ->sender('info@intelteh.hr')
-            ->to(...$emails)
-            ->bcc('logs@banox.dev')
-            ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
-            ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
-                'device' => $device,
-                'alarms' => $alarms
-            ]));
-
-        $this->mailer->send($email);
     }
 }
