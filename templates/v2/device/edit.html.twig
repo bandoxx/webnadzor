@@ -1529,43 +1529,86 @@
                                                         </div>
                                                         {% endif %}
                                                     </div>
-                                                    <div class="xl:w-1/2 flex flex-col" id="emailApplicationGeneral">
+                                                    <div class="w-full flex flex-col" id="emailApplicationCol">
                                                     {% if device.applicationEmailList %}
-                                                    {% for email in device.applicationEmailList %}
-                                                    <div class="emailApplication w-full mb-4">
-                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                            Email iz aplikacije
-                                                        </label>
-                                                        <div class="flex">
-                                                            <div class="group relative w-3/4">
-                                                                <input type="email"
-                                                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                       placeholder="Email iz aplikacije"
-                                                                       name="application_email[]"
-                                                                       value="{{ email }}"
-                                                                >
-                                                                <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                    <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                    E-mail adresa <br> za alarme,<br> maksimalno 40
-                                                                    znakova
+                                                    {% for email, settings in device.applicationEmailList %}
+                                                        {% set randomKey = random_string() %}
+                                                    <div class="flex">
+                                                        <div class="emailApplication w-full mb-4">
+                                                            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                                Email iz aplikacije
+                                                            </label>
+                                                            <div class="flex">
+                                                                <div class="group relative w-3/4">
+                                                                    <input type="email"
+                                                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                           placeholder="Email iz aplikacije"
+                                                                           name="application_email[]"
+                                                                           value="{{ email }}"
+                                                                    >
+                                                                    <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                        <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                        E-mail adresa <br> za alarme,<br> maksimalno 40
+                                                                        znakova
+                                                                    </div>
+                                                                </div>
+                                                                <div
+                                                                        title="Izbriši email iz aplikacije"
+                                                                        class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                                    <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                         viewBox="0 0 24 24" stroke-width="1.5"
+                                                                         stroke="currentColor"
+                                                                         class="size-6 relative left-1 z-10">>
+                                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                                              d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                                    </svg>
                                                                 </div>
                                                             </div>
-                                                            <div
-                                                                    title="Izbriši email iz aplikacije"
-                                                                    class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
-                                                                <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
-                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                                     viewBox="0 0 24 24" stroke-width="1.5"
-                                                                     stroke="currentColor"
-                                                                     class="size-6 relative left-1 z-10">>
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                          d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                                                </svg>
+                                                        </div>
+                                                        <div class="w-full xl:w-1/2 sensorRow">
+                                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                            Aktivan alarm za:
+                                                        </label>
+                                                        <div class="group relative">
+                                                            <div class="flex justify-between">
+                                                                <div class="flex">
+                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                        Isključeno napajanje
+                                                                    </label>
+                                                                    <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_device_power_supply_active ? 'true' : 'false' }} }">
+                                                                        <label
+                                                                                for="toggleVoltageActiveGeneralEmailgeneralCounter{{ randomKey }}"
+                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                        >
+                                                                            <div class="relative">
+                                                                                <input
+                                                                                        type="checkbox"
+                                                                                        :checked="switcherToggle"
+                                                                                        name="is_device_power_supply_active"
+                                                                                        id="toggleVoltageActiveGeneralEmailgeneralCounter{{ randomKey }}"
+                                                                                        class="sr-only"
+                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                />
+                                                                                <div
+                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                ></div>
+                                                                                <div
+                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                ></div>
+                                                                            </div>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    </div>
                                                     {% endfor %}
                                                     {% else %}
+                                                    <div class="flex">
                                                         <div class="emailApplication w-full mb-4">
                                                             <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                 Email iz aplikacije
@@ -1597,7 +1640,47 @@
                                                                     </svg>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                            </div>
+                                                        <div class="w-full xl:w-1/2 sensorRow">
+                                                                <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                                    Aktivan alarm za:
+                                                                </label>
+                                                                <div class="group relative">
+                                                                    <div class="flex justify-between">
+                                                                        <div class="flex">
+                                                                            <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                Isključeno napajanje
+                                                                            </label>
+                                                                            <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                <label
+                                                                                        for="toggleVoltageActiveGeneralEmailgeneralCounter"
+                                                                                        class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                >
+                                                                                    <div class="relative">
+                                                                                        <input
+                                                                                                type="checkbox"
+                                                                                                :checked="switcherToggle"
+                                                                                                name="is_device_power_supply_active"
+                                                                                                id="toggleVoltageActiveGeneralEmailgeneralCounter"
+                                                                                                class="sr-only"
+                                                                                                @change="switcherToggle = !switcherToggle"
+                                                                                        />
+                                                                                        <div
+                                                                                                :class="switcherToggle && '!bg-primary'"
+                                                                                                class="block h-8 w-14 rounded-full bg-black"
+                                                                                        ></div>
+                                                                                        <div
+                                                                                                :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                        ></div>
+                                                                                    </div>
+                                                                                </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                    </div>
                                                     {% endif %}
                                                 </div>
                                                 </div>
@@ -1607,9 +1690,12 @@
                                                 <div id="emailSection"
                                                      class="mb-4.5 flex flex-col gap-6 xl:flex-row flex-wrap">
                                                     <div class="emailRow flex w-full">
-                                                        <div class="xl:w-1/2 flex flex-col" id="emailApplicationSensor1">
-                                                            {% if device.entry1.application_email|default([]) %}
-                                                                {% for email in device.entry1.application_email %}
+                                                        <div class="flex flex-col w-full" id="emailApplicationCol">
+                                                            {% set entry1 = device.getEntryData(1) ?? {} %}
+                                                            {% if entry1.application_email is defined and entry1.application_email %}
+                                                                {% for email, settings in entry1.application_email %}
+                                                                    {% set randomKey = random_string() %}
+                                                                    <div class="flex">
                                                                     <div class="emailApplication w-full mb-4">
                                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                             Email iz aplikacije
@@ -1642,37 +1728,274 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                {% endfor %}
-                                                            {% else %}
-                                                                <div class="emailApplication w-full mb-4">
-                                                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                        Email iz aplikacije
-                                                                    </label>
-                                                                    <div class="flex">
-                                                                        <div class="group relative w-3/4">
-                                                                            <input type="email"
-                                                                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                                   placeholder="Email iz aplikacije"
-                                                                                   name="application_email[]"
-                                                                                   value=""
-                                                                            >
-                                                                            <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                                <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                                E-mail adresa <br> za alarme,<br> maksimalno 40
-                                                                                znakova
+                                                                        <div class="w-full sensorRow">
+                                                                            <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                                                Aktivan alarm za:
+                                                                            </label>
+                                                                            <div class="group relative">
+                                                                                <div class="flex justify-between flex-col xl:flex-row">
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                            Temperaturu
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_temperature_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_temperature_active"
+                                                                                                            id="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                            Vlagu
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_humidity_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_humidity_active"
+                                                                                                            id="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
+                                                                                            Digitalni ulaz
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_digital_entry_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_digital_entry_active"
+                                                                                                            id="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="ml-3">
+                                                                                        <div>
+                                                                                            <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
+                                                                                                <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
+                                                                                                        name="digital_entry_alarm_value" value="{{ settings.digital_entry_alarm_value ? 'true' : 'false' }}">
+                                                                                                    <option value="false" class="text-body">0</option>
+                                                                                                    <option value="true" class="text-body">1</option>
+                                                                                                </select>
+                                                                                                <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                            </g>
+                          </svg>
+                        </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div
-                                                                                title="Izbriši email iz aplikacije"
-                                                                                class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
-                                                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                                 stroke="currentColor"
-                                                                                 class="size-6 relative left-1 z-10">>
-                                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                                      d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                                                            </svg>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <div class="flex">
+                                                                    <div class="emailApplication w-full mb-4">
+                                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                                            Email iz aplikacije
+                                                                        </label>
+                                                                        <div class="flex">
+                                                                            <div class="group relative w-3/4">
+                                                                                <input type="email"
+                                                                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                                       placeholder="Email iz aplikacije"
+                                                                                       name="application_email[]"
+                                                                                       value=""
+                                                                                >
+                                                                                <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                                    <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                                    E-mail adresa <br> za alarme,<br> maksimalno 40
+                                                                                    znakova
+                                                                                </div>
+                                                                            </div>
+                                                                            <div
+                                                                                    title="Izbriši email iz aplikacije"
+                                                                                    class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                                                <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                                     viewBox="0 0 24 24" stroke-width="1.5"
+                                                                                     stroke="currentColor"
+                                                                                     class="size-6 relative left-1 z-10">>
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                          d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="w-full sensorRow">
+                                                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                                            Aktivan alarm za:
+                                                                        </label>
+                                                                        <div class="group relative">
+                                                                            <div class="flex justify-between flex-col xl:flex-row">
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                        Temperaturu
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleTempActivecurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_temperature_active"
+                                                                                                        id="toggleTempActivecurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                        Vlagu
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleHumActivecurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_humidity_active"
+                                                                                                        id="toggleHumActivecurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
+                                                                                        Digitalni ulaz
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleDigitalEntrycurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_digital_entry_active"
+                                                                                                        id="toggleDigitalEntrycurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="ml-3">
+                                                                                    <div>
+                                                                                        <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
+                                                                                            <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
+                                                                                                    name="digital_entry_alarm_value">
+                                                                                                <option value="false" class="text-body">0</option>
+                                                                                                <option value="true" class="text-body">1</option>
+                                                                                            </select>
+                                                                                            <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                            </g>
+                          </svg>
+                        </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1685,9 +2008,12 @@
                                                 <div id="emailSection"
                                                      class="mb-4.5 flex flex-col gap-6 xl:flex-row flex-wrap">
                                                     <div class="emailRow flex w-full">
-                                                        <div class="xl:w-1/2 flex flex-col" id="emailApplicationSensor2">
-                                                            {% if device.entry2.application_email|default([]) %}
-                                                                {% for email in device.entry2.application_email %}
+                                                        <div class="flex flex-col w-full" id="emailApplicationCol">
+                                                            {% set entry2 = device.getEntryData(2) ?? {} %}
+                                                            {% if entry2.application_email is defined and entry2.application_email %}
+                                                                {% for email, settings in entry2.application_email %}
+                                                                    {% set randomKey = random_string() %}
+                                                                    <div class="flex">
                                                                     <div class="emailApplication w-full mb-4">
                                                                         <label class="mb-3 block text-sm font-medium text-black dark:text-white">
                                                                             Email iz aplikacije
@@ -1720,37 +2046,274 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                {% endfor %}
-                                                            {% else %}
-                                                                <div class="emailApplication w-full mb-4">
-                                                                    <label class="mb-3 block text-sm font-medium text-black dark:text-white">
-                                                                        Email iz aplikacije
-                                                                    </label>
-                                                                    <div class="flex">
-                                                                        <div class="group relative w-3/4">
-                                                                            <input type="email"
-                                                                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                                                                                   placeholder="Email iz aplikacije"
-                                                                                   name="application_email[]"
-                                                                                   value=""
-                                                                            >
-                                                                            <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
-                                                                                <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                                                                                E-mail adresa <br> za alarme,<br> maksimalno 40
-                                                                                znakova
+                                                                        <div class="w-full sensorRow">
+                                                                            <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                                                Aktivan alarm za:
+                                                                            </label>
+                                                                            <div class="group relative">
+                                                                                <div class="flex justify-between flex-col xl:flex-row">
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                            Temperaturu
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_temperature_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_temperature_active"
+                                                                                                            id="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                            Vlagu
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_humidity_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_humidity_active"
+                                                                                                            id="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex">
+                                                                                        <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
+                                                                                            Digitalni ulaz
+                                                                                        </label>
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_digital_entry_active ? 'true' : 'false' }} }">
+                                                                                            <label
+                                                                                                    for="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                    class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                            >
+                                                                                                <div class="relative">
+                                                                                                    <input
+                                                                                                            type="checkbox"
+                                                                                                            :checked="switcherToggle"
+                                                                                                            name="is_digital_entry_active"
+                                                                                                            id="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
+                                                                                                            class="sr-only"
+                                                                                                            @change="switcherToggle = !switcherToggle"
+                                                                                                    />
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!bg-primary'"
+                                                                                                            class="block h-8 w-14 rounded-full bg-black"
+                                                                                                    ></div>
+                                                                                                    <div
+                                                                                                            :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                            class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                    ></div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="ml-3">
+                                                                                        <div>
+                                                                                            <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
+                                                                                                <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
+                                                                                                        name="digital_entry_alarm_value" value="{{ settings.digital_entry_alarm_value ? 'true' : 'false' }}">
+                                                                                                    <option value="false" class="text-body">0</option>
+                                                                                                    <option value="true" class="text-body">1</option>
+                                                                                                </select>
+                                                                                                <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                            </g>
+                          </svg>
+                        </span>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div
-                                                                                title="Izbriši email iz aplikacije"
-                                                                                class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
-                                                                            <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
-                                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                                                                                 viewBox="0 0 24 24" stroke-width="1.5"
-                                                                                 stroke="currentColor"
-                                                                                 class="size-6 relative left-1 z-10">>
-                                                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                                                      d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
-                                                                            </svg>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <div class="flex">
+                                                                    <div class="emailApplication w-full mb-4">
+                                                                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                                                                            Email iz aplikacije
+                                                                        </label>
+                                                                        <div class="flex">
+                                                                            <div class="group relative w-3/4">
+                                                                                <input type="email"
+                                                                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                                                                       placeholder="Email iz aplikacije"
+                                                                                       name="application_email[]"
+                                                                                       value=""
+                                                                                >
+                                                                                <div class="absolute left-full pointer-events-none top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black px-4.5 py-1.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                                                                                    <span class="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                                                                                    E-mail adresa <br> za alarme,<br> maksimalno 40
+                                                                                    znakova
+                                                                                </div>
+                                                                            </div>
+                                                                            <div
+                                                                                    title="Izbriši email iz aplikacije"
+                                                                                    class="deleteAppEmail border-b-2 w-7 ml-3 relative py-1 h-fit mt-1 cursor-pointer text-sm font-medium text-white md:text-base border-transparent">
+                                                                                <div class="absolute inset-0 px-4 py-4 bg-primary rounded-full"></div>
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                                                     viewBox="0 0 24 24" stroke-width="1.5"
+                                                                                     stroke="currentColor"
+                                                                                     class="size-6 relative left-1 z-10">>
+                                                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                                                          d="M15 12H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                                                                                </svg>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="w-full sensorRow">
+                                                                        <label class="mb-1 block text-sm font-medium text-black dark:text-white">
+                                                                            Aktivan alarm za:
+                                                                        </label>
+                                                                        <div class="group relative">
+                                                                            <div class="flex justify-between flex-col xl:flex-row">
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                        Temperaturu
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleTempActivecurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_temperature_active"
+                                                                                                        id="toggleTempActivecurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
+                                                                                        Vlagu
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleHumActivecurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_humidity_active"
+                                                                                                        id="toggleHumActivecurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex">
+                                                                                    <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
+                                                                                        Digitalni ulaz
+                                                                                    </label>
+                                                                                    <div class="mt-3" x-data="{ switcherToggle: false }">
+                                                                                        <label
+                                                                                                for="toggleDigitalEntrycurrentSensorsensorCounter"
+                                                                                                class="flex cursor-pointer lg:justify-end select-none items-center"
+                                                                                        >
+                                                                                            <div class="relative">
+                                                                                                <input
+                                                                                                        type="checkbox"
+                                                                                                        :checked="switcherToggle"
+                                                                                                        name="is_digital_entry_active"
+                                                                                                        id="toggleDigitalEntrycurrentSensorsensorCounter"
+                                                                                                        class="sr-only"
+                                                                                                        @change="switcherToggle = !switcherToggle"
+                                                                                                />
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!bg-primary'"
+                                                                                                        class="block h-8 w-14 rounded-full bg-black"
+                                                                                                ></div>
+                                                                                                <div
+                                                                                                        :class="switcherToggle && '!right-1 !translate-x-full'"
+                                                                                                        class="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white transition"
+                                                                                                ></div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="ml-3">
+                                                                                    <div>
+                                                                                        <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
+                                                                                            <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
+                                                                                                    name="digital_entry_alarm_value">
+                                                                                                <option value="false" class="text-body">0</option>
+                                                                                                <option value="true" class="text-body">1</option>
+                                                                                            </select>
+                                                                                            <span class="absolute right-0 pt-3 top-1/2 z-20 -translate-y-1/2">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g opacity="0.8">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path>
+                            </g>
+                          </svg>
+                        </span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
