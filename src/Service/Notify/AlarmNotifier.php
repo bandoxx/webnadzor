@@ -129,34 +129,54 @@ class AlarmNotifier
 
             // Client-level notification list (already a flat list of emails)
             $clientEmails = $settings->getAlarmNotificationList() ?? [];
-            if (!empty($clientEmails)) {
-                foreach ($clientEmails as $ce) {
-                    if (is_string($ce) && $ce !== '') {
-                        $emails[] = $ce;
+            foreach ((array) $clientEmails as $ce) {
+                if (is_string($ce) && $ce !== '') {
+                    $emails[] = $ce;
+                }
+            }
+
+            // Alarm type flags
+            $powerSupplyAlarm = in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true);
+            $isTempAlarm = in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true);
+            $isHumAlarm = in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true);
+
+            // General application emails can be either a flat list ["a@b.com", ...]
+            // or a map ["a@b.com" => ["is_device_power_supply_active" => true], ...]
+            $general = $device->getApplicationEmailList() ?? [];
+            foreach ($general as $key => $value) {
+                if (is_string($value)) {
+                    // Flat list element
+                    if ($powerSupplyAlarm) {
+                        $emails[] = $value;
+                    }
+                } elseif (is_string($key) && is_array($value)) {
+                    // Map: email => settings
+                    $isActive = (bool)($value['is_device_power_supply_active'] ?? true);
+                    if ($powerSupplyAlarm && $isActive) {
+                        $emails[] = $key;
                     }
                 }
             }
 
-            // General application emails (email => settings)
-            foreach ($device->getApplicationEmailList() as $applicationEmail => $emailSettings) {
-                $powerSupplyAlarm = in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true);
-                $isActive = (bool)($emailSettings['is_device_power_supply_active'] ?? true);
-                if ($powerSupplyAlarm && $isActive) {
-                    $emails[] = $applicationEmail;
-                }
-            }
-
-            // Entry-specific application emails (email => settings)
+            // Entry-specific application emails (either flat list or map)
             if ($entry) {
                 $entryData = $device->getEntryData($entry) ?? [];
                 $entryAppEmails = $entryData['application_email'] ?? [];
-                foreach ($entryAppEmails as $applicationEmail => $emailSettings) {
-                    if (in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true) && (bool)($emailSettings['is_temperature_active'] ?? true)) {
-                        $emails[] = $applicationEmail;
-                    }
-
-                    if (in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true) && (bool)($emailSettings['is_humidity_active'] ?? true)) {
-                        $emails[] = $applicationEmail;
+                foreach ($entryAppEmails as $key => $value) {
+                    if (is_string($value)) {
+                        // Flat list: default to receive temp/humidity alarms
+                        if ($isTempAlarm || $isHumAlarm) {
+                            $emails[] = $value;
+                        }
+                    } elseif (is_string($key) && is_array($value)) {
+                        // Map: email => settings
+                        if ($isTempAlarm && (bool)($value['is_temperature_active'] ?? true)) {
+                            $emails[] = $key;
+                            continue;
+                        }
+                        if ($isHumAlarm && (bool)($value['is_humidity_active'] ?? true)) {
+                            $emails[] = $key;
+                        }
                     }
                 }
             }
