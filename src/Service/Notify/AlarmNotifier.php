@@ -140,7 +140,7 @@ class AlarmNotifier
             // General application emails (email => settings)
             foreach ($device->getApplicationEmailList() as $applicationEmail => $emailSettings) {
                 $powerSupplyAlarm = in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true);
-                $isActive = (bool)($emailSettings['is_device_power_supply_active'] ?? false);
+                $isActive = (bool)($emailSettings['is_device_power_supply_active'] ?? true);
                 if ($powerSupplyAlarm && $isActive) {
                     $emails[] = $applicationEmail;
                 }
@@ -151,11 +151,11 @@ class AlarmNotifier
                 $entryData = $device->getEntryData($entry) ?? [];
                 $entryAppEmails = $entryData['application_email'] ?? [];
                 foreach ($entryAppEmails as $applicationEmail => $emailSettings) {
-                    if (in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true) && (bool)($emailSettings['is_temperature_active'] ?? false)) {
+                    if (in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true) && (bool)($emailSettings['is_temperature_active'] ?? true)) {
                         $emails[] = $applicationEmail;
                     }
 
-                    if (in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true) && (bool)($emailSettings['is_humidity_active'] ?? false)) {
+                    if (in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true) && (bool)($emailSettings['is_humidity_active'] ?? true)) {
                         $emails[] = $applicationEmail;
                     }
                 }
