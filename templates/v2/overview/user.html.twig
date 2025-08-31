@@ -1009,7 +1009,7 @@
                                                     FTP poslužitelj
                                                 </label>
                                                 <input
-                                                        value="{{ ftp.host }}"
+                                                        value="{{ ftp is not null ? ftp.host : '' }}"
                                                         type="text"
                                                         name="host"
                                                         placeholder="domen.net"
@@ -1023,7 +1023,7 @@
                                                     FTP korisničko ime
                                                 </label>
                                                 <input
-                                                        value="{{ ftp.username }}"
+                                                        value="{{ ftp is not null ? ftp.username : '' }}"
                                                         type="text"
                                                         name="username"
                                                         placeholder="korisnik@domen.net"
@@ -1039,7 +1039,7 @@
                                                 <div class="relative">
                                                     <input
                                                             id="ftpPassword"
-                                                            value="{{ ftp.password }}"
+                                                            value="{{ ftp is not null ? ftp.password : '' }}"
                                                             name="password"
                                                             type="password"
                                                             placeholder="•••••••••••"

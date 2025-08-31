@@ -17,7 +17,7 @@ class AdminDeviceSimListController extends AbstractController
     public function __invoke(DeviceRepository $deviceRepository, DeviceSimListFactory $deviceSimListFactory, Request $request): Response
     {
         $filled = $request->query->getBoolean('filled', false);
-        $devices = $deviceRepository->findActiveDevices($filled ?? false);
+        $devices = $deviceRepository->findActiveDevices($filled);
         /** @var DeviceSimListItem[] $table */
         $table = [];
 

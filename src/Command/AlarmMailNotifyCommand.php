@@ -7,6 +7,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Lock\Store\FlockStore;
 
 #[AsCommand(
     name: 'app:alarm:notify',
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AlarmMailNotifyCommand extends Command
 {
     public function __construct(
-        private AlarmNotifier $alarmNotifier
+        private AlarmNotifier $alarmNotifier,
     )
     {
         parent::__construct();
@@ -27,9 +28,21 @@ class AlarmMailNotifyCommand extends Command
     {
         $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
+        $store = new FlockStore(sys_get_temp_dir());
+        $factory = new \Symfony\Component\Lock\LockFactory($store);
+        $lock = $factory->createLock('alarm-notify');
+
+        // Try to acquire the lock
+        if (!$lock->acquire()) {
+            $output->writeln(sprintf("%s - %s lock is active", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+            return Command::FAILURE;
+        }
+
         $this->alarmNotifier->notify();
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
+        $lock->refresh();
 
         return Command::SUCCESS;
     }

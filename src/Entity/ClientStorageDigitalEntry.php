@@ -182,26 +182,4 @@ class ClientStorageDigitalEntry
         $this->backgroundActive = $backgroundActive;
         return $this;
     }
-
-    public function getText(): string
-    {
-        return $this->text;
-    }
-
-    public function setText(string $text): self
-    {
-        $this->text = $text;
-        return $this;
-    }
-
-    public function getColor(): string
-    {
-        return $this->color;
-    }
-
-    public function setColor(string $color): self
-    {
-        $this->color = $color;
-        return $this;
-    }
 }

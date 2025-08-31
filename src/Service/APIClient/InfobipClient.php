@@ -78,21 +78,21 @@ class InfobipClient
         return $reports;
     }
 
-    public function sendVoiceMessage(array $phoneNumber, string $message)
-    {
-        // TODO:
-        if ($this->isClientActive === false) {
-            return;
-        }
-
-        $data = [
-            'from' => $from,
-            'to' => $phoneNumber
-        ];
-
-        $this->infobipClient->request('POST', '/tts/3/simple', [
-            'body' => json_encode($data)
-        ]);
-    }
+//    public function sendVoiceMessage(array $phoneNumber, string $message)
+//    {
+//        // TODO:
+//        if ($this->isClientActive === false) {
+//            return;
+//        }
+//
+//        $data = [
+//            'from' => $from,
+//            'to' => $phoneNumber
+//        ];
+//
+//        $this->infobipClient->request('POST', '/tts/3/simple', [
+//            'body' => json_encode($data)
+//        ]);
+//    }
 
 }

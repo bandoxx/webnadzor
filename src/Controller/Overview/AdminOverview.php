@@ -32,7 +32,7 @@ class AdminOverview extends AbstractController
 
         $data = [];
         foreach ($clients as $client) {
-            if ($client->isDeleted() === true || $user->isUser() || $user->isModerator() || $user->getClients()->contains($client) === false) {
+            if ($user->isUser() || $user->isModerator() || $user->getClients()->contains($client) === false) {
                 continue;
             }
 
@@ -44,9 +44,9 @@ class AdminOverview extends AbstractController
                 'name' => $client->getName(),
                 'address' => $client->getAddress(),
                 'oib' => $client->getOIB(),
-                'numberOfDevices' => count($devices),
-                'onlineDevices' => 0,
-                'offlineDevices' => 0,
+                'numberOfDevices' => 0, // Will count used sensors instead of devices
+                'onlineDevices' => 0,   // Will count online sensors
+                'offlineDevices' => 0,  // Will count offline sensors
                 'overview' => $client->getOverviewViews(),
                 'pdfLogo' => $client->getPdfLogo(),
                 'mainLogo' => $client->getMainLogo(),
@@ -55,7 +55,9 @@ class AdminOverview extends AbstractController
                 'alarms' => []
             ];
 
-            $onlineDevices = 0;
+            $totalUsedSensors = 0;
+            $onlineSensors = 0;
+            $offlineSensors = 0;
 
             foreach ($devices as $device) {
                 $deviceData = $deviceDataRepository->findLastRecordForDevice($device);
@@ -64,8 +66,26 @@ class AdminOverview extends AbstractController
                     continue;
                 }
 
-                if (time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalTrashholdInSeconds()) {
-                    $onlineDevices++;
+                $isDeviceOnline = time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalTrashholdInSeconds();
+                
+                // Check Entry1 sensors - count as one sensor if any type is used
+                if ($device->isTUsed(1) || $device->isRhUsed(1) || $device->isDUsed(1)) {
+                    $totalUsedSensors++;
+                    if ($isDeviceOnline) {
+                        $onlineSensors++;
+                    } else {
+                        $offlineSensors++;
+                    }
+                }
+                
+                // Check Entry2 sensors - count as one sensor if any type is used
+                if ($device->isTUsed(2) || $device->isRhUsed(2) || $device->isDUsed(2)) {
+                    $totalUsedSensors++;
+                    if ($isDeviceOnline) {
+                        $onlineSensors++;
+                    } else {
+                        $offlineSensors++;
+                    }
                 }
 
                 $alarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
@@ -96,8 +116,9 @@ class AdminOverview extends AbstractController
                 }
             }
 
-            $data[$clientId]['onlineDevices'] = $onlineDevices;
-            $data[$clientId]['offlineDevices'] = $data[$clientId]['numberOfDevices'] - $onlineDevices;
+            $data[$clientId]['numberOfDevices'] = $totalUsedSensors;
+            $data[$clientId]['onlineDevices'] = $onlineSensors;
+            $data[$clientId]['offlineDevices'] = $offlineSensors;
         }
 
         return $this->render('v2/overview/admin.html.twig', [

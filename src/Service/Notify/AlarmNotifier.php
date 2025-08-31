@@ -7,12 +7,6 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmLog;
 use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
-use App\Service\Alarm\Types\HumidityHigh;
-use App\Service\Alarm\Types\HumidityLow;
-use App\Service\Alarm\Types\Standalone\DeviceOffline;
-use App\Service\Alarm\Types\TemperatureHigh;
-use App\Service\Alarm\Types\TemperatureLow;
-use App\Service\Alarm\Types\DeviceSupplyOff;
 use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,27 +32,30 @@ class AlarmNotifier
     public function notify(): void
     {
         $devices = $this->entityManager->getRepository(Device::class)->findAll();
-
         $deviceAlarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
+
         foreach ($devices as $device) {
+            // Process main alarms (no sensor)
             $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
-
             $this->notifyByMail($alarms);
-
-            for ($entry = 1; $entry <= 2; $entry++) {
-                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
-                $alarms = array_merge($alarms, $entryAlarms);
-
-                $this->notifyByMail($entryAlarms, $entry);
-            }
-
             $this->notifyBySMS($alarms);
 
             foreach ($alarms as $alarm) {
                 $alarm->setIsNotified(true);
             }
-
             $this->entityManager->flush();
+
+            // Process alarms for entries 1 and 2
+            for ($entry = 1; $entry <= 2; $entry++) {
+                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+                $this->notifyByMail($entryAlarms, $entry);
+                $this->notifyBySMS($entryAlarms);
+
+                foreach ($entryAlarms as $alarm) {
+                    $alarm->setIsNotified(true);
+                }
+                $this->entityManager->flush();
+            }
         }
     }
 
