@@ -1576,7 +1576,7 @@
                                                                     <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                         Isključeno napajanje
                                                                     </label>
-                                                                    <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_device_power_supply_active|default(true) ? 'true' : 'false' }} }">
+                                                                    <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_device_power_supply_active is defined ? settings.is_device_power_supply_active : true) ? 'true' : 'false' }} }">
                                                                         <label
                                                                                 for="toggleVoltageActiveGeneralEmailgeneralCounter{{ randomKey }}"
                                                                                 class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1738,7 +1738,7 @@
                                                                                         <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                                             Temperaturu
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_temperature_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_temperature_active is defined ? settings.is_temperature_active : true) ? 'true' : 'false' }}}">
                                                                                             <label
                                                                                                     for="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1768,7 +1768,7 @@
                                                                                         <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                                             Vlagu
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_humidity_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_humidity_active is defined ? settings.is_humidity_active : true) ? 'true' : 'false' }} }">
                                                                                             <label
                                                                                                     for="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1798,7 +1798,7 @@
                                                                                         <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
                                                                                             Digitalni ulaz
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_digital_entry_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_digital_entry_active is defined ? settings.is_digital_entry_active : true) ? 'true' : 'false' }} }">
                                                                                             <label
                                                                                                     for="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -1828,7 +1828,7 @@
                                                                                         <div>
                                                                                             <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
                                                                                                 <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
-                                                                                                        name="digital_entry_alarm_value" value="{{ settings.digital_entry_alarm_value|default(true) ? 'true' : 'false' }}">
+                                                                                                        name="digital_entry_alarm_value" value="{{ (settings.digital_entry_alarm_value is defined ? settings.digital_entry_alarm_value : true) ? 'true' : 'false' }}{{ (settings.digital_entry_alarm_value is defined ? settings.digital_entry_alarm_value : true) ? 'true' : 'false' }}">
                                                                                                     <option value="false" class="text-body">0</option>
                                                                                                     <option value="true" class="text-body">1</option>
                                                                                                 </select>
@@ -2056,7 +2056,7 @@
                                                                                         <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                                             Temperaturu
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_temperature_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_temperature_active is defined ? settings.is_temperature_active : true) ? 'true' : 'false' }} }">
                                                                                             <label
                                                                                                     for="toggleTempActivecurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -2086,7 +2086,7 @@
                                                                                         <label class="mt-4 mr-3 text-sm font-medium text-black dark:text-white">
                                                                                             Vlagu
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_humidity_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_humidity_active is defined ? settings.is_humidity_active : true) ? 'true' : 'false' }} }">
                                                                                             <label
                                                                                                     for="toggleHumActivecurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -2116,7 +2116,7 @@
                                                                                         <label class="mt-4 mr-3 w text-sm font-medium text-black dark:text-white">
                                                                                             Digitalni ulaz
                                                                                         </label>
-                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ settings.is_digital_entry_active|default(true) ? 'true' : 'false' }} }">
+                                                                                        <div class="mt-3" x-data="{ switcherToggle: {{ (settings.is_digital_entry_active is defined ? settings.is_digital_entry_active : true) ? 'true' : 'false' }}}">
                                                                                             <label
                                                                                                     for="toggleDigitalEntrycurrentSensorsensorCounter{{ randomKey }}"
                                                                                                     class="flex cursor-pointer lg:justify-end select-none items-center"
@@ -2146,7 +2146,7 @@
                                                                                         <div>
                                                                                             <div x-data="{ isOptionSelected: false }" class="relative z-20 bg-white dark:bg-form-input">
                                                                                                 <select class="relative mt-3 z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input" :class="isOptionSelected &amp;&amp; 'text-black dark:text-white'" @change="isOptionSelected = true"
-                                                                                                        name="digital_entry_alarm_value" value="{{ settings.digital_entry_alarm_value|default(true) ? 'true' : 'false' }}">
+                                                                                                        name="digital_entry_alarm_value" value="{{ (settings.digital_entry_alarm_value is defined ? settings.digital_entry_alarm_value : true) ? 'true' : 'false' }}">
                                                                                                     <option value="false" class="text-body">0</option>
                                                                                                     <option value="true" class="text-body">1</option>
                                                                                                 </select>
