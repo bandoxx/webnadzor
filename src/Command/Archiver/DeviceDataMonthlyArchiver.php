@@ -68,7 +68,7 @@ class DeviceDataMonthlyArchiver extends Command
         $archiveCount = 0;
 
         // Pre-check which archives already exist to avoid unnecessary processing
-        $existingMonthlyArchives = $this->preCheckExistingArchives($devices, $date, DeviceDataArchive::PERIOD_MONTH);
+        $existingMonthlyArchives = $this->preCheckExistingArchives($devices, $date);
 
         foreach ($devices as $device) {
             $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
@@ -90,13 +90,18 @@ class DeviceDataMonthlyArchiver extends Command
                 // Flush every $batchSize archives
                 if ($archiveCount % $batchSize === 0) {
                     $this->entityManager->flush();
+                    $output->writeln(sprintf("%s - monthly flush completed after %d archives", (new \DateTime())->format('Y-m-d H:i:s'), $archiveCount));
                 }
             }
+            // Device processed (regardless of whether archives were created or skipped)
+            $deviceIdentifier = $device->getDeviceIdentifier() ?? ('device#' . $device->getId());
+            $output->writeln(sprintf("%s - device %s monthly report done for %s", (new \DateTime())->format('Y-m-d H:i:s'), $deviceIdentifier, $date->format(ArchiverInterface::MONTHLY_FORMAT)));
         }
 
         // Final flush for any remaining archives
         if ($archiveCount % $batchSize !== 0) {
             $this->entityManager->flush();
+            $output->writeln(sprintf("%s - monthly final flush completed after %d archives", (new \DateTime())->format('Y-m-d H:i:s'), $archiveCount));
         }
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
@@ -145,7 +150,7 @@ class DeviceDataMonthlyArchiver extends Command
         return $target;
     }
 
-    private function preCheckExistingArchives(array $devices, \DateTime $date, string $period): array
+    private function preCheckExistingArchives(array $devices, \DateTime $date): array
     {
         $deviceIds = array_map(function (Device $device) {
             return $device->getId();
@@ -156,7 +161,7 @@ class DeviceDataMonthlyArchiver extends Command
             ->andWhere('dda.period = :period')
             ->andWhere('dda.archiveDate = :archive_date')
             ->setParameter('device_ids', $deviceIds)
-            ->setParameter('period', $period)
+            ->setParameter('period', DeviceDataArchive::PERIOD_MONTH)
             ->setParameter('archive_date', $date);
 
         $existingArchives = $qb->getQuery()->getResult();
