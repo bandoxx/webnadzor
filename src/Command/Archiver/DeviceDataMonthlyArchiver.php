@@ -90,18 +90,21 @@ class DeviceDataMonthlyArchiver extends Command
                 // Flush every $batchSize archives
                 if ($archiveCount % $batchSize === 0) {
                     $this->entityManager->flush();
-                    $output->writeln(sprintf("%s - monthly flush completed after %d archives", (new \DateTime())->format('Y-m-d H:i:s'), $archiveCount));
                 }
             }
-            // Device processed (regardless of whether archives were created or skipped)
-            $deviceIdentifier = $device->getDeviceIdentifier() ?? ('device#' . $device->getId());
-            $output->writeln(sprintf("%s - device %s monthly report done for %s", (new \DateTime())->format('Y-m-d H:i:s'), $deviceIdentifier, $date->format(ArchiverInterface::MONTHLY_FORMAT)));
+
+            // Detach only DeviceData entities to free memory
+            foreach ($data as $row) {
+                $this->entityManager->detach($row);
+            }
+
+            unset($data);
+            gc_collect_cycles();
         }
 
         // Final flush for any remaining archives
         if ($archiveCount % $batchSize !== 0) {
             $this->entityManager->flush();
-            $output->writeln(sprintf("%s - monthly final flush completed after %d archives", (new \DateTime())->format('Y-m-d H:i:s'), $archiveCount));
         }
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
