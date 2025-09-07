@@ -93,6 +93,14 @@ class DeviceDataArchiver extends Command
                         $this->entityManager->flush();
                     }
                 }
+
+                // Detach only DeviceData entities to free memory
+                foreach ($data as $row) {
+                    $this->entityManager->detach($row);
+                }
+
+                unset($data);
+                gc_collect_cycles();
             }
         }
         
