@@ -71,7 +71,7 @@ class DeviceDataArchiver extends Command
         foreach ($dates as $date) {
             // Pre-check which archives already exist to avoid unnecessary processing
             $existingDailyArchives = $this->preCheckExistingArchives($devices, $date, DeviceDataArchive::PERIOD_DAY);
-            
+
             foreach ($devices as $device) {
                 $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
                 foreach([1, 2] as $entry) {
@@ -107,7 +107,7 @@ class DeviceDataArchiver extends Command
 
     private function generateDailyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
     {
-        $fileName = $this->generateFilename($device->getDeviceIdentifier(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
+        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getDeviceIdentifier()), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
@@ -115,25 +115,6 @@ class DeviceDataArchiver extends Command
         $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
         $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
-
-        $this->entityManager->persist($archive);
-        
-        // Only flush immediately if requested (for backward compatibility)
-        if ($flushImmediately) {
-            $this->entityManager->flush();
-        }
-    }
-
-    private function generateMonthlyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
-    {
-        $fileName = $this->generateFilename($device->getDeviceIdentifier(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
-
-        $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
-        $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
-
-        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
-
-        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
         $this->entityManager->persist($archive);
         

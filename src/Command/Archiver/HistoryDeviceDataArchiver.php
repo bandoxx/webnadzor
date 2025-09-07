@@ -99,7 +99,7 @@ class HistoryDeviceDataArchiver extends Command
 
     private function generateDailyReport($device, $data, $entry, $date): void
     {
-        $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
+        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getXmlName()), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
         $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
@@ -112,7 +112,7 @@ class HistoryDeviceDataArchiver extends Command
 
     private function generateMonthlyReport($device, $data, $entry, $date): void
     {
-        $fileName = $this->generateFilename($device->getXmlName(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
+        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getXmlName()), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 

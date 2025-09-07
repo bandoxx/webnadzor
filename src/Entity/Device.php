@@ -526,6 +526,6 @@ class Device
 
     public function getDeviceIdentifier(): ?string
     {
-        return $this->xmlName ?? $this->serialNumber;
+        return empty($this->xmlName) ? $this->serialNumber : $this->xmlName;
     }
 }

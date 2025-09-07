@@ -110,7 +110,7 @@ class DeviceDataMonthlyArchiver extends Command
 
     private function generateMonthlyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
     {
-        $fileName = $this->generateFilename($device->getDeviceIdentifier(), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
+        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getDeviceIdentifier()), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
 
         $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
         $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
