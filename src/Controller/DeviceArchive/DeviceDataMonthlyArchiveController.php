@@ -31,9 +31,26 @@ class DeviceDataMonthlyArchiveController extends AbstractController
         DeviceOverviewFactory $deviceOverviewFactory
     ): StreamedResponse|Response|NotFoundHttpException
     {
-        $dateFrom = new \DateTime($request->get('date_from'));
+        $dateFrom = $request->query->get('date_from');
+        $dateTo   = $request->query->get('date_to');
+
+        // if missing, set defaults and redirect
+        if (!$dateFrom || !$dateTo) {
+            $defaults = [
+                'date_from' => (new \DateTimeImmutable('-6 month'))->format('d.m.Y'),
+                'date_to'   => (new \DateTimeImmutable())->format('d.m.Y'),
+            ];
+
+            return $this->redirectToRoute('app_devicedataarchive_getmonthlydata', array_merge(
+                $request->query->all(),
+                $defaults,
+                ['deviceId' => $device->getId(), 'clientId' => $client->getId(), 'entry' => $entry],
+            ));
+        }
+
+        $dateFrom = new \DateTime($dateFrom);
         $dateFrom->setTime(0, 0);
-        $dateTo = (new \DateTime($request->get('date_to')));
+        $dateTo = (new \DateTime($dateTo));
         $dateTo->setTime(23, 59);
 
         $archiveData = $deviceDataArchiveRepository->getMonthlyArchives($device, $entry, $dateFrom, $dateTo);
