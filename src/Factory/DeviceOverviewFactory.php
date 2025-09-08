@@ -60,7 +60,7 @@ class DeviceOverviewFactory
             ->setHumidityModel($humidityModel)
         ;
 
-        $data = $this->deviceDataRepository->findLastRecordForDevice($device);
+        $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entry);
         $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
 
         if (!$data) {
