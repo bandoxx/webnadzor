@@ -60,31 +60,23 @@ class AdminOverview extends AbstractController
             $offlineSensors = 0;
 
             foreach ($devices as $device) {
-                $deviceData = $deviceDataRepository->findLastRecordForDevice($device);
+                foreach ([1, 2] as $sensor) {
+                    $deviceData = $deviceDataRepository->findLastRecordForDeviceAndEntry($device, $sensor);
 
-                if (!$deviceData) {
-                    continue;
-                }
-
-                $isDeviceOnline = time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalTrashholdInSeconds();
-                
-                // Check Entry1 sensors - count as one sensor if any type is used
-                if ($device->isTUsed(1) || $device->isRhUsed(1) || $device->isDUsed(1)) {
-                    $totalUsedSensors++;
-                    if ($isDeviceOnline) {
-                        $onlineSensors++;
-                    } else {
-                        $offlineSensors++;
+                    if (!$deviceData) {
+                        continue;
                     }
-                }
-                
-                // Check Entry2 sensors - count as one sensor if any type is used
-                if ($device->isTUsed(2) || $device->isRhUsed(2) || $device->isDUsed(2)) {
-                    $totalUsedSensors++;
-                    if ($isDeviceOnline) {
-                        $onlineSensors++;
-                    } else {
-                        $offlineSensors++;
+
+                    $isDeviceOnline = time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalTrashholdInSeconds();
+
+                    // Check Entry sensors - count as one sensor if any type is used
+                    if ($device->isTUsed($sensor) || $device->isRhUsed($sensor) || $device->isDUsed($sensor)) {
+                        $totalUsedSensors++;
+                        if ($isDeviceOnline) {
+                            $onlineSensors++;
+                        } else {
+                            $offlineSensors++;
+                        }
                     }
                 }
 
