@@ -84,7 +84,7 @@ class DeviceLocationHandler
         $deviceTable = [];
 
         foreach ($entries as $entry) {
-            $overviewData = $this->deviceOverviewFactory->create($entry['device'], $entry['entry'], true);
+            $overviewData = $this->deviceOverviewFactory->create($entry['device'], $entry['entry']);
 
             if (!$overviewData) {
                 continue;
