@@ -20,7 +20,7 @@ class DeviceOverviewFactory
         private readonly DeviceAlarmRepository $deviceAlarmRepository
     ) {}
 
-    public function create(Device $device, int $entry): ?DeviceOverviewModel
+    public function create(Device $device, int $entry, bool $lastRecordByDevice = false): ?DeviceOverviewModel
     {
         $deviceEntryData = $device->getEntryData($entry);
 
@@ -60,7 +60,12 @@ class DeviceOverviewFactory
             ->setHumidityModel($humidityModel)
         ;
 
-        $data = $this->deviceDataRepository->findLastRecordForDevice($device);
+        if ($lastRecordByDevice) {
+            $data = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
+        } else {
+            $data = $this->deviceDataRepository->findLastRecordForDevice($device);
+        }
+
         $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
 
         if (!$data) {
