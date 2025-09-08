@@ -61,9 +61,9 @@ class DeviceOverviewFactory
         ;
 
         if ($lastRecordByDevice) {
-            $data = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
-        } else {
             $data = $this->deviceDataRepository->findLastRecordForDevice($device);
+        } else {
+            $data = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
         }
 
         $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
