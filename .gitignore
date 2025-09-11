@@ -33,3 +33,4 @@ phpstan.neon
 ###< phpstan/phpstan ###
 
 /src/Command/TestCommand.php
+/src/Command/XmlUploaderCommand.php
