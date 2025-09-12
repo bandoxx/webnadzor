@@ -24,6 +24,13 @@ class XLSXArchiver extends Archiver
         $objWriter = IOFactory::createWriter($spreadsheet, IOFactory::WRITER_XLSX);
 
         $objWriter->save('php://output');
+
+        // Free memory after save
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet);
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
     }
 
     public function save(Spreadsheet $spreadsheet, ?string $path = null, ?string $fileName = null): ArchiveModel
@@ -36,6 +43,13 @@ class XLSXArchiver extends Archiver
 
         $archiveModel = $this->createArchiveModel($path, $fileName);
         $objWriter->save($archiveModel->getFullPath());
+
+        // Free memory after save
+        $spreadsheet->disconnectWorksheets();
+        unset($spreadsheet);
+        if (function_exists('gc_collect_cycles')) {
+            gc_collect_cycles();
+        }
 
         return $archiveModel;
     }
