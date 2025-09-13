@@ -27,6 +27,8 @@ parameters:
     aes_key_path: '%kernel.project_dir%/key/aes.json'
     temporary_directory: '%kernel.project_dir%/var'
     is_infobip_client_active: true
+    recaptcha_site_key: '%env(default::GOOGLE_RECAPTCHA_SITE_KEY)%'
+    recaptcha_secret: '%env(default::GOOGLE_RECAPTCHA_SECRET)%'
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -102,6 +104,10 @@ services:
     App\Service\APIClient\InfobipClient:
         $sender: '%env(INFOBIP_SENDER)%'
         $isClientActive: '%is_infobip_client_active%'
+
+    App\Service\Security\RecaptchaValidator:
+        arguments:
+            $secret: '%recaptcha_secret%'
 
     App\Command\RabbitMQConsumerCommand:
         arguments:

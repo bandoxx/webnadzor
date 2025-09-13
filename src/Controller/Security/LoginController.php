@@ -22,7 +22,12 @@ class LoginController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('v2/security/login.html.twig', ['something' => 'ok', 'last_username' => $lastUsername, 'error' => $error]);
+        $siteKey = (string) $this->getParameter('recaptcha_site_key');
+        return $this->render('v2/security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+            'recaptcha_site_key' => $siteKey,
+        ]);
     }
 
 
