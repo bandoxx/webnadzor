@@ -17,13 +17,17 @@ class MapMarkersAllClientsController extends AbstractController
 {
     public function __invoke(ClientRepository $clientRepository, UserAccess $userAccess, MapMarkerFactory $mapMarkerFactory): NotFoundHttpException|JsonResponse
     {
-        $clients = $clientRepository->findAllActive();
-
         /** @var User|null $user */
         $user = $this->getUser();
 
         if (!$user) {
             return $this->createNotFoundException();
+        }
+
+        if ($user->getPermission() === User::ROLE_ADMINISTRATOR) {
+            $clients = $user->getClients();
+        } else {
+            $clients = $clientRepository->findAllActive();
         }
 
         $data = [];
