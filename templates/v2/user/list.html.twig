@@ -501,7 +501,7 @@
                                                     <option value="{{ client.id }}">{{ client.name }}</option>
                                                 {% endfor %}
                                             </select>
-                                            <div x-data="dropdownClient('select')" x-init="loadOptions()"
+                                            <div x-data="dropdownClient('select', 'select2')" x-init="loadOptions()"
                                                  class="flex flex-col items-center">
                                                 <input name="clients" type="hidden" id="selectNewClient"
                                                        :value="selectedValues()">
@@ -732,7 +732,7 @@
 
                         <!--dropdown logic-->
                         <script>
-                            function dropdownClient(clientSelectId) {
+                            function dropdownClient(clientSelectId, locationSelectId) {
                                 return {
                                     options: [],
                                     selected: [],
@@ -777,13 +777,83 @@
                                             this.selected.splice(this.selected.lastIndexOf(index), 1);
                                             this.options[index].selected = false;
                                         }
+
+                                        this.updateLocations(locationSelectId);
                                     },
 
                                     remove(index, optionIndex) {
                                         this.options[optionIndex].selected = false;
                                         this.selected.splice(index, 1);
-                                    },
 
+                                        this.updateLocations(locationSelectId);
+                                    },
+                                    //method to fetch and update locations
+                                    async updateLocations(locationSelectId) {
+                                        const clientIds = this.selectedValues();
+
+                                        const locationDropdownElement = document.querySelector(`div[x-data="dropdownLocation('${locationSelectId}')"]`);
+
+                                        if (!locationDropdownElement) {
+                                            console.error(`Alpine.js dropdown root element not found for ID: ${locationSelectId}`);
+                                            return;
+                                        }
+
+                                        const locationDropdownData = Alpine.$data(locationDropdownElement);
+
+                                        const hiddenSelect = document.getElementById(locationSelectId);
+
+                                        if (clientIds.length === 0) {
+                                            hiddenSelect.innerHTML = '';
+                                            locationDropdownData.loadOptions();
+                                            locationDropdownData.selected = [];
+                                            return;
+                                        }
+
+                                        const previouslySelectedValues = locationDropdownData.selectedValues();
+                                        const queryParams = clientIds.map(id => `clientIds[]=${id}`).join('&');
+                                        const apiUrl = `/api/clients/active-sensors?${queryParams}`;
+
+                                        try {
+                                            const response = await fetch(apiUrl);
+                                            if (!response.ok) {
+                                                throw new Error(`HTTP error! Status: ${response.status}`);
+                                            }
+                                            const data = await response.json();
+
+                                            // Convert the fetched data into the new options format
+                                            const newLocationOptions = Object.keys(data).map(key => ({
+                                                value: key,
+                                                text: data[key].full,
+                                                selected: false
+                                            }));
+
+                                            if (hiddenSelect) {
+                                                hiddenSelect.innerHTML = '';
+
+                                                newLocationOptions.forEach(option => {
+                                                    const newOption = document.createElement('option');
+                                                    newOption.value = option.value;
+                                                    newOption.textContent = option.text;
+                                                    hiddenSelect.appendChild(newOption);
+                                                });
+                                            }
+
+                                            locationDropdownData.loadOptions();
+
+                                            setTimeout(() => {
+                                                const newSelections = [];
+                                                previouslySelectedValues.forEach(selectedValue => {
+                                                    const newIndex = locationDropdownData.options.findIndex(option => option.value === selectedValue);
+                                                    if (newIndex !== -1) {
+                                                        newSelections.push(newIndex);
+                                                    }
+                                                });
+                                                locationDropdownData.selected = newSelections;
+                                            }, 0);
+                                        } catch (error) {
+                                            console.error('Error fetching locations:', error);
+                                        }
+                                    },
                                     loadOptions() {
                                         // build options from hidden select
                                         const options = document.getElementById(clientSelectId).options;
@@ -1100,7 +1170,7 @@
                                                 {% endfor %}
                                             </select>
 
-                                            <div x-data="dropdownClient('select3')" x-init="loadOptions()" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
+                                            <div x-data="dropdownClient('select3', 'select4')" x-init="loadOptions()" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
                                                 <input name="clients" type="hidden" id="selectNewClientUpdate" :value="selectedValues()">
 
                                                 <div class="inline-block relative w-full">
