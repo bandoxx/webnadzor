@@ -20,7 +20,7 @@ class AdminOverview extends AbstractController
         $clients = $clientRepository->findAllActive();
 
         if ($user->getClients()->count() === 1) {
-            $clientId = $user->getclients()->first()->getId();
+            $clientId = $user->getClients()->first()->getId();
 
             return $this->redirectToRoute('client_overview', [
                 'clientId' => $clientId,
@@ -29,7 +29,7 @@ class AdminOverview extends AbstractController
 
         $data = [];
         foreach ($clients as $client) {
-            if ($user->isUser() || $user->isModerator() || $user->getClients()->contains($client) === false) {
+            if ($user->isModerator() || $user->getClients()->contains($client) === false) {
                 continue;
             }
 
