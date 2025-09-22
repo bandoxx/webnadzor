@@ -603,9 +603,9 @@
 
                                         <div>
                                             <select class="hidden" x-cloak id="select2">
-                                                {% for key, location in client_locations %}
-                                                    <option value="{{ key }}">{{ location.full }}</option>
-                                                {% endfor %}
+{#                                                {% for key, location in client_locations %}#}
+{#                                                    <option value="{{ key }}">{{ location.full }}</option>#}
+{#                                                {% endfor %}#}
                                             </select>
 
                                             <div x-data="dropdownLocation('select2')" x-init="loadOptions()"
@@ -1241,9 +1241,9 @@
 
                                         <div>
                                             <select class="hidden" name="locations" x-cloak id="select4">
-                                                {% for key, location in client_locations %}
-                                                    <option value="{{ key }}">{{ location.full }}</option>
-                                                {% endfor %}
+{#                                                {% for key, location in client_locations %}#}
+{#                                                    <option value="{{ key }}">{{ location.full }}</option>#}
+{#                                                {% endfor %}#}
                                             </select>
 
                                             <div x-data="dropdownLocation('select4')" x-init="loadOptions()" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
