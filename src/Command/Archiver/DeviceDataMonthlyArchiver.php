@@ -22,10 +22,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
-    name: 'app:device-data-archiver:daily',
-    description: 'Command for making XLSX and PDF archives on daily level.',
+    name: 'app:device-data-archiver:monthly',
+    description: 'Command for making XLSX and PDF archives on monthly level.',
 )]
-class DeviceDataArchiver extends Command
+class DeviceDataMonthlyArchiver extends Command
 {
     public function __construct(
         private DeviceDataXLSXArchiver       $XLSXArchiver,
@@ -46,8 +46,7 @@ class DeviceDataArchiver extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('fromDate', null, InputOption::VALUE_OPTIONAL, 'From date', null)
-            ->addOption('toDate', null, InputOption::VALUE_OPTIONAL, 'To date', null)
+            ->addOption('date', null, InputOption::VALUE_OPTIONAL, 'Any date within the target month', null)
             ->addOption('deviceId', null, InputOption::VALUE_OPTIONAL, 'Device id', null)
         ;
     }
@@ -62,48 +61,47 @@ class DeviceDataArchiver extends Command
             $devices = $this->deviceRepository->findDevicesWithIdentifiers();
         }
 
-        $dates = $this->getDates($input->getOption('fromDate'), $input->getOption('toDate'));
-        
+        $date = $this->getTargetDate($input->getOption('date'));
+
         // Batch size for flushing to database
         $batchSize = 20;
         $archiveCount = 0;
 
-        foreach ($dates as $date) {
-            // Pre-check which archives already exist to avoid unnecessary processing
-            $existingDailyArchives = $this->preCheckExistingArchives($devices, $date, DeviceDataArchive::PERIOD_DAY);
+        // Pre-check which archives already exist to avoid unnecessary processing
+        $existingMonthlyArchives = $this->preCheckExistingArchives($devices, $date);
 
-            foreach ($devices as $device) {
-                $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
-                foreach([1, 2] as $entry) {
-                    $fromDate = (clone $date)->setTime(0, 0, 0);
-                    $toDate = (clone $date)->setTime(23, 59, 59);
+        foreach ($devices as $device) {
+            $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
-                    // Check if archive already exists using the pre-fetched data
-                    $archiveKey = $this->getArchiveKey($device->getId(), $entry, $date, DeviceDataArchive::PERIOD_DAY);
-                    if (isset($existingDailyArchives[$archiveKey])) {
-                        continue;
-                    }
+            foreach([1, 2] as $entry) {
+                $fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
+                $toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
 
-                    $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
-                    $this->generateDailyReport($device, $data, $entry, $date, false);
-                    
-                    $archiveCount++;
-                    // Flush every $batchSize archives
-                    if ($archiveCount % $batchSize === 0) {
-                        $this->entityManager->flush();
-                    }
+                // Check if archive already exists using the pre-fetched data
+                $archiveKey = $this->getArchiveKey($device->getId(), $entry, $date, DeviceDataArchive::PERIOD_MONTH);
+                if (isset($existingMonthlyArchives[$archiveKey])) {
+                    continue;
                 }
 
-                // Detach only DeviceData entities to free memory
-                foreach ($data as $row) {
-                    $this->entityManager->detach($row);
-                }
+                $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
+                $this->generateMonthlyReport($device, $data, $entry, $date, false);
 
-                unset($data);
-                gc_collect_cycles();
+                $archiveCount++;
+                // Flush every $batchSize archives
+                if ($archiveCount % $batchSize === 0) {
+                    $this->entityManager->flush();
+                }
             }
+
+            // Detach only DeviceData entities to free memory
+            foreach ($data as $row) {
+                $this->entityManager->detach($row);
+            }
+
+            unset($data);
+            gc_collect_cycles();
         }
-        
+
         // Final flush for any remaining archives
         if ($archiveCount % $batchSize !== 0) {
             $this->entityManager->flush();
@@ -113,20 +111,19 @@ class DeviceDataArchiver extends Command
         return Command::SUCCESS;
     }
 
-    private function generateDailyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
+    private function generateMonthlyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
     {
-        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getDeviceIdentifier()), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
+        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getDeviceIdentifier()), $entry, $date->format(ArchiverInterface::MONTHLY_FILENAME_FORMAT));
 
-        $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
-        $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
+        $this->XLSXArchiver->saveMonthly($device,  $data, $entry, $date, $fileName);
+        $archive = $this->PDFArchiver->saveMonthly($device, $data, $entry, $date, $fileName);
 
         $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
 
-        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
+        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_MONTH);
 
         $this->entityManager->persist($archive);
-        
-        // Only flush immediately if requested (for backward compatibility)
+
         if ($flushImmediately) {
             $this->entityManager->flush();
         }
@@ -136,57 +133,42 @@ class DeviceDataArchiver extends Command
     {
         $text = sprintf('%s_t%s_%s', $identifier, $entry, $date);
         $text = preg_replace('/[^a-zA-Z0-9]+/u', '_', $text);
-
-        // Trim and lowercase
         $text = trim($text, '-');
         return mb_strtolower($text, 'UTF-8');
     }
 
-    private function getDates(?string $fromDate = null, ?string $toDate = null): \DatePeriod
+    private function getTargetDate(?string $date = null): \DateTime
     {
-        if ($fromDate === null) {
-            $fromDate = new \DateTime('-1 day');
-            $toDate = new \DateTime();
-        } else if ($toDate === null) {
-            $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime();
+        if ($date === null) {
+            $target = new \DateTime();
         } else {
-            $fromDate = new \DateTime($fromDate);
-            $toDate = new \DateTime($toDate);
+            try {
+                $target = new \DateTime($date);
+            } catch (\Exception $e) {
+                $target = new \DateTime();
+            }
         }
 
-        $fromDate->setTime(0, 0, 0);
-        $toDate->setTime(0, 0, 0);
-
-        return new \DatePeriod(
-            $fromDate,
-            new \DateInterval('P1D'),
-            $toDate
-        );
+        $target->setTime(0, 0, 0);
+        return $target;
     }
-    
-    /**
-     * Pre-check which archives already exist for a set of devices and a date
-     * This is more efficient than checking one by one
-     */
-    private function preCheckExistingArchives(array $devices, \DateTime $date, string $period): array
+
+    private function preCheckExistingArchives(array $devices, \DateTime $date): array
     {
         $deviceIds = array_map(function (Device $device) {
             return $device->getId();
         }, $devices);
-        
-        // Get all existing archives for these devices on this date with this period
+
         $qb = $this->deviceDataArchiveRepository->createQueryBuilder('dda')
             ->where('dda.device IN (:device_ids)')
             ->andWhere('dda.period = :period')
             ->andWhere('dda.archiveDate = :archive_date')
             ->setParameter('device_ids', $deviceIds)
-            ->setParameter('period', $period)
+            ->setParameter('period', DeviceDataArchive::PERIOD_MONTH)
             ->setParameter('archive_date', $date);
-            
+
         $existingArchives = $qb->getQuery()->getResult();
-        
-        // Create a lookup map for quick checking
+
         $archiveMap = [];
         foreach ($existingArchives as $archive) {
             $key = $this->getArchiveKey(
@@ -197,13 +179,10 @@ class DeviceDataArchiver extends Command
             );
             $archiveMap[$key] = true;
         }
-        
+
         return $archiveMap;
     }
-    
-    /**
-     * Generate a unique key for an archive based on its properties
-     */
+
     private function getArchiveKey(int $deviceId, int $entry, \DateTime $date, string $period): string
     {
         return sprintf('%d_%d_%s_%s', $deviceId, $entry, $date->format('Y-m-d'), $period);

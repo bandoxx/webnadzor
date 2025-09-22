@@ -157,6 +157,18 @@ class DeviceDataRepository extends ServiceEntityRepository
 
     public function findLastRecordForDeviceAndEntry(Device $device, $entry): ?DeviceData
     {
+        // Try cache first
+        try {
+            $em = $this->getEntityManager();
+            $cacheRepo = $em->getRepository(\App\Entity\DeviceDataLastCache::class);
+            $cache = $cacheRepo->findOneBy(['device' => $device, 'entry' => (int)$entry]);
+            if ($cache) {
+                return $cache->getDeviceData();
+            }
+        } catch (\Throwable $e) {
+            // Fallback silently to live query if cache entity is missing or not migrated
+        }
+
         return $this->createQueryBuilder('dd')
             ->where('dd.device = :device_id')
             ->andWhere("dd.t$entry IS NOT NULL")

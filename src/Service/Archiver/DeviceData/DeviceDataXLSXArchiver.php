@@ -23,6 +23,16 @@ class DeviceDataXLSXArchiver extends XLSXArchiver implements DeviceDataArchiverI
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::DAILY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
+
+        // Reduce memory usage for large datasets by disabling autosize and setting fixed widths
+        if (is_countable($deviceData) && count($deviceData) > 1000) {
+            $sheet = $xlsx->getActiveSheet();
+
+            if (method_exists($sheet, 'garbageCollect')) {
+                $sheet->garbageCollect();
+            }
+        }
+
         $client = $device->getClient();
 
         $fileName = sprintf("%s.xlsx", $fileName);
@@ -35,6 +45,16 @@ class DeviceDataXLSXArchiver extends XLSXArchiver implements DeviceDataArchiverI
     {
         $subtitle = sprintf("Podaci za %s", $archiveDate->format(self::MONTHLY_FORMAT));
         $xlsx = $this->generateBody($device, $deviceData, $entry, $subtitle);
+
+        // Reduce memory usage for large datasets by disabling autosize and setting fixed widths
+        if (is_countable($deviceData) && count($deviceData) > 1000) {
+            $sheet = $xlsx->getActiveSheet();
+
+            if (method_exists($sheet, 'garbageCollect')) {
+                $sheet->garbageCollect();
+            }
+        }
+
         $client = $device->getClient();
 
         $fileName = sprintf("%s.xlsx", $fileName);

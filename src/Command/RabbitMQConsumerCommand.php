@@ -92,14 +92,14 @@ class RabbitMQConsumerCommand extends Command
             return Command::SUCCESS;
         }
 
-        $callback = function (AMQPMessage $msg) use ($io, $channel) {
+        $callback = function (AMQPMessage $msg) use ($channel) {
             try {
                 $data = json_decode($msg->body, true, 512, JSON_THROW_ON_ERROR);
 
                 $device = $this->deviceRepository->findOneBy(['serialNumber' => $data['ID']]);
 
                 if (!$device) {
-                    $this->saveUnresolvedDeviceData($data);
+                    $this->saveUnresolvedDeviceData($data, $data['ID'] ?? null);
                 } else {
                     $this->processMessage($device, $data);
                 }
@@ -165,9 +165,9 @@ class RabbitMQConsumerCommand extends Command
         $this->entityManager->flush();
     }
 
-    private function saveUnresolvedDeviceData(array $data): void
+    private function saveUnresolvedDeviceData(array $data, ?string $identifier = null): void
     {
-        $unresolvedDeviceData = $this->unresolvedDeviceDataFactory->createFromArray($data);
+        $unresolvedDeviceData = $this->unresolvedDeviceDataFactory->createFromArray($data, $identifier);
         $this->entityManager->persist($unresolvedDeviceData);
         $this->entityManager->flush();
     }

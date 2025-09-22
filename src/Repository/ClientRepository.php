@@ -28,4 +28,25 @@ class ClientRepository extends ServiceEntityRepository
     {
         return $this->findBy(['isDeleted' => false]);
     }
+
+    /**
+     * Find active (not deleted) clients by a list of IDs
+     *
+     * @param int[] $ids
+     * @return Client[]
+     */
+    public function findActiveByIds(array $ids): array
+    {
+        if (empty($ids)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('c')
+            ->where('c.id IN (:ids)')
+            ->andWhere('c.isDeleted = :isDeleted')
+            ->setParameter('ids', $ids)
+            ->setParameter('isDeleted', false)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -29,7 +29,7 @@ class DeviceEditController extends AbstractController
     {
         $data = $request->getContent();
 
-        $logger->error($data);
+        $logger->info($data);
 
         try {
             $errors = $deviceUpdater->update($device, json_decode($data, true, 512, JSON_THROW_ON_ERROR));

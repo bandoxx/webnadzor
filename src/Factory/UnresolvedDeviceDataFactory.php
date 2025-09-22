@@ -11,9 +11,9 @@ class UnresolvedDeviceDataFactory
         return $this->create($data);
     }
 
-    public function createFromArray(array $content): UnresolvedDeviceData
+    public function createFromArray(array $content, ?string $identifier = null): UnresolvedDeviceData
     {
-        return $this->create(json_encode($content));
+        return $this->create(json_encode($content), $identifier);
     }
 
     public function createFromXml(string $xmlPath): UnresolvedDeviceData

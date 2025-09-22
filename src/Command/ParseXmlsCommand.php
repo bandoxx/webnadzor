@@ -40,13 +40,14 @@ class ParseXmlsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+
         $lock = $this->lockFactory->create('parse-xml');
 
         if (!$lock->acquire()) {
-            $output->writeln('Parser is running already...');
+            $output->writeln(sprintf("%s - %s closed - parser already running", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
+            return Command::FAILURE;
         }
-
-        $output->writeln(sprintf("%s - %s started", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
 
         $xmls = array_diff(scandir($this->xmlDirectory), ['.', '..']);
 
@@ -62,8 +63,9 @@ class ParseXmlsCommand extends Command
             if (!$device) {
                 try {
                     $this->saveUnresolvedXml($xmlPath);
-                    $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
                 } catch (\Throwable $e) {
+                    $this->logger->error(sprintf("Client with file name %s doesn't exist!", $name));
+                    $output->writeln($e->getMessage());
                 } finally {
                     unlink($xmlPath);
                 }
@@ -74,8 +76,9 @@ class ParseXmlsCommand extends Command
             if ($device->isParserActive() === false) {
                 try {
                     $this->saveUnresolvedXml($xmlPath);
-                    $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
                 } catch (\Throwable $e) {
+                    $this->logger->error(sprintf("Client with file name %s is not currently active!", $name));
+                    $output->writeln($e->getMessage());
                 } finally {
                     unlink($xmlPath);
                 }

@@ -32,4 +32,4 @@ deploy.php
 phpstan.neon
 ###< phpstan/phpstan ###
 
-/src/Command/TestCommand.php
+/src/Command/Local/*
