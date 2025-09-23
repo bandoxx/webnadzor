@@ -328,7 +328,7 @@
                                                     {% endfor %}
                                                 </ul>
                                             </div>
-                                        {% else %}
+{#                                        {% else %}#}
                                             <div class="metadata-clients">
                                                 <ul>
                                                     {% for client in user.clients %}
@@ -733,6 +733,7 @@
                         <!--dropdown logic-->
                         <script>
                             function dropdownClient(clientSelectId, locationSelectId) {
+                                let activeSensorsAbortController = null;
                                 return {
                                     options: [],
                                     selected: [],
@@ -788,7 +789,7 @@
                                         this.updateLocations(locationSelectId);
                                     },
                                     //method to fetch and update locations
-                                    async updateLocations(locationSelectId) {
+                                    async updateLocations(locationSelectId, initial = false) {
                                         const clientIds = this.selectedValues();
 
                                         const locationDropdownElement = document.querySelector(`div[x-data="dropdownLocation('${locationSelectId}')"]`);
@@ -813,8 +814,14 @@
                                         const queryParams = clientIds.map(id => `clientIds[]=${id}`).join('&');
                                         const apiUrl = `/api/clients/active-sensors?${queryParams}`;
 
+                                        if (this.activeSensorsAbortController) {
+                                            this.activeSensorsAbortController.abort();
+                                        }
+                                        this.activeSensorsAbortController = new AbortController();
+                                        const { signal } = this.activeSensorsAbortController;
+
                                         try {
-                                            const response = await fetch(apiUrl);
+                                            const response = await fetch(apiUrl, { signal });
                                             if (!response.ok) {
                                                 throw new Error(`HTTP error! Status: ${response.status}`);
                                             }
@@ -840,6 +847,7 @@
 
                                             locationDropdownData.loadOptions();
 
+                                            if(!initial)
                                             setTimeout(() => {
                                                 const newSelections = [];
                                                 previouslySelectedValues.forEach(selectedValue => {
@@ -889,8 +897,9 @@
                                         this.search = '';
 
                                         // reload options after DOM updates
-                                        setTimeout(() => {
+                                        setTimeout(async () => {
                                             this.loadOptions();
+                                            await this.updateLocations(locationSelectId, true);
                                         }, 0);
                                     },
 
