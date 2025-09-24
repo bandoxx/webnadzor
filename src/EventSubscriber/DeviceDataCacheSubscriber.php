@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\Device;
 use App\Entity\DeviceData;
 use App\Entity\DeviceDataLastCache;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
@@ -40,8 +41,9 @@ class DeviceDataCacheSubscriber
                         ->setDeviceDate($date);
                 }
             } else {
+                $deviceRef = $em->getReference(Device::class, $device->getId());
                 $cache = (new DeviceDataLastCache())
-                    ->setDevice($device)
+                    ->setDevice($deviceRef)
                     ->setEntry($entry)
                     ->setDeviceData($deviceData)
                     ->setDeviceDate($date);

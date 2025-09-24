@@ -61,19 +61,56 @@ class UserAccess
                 }
             }
         } else {
-            $accesses = $this->deviceAccessRepository->findAccessibleEntries($user);
-            foreach ($accesses as $access) {
-                $device = $access->getDevice();
-                $deviceData = $device->getEntryData($access->getSensor());
+            // Limit accesses to this client only
+            $accesses = $this->deviceAccessRepository->findBy(['user' => $user, 'client' => $client]);
 
-                if ($deviceData['t_use']) {
-                    $entries[] = [
-                        'entry' => $access->getSensor(),
-                        'device' => $access->getDevice()
-                    ];
+            // Check if client-wide access exists
+            $clientWide = false;
+            foreach ($accesses as $acc) {
+                if ($acc->getClient() && $acc->getDevice() === null) {
+                    $clientWide = true;
+                    break;
                 }
             }
 
+            if ($clientWide) {
+                // Grant access to all used entries for all client's devices
+                $devices = $this->deviceRepository->findDevicesByClient($client->getId());
+                foreach ($devices as $device) {
+                    for ($entry = 1; $entry <= 2; $entry++) {
+                        $data = $device->getEntryData($entry);
+                        if ($data['t_use']) {
+                            $entries[] = [
+                                'entry' => $entry,
+                                'device' => $device
+                            ];
+                        }
+                    }
+                }
+            } else {
+                // Only include explicitly allowed device/sensor entries for this client
+                foreach ($accesses as $access) {
+                    $device = $access->getDevice();
+                    if (!$device) {
+                        continue;
+                    }
+                    // Skip entries for devices not belonging to this client (safety)
+                    if ($device->getClient()?->getId() !== $client->getId()) {
+                        continue;
+                    }
+                    $sensor = (int) $access->getSensor();
+                    if ($sensor < 1 || $sensor > 2) {
+                        continue;
+                    }
+                    $deviceData = $device->getEntryData($sensor);
+                    if ($deviceData['t_use']) {
+                        $entries[] = [
+                            'entry' => $sensor,
+                            'device' => $device
+                        ];
+                    }
+                }
+            }
         }
 
         return $entries;
