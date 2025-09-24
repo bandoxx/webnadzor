@@ -56,8 +56,10 @@
                                     <a
                                             class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                         </svg>
                                         Dodaj korisnika
                                     </a>
@@ -67,8 +69,10 @@
                                             href="{{ path('client_overview', { clientId: client.id }) }}"
                                             class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
                                     >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                             stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15"/>
                                         </svg>
                                         Povratak
                                     </a>
@@ -114,7 +118,9 @@
                                     <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
                                 </li>
                                 <li>
-                                    <a class="font-medium" href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }} /</a>
+                                    <a class="font-medium"
+                                       href="{{ path('client_overview', { clientId: client.id }) }}">{{ client.name }}
+                                        /</a>
                                 </li>
                                 <li class="font-medium text-primary">Popis korisnika</li>
                             </ol>
@@ -243,7 +249,8 @@
                                                             class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1 pl-5 pr-12 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
                                                     >
                                                         {% for location in user.availableLocations %}
-                                                            <option class="text-body" value="">{{ location.name }} - {{ location.location }}</option>
+                                                            <option class="text-body" value="">{{ location.name }}
+                                                                - {{ location.location }}</option>
                                                         {% endfor %}
                                                     </select>
                                                 {% else %}
@@ -253,35 +260,41 @@
                                             <td>
                                                 <div class="flex justify-evenly">
                                                     {% if user.permission != 4 %}
-                                                    <div x-data>
-                                                        <div class="edit-btn mr-5"
-                                                             data-id="{{ user.id }}"
-                                                             data-permission="{{ user.permission }}"
-                                                             data-overview="{{ user.overviewViews }}"
-                                                             data-path="{{ path('api_user_update', { clientId: client.id, userId: user.id }) }}"
-                                                             data-index="0"
-                                                                {% if user.permission == 1 %}
-                                                                    data-location="{{ user.availableLocations|map(location => "#{location.client_id}-#{location.device_id}-#{location.entry}")|join(',') }}"
-                                                                {% endif %}
-                                                             x-on:click="setTimeout(() => $dispatch('edit-triggered'), 0); modalOpenEdit = true"
-                                                        >
-                                                            <div class="cursor-pointer" title="Uredi">
-                                                                <svg class="size-6" fill="none"
-                                                                     stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
-                                                                     xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" stroke-linecap="round"
-                                                                          stroke-linejoin="round"/>
-                                                                </svg>
+                                                        <div x-data>
+                                                            <div class="edit-btn mr-5"
+                                                                 data-id="{{ user.id }}"
+                                                                 data-permission="{{ user.permission }}"
+                                                                 data-overview="{{ user.overviewViews }}"
+                                                                 data-path="{{ path('api_user_update', { clientId: client.id, userId: user.id }) }}"
+                                                                 data-index="0"
+                                                                    {% if user.permission == 1 %}
+                                                                        data-location="{{ user.availableLocations|map(location => "#{location.client_id}-#{location.device_id}-#{location.entry}")|join(',') }}"
+                                                                    {% endif %}
+                                                                 x-on:click="setTimeout(() => $dispatch('edit-triggered'), 0); modalOpenEdit = true"
+                                                            >
+                                                                <div class="cursor-pointer" title="Uredi">
+                                                                    <svg class="size-6" fill="none"
+                                                                         stroke="currentColor" stroke-width="1.5"
+                                                                         viewBox="0 0 24 24"
+                                                                         xmlns="http://www.w3.org/2000/svg">
+                                                                        <path d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                                                              stroke-linecap="round"
+                                                                              stroke-linejoin="round"/>
+                                                                    </svg>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
 
-                                                        <div class="delete-btn" data-path="{{ path('api_user_delete', { userId: user.id }) }}" data-index="0" x-on:click="modalOpenDelete = true">
+                                                        <div class="delete-btn"
+                                                             data-path="{{ path('api_user_delete', { userId: user.id }) }}"
+                                                             data-index="0" x-on:click="modalOpenDelete = true">
                                                             <div class="cursor-pointer" title="Obriši">
                                                                 <svg class="size-6" fill="none"
-                                                                     stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                                                                     stroke="currentColor" stroke-width="1.5"
+                                                                     viewBox="0 0 24 24"
                                                                      xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" stroke-linecap="round"
+                                                                    <path d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m6 4.125 2.25 2.25m0 0 2.25 2.25M12 13.875l2.25-2.25M12 13.875l-2.25 2.25M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+                                                                          stroke-linecap="round"
                                                                           stroke-linejoin="round"/>
                                                                 </svg>
                                                             </div>
@@ -289,21 +302,21 @@
                                                     {% endif %}
                                                 </div>
                                             </td>
-                                            {#                                                <div id="{{ user.id }}"#}
-                                            {#                                                     data-username="{{ user.username }}"#}
-                                            {#                                                     data-permissions="{{ user.permission }}"#}
-                                            {#                                                     data-overviews="1"#}
-                                            {#                                                     data-devices="{{ user.availableLocations|map((value, key) => key)|join(',') }}"#}
-                                            {#                                                     data-clients="{{ user.clients|map(client => client.id)|join(',') }}"#}
-                                            {#                                                     class="actionbar">#}
-                                            {#                                                    <a href="#" class="action edit"><span>Uredi</span></a>#}
-                                            {#                                                    <a href="#" class="action delete"><span>Obriši</span></a>#}
-                                            {#                                                </div>#}
+                                            {#                                                <div id="{{ user.id }}" #}
+                                            {#                                                     data-username="{{ user.username }}" #}
+                                            {#                                                     data-permissions="{{ user.permission }}" #}
+                                            {#                                                     data-overviews="1" #}
+                                            {#                                                     data-devices="{{ user.availableLocations|map((value, key) => key)|join(',') }}" #}
+                                            {#                                                     data-clients="{{ user.clients|map(client => client.id)|join(',') }}" #}
+                                            {#                                                     class="actionbar"> #}
+                                            {#                                                    <a href="#" class="action edit"><span>Uredi</span></a> #}
+                                            {#                                                    <a href="#" class="action delete"><span>Obriši</span></a> #}
+                                            {#                                                </div> #}
                                         </tr>
                                     {% endfor %}
                                     </tbody>
                                 </table>
-                                {#   USER META DATA#}
+                                {#   USER META DATA #}
                                 <input type="hidden" id="currUser" value="0">
                                 {% for user in users %}
                                     <div class="userMeta-{{ user.id }} hidden">
@@ -315,7 +328,7 @@
                                                     {% endfor %}
                                                 </ul>
                                             </div>
-                                        {% else %}
+{#                                        {% else %}#}
                                             <div class="metadata-clients">
                                                 <ul>
                                                     {% for client in user.clients %}
@@ -372,16 +385,27 @@
                                                     placeholder="•••••••••••"
                                                     class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
-                                            <button type="button" data-password='#user-toggle-password' class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
-                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path class="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                                    <path class="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                                    <path class="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
-                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                            <button type="button" data-password='#user-toggle-password'
+                                                    class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
+                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2"
+                                                          y2="22"></line>
                                                 </svg>
-                                                <svg class="hidden shown-password shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <svg class="hidden shown-password shrink-0 size-6"
+                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                     stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -400,16 +424,27 @@
                                                     placeholder="•••••••••••"
                                                     class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
-                                            <button type="button" data-password='#user-repeat-toggle-password' class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
-                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path class="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                                    <path class="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                                    <path class="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
-                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                            <button type="button" data-password='#user-repeat-toggle-password'
+                                                    class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
+                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2"
+                                                          y2="22"></line>
                                                 </svg>
-                                                <svg class="hidden shown-password shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <svg class="hidden shown-password shrink-0 size-6"
+                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                     stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -423,10 +458,14 @@
                                         </label>
                                         <div class="flex items-center rounded-full" id="addUserTypeTag">
                                             <input type="hidden" name="permissions" value="" id="addUserTypeTagHidden">
-                                            <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Korisnik</a>
-                                            <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Moderator</a>
-                                            <a href="#" data-value="3" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Admin</a>
-                                            <a href="#" data-value="4" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Root</a>
+                                            <a href="#" data-value="1"
+                                               class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Korisnik</a>
+                                            <a href="#" data-value="2"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Moderator</a>
+                                            <a href="#" data-value="3"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Admin</a>
+                                            <a href="#" data-value="4"
+                                               class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Root</a>
                                         </div>
                                     </div>
 
@@ -437,19 +476,23 @@
                                             Prikaz na početnoj stranici korisnicima
                                         </label>
                                         <div class="flex items-center rounded-full" id="addMapShownTag">
-                                            <input type="hidden" name="overview_views" value="" id="addMapShownTagHidden">
-                                            <a href="#" data-value="" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Poništi</a>
-                                            <a href="#" data-value="1" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
-                                            <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                            <a href="#" data-value="3" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
-                                            <a href="#" data-value="4" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Scada</a>
+                                            <input type="hidden" name="overview_views" value=""
+                                                   id="addMapShownTagHidden">
+                                            <a href="#" data-value=""
+                                               class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Poništi</a>
+                                            <a href="#" data-value="1"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                            <a href="#" data-value="2"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                            <a href="#" data-value="3"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                            <a href="#" data-value="4"
+                                               class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Scada</a>
                                         </div>
                                     </div>
 
                                     <div id="newClientsDiv" class="relative mb-2" style="display:none;">
-                                        <label
-                                                class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                        >
+                                        <label class="mb-2 text-left block text-sm font-medium text-black dark:text-white">
                                             Pristup klijentima
                                         </label>
                                         <div>
@@ -458,24 +501,31 @@
                                                     <option value="{{ client.id }}">{{ client.name }}</option>
                                                 {% endfor %}
                                             </select>
-
-                                            <div x-data="dropdownClient('select')" x-init="loadOptions()" class="flex flex-col items-center">
-                                                <input name="clients" type="hidden" id="selectNewClient" :value="selectedValues()">
-                                                <div class="inline-block relative  w-full">
+                                            <div x-data="dropdownClient('select', 'select2')" x-init="loadOptions()"
+                                                 class="flex flex-col items-center">
+                                                <input name="clients" type="hidden" id="selectNewClient"
+                                                       :value="selectedValues()">
+                                                <div class="inline-block relative w-full">
                                                     <div class="flex flex-col items-center relative">
                                                         <div @click="open" class="w-full">
-                                                            <div
-                                                                    class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
+                                                            <div class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
                                                                 <div class="flex gap-3 flex-auto flex-wrap">
-                                                                    <template x-for="(option,index) in selected" :key="index">
-                                                                        <div
-                                                                                class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option].text"></div>
+                                                                    <!-- show selected tags -->
+                                                                    <template x-for="(option,index) in selected"
+                                                                              :key="index">
+                                                                        <div class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
+                                                                            <div class="max-w-full flex-initial"
+                                                                                 x-text="options[option].text"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
-                                                                                <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
-                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                                                                <div @click.stop="remove(index,option)"
+                                                                                     class="cursor-pointer pl-2 hover:text-danger">
+                                                                                    <svg class="fill-current"
+                                                                                         role="button" width="12"
+                                                                                         height="12" viewBox="0 0 12 12"
+                                                                                         fill="none"
                                                                                          xmlns="http://www.w3.org/2000/svg">
-                                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                        <path fill-rule="evenodd"
+                                                                                              clip-rule="evenodd"
                                                                                               d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
                                                                                               fill="currentColor"></path>
                                                                                     </svg>
@@ -483,17 +533,23 @@
                                                                             </div>
                                                                         </div>
                                                                     </template>
+                                                                    <!-- placeholder if no selection -->
                                                                     <div x-show="selected.length == 0" class="flex-1">
                                                                         <input placeholder="Izaberite opciju"
-                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()">
+                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full"
+                                                                               :value="selectedValues()" readonly>
                                                                     </div>
                                                                 </div>
                                                                 <div class="w-8 py-1 pl-1 pr-1 flex items-center">
-                                                                    <button type="button" @click="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
+                                                                    <button type="button" @click.stop="open"
+                                                                            class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
                                                                             :class="isOpen() === true ? 'rotate-180' : ''">
-                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                                                             fill="none"
+                                                                             xmlns="http://www.w3.org/2000/svg">
                                                                             <g opacity="0.8">
-                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                <path fill-rule="evenodd"
+                                                                                      clip-rule="evenodd"
                                                                                       d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
                                                                                       fill="#637381"></path>
                                                                             </g>
@@ -502,20 +558,29 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        <!-- dropdown -->
                                                         <div class="w-full px-4">
                                                             <div x-show.transition.origin.top="isOpen()"
                                                                  class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto"
                                                                  @click.outside="close">
+                                                                <!-- search inside dropdown -->
+                                                                <input type="text"
+                                                                       x-model="search"
+                                                                       placeholder="Pretraži..."
+                                                                       @click.stop
+                                                                       class="w-full p-2 border-b border-gray-200 text-sm outline-none"/>
+
                                                                 <div class="flex flex-col w-full">
-                                                                    <template x-for="(option,index) in options" :key="index">
+                                                                    <template x-for="(option,index) in filteredOptions"
+                                                                              :key="index">
                                                                         <div>
-                                                                            <div
-                                                                                    class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
-                                                                                    @click="select(index,$event)">
+                                                                            <div class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
+                                                                                 @click="select(index,$event)">
                                                                                 <div :class="option.selected ? 'border-primary' : ''"
                                                                                      class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
                                                                                     <div class="w-full items-center flex">
-                                                                                        <div class="mx-2 leading-6" x-model="option" x-text="option.text"></div>
+                                                                                        <div class="mx-2 leading-6"
+                                                                                             x-text="option.text"></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -524,6 +589,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -531,35 +597,43 @@
                                     </div>
 
                                     <div id="newLocationsDiv" class="relative mb-4" style="display:none;">
-                                        <label
-                                                class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                        >
+                                        <label class="mb-2 text-left block text-sm font-medium text-black dark:text-white">
                                             Dozvoljene lokacije
                                         </label>
+
                                         <div>
                                             <select class="hidden" x-cloak id="select2">
-                                                {% for key, location in client_locations %}
-                                                    <option value="{{ key }}">{{ location.full }}</option>
-                                                {% endfor %}
+{#                                                {% for key, location in client_locations %}#}
+{#                                                    <option value="{{ key }}">{{ location.full }}</option>#}
+{#                                                {% endfor %}#}
                                             </select>
 
-                                            <div x-data="dropdownLocation('select2')" x-init="loadOptions()" class="flex flex-col items-center">
+                                            <div x-data="dropdownLocation('select2')" x-init="loadOptions()"
+                                                 class="flex flex-col items-center">
                                                 <input name="locations" type="hidden" :value="selectedValues()">
-                                                <div class="inline-block relative  w-full">
+
+                                                <div class="inline-block relative w-full">
                                                     <div class="flex flex-col items-center relative">
+                                                        <!-- header -->
                                                         <div @click="open" class="w-full">
-                                                            <div
-                                                                    class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
+                                                            <div class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
                                                                 <div class="flex gap-3 flex-auto flex-wrap">
-                                                                    <template x-for="(option,index) in selected" :key="index">
-                                                                        <div
-                                                                                class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option].text"></div>
+                                                                    <!-- show selected tags -->
+                                                                    <template x-for="(option,index) in selected"
+                                                                              :key="index">
+                                                                        <div class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
+                                                                            <div class="max-w-full flex-initial"
+                                                                                 x-text="options[option].text"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
-                                                                                <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
-                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                                                                <div @click.stop="remove(index,option)"
+                                                                                     class="cursor-pointer pl-2 hover:text-danger">
+                                                                                    <svg class="fill-current"
+                                                                                         role="button" width="12"
+                                                                                         height="12" viewBox="0 0 12 12"
+                                                                                         fill="none"
                                                                                          xmlns="http://www.w3.org/2000/svg">
-                                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                        <path fill-rule="evenodd"
+                                                                                              clip-rule="evenodd"
                                                                                               d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
                                                                                               fill="currentColor"></path>
                                                                                     </svg>
@@ -567,17 +641,25 @@
                                                                             </div>
                                                                         </div>
                                                                     </template>
+
+                                                                    <!-- placeholder -->
                                                                     <div x-show="selected.length == 0" class="flex-1">
                                                                         <input placeholder="Izaberite opciju"
-                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()">
+                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full"
+                                                                               :value="selectedValues()" readonly>
                                                                     </div>
                                                                 </div>
+
                                                                 <div class="w-8 py-1 pl-1 pr-1 flex items-center">
-                                                                    <button type="button" @click="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
+                                                                    <button type="button" @click.stop="open"
+                                                                            class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
                                                                             :class="isOpen() === true ? 'rotate-180' : ''">
-                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24"
+                                                                             fill="none"
+                                                                             xmlns="http://www.w3.org/2000/svg">
                                                                             <g opacity="0.8">
-                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                                <path fill-rule="evenodd"
+                                                                                      clip-rule="evenodd"
                                                                                       d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
                                                                                       fill="#637381"></path>
                                                                             </g>
@@ -586,20 +668,30 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <!-- dropdown -->
                                                         <div class="w-full px-4">
                                                             <div x-show.transition.origin.top="isOpen()"
                                                                  class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto"
                                                                  @click.outside="close">
+                                                                <!-- search inside dropdown -->
+                                                                <input type="text"
+                                                                       x-model="search"
+                                                                       placeholder="Pretraži..."
+                                                                       @click.stop
+                                                                       class="w-full p-2 border-b border-gray-200 text-sm outline-none"/>
+
                                                                 <div class="flex flex-col w-full">
-                                                                    <template x-for="(option,index) in options" :key="index">
+                                                                    <template x-for="(option,index) in filteredOptions"
+                                                                              :key="index">
                                                                         <div>
-                                                                            <div
-                                                                                    class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
-                                                                                    @click="select(index,$event)">
+                                                                            <div class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
+                                                                                 @click="select(index,$event)">
                                                                                 <div :class="option.selected ? 'border-primary' : ''"
                                                                                      class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
                                                                                     <div class="w-full items-center flex">
-                                                                                        <div class="mx-2 leading-6" x-model="option" x-text="option.text"></div>
+                                                                                        <div class="mx-2 leading-6"
+                                                                                             x-text="option.text"></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -608,6 +700,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -640,10 +733,13 @@
                         <!--dropdown logic-->
                         <script>
                             function dropdownClient(clientSelectId, locationSelectId) {
+                                let activeSensorsAbortController = null;
                                 return {
                                     options: [],
                                     selected: [],
                                     show: false,
+                                    search: '',
+
                                     open() {
                                         this.show = true;
                                     },
@@ -653,7 +749,20 @@
                                     isOpen() {
                                         return this.show === true;
                                     },
-                                    select(index, event) {
+
+                                    // computed property for live-filtering options
+                                    get filteredOptions() {
+                                        if (!this.search) return this.options;
+                                        return this.options.filter(opt =>
+                                            opt.text.toLowerCase().includes(this.search.toLowerCase())
+                                        );
+                                    },
+
+                                    select(filteredIndex, event) {
+                                        // find the real index in the original array
+                                        const optionValue = this.filteredOptions[filteredIndex].value;
+                                        const index = this.options.findIndex(o => o.value === optionValue);
+
                                         if (!this.options[index].selected) {
                                             if (this.options[index].value == 0) {
                                                 this.options.forEach((value) => value.selected = value.value == 0);
@@ -669,21 +778,102 @@
                                             this.selected.splice(this.selected.lastIndexOf(index), 1);
                                             this.options[index].selected = false;
                                         }
+
+                                        this.updateLocations(locationSelectId);
                                     },
-                                    remove(index, option) {
-                                        this.options[option].selected = false;
+
+                                    remove(index, optionIndex) {
+                                        this.options[optionIndex].selected = false;
                                         this.selected.splice(index, 1);
+
+                                        this.updateLocations(locationSelectId);
+                                    },
+                                    //method to fetch and update locations
+                                    async updateLocations(locationSelectId, initial = false) {
+                                        const clientIds = this.selectedValues();
+
+                                        const locationDropdownElement = document.querySelector(`div[x-data="dropdownLocation('${locationSelectId}')"]`);
+
+                                        if (!locationDropdownElement) {
+                                            console.error(`Alpine.js dropdown root element not found for ID: ${locationSelectId}`);
+                                            return;
+                                        }
+
+                                        const locationDropdownData = Alpine.$data(locationDropdownElement);
+
+                                        const hiddenSelect = document.getElementById(locationSelectId);
+
+                                        if (clientIds.length === 0) {
+                                            hiddenSelect.innerHTML = '';
+                                            locationDropdownData.loadOptions();
+                                            locationDropdownData.selected = [];
+                                            return;
+                                        }
+
+                                        const previouslySelectedValues = locationDropdownData.selectedValues();
+                                        const queryParams = clientIds.map(id => `clientIds[]=${id}`).join('&');
+                                        const apiUrl = `/api/clients/active-sensors?${queryParams}`;
+
+                                        if (this.activeSensorsAbortController) {
+                                            this.activeSensorsAbortController.abort();
+                                        }
+                                        this.activeSensorsAbortController = new AbortController();
+                                        const { signal } = this.activeSensorsAbortController;
+
+                                        try {
+                                            const response = await fetch(apiUrl, { signal });
+                                            if (!response.ok) {
+                                                throw new Error(`HTTP error! Status: ${response.status}`);
+                                            }
+                                            const data = await response.json();
+
+                                            // Convert the fetched data into the new options format
+                                            const newLocationOptions = Object.keys(data).map(key => ({
+                                                value: key,
+                                                text: data[key].full,
+                                                selected: false
+                                            }));
+
+                                            if (hiddenSelect) {
+                                                hiddenSelect.innerHTML = '';
+
+                                                newLocationOptions.forEach(option => {
+                                                    const newOption = document.createElement('option');
+                                                    newOption.value = option.value;
+                                                    newOption.textContent = option.text;
+                                                    hiddenSelect.appendChild(newOption);
+                                                });
+                                            }
+
+                                            locationDropdownData.loadOptions();
+
+                                            if(!initial)
+                                            setTimeout(() => {
+                                                const newSelections = [];
+                                                previouslySelectedValues.forEach(selectedValue => {
+                                                    const newIndex = locationDropdownData.options.findIndex(option => option.value === selectedValue);
+                                                    if (newIndex !== -1) {
+                                                        newSelections.push(newIndex);
+                                                    }
+                                                });
+                                                locationDropdownData.selected = newSelections;
+                                            }, 0);
+                                        } catch (error) {
+                                            console.error('Error fetching locations:', error);
+                                        }
                                     },
                                     loadOptions() {
+                                        // build options from hidden select
                                         const options = document.getElementById(clientSelectId).options;
                                         for (let i = 0; i < options.length; i++) {
                                             this.options.push({
                                                 value: options[i].value,
                                                 text: options[i].innerText,
-                                                selected: options[i].getAttribute('selected') != null ? options[i].getAttribute('selected') : false
+                                                selected: options[i].getAttribute('selected') != null
                                             });
                                         }
-                                        // Load preselected options from the hidden list if provided
+
+                                        // mark preselected items (if you have them in hidden markup)
                                         let userId = document.getElementById("currUser").value;
                                         const hiddenListItems = document.querySelectorAll(`.userMeta-${userId} .metadata-clients ul li`);
                                         if (hiddenListItems.length) {
@@ -691,7 +881,6 @@
                                                 const text = li.textContent.trim();
                                                 const existingOptionIndex = this.options.findIndex((opt) => opt.text === text);
                                                 if (existingOptionIndex > -1) {
-                                                    // If option exists, mark it as selected
                                                     this.options[existingOptionIndex].selected = true;
                                                     if (!this.selected.includes(existingOptionIndex)) {
                                                         this.selected.push(existingOptionIndex);
@@ -700,30 +889,35 @@
                                             });
                                         }
                                     },
+
                                     handleEditTriggered() {
-                                        //load options again with new options with selected for that user
-                                        //temporarily clear options and selected arrays to force Alpine.js to rebuild
+                                        // temporarily clear to force Alpine to rebuild
                                         this.options = [];
                                         this.selected = [];
+                                        this.search = '';
 
-                                        //use a timeout to ensure DOM updates before reloading options
-                                        setTimeout(() => {
+                                        // reload options after DOM updates
+                                        setTimeout(async () => {
                                             this.loadOptions();
+                                            await this.updateLocations(locationSelectId, true);
                                         }, 0);
                                     },
+
                                     selectedValues() {
-                                        return this.selected.map((option) => {
-                                            return this.options[option].value;
+                                        return this.selected.map((optionIndex) => {
+                                            return this.options[optionIndex].value;
                                         });
                                     }
                                 };
                             }
 
-                            function dropdownLocation(locationId) {
+                            function dropdownLocation(locationSelectId) {
                                 return {
                                     options: [],
                                     selected: [],
                                     show: false,
+                                    search: '',
+
                                     open() {
                                         this.show = true;
                                     },
@@ -733,10 +927,23 @@
                                     isOpen() {
                                         return this.show === true;
                                     },
-                                    select(index, event) {
+
+                                    // computed property for live-filtering options
+                                    get filteredOptions() {
+                                        if (!this.search) return this.options;
+                                        return this.options.filter(opt =>
+                                            opt.text.toLowerCase().includes(this.search.toLowerCase())
+                                        );
+                                    },
+
+                                    select(filteredIndex, event) {
+                                        // find the real index in the original array
+                                        const optionValue = this.filteredOptions[filteredIndex].value;
+                                        const index = this.options.findIndex(o => o.value === optionValue);
+
                                         if (!this.options[index].selected) {
                                             if (this.options[index].value == 0) {
-                                                this.options.forEach((value) => value.selected = value.value == 0);
+                                                this.options.forEach(value => value.selected = value.value == 0);
                                                 this.selected = [];
                                                 this.selected.push(index);
                                                 this.show = false;
@@ -750,28 +957,41 @@
                                             this.options[index].selected = false;
                                         }
                                     },
-                                    remove(index, option) {
-                                        this.options[option].selected = false;
+
+                                    remove(index, optionIndex) {
+                                        this.options[optionIndex].selected = false;
                                         this.selected.splice(index, 1);
                                     },
+
                                     loadOptions() {
-                                        const options = document.getElementById(locationId).options;
+                                        const selectEl = document.getElementById(locationSelectId);
+                                        selectEl.selectedIndex = -1; // clear default browser selection
+
+                                        const options = selectEl.options;
+                                        this.options = [];
+                                        this.selected = [];
+
                                         for (let i = 0; i < options.length; i++) {
                                             this.options.push({
                                                 value: options[i].value,
-                                                text: options[i].innerText,
-                                                selected: options[i].getAttribute('selected') != null ? options[i].getAttribute('selected') : false
+                                                text: options[i].innerText.trim(),
+                                                selected: options[i].getAttribute('selected') != null
                                             });
+                                            // push only if explicitly marked selected
+                                            if (options[i].getAttribute('selected') != null) {
+                                                this.selected.push(i);
+                                            }
                                         }
-                                        // Load preselected options from the hidden list if provided
-                                        let userId = document.getElementById("currUser").value;
-                                        const hiddenListItems = document.querySelectorAll(`.userMeta-${userId} .metadata-locations ul li`);
-                                        if (hiddenListItems.length) {
+
+                                        // apply hidden .metadata-locations preselect
+                                        let userIdEl = document.getElementById("currUser");
+                                        if (userIdEl) {
+                                            let userId = userIdEl.value;
+                                            const hiddenListItems = document.querySelectorAll(`.userMeta-${userId} .metadata-locations ul li`);
                                             hiddenListItems.forEach((li) => {
                                                 const text = li.textContent.trim();
                                                 const existingOptionIndex = this.options.findIndex((opt) => opt.text === text);
                                                 if (existingOptionIndex > -1) {
-                                                    // If option exists, mark it as selected
                                                     this.options[existingOptionIndex].selected = true;
                                                     if (!this.selected.includes(existingOptionIndex)) {
                                                         this.selected.push(existingOptionIndex);
@@ -779,21 +999,24 @@
                                                 }
                                             });
                                         }
-                                    },
+                                    }
+                                    ,
+
                                     handleEditTriggered() {
-                                        //load options again with new options with selected for that user
-                                        //temporarily clear options and selected arrays to force Alpine.js to rebuild
+                                        // temporarily clear to force Alpine to rebuild
                                         this.options = [];
                                         this.selected = [];
+                                        this.search = '';
 
-                                        //use a timeout to ensure DOM updates before reloading options
+                                        // reload options after DOM updates
                                         setTimeout(() => {
                                             this.loadOptions();
                                         }, 0);
                                     },
+
                                     selectedValues() {
-                                        return this.selected.map((option) => {
-                                            return this.options[option].value;
+                                        return this.selected.map((optionIndex) => {
+                                            return this.options[optionIndex].value;
                                         });
                                     }
                                 };
@@ -810,11 +1033,13 @@
                                         @click.outside="modalOpenEdit = false"
                                         class="modal w-full max-w-10 rounded-lg bg-white px-8 py-8 dark:bg-boxdark md:px-17.5 md:py-10"
                                 >
-                                    <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl" id="userName">
+                                    <h3 class="mb-2 text-xl text-left font-bold text-black dark:text-white sm:text-2xl"
+                                        id="userName">
 
                                     </h3>
                                     <div class="my-4">
-                                        <a href="#" id="changePasswordButton" class="rounded-md bg-black px-5 py-2 font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
+                                        <a href="#" id="changePasswordButton"
+                                           class="rounded-md bg-black px-5 py-2 font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10">
                                             Promjeni zaporku
                                         </a>
                                     </div>
@@ -834,16 +1059,27 @@
                                                     placeholder="•••••••••••"
                                                     class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
-                                            <button type="button" data-password='#changePasswordInput' class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
-                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path class="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                                    <path class="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                                    <path class="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
-                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                            <button type="button" data-password='#changePasswordInput'
+                                                    class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
+                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2"
+                                                          y2="22"></line>
                                                 </svg>
-                                                <svg class="hidden shown-password shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <svg class="hidden shown-password shrink-0 size-6"
+                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                     stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -864,16 +1100,27 @@
                                                     placeholder="•••••••••••"
                                                     class="w-full mb-2 rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                             />
-                                            <button type="button" data-password='#changePasswordInputRepeat' class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
-                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path class="hs-password-active:hidden" d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
-                                                    <path class="hs-password-active:hidden" d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
-                                                    <path class="hs-password-active:hidden" d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
-                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2" y2="22"></line>
+                                            <button type="button" data-password='#changePasswordInputRepeat'
+                                                    class="password-toggle absolute inset-y-0 top-2 right-0 end-0 flex items-center z-20 px-3 cursor-pointer text-gray-400 rounded-e-md focus:outline-none focus:text-blue-600 dark:text-neutral-600 dark:focus:text-blue-500">
+                                                <svg class="hidden-password shrink-0 size-6" width="24" height="24"
+                                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path>
+                                                    <path class="hs-password-active:hidden"
+                                                          d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path>
+                                                    <line class="hs-password-active:hidden" x1="2" x2="22" y1="2"
+                                                          y2="22"></line>
                                                 </svg>
-                                                <svg class="hidden shown-password shrink-0 size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                <svg class="hidden shown-password shrink-0 size-6"
+                                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                     stroke-width="1.5" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                          d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                                 </svg>
                                             </button>
                                         </div>
@@ -886,10 +1133,14 @@
                                         </label>
                                         <div class="flex items-center rounded-full" id="editUserTypeTag">
                                             <input type="hidden" name="permissions" value="" id="editUserTypeTagHidden">
-                                            <a href="#" data-value="1" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Korisnik</a>
-                                            <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Moderator</a>
-                                            <a href="#" data-value="3" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Admin</a>
-                                            <a href="#" data-value="4" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Root</a>
+                                            <a href="#" data-value="1"
+                                               class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Korisnik</a>
+                                            <a href="#" data-value="2"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Moderator</a>
+                                            <a href="#" data-value="3"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Admin</a>
+                                            <a href="#" data-value="4"
+                                               class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Root</a>
                                         </div>
                                     </div>
 
@@ -900,21 +1151,27 @@
                                             Prikaz na početnoj stranici korisnicima
                                         </label>
                                         <div class="flex items-center rounded-full" id="editMapShownTag">
-                                            <input type="hidden" name="overview_views" value="" id="editMapShownTagHidden">
-                                            <a href="#" data-value="" class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Poništi</a>
-                                            <a href="#" data-value="1" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
-                                            <a href="#" data-value="2" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
-                                            <a href="#" data-value="3" class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
-                                            <a href="#" data-value="4" class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Scada</a>
+                                            <input type="hidden" name="overview_views" value=""
+                                                   id="editMapShownTagHidden">
+                                            <a href="#" data-value=""
+                                               class="inline-flex rounded-l-full border border-stroke px-2 py-1 text-black font-medium hover:border-primary hover:bg-primary hover:text-white  dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Poništi</a>
+                                            <a href="#" data-value="1"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Mapa</a>
+                                            <a href="#" data-value="2"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Termometri</a>
+                                            <a href="#" data-value="3"
+                                               class="inline-flex border-y border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Ikonice</a>
+                                            <a href="#" data-value="4"
+                                               class="inline-flex rounded-r-full border border-stroke px-2 py-1 font-medium text-black hover:border-primary hover:bg-primary hover:text-white dark:border-strokedark dark:text-white dark:hover:border-primary sm:px-6">Scada</a>
                                         </div>
                                     </div>
 
+                                    <!-- Edit Clients -->
                                     <div id="editClientsDiv" class="relative mb-2" style="display:none;">
-                                        <label
-                                                class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                        >
+                                        <label class="mb-2 text-left block text-sm font-medium text-black dark:text-white">
                                             Pristup klijentima
                                         </label>
+
                                         <div>
                                             <select class="hidden" x-cloak id="select3">
                                                 {% for client in clients %}
@@ -922,69 +1179,63 @@
                                                 {% endfor %}
                                             </select>
 
-                                            <div x-data="dropdownClient('select3')" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
+                                            <div x-data="dropdownClient('select3', 'select4')" x-init="loadOptions()" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
                                                 <input name="clients" type="hidden" id="selectNewClientUpdate" :value="selectedValues()">
-                                                <div class="inline-block relative  w-full">
+
+                                                <div class="inline-block relative w-full">
                                                     <div class="flex flex-col items-center relative">
+                                                        <!-- header -->
                                                         <div @click="open" class="w-full">
-                                                            <div
-                                                                    class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
+                                                            <div class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
                                                                 <div class="flex gap-3 flex-auto flex-wrap">
+                                                                    <!-- selected tags -->
                                                                     <template id="editClientTemplate" x-for="(option,index) in selected" :key="index">
-                                                                        <div
-                                                                                class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option] ? options[option].text : ''"></div>
+                                                                        <div class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
+                                                                            <div class="max-w-full flex-initial" x-text="options[option] ? options[option].text : ''"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
-                                                                                <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
-                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                                                                                         xmlns="http://www.w3.org/2000/svg">
-                                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                              d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
-                                                                                              fill="currentColor"></path>
+                                                                                <div @click.stop="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
+                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z" fill="currentColor"></path>
                                                                                     </svg>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </template>
+
+                                                                    <!-- placeholder if no selection -->
                                                                     <div x-show="selected.length == 0" class="flex-1">
-                                                                        <input placeholder="Izaberite opciju"
-                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()">
+                                                                        <input placeholder="Izaberite opciju" class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()" readonly>
                                                                     </div>
                                                                 </div>
+
                                                                 <div class="w-8 py-1 pl-1 pr-1 flex items-center">
-                                                                    <button type="button" @click="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
-                                                                            :class="isOpen() === true ? 'rotate-180' : ''">
-                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                            <g opacity="0.8">
-                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                      d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                                                                      fill="#637381"></path>
-                                                                            </g>
-                                                                        </svg>
+                                                                    <button type="button" @click.stop="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none" :class="isOpen() === true ? 'rotate-180' : ''">
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path></g></svg>
                                                                     </button>
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <!-- dropdown -->
                                                         <div class="w-full px-4">
-                                                            <div x-show.transition.origin.top="isOpen()"
-                                                                 class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto"
-                                                                 @click.outside="close">
+                                                            <div x-show.transition.origin.top="isOpen()" class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto" @click.outside="close">
+                                                                <!-- search inside dropdown -->
+                                                                <input type="text" x-model="search" placeholder="Pretraži..." @click.stop class="w-full p-2 border-b border-gray-200 text-sm outline-none" />
+
                                                                 <div class="flex flex-col w-full">
-                                                                    <template x-for="(option,index) in options" :key="index">
+                                                                    <template x-for="(option,index) in filteredOptions" :key="index">
                                                                         <div>
-                                                                            <div
-                                                                                    class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
-                                                                                    @click="select(index,$event)">
-                                                                                <div :class="option.selected ? 'border-primary' : ''"
-                                                                                     class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
+                                                                            <div class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark" @click="select(index,$event)">
+                                                                                <div :class="option.selected ? 'border-primary' : ''" class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
                                                                                     <div class="w-full items-center flex">
-                                                                                        <div class="mx-2 leading-6" x-model="option" x-text="option.text"></div>
+                                                                                        <div class="mx-2 leading-6" x-text="option.text"></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </template>
                                                                 </div>
+
                                                             </div>
                                                         </div>
                                                     </div>
@@ -993,84 +1244,77 @@
                                         </div>
                                     </div>
 
+                                    <!-- Edit Locations -->
                                     <div id="editLocationsDiv" class="relative mb-4" style="display:none;">
-                                        <label
-                                                class="mb-2 text-left block text-sm font-medium text-black dark:text-white"
-                                        >
-                                            Dozvoljene lokacije
-                                        </label>
+                                        <label class="mb-2 text-left block text-sm font-medium text-black dark:text-white">Dozvoljene lokacije</label>
+
                                         <div>
                                             <select class="hidden" name="locations" x-cloak id="select4">
-                                                {% for key, location in client_locations %}
-                                                    <option value="{{ key }}">{{ location.full }}</option>
-                                                {% endfor %}
+{#                                                {% for key, location in client_locations %}#}
+{#                                                    <option value="{{ key }}">{{ location.full }}</option>#}
+{#                                                {% endfor %}#}
                                             </select>
 
-                                            <div x-data="dropdownLocation('select4')" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
+                                            <div x-data="dropdownLocation('select4')" x-init="loadOptions()" @edit-triggered.window="handleEditTriggered();" class="flex flex-col items-center">
                                                 <input name="locations" type="hidden" :value="selectedValues()">
-                                                <div class="inline-block relative  w-full">
+
+                                                <div class="inline-block relative w-full">
                                                     <div class="flex flex-col items-center relative">
+                                                        <!-- header -->
                                                         <div @click="open" class="w-full">
-                                                            <div
-                                                                    class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
+                                                            <div class="mb-2 pl-3 pr-3 py-2 flex rounded border border-stroke outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input max-w-142.5">
                                                                 <div class="flex gap-3 flex-auto flex-wrap">
+                                                                    <!-- selected tags -->
                                                                     <template id="editTemplateLocations" x-for="(option,index) in selected" :key="index">
-                                                                        <div
-                                                                                class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
-                                                                            <div class="max-w-full flex-initial " x-model="options[option]" x-text="options[option] ? options[option].text : ''"></div>
+                                                                        <div class="flex items-center justify-center rounded border-[.5px] border-stroke bg-gray px-2.5 py-1.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
+                                                                            <div class="max-w-full flex-initial" x-text="options[option] ? options[option].text : ''"></div>
                                                                             <div class="flex flex-auto flex-row-reverse">
-                                                                                <div @click="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
-                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none"
-                                                                                         xmlns="http://www.w3.org/2000/svg">
-                                                                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                              d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z"
-                                                                                              fill="currentColor"></path>
+                                                                                <div @click.stop="remove(index,option)" class="cursor-pointer pl-2 hover:text-danger">
+                                                                                    <svg class="fill-current" role="button" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9.35355 3.35355C9.54882 3.15829 9.54882 2.84171 9.35355 2.64645C9.15829 2.45118 8.84171 2.45118 8.64645 2.64645L6 5.29289L3.35355 2.64645C3.15829 2.45118 2.84171 2.45118 2.64645 2.64645C2.45118 2.84171 2.45118 3.15829 2.64645 3.35355L5.29289 6L2.64645 8.64645C2.45118 8.84171 2.45118 9.15829 2.64645 9.35355C2.84171 9.54882 3.15829 9.54882 3.35355 9.35355L6 6.70711L8.64645 9.35355C8.84171 9.54882 9.15829 9.54882 9.35355 9.35355C9.54882 9.15829 9.54882 8.84171 9.35355 8.64645L6.70711 6L9.35355 3.35355Z" fill="currentColor"></path>
                                                                                     </svg>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </template>
+
+                                                                    <!-- placeholder -->
                                                                     <div x-show="selected.length == 0" class="flex-1">
-                                                                        <input placeholder="Izaberite opciju"
-                                                                               class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()">
+                                                                        <input placeholder="Izaberite opciju" class="bg-transparent p-1 px-2 appearance-none outline-none h-full w-full" :value="selectedValues()" readonly>
                                                                     </div>
                                                                 </div>
+
                                                                 <div class="w-8 py-1 pl-1 pr-1 flex items-center">
-                                                                    <button type="button" @click="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none"
-                                                                            :class="isOpen() === true ? 'rotate-180' : ''">
-                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                            <g opacity="0.8">
-                                                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                                      d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z"
-                                                                                      fill="#637381"></path>
-                                                                            </g>
-                                                                        </svg>
+                                                                    <button type="button" @click.stop="open" class="cursor-pointer w-6 h-6 outline-none focus:outline-none" :class="isOpen() === true ? 'rotate-180' : ''">
+                                                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#637381"></path></g></svg>
                                                                     </button>
                                                                 </div>
                                                             </div>
                                                         </div>
+
+                                                        <!-- dropdown -->
                                                         <div class="w-full px-4">
-                                                            <div x-show.transition.origin.top="isOpen()"
-                                                                 class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto"
-                                                                 @click.outside="close">
+                                                            <div x-show.transition.origin.top="isOpen()" class="absolute shadow top-full bg-white dark:bg-form-input z-999999 w-full left-0 rounded max-h-select overflow-y-auto" @click.outside="close">
+                                                                <!-- search inside dropdown -->
+                                                                <input type="text" x-model="search" placeholder="Pretraži..." @click.stop class="w-full p-2 border-b border-gray-200 text-sm outline-none" />
+
                                                                 <div class="flex flex-col w-full">
-                                                                    <template x-for="(option,index) in options" :key="index">
+                                                                    <template x-for="(option,index) in filteredOptions" :key="index">
                                                                         <div>
-                                                                            <div
-                                                                                    class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark"
-                                                                                    @click="select(index,$event)">
-                                                                                <div :class="option.selected ? 'border-primary' : ''"
-                                                                                     class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
+                                                                            <div class="cursor-pointer w-full border-stroke rounded-t border-b hover:bg-primary/5 dark:border-form-strokedark" @click="select(index,$event)">
+                                                                                <div :class="option.selected ? 'border-primary' : ''" class="flex w-full items-center p-2 pl-2 border-transparent border-l-2 relative">
                                                                                     <div class="w-full items-center flex">
-                                                                                        <div class="mx-2 leading-6" x-model="option" x-text="option.text"></div>
+                                                                                        <div class="mx-2 leading-6" x-text="option.text"></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                     </template>
                                                                 </div>
+
                                                             </div>
                                                         </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -1133,7 +1377,8 @@
                                 </h3>
                                 <form action="" method="POST" id="formDeleteUser">
                                     <p class="mb-7.5 text-left font-medium text-white" id="clientDeleteMessage">
-                                        Korisnik <span id="userName">user_name</span> će biti trajno obrisan. Jeste li sigurni?
+                                        Korisnik <span id="userName">user_name</span> će biti trajno obrisan. Jeste li
+                                        sigurni?
                                     </p>
                                     <button
                                             type="submit"

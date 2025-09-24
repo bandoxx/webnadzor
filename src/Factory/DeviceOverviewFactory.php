@@ -7,7 +7,7 @@ use App\Model\Device\DeviceOverviewModel;
 use App\Model\Device\HumidityModel;
 use App\Model\Device\TemperatureModel;
 use App\Repository\DeviceAlarmRepository;
-use App\Repository\DeviceDataRepository;
+use App\Repository\DeviceDataLastCacheRepository;
 use App\Repository\DeviceIconRepository;
 
 class DeviceOverviewFactory
@@ -16,7 +16,7 @@ class DeviceOverviewFactory
     public function __construct(
         private readonly string               $iconDirectory,
         private readonly DeviceIconRepository $deviceIconRepository,
-        private readonly DeviceDataRepository $deviceDataRepository,
+        private readonly DeviceDataLastCacheRepository $lastCacheRepository,
         private readonly DeviceAlarmRepository $deviceAlarmRepository
     ) {}
 
@@ -60,7 +60,9 @@ class DeviceOverviewFactory
             ->setHumidityModel($humidityModel)
         ;
 
-        $data = $this->deviceDataRepository->findLastRecordForDeviceId($device->getId(), $entry);
+        $cache = $this->lastCacheRepository->findOneBy(['device' => $device, 'entry' => $entry]);
+        $data = $cache?->getDeviceData();
+
         $alarms = $this->deviceAlarmRepository->findActiveAlarms($device, $entry);
 
         if (!$data) {

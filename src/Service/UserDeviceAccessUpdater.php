@@ -31,8 +31,6 @@ class UserDeviceAccessUpdater
 
         $this->entityManager->flush();
 
-        $clientId = null;
-
         if ($user->getPermission() === 1) {
             foreach ($locations as $location) {
                 [$clientId, $deviceId, $entry] = explode('-', $location);
@@ -55,18 +53,24 @@ class UserDeviceAccessUpdater
                 $user->addUserDeviceAccess($userDeviceAccess);
             }
 
-            $client = $this->clientRepository->find($clientId);
-            $user->addClient($client);
+            foreach ($clients as $clientId) {
+                $this->assignClients($user, $clientId);
+            }
         }
 
         if (in_array($user->getPermission(), [2, 3], true)) {
             foreach ($clients as $clientId) {
-                $client = $this->clientRepository->find($clientId);
-
-                $user->addClient($client);
+                $this->assignClients($user, $clientId);
             }
         }
 
         $this->entityManager->flush();
+    }
+
+    private function assignClients(User $user, int $clientId): void
+    {
+        $client = $this->clientRepository->find($clientId);
+
+        $user->addClient($client);
     }
 }
