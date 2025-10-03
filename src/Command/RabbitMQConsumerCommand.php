@@ -56,78 +56,31 @@ class RabbitMQConsumerCommand extends Command
             return Command::FAILURE;
         }
 
-        $connection = new AMQPStreamConnection(
-            $this->rabbitmqHost,
-            $this->rabbitmqPort,
-            $this->rabbitmqUser,
-            $this->rabbitmqPassword,
-            '/',     // vhost
-            false,   // insist
-            'AMQPLAIN', // login method
-            null,    // login response
-            'en_US', // locale
-            10.0,    // connection timeout
-            10.0,    // read timeout
-            null,    // write timeout
-        );
+        // Temporarily suppress deprecation notices from php-amqplib (PHP 8.2 dynamic properties)
+        $originalErrorReporting = error_reporting();
+        error_reporting($originalErrorReporting & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
-        $channel = $connection->channel();
-        // Set prefetch count to 1 to process one message at a time
-        $channel->basic_qos(null, 1, null);
+        try {
+            $connection = new AMQPStreamConnection(
+                $this->rabbitmqHost,
+                $this->rabbitmqPort,
+                $this->rabbitmqUser,
+                $this->rabbitmqPassword,
+                '/',     // vhost
+                false,   // insist
+                'AMQPLAIN', // login method
+                null,    // login response
+                'en_US', // locale
+                10.0,    // connection timeout
+                10.0,    // read timeout
+                null,    // write timeout
+            );
 
-        // Check if queue exists and get message count
-        $queueInfo = $channel->queue_declare(
-            self::QUEUE_NAME,
-            true,   // passive - only check if queue exists
-            false,  // durable
-            false,  // exclusive
-            false,  // auto delete
-            false   // nowait
-        );
+            $channel = $connection->channel();
+            // Set prefetch count to 1 to process one message at a time
+            $channel->basic_qos(null, 1, null);
 
-        // If queue is empty, close connection and exit
-        if ($queueInfo[1] == 0) {
-            $channel->close();
-            $connection->close();
-            return Command::SUCCESS;
-        }
-
-        $callback = function (AMQPMessage $msg) use ($channel) {
-            try {
-                $data = json_decode($msg->body, true, 512, JSON_THROW_ON_ERROR);
-
-                $device = $this->deviceRepository->findOneBy(['serialNumber' => $data['ID']]);
-
-                if (!$device) {
-                    $this->saveUnresolvedDeviceData($data, $data['ID'] ?? null);
-                } else {
-                    $this->processMessage($device, $data);
-                }
-
-                // Acknowledge the message
-                $channel->basic_ack($msg->delivery_info['delivery_tag']);
-            } catch (\Exception $e) {
-                $this->saveUnresolvedDeviceDataFromString($msg->body);
-                $channel->basic_ack($msg->delivery_info['delivery_tag']);
-            }
-        };
-
-        // Start consuming
-        $channel->basic_consume(
-            self::QUEUE_NAME,
-            '',     // consumer tag
-            false,  // no local
-            false,  // no ack
-            false,  // exclusive
-            false,  // no wait
-            $callback
-        );
-
-        // Consume messages until queue is empty
-        while (count($channel->callbacks)) {
-            $channel->wait();
-
-            // Check if queue is empty after each message
+            // Check if queue exists and get message count
             $queueInfo = $channel->queue_declare(
                 self::QUEUE_NAME,
                 true,   // passive - only check if queue exists
@@ -137,15 +90,71 @@ class RabbitMQConsumerCommand extends Command
                 false   // nowait
             );
 
+            // If queue is empty, close connection and exit
             if ($queueInfo[1] == 0) {
-                break;
+                $channel->close();
+                $connection->close();
+                return Command::SUCCESS;
             }
+
+            $callback = function (AMQPMessage $msg) use ($channel) {
+                try {
+                    $data = json_decode($msg->body, true, 512, JSON_THROW_ON_ERROR);
+
+                    $device = $this->deviceRepository->findOneBy(['serialNumber' => $data['ID']]);
+
+                    if (!$device) {
+                        $this->saveUnresolvedDeviceData($data, $data['ID'] ?? null);
+                    } else {
+                        $this->processMessage($device, $data);
+                    }
+
+                    // Acknowledge the message
+                    $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                } catch (\Exception $e) {
+                    $this->saveUnresolvedDeviceDataFromString($msg->body);
+                    $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                }
+            };
+
+            // Start consuming
+            $channel->basic_consume(
+                self::QUEUE_NAME,
+                '',     // consumer tag
+                false,  // no local
+                false,  // no ack
+                false,  // exclusive
+                false,  // no wait
+                $callback
+            );
+
+            // Consume messages until queue is empty
+            while (count($channel->callbacks)) {
+                $channel->wait();
+
+                // Check if queue is empty after each message
+                $queueInfo = $channel->queue_declare(
+                    self::QUEUE_NAME,
+                    true,   // passive - only check if queue exists
+                    false,  // durable
+                    false,  // exclusive
+                    false,  // auto delete
+                    false   // nowait
+                );
+
+                if ($queueInfo[1] == 0) {
+                    break;
+                }
+            }
+
+            $channel->close();
+            $connection->close();
+
+            return Command::SUCCESS;
+        } finally {
+            // Restore previous error reporting level
+            error_reporting($originalErrorReporting);
         }
-
-        $channel->close();
-        $connection->close();
-
-        return Command::SUCCESS;
     }
 
     private function processMessage(Device $device, array $data): void
