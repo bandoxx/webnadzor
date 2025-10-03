@@ -21,7 +21,7 @@ class DatabaseGarbageCollector
     public function clean(): void
     {
         $this->cleanLoginList();
-        $this->cleanAlarmList();
+//        $this->cleanAlarmList();
         $this->cleanUnresolvedXmlList();
     }
 
