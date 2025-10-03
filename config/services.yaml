@@ -101,6 +101,10 @@ services:
     App\Service\RawData\RawDataHandler:
         $projectTemporaryDirectory: '%temporary_directory%'
 
+    App\Service\Mailer:
+        arguments:
+            $logger: '@monolog.logger.mailer'
+
     App\Service\APIClient\InfobipClient:
         $sender: '%env(INFOBIP_SENDER)%'
         $isClientActive: '%is_infobip_client_active%'
