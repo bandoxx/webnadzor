@@ -32,6 +32,7 @@ class ErrorLoggingSubscriber implements EventSubscriberInterface
     #[AsEventListener(event: KernelEvents::EXCEPTION, priority: 0)]
     public function onKernelException(ExceptionEvent $event): void
     {
+        return;
         $throwable = $event->getThrowable();
 
         $request = $event->getRequest();
