@@ -48,4 +48,12 @@ class DeviceAlarmLogRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    public function deleteLogsRelatedToDevice(int $deviceId): void
+    {
+        $this->getEntityManager()->getConnection()->executeQuery(
+            'DELETE dal FROM device_alarm_log dal JOIN device_alarm da ON dal.device_alarm_id = da.id WHERE da.device_id = :deviceId',
+            ['deviceId' => $deviceId]
+        )->free();
+    }
 }
