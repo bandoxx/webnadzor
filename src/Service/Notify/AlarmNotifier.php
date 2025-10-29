@@ -21,6 +21,8 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
+use Psr\Log\LoggerInterface;
+use Monolog\Attribute\WithMonologChannel;
 
 class AlarmNotifier
 {
@@ -31,7 +33,9 @@ class AlarmNotifier
         private readonly InfobipClient $infobipClient,
         private readonly AlarmRecipients $alarmRecipients,
         private readonly Environment $twig,
-        private readonly AlarmLogFactory $alarmLogFactory
+        private readonly AlarmLogFactory $alarmLogFactory,
+        #[WithMonologChannel('mailer')]
+        private readonly LoggerInterface $logger,
     )
     {}
 
@@ -200,6 +204,24 @@ class AlarmNotifier
                 ]));
 
             $this->mailer->send($email);
+
+            // Log mail notification via Monolog (mailer channel)
+            try {
+                $alarmIds = array_map(static fn($a) => method_exists($a, 'getId') ? $a->getId() : null, $alarms);
+                $alarmTypes = array_map(static fn($a) => method_exists($a, 'getType') ? $a->getType() : null, $alarms);
+                $this->logger->info('AlarmNotifier: sent alarm notification email.', [
+                    'device_id' => $device->getId(),
+                    'device_name' => $device->getName(),
+                    'entry' => $entry,
+                    'recipients' => $emails,
+                    'subject' => sprintf('Aktivni alarmi za uređaj: %s', $device->getName()),
+                    'alarm_ids' => $alarmIds,
+                    'alarm_types' => $alarmTypes,
+                    'alarm_count' => count($alarms),
+                ]);
+            } catch (\Throwable $e) {
+                // Do not break the flow if logging fails
+            }
         }
     }
 }
