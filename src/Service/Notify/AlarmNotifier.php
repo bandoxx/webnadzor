@@ -193,8 +193,9 @@ class AlarmNotifier
             }
 
             $email = (new Email())
-                ->from('info@intelteh.hr')
-                ->sender('info@intelteh.hr')
+                ->from('rht@intelteh.hr')
+                ->sender('rht@intelteh.hr')
+                ->replyTo('info@intelteh.hr')
                 ->to(...$emails)
                 ->bcc('logs@banox.dev')
                 ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))

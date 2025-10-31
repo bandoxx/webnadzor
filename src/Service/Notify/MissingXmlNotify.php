@@ -20,8 +20,9 @@ class MissingXmlNotify
         $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
 
         $email = (new Email())
-            ->from('info@intelteh.hr')
-            ->sender('info@intelteh.hr')
+            ->from('rht@intelteh.hr')
+            ->sender('rht@intelteh.hr')
+            ->replyTo('info@intelteh.hr')
             ->to(...$emails)
             ->bcc('logs@banox.dev')
             ->subject(sprintf('Lista uređaja kojima fale logovi za dan: %s', (new \DateTime('-1 day'))->format('d.m.Y')))
