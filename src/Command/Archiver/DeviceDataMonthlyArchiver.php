@@ -63,10 +63,8 @@ class DeviceDataMonthlyArchiver extends Command
 
         $date = $this->getTargetDate($input->getOption('date'));
 
-        // For data fetching, use last month's date if no date was explicitly provided
-        $dataFetchDate = $input->getOption('date') === null
-            ? (clone $date)->modify('-1 month')
-            : $date;
+        // Use the same date for data fetching (already set to last month)
+        $dataFetchDate = $date;
 
         // Batch size for flushing to database
         $batchSize = 20;
@@ -146,13 +144,13 @@ class DeviceDataMonthlyArchiver extends Command
     {
         if ($date === null) {
             $target = new \DateTime();
-            $target->modify('first day of this month');
+            $target->modify('last day of last month');
         } else {
             try {
                 $target = new \DateTime($date);
             } catch (\Exception $e) {
                 $target = new \DateTime();
-                $target->modify('first day of this month');
+                $target->modify('last day of last month');
             }
         }
 
