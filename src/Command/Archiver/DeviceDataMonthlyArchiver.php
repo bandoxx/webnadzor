@@ -63,6 +63,11 @@ class DeviceDataMonthlyArchiver extends Command
 
         $date = $this->getTargetDate($input->getOption('date'));
 
+        // For data fetching, use last month's date if no date was explicitly provided
+        $dataFetchDate = $input->getOption('date') === null
+            ? (clone $date)->modify('-1 month')
+            : $date;
+
         // Batch size for flushing to database
         $batchSize = 20;
         $archiveCount = 0;
@@ -71,11 +76,11 @@ class DeviceDataMonthlyArchiver extends Command
         $existingMonthlyArchives = $this->preCheckExistingArchives($devices, $date);
 
         foreach ($devices as $device) {
-            $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
+            $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $dataFetchDate);
 
             foreach([1, 2] as $entry) {
-                $fromDate = (clone $date)->modify('first day of this month')->setTime(0, 0, 0);
-                $toDate = (clone $date)->modify('last day of this month')->setTime(23, 59, 59);
+                $fromDate = (clone $dataFetchDate)->modify('first day of this month')->setTime(0, 0, 0);
+                $toDate = (clone $dataFetchDate)->modify('last day of this month')->setTime(23, 59, 59);
 
                 // Check if archive already exists using the pre-fetched data
                 $archiveKey = $this->getArchiveKey($device->getId(), $entry, $date, DeviceDataArchive::PERIOD_MONTH);
@@ -141,11 +146,13 @@ class DeviceDataMonthlyArchiver extends Command
     {
         if ($date === null) {
             $target = new \DateTime();
+            $target->modify('first day of this month');
         } else {
             try {
                 $target = new \DateTime($date);
             } catch (\Exception $e) {
                 $target = new \DateTime();
+                $target->modify('first day of this month');
             }
         }
 
