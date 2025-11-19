@@ -325,7 +325,7 @@ class FillMissingDeviceDataCommand extends Command
         }
 
         // Copy supply status (no modification needed)
-        $newRecord->setSupply($template->getSupply());
+        $newRecord->setSupply($template->isSupply());
 
         // Copy and modify battery voltage (±0.01-0.05V)
         $vbat = $template->getVbat();
