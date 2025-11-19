@@ -267,23 +267,18 @@ class FillMissingDeviceDataCommand extends Command
 
     private function findSimilarPastRecord(Device $device, \DateTime $targetTimestamp, int $lookbackDays): ?DeviceData
     {
-        $targetTime = $targetTimestamp->format('H:i:s');
-
         // Look for records with same time of day going back N days
         for ($daysBack = 1; $daysBack <= $lookbackDays; $daysBack++) {
             $pastDate = (clone $targetTimestamp)->modify("-{$daysBack} days");
-            $pastDateStr = $pastDate->format('Y-m-d');
 
             $qb = $this->entityManager->createQueryBuilder();
 
             $record = $qb->select('dd')
                 ->from(DeviceData::class, 'dd')
                 ->where('dd.device = :device')
-                ->andWhere('DATE(dd.serverDate) = :date')
-                ->andWhere('TIME(dd.serverDate) = :time')
+                ->andWhere('dd.serverDate = :datetime')
                 ->setParameter('device', $device)
-                ->setParameter('date', $pastDateStr)
-                ->setParameter('time', $targetTime)
+                ->setParameter('datetime', $pastDate)
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getOneOrNullResult();
