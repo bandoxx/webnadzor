@@ -3,6 +3,7 @@
 namespace App\Service\ClientStorage\Types;
 
 use App\Entity\Client;
+use App\Repository\DeviceRepository;
 
 class DeviceTypesDropdown
 {
@@ -43,5 +44,36 @@ class DeviceTypesDropdown
 
         return $list;
     }
+
+    public static function getAllDevices(DeviceRepository $deviceRepository): array
+    {
+        $devices = $deviceRepository->findActiveDevices();
+        $result = [];
+
+        foreach ($devices as $device) {
+            // Check both entries (1 and 2)
+            for ($entry = 1; $entry <= 2; $entry++) {
+
+                // Must have at least T or RH active
+                if ($device->isTUsed($entry) || $device->isRhUsed($entry)) {
+
+                    $entryData = $device->getEntryData($entry);
+
+                    // Prefer T name, fallback to RH name
+                    $entryName = $device->isTUsed($entry) && !empty($entryData['t_name'])
+                        ? $entryData['t_name']
+                        : ($entryData['rh_name'] ?? '');
+
+                    $result[] = [
+                        'value' => sprintf('%s', $device->getId()),
+                        'text'  => $device->getName() . ' - ' . $entryName,
+                    ];
+                }
+            }
+        }
+
+        return $result;
+    }
+
 
 }
