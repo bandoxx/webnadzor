@@ -4,16 +4,11 @@ namespace App\Command\Archiver;
 
 use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
-use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
-use App\Service\Archiver\ArchiverInterface;
-use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
-use App\Service\Archiver\DeviceData\DeviceDataXLSXArchiver;
 use App\Service\Chart\ChartImageGenerator;
-use App\Service\RawData\Factory\DeviceDataRawDataFactory;
-use App\Service\RawData\RawDataHandler;
+use App\Service\DeviceData\DeviceDataDailyArchiveService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -28,16 +23,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DeviceDataArchiver extends Command
 {
     public function __construct(
-        private DeviceDataXLSXArchiver       $XLSXArchiver,
-        private DeviceDataPDFArchiver        $PDFArchiver,
         private DeviceRepository             $deviceRepository,
         private DeviceDataRepository         $deviceDataRepository,
-        private DeviceDataArchiveFactory     $deviceDataArchiveFactory,
         private DeviceDataArchiveRepository  $deviceDataArchiveRepository,
-        private RawDataHandler               $rawDataHandler,
-        private DeviceDataRawDataFactory     $deviceDataRawDataFactory,
-        private EntityManagerInterface       $entityManager,
-        private ChartImageGenerator          $chartImageGenerator
+        private ChartImageGenerator          $chartImageGenerator,
+        private DeviceDataDailyArchiveService $dailyArchiveService,
+        private EntityManagerInterface       $entityManager
     )
     {
         parent::__construct();
@@ -85,8 +76,8 @@ class DeviceDataArchiver extends Command
                     }
 
                     $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
-                    $this->generateDailyReport($device, $data, $entry, $date, false);
-                    
+                    $this->dailyArchiveService->generateDailyReport($device, $data, $entry, $date, false);
+
                     $archiveCount++;
                     // Flush every $batchSize archives
                     if ($archiveCount % $batchSize === 0) {
@@ -111,35 +102,6 @@ class DeviceDataArchiver extends Command
 
         $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
         return Command::SUCCESS;
-    }
-
-    private function generateDailyReport(Device $device, $data, $entry, $date, bool $flushImmediately = true): void
-    {
-        $fileName = $this->generateFilename(sprintf('d%s_%s', $device->getId(), $device->getDeviceIdentifier()), $entry, $date->format(ArchiverInterface::DAILY_FILENAME_FORMAT));
-
-        $this->XLSXArchiver->saveDaily($device, $data, $entry, $date, $fileName);
-        $archive = $this->PDFArchiver->saveDaily($device, $data, $entry, $date, $fileName);
-
-        $this->rawDataHandler->encrypt($this->deviceDataRawDataFactory->create($data, $entry, $date), $archive->getFullPathWithoutExtension());
-
-        $archive = $this->deviceDataArchiveFactory->create($device, $date, $entry, $fileName, DeviceDataArchive::PERIOD_DAY);
-
-        $this->entityManager->persist($archive);
-        
-        // Only flush immediately if requested (for backward compatibility)
-        if ($flushImmediately) {
-            $this->entityManager->flush();
-        }
-    }
-
-    private function generateFilename(string $identifier, $entry, $date): string
-    {
-        $text = sprintf('%s_t%s_%s', $identifier, $entry, $date);
-        $text = preg_replace('/[^a-zA-Z0-9]+/u', '_', $text);
-
-        // Trim and lowercase
-        $text = trim($text, '-');
-        return mb_strtolower($text, 'UTF-8');
     }
 
     private function getDates(?string $fromDate = null, ?string $toDate = null): \DatePeriod

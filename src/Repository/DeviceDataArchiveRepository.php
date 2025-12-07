@@ -86,4 +86,31 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
 
         return count($qb->getQuery()->getResult()) > 0;
     }
+
+    /**
+     * Delete daily archives for a device within a date range
+     *
+     * @param int $deviceId
+     * @param \DateTimeInterface $dateFrom
+     * @param \DateTimeInterface $dateTo
+     * @return int Number of archives deleted
+     */
+    public function deleteDailyArchivesForDeviceAndDateRange(
+        int $deviceId,
+        \DateTimeInterface $dateFrom,
+        \DateTimeInterface $dateTo
+    ): int {
+        $qb = $this->createQueryBuilder('dda')
+            ->delete()
+            ->where('dda.device = :device_id')
+            ->andWhere('dda.period = :period')
+            ->andWhere('dda.archiveDate >= :date_from')
+            ->andWhere('dda.archiveDate <= :date_to')
+            ->setParameter('device_id', $deviceId)
+            ->setParameter('period', DeviceDataArchive::PERIOD_DAY)
+            ->setParameter('date_from', $dateFrom)
+            ->setParameter('date_to', $dateTo);
+
+        return $qb->getQuery()->execute();
+    }
 }
