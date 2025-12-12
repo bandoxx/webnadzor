@@ -86,10 +86,10 @@ class DeviceDataShiftInsertController extends AbstractController
             throw new BadRequestHttpException('dateFrom must be before or equal to dateTo');
         }
 
-        // Validate dateTo is not in the future
-        $now = new \DateTime();
-        if ($dateToObj > $now) {
-            throw new BadRequestHttpException('dateTo cannot be in the future');
+        // Cap dateTo to yesterday (don't insert data for today or future)
+        $yesterday = (new \DateTime())->modify('-1 day')->setTime(23, 59, 59);
+        if ($dateToObj > $yesterday) {
+            $dateToObj = $yesterday;
         }
 
         try {

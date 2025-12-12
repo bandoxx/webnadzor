@@ -68,10 +68,12 @@ class DeviceDataShiftPreviewController extends AbstractController
             throw new BadRequestHttpException('dateFrom must be before or equal to dateTo');
         }
 
-        // Validate dateTo is not in the future
-        $now = new \DateTime();
-        if ($dateToObj > $now) {
-            throw new BadRequestHttpException('dateTo cannot be in the future');
+        // Cap dateTo to yesterday (don't insert data for today or future)
+        $yesterday = (new \DateTime())->modify('-1 day')->setTime(23, 59, 59);
+        $dateToWasCapped = false;
+        if ($dateToObj > $yesterday) {
+            $dateToObj = $yesterday;
+            $dateToWasCapped = true;
         }
 
         try {
@@ -89,6 +91,7 @@ class DeviceDataShiftPreviewController extends AbstractController
                     'deviceId' => $deviceId,
                     'dateFrom' => $dateFromObj->format('Y-m-d H:i:s'),
                     'dateTo' => $dateToObj->format('Y-m-d H:i:s'),
+                    'dateToWasCapped' => $dateToWasCapped,
                     'intervalDays' => $previewData['intervalDays'],
                     'recordCount' => count($previewData['records']),
                     'records' => $previewData['records'],
