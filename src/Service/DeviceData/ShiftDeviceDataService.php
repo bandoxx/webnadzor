@@ -16,27 +16,78 @@ class ShiftDeviceDataService
     ) {
     }
 
+    private const MIN_INTERVAL_DAYS = 20;
+    private const MAX_INTERVAL_DAYS = 35;
+
     /**
-     * Preview device data that would be inserted with shifted dates
+     * Find the best interval (20-35 days) with the most available records
      *
      * @param int $deviceId
      * @param \DateTimeInterface $dateFrom
      * @param \DateTimeInterface $dateTo
-     * @param int $intervalDays Number of days to shift (default 25)
-     * @return array Array of associative arrays with old and new dates plus all data
+     * @return array{intervalDays: int, recordCount: int} Best interval and its record count
+     */
+    public function findBestInterval(
+        int $deviceId,
+        \DateTimeInterface $dateFrom,
+        \DateTimeInterface $dateTo
+    ): array {
+        $bestInterval = self::MIN_INTERVAL_DAYS;
+        $bestCount = 0;
+
+        for ($interval = self::MIN_INTERVAL_DAYS; $interval <= self::MAX_INTERVAL_DAYS; $interval++) {
+            $count = $this->deviceDataRepository->countShiftedDataForInterval(
+                $deviceId,
+                $dateFrom,
+                $dateTo,
+                $interval
+            );
+
+            if ($count > $bestCount) {
+                $bestCount = $count;
+                $bestInterval = $interval;
+            }
+        }
+
+        return [
+            'intervalDays' => $bestInterval,
+            'recordCount' => $bestCount,
+        ];
+    }
+
+    /**
+     * Preview device data that would be inserted with shifted dates
+     * Automatically finds the best interval (20-35 days) with most records
+     *
+     * @param int $deviceId
+     * @param \DateTimeInterface $dateFrom
+     * @param \DateTimeInterface $dateTo
+     * @param int|null $intervalDays If null, will find the best interval automatically
+     * @return array{intervalDays: int, records: array} The interval used and preview records
      */
     public function previewShiftedData(
         int $deviceId,
         \DateTimeInterface $dateFrom,
         \DateTimeInterface $dateTo,
-        int $intervalDays = 25
+        ?int $intervalDays = null
     ): array {
-        return $this->deviceDataRepository->getShiftedDataPreview(
+        // If no interval specified, find the best one
+        if ($intervalDays === null) {
+            $bestMatch = $this->findBestInterval($deviceId, $dateFrom, $dateTo);
+            $intervalDays = $bestMatch['intervalDays'];
+        }
+
+        $records = $this->deviceDataRepository->getShiftedDataPreview(
             $deviceId,
             $dateFrom,
             $dateTo,
             $intervalDays
         );
+
+        return [
+            'intervalDays' => $intervalDays,
+            'records' => $records,
+        ];
     }
 
     /**

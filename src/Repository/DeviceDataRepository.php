@@ -306,6 +306,48 @@ class DeviceDataRepository extends ServiceEntityRepository
     }
 
     /**
+     * Count available records for a specific interval shift
+     *
+     * @param int $deviceId
+     * @param \DateTimeInterface $dateFrom Target date from
+     * @param \DateTimeInterface $dateTo Target date to
+     * @param int $intervalDays Number of days to shift forward from the past
+     * @return int Number of available records for this interval
+     */
+    public function countShiftedDataForInterval(
+        int $deviceId,
+        \DateTimeInterface $dateFrom,
+        \DateTimeInterface $dateTo,
+        int $intervalDays
+    ): int {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT COUNT(*) as cnt
+            FROM device_data dd
+            WHERE dd.device_id = :deviceId
+              AND dd.device_date BETWEEN DATE_SUB(:dateFrom, INTERVAL :intervalDays DAY)
+                                     AND DATE_SUB(:dateTo, INTERVAL :intervalDays DAY)
+              AND NOT EXISTS (
+                    SELECT 1
+                    FROM device_data dd2
+                    WHERE dd2.device_id = dd.device_id
+                      AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
+                )
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery([
+            'deviceId' => $deviceId,
+            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
+            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
+            'intervalDays' => $intervalDays,
+        ]);
+
+        return (int) $result->fetchOne();
+    }
+
+    /**
      * Preview device data that would be inserted with shifted dates
      * Fetches data from the past and shows what it would look like with target dates
      *

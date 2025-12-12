@@ -35,7 +35,6 @@ class DeviceDataShiftPreviewController extends AbstractController
         $deviceId = $request->query->get('deviceId');
         $dateFrom = $request->query->get('dateFrom');
         $dateTo = $request->query->get('dateTo');
-        $intervalDays = $request->query->get('intervalDays', 25);
 
         // Validate required parameters
         if (!$deviceId) {
@@ -55,12 +54,6 @@ class DeviceDataShiftPreviewController extends AbstractController
             throw new BadRequestHttpException('Invalid deviceId: must be a positive integer');
         }
         $deviceId = (int)$deviceId;
-
-        // Validate and parse interval days
-        if (!is_numeric($intervalDays) || (int)$intervalDays <= 0) {
-            throw new BadRequestHttpException('Invalid intervalDays: must be a positive integer');
-        }
-        $intervalDays = (int)$intervalDays;
 
         // Parse dates
         try {
@@ -82,12 +75,11 @@ class DeviceDataShiftPreviewController extends AbstractController
         }
 
         try {
-            // Get preview data
+            // Get preview data (automatically finds best interval 20-35 days)
             $previewData = $this->shiftDeviceDataService->previewShiftedData(
                 $deviceId,
                 $dateFromObj,
-                $dateToObj,
-                $intervalDays
+                $dateToObj
             );
 
             return $this->json([
@@ -97,9 +89,9 @@ class DeviceDataShiftPreviewController extends AbstractController
                     'deviceId' => $deviceId,
                     'dateFrom' => $dateFromObj->format('Y-m-d H:i:s'),
                     'dateTo' => $dateToObj->format('Y-m-d H:i:s'),
-                    'intervalDays' => $intervalDays,
-                    'recordCount' => count($previewData),
-                    'records' => $previewData,
+                    'intervalDays' => $previewData['intervalDays'],
+                    'recordCount' => count($previewData['records']),
+                    'records' => $previewData['records'],
                 ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {

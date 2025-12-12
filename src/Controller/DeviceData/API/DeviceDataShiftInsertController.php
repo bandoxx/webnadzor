@@ -42,7 +42,7 @@ class DeviceDataShiftInsertController extends AbstractController
         $deviceId = $data['deviceId'] ?? null;
         $dateFrom = $data['dateFrom'] ?? null;
         $dateTo = $data['dateTo'] ?? null;
-        $intervalDays = $data['intervalDays'] ?? 25;
+        $intervalDays = $data['intervalDays'] ?? null;
 
         // Validate required parameters
         if (!$deviceId) {
@@ -55,6 +55,10 @@ class DeviceDataShiftInsertController extends AbstractController
 
         if (!$dateTo) {
             throw new BadRequestHttpException('Missing required parameter: dateTo');
+        }
+
+        if ($intervalDays === null) {
+            throw new BadRequestHttpException('Missing required parameter: intervalDays');
         }
 
         // Validate and parse device ID
