@@ -64,9 +64,10 @@ class DeviceDataArchiveRepository extends ServiceEntityRepository
 
     public function deleteArchiveRelatedToDevice(int $deviceId): void
     {
-        $this->getEntityManager()->getConnection()->executeQuery(
-            "DELETE FROM device_data_archive WHERE device_id = $deviceId",
-        )->free();
+        $this->getEntityManager()->getConnection()->executeStatement(
+            "DELETE FROM device_data_archive WHERE device_id = :deviceId",
+            ['deviceId' => $deviceId]
+        );
     }
 
     public function archiveExists(Device $device, int $entry, \DateTime $archiveDate, string $period): bool

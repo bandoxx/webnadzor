@@ -24,9 +24,10 @@ class DeviceAlarmRepository extends ServiceEntityRepository
 
     public function deleteAlarmsRelatedToDevice(int $deviceId): void
     {
-        $this->getEntityManager()->getConnection()->executeQuery(
-            "DELETE FROM device_alarm WHERE device_id = $deviceId",
-        )->free();
+        $this->getEntityManager()->getConnection()->executeStatement(
+            "DELETE FROM device_alarm WHERE device_id = :deviceId",
+            ['deviceId' => $deviceId]
+        );
     }
 
     public function findByDeviceOrderByEndDate(Device $device, int $entry): array

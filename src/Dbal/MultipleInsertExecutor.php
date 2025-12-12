@@ -119,12 +119,8 @@ class MultipleInsertExecutor
             return 'NULL';
         }
 
-        return "'" . addslashes((string) $value) . "'";
-
-        // It allows maximum 60k parameters and it's not enough
-//        $parameterName = 'param' . count($this->parameters);
-//        $this->parameters[$parameterName] = (string) $value;
-//
-//        return ':' . $parameterName;
+        // Use Doctrine's quote() for proper database-specific escaping
+        // Note: We can't use parameterized queries due to MySQL's ~60k parameter limit
+        return $this->connection->quote((string) $value);
     }
 }

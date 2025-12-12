@@ -60,9 +60,10 @@ class DeviceDataRepository extends ServiceEntityRepository
 
     public function removeDataForDevice(int $deviceId): void
     {
-        $this->getEntityManager()->getConnection()->executeQuery(
-            "DELETE FROM device_data WHERE device_id = $deviceId",
-        )->free();
+        $this->getEntityManager()->getConnection()->executeStatement(
+            "DELETE FROM device_data WHERE device_id = :deviceId",
+            ['deviceId' => $deviceId]
+        );
     }
 
     public function getNumberOfRecords(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): int

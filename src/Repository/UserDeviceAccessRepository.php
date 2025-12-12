@@ -24,9 +24,10 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
 
     public function deleteAccessesRelatedToDevice(int $deviceId): void
     {
-        $this->getEntityManager()->getConnection()->executeQuery(
-            "DELETE FROM user_device_access WHERE device_id = $deviceId",
-        )->free();
+        $this->getEntityManager()->getConnection()->executeStatement(
+            "DELETE FROM user_device_access WHERE device_id = :deviceId",
+            ['deviceId' => $deviceId]
+        );
     }
 
     /**
