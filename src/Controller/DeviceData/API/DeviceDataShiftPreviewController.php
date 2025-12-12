@@ -2,6 +2,7 @@
 
 namespace App\Controller\DeviceData\API;
 
+use App\Entity\User;
 use App\Service\DeviceData\ShiftDeviceDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,12 @@ class DeviceDataShiftPreviewController extends AbstractController
 
     public function __invoke(Request $request): JsonResponse
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getPermission() !== 4) {
+            throw $this->createAccessDeniedException();
+        }
         // Get and validate query parameters
         $deviceId = $request->query->get('deviceId');
         $dateFrom = $request->query->get('dateFrom');

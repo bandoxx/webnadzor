@@ -2,6 +2,7 @@
 
 namespace App\Controller\DeviceData\API;
 
+use App\Entity\User;
 use App\Service\DeviceData\ShiftDeviceDataService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,14 +25,14 @@ class DeviceDataShiftInsertController extends AbstractController
 
     public function __invoke(Request $request): JsonResponse
     {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getPermission() !== 4) {
+            throw $this->createAccessDeniedException();
+        }
         // Parse JSON body
         $data = json_decode($request->getContent(), true);
-
-        if ($data['status'] == 201) {
-            return $this->json(true, Response::HTTP_CREATED);
-        }
-
-        return $this->json("Greska", Response::HTTP_BAD_REQUEST);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new BadRequestHttpException('Invalid JSON in request body: ' . json_last_error_msg());
