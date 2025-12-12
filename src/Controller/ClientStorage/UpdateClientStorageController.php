@@ -17,6 +17,11 @@ use App\Entity\ClientStorage;
 #[Route('/admin/{clientId}/client-storage/{clientStorageId}', name: 'app_client_storage_get_post', methods: ['GET', 'POST'])]
 class UpdateClientStorageController extends AbstractController
 {
+    public function __construct(
+        private readonly DeviceTypesDropdown $deviceTypesDropdown,
+        private readonly DigitalEntryDropdown $digitalEntryDropdown
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'clientId')]
@@ -34,8 +39,8 @@ class UpdateClientStorageController extends AbstractController
             return $this->redirectToRoute('client_overview', ['clientId' => $client->getId()]);
         }
 
-        $deviceTypesDropdown = DeviceTypesDropdown::get($client);
-        $digitalEntryDropdown = DigitalEntryDropdown::get($client);
+        $deviceTypesDropdown = $this->deviceTypesDropdown->getForClient($client);
+        $digitalEntryDropdown = $this->digitalEntryDropdown->getForClient($client);
 
         if ($request->isMethod('GET')) {
             return $this->render('v2/client_storage/edit.html.twig', [

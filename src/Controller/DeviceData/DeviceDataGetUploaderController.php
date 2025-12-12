@@ -97,7 +97,7 @@ class DeviceDataGetUploaderController extends AbstractController
             return $this->json('Error processing data: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     private function saveUnresolvedData(string $content, string $filename): void
     {
         $unresolvedData = $this->unresolvedDeviceDataFactory->createFromString($content);
