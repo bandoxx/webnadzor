@@ -8,7 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(
@@ -35,7 +34,10 @@ class DeviceDataShiftInsertController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new BadRequestHttpException('Invalid JSON in request body: ' . json_last_error_msg());
+            return $this->json([
+                'success' => false,
+                'message' => 'Neispravan format zahteva.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // Get and validate parameters from request body
@@ -46,30 +48,48 @@ class DeviceDataShiftInsertController extends AbstractController
 
         // Validate required parameters
         if (!$deviceId) {
-            throw new BadRequestHttpException('Missing required parameter: deviceId');
+            return $this->json([
+                'success' => false,
+                'message' => 'Morate izabrati uređaj.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if (!$dateFrom) {
-            throw new BadRequestHttpException('Missing required parameter: dateFrom');
+            return $this->json([
+                'success' => false,
+                'message' => 'Morate uneti datum od.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if (!$dateTo) {
-            throw new BadRequestHttpException('Missing required parameter: dateTo');
+            return $this->json([
+                'success' => false,
+                'message' => 'Morate uneti datum do.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         if ($intervalDays === null) {
-            throw new BadRequestHttpException('Missing required parameter: intervalDays');
+            return $this->json([
+                'success' => false,
+                'message' => 'Molimo prvo kliknite "Prikaži" za pronalaženje podataka.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // Validate and parse device ID
         if (!is_numeric($deviceId) || (int)$deviceId <= 0) {
-            throw new BadRequestHttpException('Invalid deviceId: must be a positive integer');
+            return $this->json([
+                'success' => false,
+                'message' => 'Neispravan ID uređaja.',
+            ], Response::HTTP_BAD_REQUEST);
         }
         $deviceId = (int)$deviceId;
 
         // Validate and parse interval days
         if (!is_numeric($intervalDays) || (int)$intervalDays <= 0) {
-            throw new BadRequestHttpException('Invalid intervalDays: must be a positive integer');
+            return $this->json([
+                'success' => false,
+                'message' => 'Neispravan interval dana.',
+            ], Response::HTTP_BAD_REQUEST);
         }
         $intervalDays = (int)$intervalDays;
 
@@ -78,18 +98,32 @@ class DeviceDataShiftInsertController extends AbstractController
             $dateFromObj = new \DateTime($dateFrom);
             $dateToObj = new \DateTime($dateTo);
         } catch (\Exception $e) {
-            throw new BadRequestHttpException('Invalid date format. Expected format: Y-m-d H:i:s or Y-m-d');
+            return $this->json([
+                'success' => false,
+                'message' => 'Neispravan format datuma.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // Validate date range
         if ($dateFromObj > $dateToObj) {
-            throw new BadRequestHttpException('dateFrom must be before or equal to dateTo');
+            return $this->json([
+                'success' => false,
+                'message' => 'Datum od mora biti pre datuma do.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         // Cap dateTo to yesterday (don't insert data for today or future)
         $yesterday = (new \DateTime())->modify('-1 day')->setTime(23, 59, 59);
         if ($dateToObj > $yesterday) {
             $dateToObj = $yesterday;
+        }
+
+        // Validate that dateFrom is not after capped dateTo
+        if ($dateFromObj > $dateToObj) {
+            return $this->json([
+                'success' => false,
+                'message' => 'Datum od ne može biti u budućnosti. Maksimalni datum je jučerašnji dan.',
+            ], Response::HTTP_BAD_REQUEST);
         }
 
         try {
