@@ -17,6 +17,11 @@ use App\Entity\ClientStorage;
 #[Route('/admin/{clientId}/client-storage', name: 'app_client_storage_post', methods: ['GET', 'POST'])]
 class CreateClientStorageController extends AbstractController
 {
+    public function __construct(
+        private readonly DeviceTypesDropdown $deviceTypesDropdown,
+        private readonly DigitalEntryDropdown $digitalEntryDropdown
+    ) {
+    }
 
     public function __invoke(
         #[MapEntity(id: 'clientId')]
@@ -32,8 +37,8 @@ class CreateClientStorageController extends AbstractController
             return $this->redirectToRoute('client_overview', ['clientId' => $client->getId()]);
         }
 
-        $deviceTypesDropdown = DeviceTypesDropdown::get($client);
-        $digitalEntryDropdown = DigitalEntryDropdown::get($client);
+        $deviceTypesDropdown = $this->deviceTypesDropdown->getForClient($client);
+        $digitalEntryDropdown = $this->digitalEntryDropdown->getForClient($client);
         $clientStorage = (new ClientStorage())->setClient($client);
 
         if ($request->isMethod('GET')) {

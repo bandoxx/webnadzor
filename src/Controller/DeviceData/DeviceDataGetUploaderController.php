@@ -7,7 +7,6 @@ use App\Entity\DeviceData;
 use App\Factory\DeviceDataFactory;
 use App\Factory\UnresolvedDeviceDataFactory;
 use App\Repository\DeviceRepository;
-use App\Service\ClientStorage\Types\DeviceTypesDropdown;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -99,15 +98,6 @@ class DeviceDataGetUploaderController extends AbstractController
         }
     }
 
-    #[Route('/admin/device-data', name: 'device_data', methods: ['GET'])]
-    public function deviceDataView(): Response
-    {
-        $devices = DeviceTypesDropdown::getAllDevices($this->deviceRepository);
-        return $this->render('v2/device/device_data.html.twig', [
-            'deviceTypesDropdown' => $devices,
-        ]);
-    }
-    
     private function saveUnresolvedData(string $content, string $filename): void
     {
         $unresolvedData = $this->unresolvedDeviceDataFactory->createFromString($content);

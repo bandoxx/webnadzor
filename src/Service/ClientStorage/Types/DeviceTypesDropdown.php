@@ -7,8 +7,12 @@ use App\Repository\DeviceRepository;
 
 class DeviceTypesDropdown
 {
+    public function __construct(
+        private readonly DeviceRepository $deviceRepository
+    ) {
+    }
 
-    public static function get(Client $client): array
+    public function getForClient(Client $client): array
     {
         $devices = $client->getDevice()->toArray();
         $list = [];
@@ -45,21 +49,16 @@ class DeviceTypesDropdown
         return $list;
     }
 
-    public static function getAllDevices(DeviceRepository $deviceRepository): array
+    public function getAllDevices(): array
     {
-        $devices = $deviceRepository->findActiveDevices();
+        $devices = $this->deviceRepository->findActiveDevices();
         $result = [];
 
         foreach ($devices as $device) {
-            // Check both entries (1 and 2)
             for ($entry = 1; $entry <= 2; $entry++) {
-
-                // Must have at least T or RH active
                 if ($device->isTUsed($entry) || $device->isRhUsed($entry)) {
-
                     $entryData = $device->getEntryData($entry);
 
-                    // Prefer T name, fallback to RH name
                     $entryName = $device->isTUsed($entry) && !empty($entryData['t_name'])
                         ? $entryData['t_name']
                         : ($entryData['rh_name'] ?? '');
@@ -74,6 +73,4 @@ class DeviceTypesDropdown
 
         return $result;
     }
-
-
 }

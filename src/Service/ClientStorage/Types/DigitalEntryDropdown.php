@@ -6,8 +6,7 @@ use App\Entity\Client;
 
 class DigitalEntryDropdown
 {
-
-    public static function get(Client $client): array
+    public function getForClient(Client $client): array
     {
         $devices = $client->getDevice()->toArray();
         $list = [];
@@ -27,5 +26,4 @@ class DigitalEntryDropdown
 
         return $list;
     }
-
 }
