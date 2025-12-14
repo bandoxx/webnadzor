@@ -312,17 +312,21 @@ class DeviceDataRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $dateFrom Target date from
      * @param \DateTimeInterface $dateTo Target date to
      * @param int $intervalDays Number of days to shift forward from the past
+     * @param array|null $limits Optional temperature/humidity limits to filter alarm records
      * @return int Number of available records for this interval
      */
     public function countShiftedDataForInterval(
         int $deviceId,
         \DateTimeInterface $dateFrom,
         \DateTimeInterface $dateTo,
-        int $intervalDays
+        int $intervalDays,
+        ?array $limits = null
     ): int {
         $conn = $this->getEntityManager()->getConnection();
 
-        $sql = '
+        $limitConditions = $this->buildLimitConditions($limits);
+
+        $sql = "
             SELECT COUNT(*) as cnt
             FROM device_data dd
             WHERE dd.device_id = :deviceId
@@ -334,17 +338,107 @@ class DeviceDataRepository extends ServiceEntityRepository
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                 )
-        ';
+              {$limitConditions}
+        ";
 
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery([
+        $params = [
             'deviceId' => $deviceId,
             'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
             'dateTo' => $dateTo->format('Y-m-d H:i:s'),
             'intervalDays' => $intervalDays,
-        ]);
+        ];
+
+        $params = array_merge($params, $this->buildLimitParams($limits));
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery($params);
 
         return (int) $result->fetchOne();
+    }
+
+    /**
+     * Build SQL conditions for temperature/humidity limits
+     */
+    private function buildLimitConditions(?array $limits): string
+    {
+        if ($limits === null) {
+            return '';
+        }
+
+        $conditions = [];
+
+        // Temperature 1 limits
+        if (isset($limits['t1_min']) && $limits['t1_min'] !== null) {
+            $conditions[] = '(dd.t1 IS NULL OR dd.t1 >= :t1Min)';
+        }
+        if (isset($limits['t1_max']) && $limits['t1_max'] !== null) {
+            $conditions[] = '(dd.t1 IS NULL OR dd.t1 <= :t1Max)';
+        }
+
+        // Temperature 2 limits
+        if (isset($limits['t2_min']) && $limits['t2_min'] !== null) {
+            $conditions[] = '(dd.t2 IS NULL OR dd.t2 >= :t2Min)';
+        }
+        if (isset($limits['t2_max']) && $limits['t2_max'] !== null) {
+            $conditions[] = '(dd.t2 IS NULL OR dd.t2 <= :t2Max)';
+        }
+
+        // Humidity 1 limits
+        if (isset($limits['rh1_min']) && $limits['rh1_min'] !== null) {
+            $conditions[] = '(dd.rh1 IS NULL OR dd.rh1 >= :rh1Min)';
+        }
+        if (isset($limits['rh1_max']) && $limits['rh1_max'] !== null) {
+            $conditions[] = '(dd.rh1 IS NULL OR dd.rh1 <= :rh1Max)';
+        }
+
+        // Humidity 2 limits
+        if (isset($limits['rh2_min']) && $limits['rh2_min'] !== null) {
+            $conditions[] = '(dd.rh2 IS NULL OR dd.rh2 >= :rh2Min)';
+        }
+        if (isset($limits['rh2_max']) && $limits['rh2_max'] !== null) {
+            $conditions[] = '(dd.rh2 IS NULL OR dd.rh2 <= :rh2Max)';
+        }
+
+        return empty($conditions) ? '' : 'AND ' . implode(' AND ', $conditions);
+    }
+
+    /**
+     * Build parameters array for limit conditions
+     */
+    private function buildLimitParams(?array $limits): array
+    {
+        if ($limits === null) {
+            return [];
+        }
+
+        $params = [];
+
+        if (isset($limits['t1_min']) && $limits['t1_min'] !== null) {
+            $params['t1Min'] = $limits['t1_min'];
+        }
+        if (isset($limits['t1_max']) && $limits['t1_max'] !== null) {
+            $params['t1Max'] = $limits['t1_max'];
+        }
+        if (isset($limits['t2_min']) && $limits['t2_min'] !== null) {
+            $params['t2Min'] = $limits['t2_min'];
+        }
+        if (isset($limits['t2_max']) && $limits['t2_max'] !== null) {
+            $params['t2Max'] = $limits['t2_max'];
+        }
+        if (isset($limits['rh1_min']) && $limits['rh1_min'] !== null) {
+            $params['rh1Min'] = $limits['rh1_min'];
+        }
+        if (isset($limits['rh1_max']) && $limits['rh1_max'] !== null) {
+            $params['rh1Max'] = $limits['rh1_max'];
+        }
+        if (isset($limits['rh2_min']) && $limits['rh2_min'] !== null) {
+            $params['rh2Min'] = $limits['rh2_min'];
+        }
+        if (isset($limits['rh2_max']) && $limits['rh2_max'] !== null) {
+            $params['rh2Max'] = $limits['rh2_max'];
+        }
+
+        return $params;
     }
 
     /**
@@ -355,17 +449,21 @@ class DeviceDataRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $dateFrom Target date from (where data should end up)
      * @param \DateTimeInterface $dateTo Target date to (where data should end up)
      * @param int $intervalDays Number of days to shift forward from the past
+     * @param array|null $limits Optional temperature/humidity limits to filter alarm records
      * @return array Array of associative arrays with old and new dates plus all data
      */
     public function getShiftedDataPreview(
         int $deviceId,
         \DateTimeInterface $dateFrom,
         \DateTimeInterface $dateTo,
-        int $intervalDays
+        int $intervalDays,
+        ?array $limits = null
     ): array {
         $conn = $this->getEntityManager()->getConnection();
 
-        $sql = '
+        $limitConditions = $this->buildLimitConditions($limits);
+
+        $sql = "
             SELECT
                 dd.id,
                 dd.device_id,
@@ -403,16 +501,21 @@ class DeviceDataRepository extends ServiceEntityRepository
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                 )
+              {$limitConditions}
             ORDER BY dd.device_date
-        ';
+        ";
 
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery([
+        $params = [
             'deviceId' => $deviceId,
             'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
             'dateTo' => $dateTo->format('Y-m-d H:i:s'),
             'intervalDays' => $intervalDays,
-        ]);
+        ];
+
+        $params = array_merge($params, $this->buildLimitParams($limits));
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery($params);
 
         return $result->fetchAllAssociative();
     }
@@ -425,17 +528,21 @@ class DeviceDataRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $dateFrom Target date from (where data should end up)
      * @param \DateTimeInterface $dateTo Target date to (where data should end up)
      * @param int $intervalDays Number of days to shift forward from the past
+     * @param array|null $limits Optional temperature/humidity limits to filter alarm records
      * @return int Number of records inserted
      */
     public function insertShiftedData(
         int $deviceId,
         \DateTimeInterface $dateFrom,
         \DateTimeInterface $dateTo,
-        int $intervalDays
+        int $intervalDays,
+        ?array $limits = null
     ): int {
         $conn = $this->getEntityManager()->getConnection();
 
-        $sql = '
+        $limitConditions = $this->buildLimitConditions($limits);
+
+        $sql = "
             INSERT INTO device_data (
                 device_id,
                 server_date,
@@ -495,15 +602,94 @@ class DeviceDataRepository extends ServiceEntityRepository
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                 )
+              {$limitConditions}
             ORDER BY dd.device_date
-        ';
+        ";
 
-        $stmt = $conn->prepare($sql);
-        return $stmt->executeStatement([
+        $params = [
             'deviceId' => $deviceId,
             'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
             'dateTo' => $dateTo->format('Y-m-d H:i:s'),
             'intervalDays' => $intervalDays,
-        ]);
+        ];
+
+        $params = array_merge($params, $this->buildLimitParams($limits));
+
+        $stmt = $conn->prepare($sql);
+        return $stmt->executeStatement($params);
+    }
+
+    /**
+     * Find an alternative record within limits for a specific target datetime
+     * Searches nearby intervals (±5 days from primary interval) to find a valid record
+     *
+     * @param int $deviceId
+     * @param \DateTimeInterface $targetDateTime The target datetime to fill
+     * @param int $primaryInterval The primary interval in days
+     * @param array $limits Temperature/humidity limits
+     * @return array|null The alternative record data or null if not found
+     */
+    public function findAlternativeRecordWithinLimits(
+        int $deviceId,
+        \DateTimeInterface $targetDateTime,
+        int $primaryInterval,
+        array $limits
+    ): ?array {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $limitConditions = $this->buildLimitConditions($limits);
+
+        // Search within ±5 days of primary interval, ordered by proximity to primary interval
+        $sql = "
+            SELECT
+                dd.id,
+                dd.device_id,
+                dd.server_date,
+                dd.device_date,
+                dd.gsm_signal,
+                dd.supply,
+                dd.vbat,
+                dd.battery,
+                dd.d1,
+                dd.t1,
+                dd.rh1,
+                dd.mkt1,
+                dd.t_avrg1,
+                dd.t_min1,
+                dd.t_max1,
+                dd.note1,
+                dd.d2,
+                dd.t2,
+                dd.rh2,
+                dd.mkt2,
+                dd.t_avrg2,
+                dd.t_min2,
+                dd.t_max2,
+                dd.note2,
+                ABS(TIMESTAMPDIFF(SECOND, dd.device_date, DATE_SUB(:targetDateTime, INTERVAL :primaryInterval DAY))) as time_diff
+            FROM device_data dd
+            WHERE dd.device_id = :deviceId
+              AND dd.device_date BETWEEN DATE_SUB(:targetDateTime, INTERVAL :maxInterval DAY)
+                                     AND DATE_SUB(:targetDateTime, INTERVAL :minInterval DAY)
+              {$limitConditions}
+            ORDER BY time_diff ASC
+            LIMIT 1
+        ";
+
+        $params = [
+            'deviceId' => $deviceId,
+            'targetDateTime' => $targetDateTime->format('Y-m-d H:i:s'),
+            'primaryInterval' => $primaryInterval,
+            'minInterval' => $primaryInterval - 5,
+            'maxInterval' => $primaryInterval + 5,
+        ];
+
+        $params = array_merge($params, $this->buildLimitParams($limits));
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery($params);
+
+        $row = $result->fetchAssociative();
+        return $row ?: null;
     }
 }

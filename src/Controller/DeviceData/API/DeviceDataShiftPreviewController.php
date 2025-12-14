@@ -103,6 +103,7 @@ class DeviceDataShiftPreviewController extends AbstractController
 
         try {
             // Get preview data (automatically finds best interval 20-35 days)
+            // Always excludes records that exceed device temperature limits
             $previewData = $this->shiftDeviceDataService->previewShiftedData(
                 $deviceId,
                 $dateFromObj,
@@ -119,6 +120,8 @@ class DeviceDataShiftPreviewController extends AbstractController
                     'dateToWasCapped' => $dateToWasCapped,
                     'intervalDays' => $previewData['intervalDays'],
                     'recordCount' => count($previewData['records']),
+                    'filteredCount' => $previewData['filteredCount'] ?? 0,
+                    'limits' => $previewData['limits'] ?? null,
                     'records' => $previewData['records'],
                 ],
             ], Response::HTTP_OK);
