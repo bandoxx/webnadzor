@@ -92,17 +92,26 @@ class ParseXmlsCommand extends Command
 
             try {
                 $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
-            } catch (\Exception $e) {
+
+                $this->entityManager->beginTransaction();
+                try {
+                    $this->entityManager->persist($deviceData);
+                    $this->entityManager->flush();
+                    $this->entityManager->commit();
+                } catch (\Throwable $e) {
+                    if ($this->entityManager->getConnection()->isTransactionActive()) {
+                        $this->entityManager->rollback();
+                    }
+                    $this->entityManager->clear();
+                    throw $e;
+                }
+
+                unlink($xmlPath);
+                $this->alarmValidator->validate($deviceData, $device->getClient()->getClientSetting());
+            } catch (\Throwable $e) {
                 $this->logger->error($e->getMessage());
                 continue;
             }
-
-            $this->entityManager->persist($deviceData);
-            $this->entityManager->flush();
-
-            unlink($xmlPath);
-
-            $this->alarmValidator->validate($deviceData, $device->getClient()->getClientSetting());
         }
 
         $lock->release();
@@ -115,7 +124,18 @@ class ParseXmlsCommand extends Command
     private function saveUnresolvedXml(string $xmlPath): void
     {
         $unresolvedXML = $this->unresolvedXMLFactory->createFromXml($xmlPath);
-        $this->entityManager->persist($unresolvedXML);
-        $this->entityManager->flush();
+
+        $this->entityManager->beginTransaction();
+        try {
+            $this->entityManager->persist($unresolvedXML);
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Throwable $e) {
+            if ($this->entityManager->getConnection()->isTransactionActive()) {
+                $this->entityManager->rollback();
+            }
+            $this->entityManager->clear();
+            throw $e;
+        }
     }
 }
