@@ -93,10 +93,10 @@ class DeviceDataShiftInsertController extends AbstractController
         }
         $intervalDays = (int)$intervalDays;
 
-        // Parse dates
+        // Parse dates (set time to start/end of day for full day coverage)
         try {
-            $dateFromObj = new \DateTime($dateFrom);
-            $dateToObj = new \DateTime($dateTo);
+            $dateFromObj = (new \DateTime($dateFrom))->setTime(0, 0, 0);
+            $dateToObj = (new \DateTime($dateTo))->setTime(23, 59, 59);
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,
