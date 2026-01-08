@@ -306,6 +306,38 @@ class DeviceDataRepository extends ServiceEntityRepository
     }
 
     /**
+     * Delete empty device data records (sensor errors) in the given date range.
+     * A record is considered "empty" if both temperature values are NULL or 0.
+     *
+     * @param int $deviceId
+     * @param \DateTimeInterface $dateFrom
+     * @param \DateTimeInterface $dateTo
+     * @return int Number of deleted records
+     */
+    public function deleteEmptyRecordsInRange(
+        int $deviceId,
+        \DateTimeInterface $dateFrom,
+        \DateTimeInterface $dateTo
+    ): int {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            DELETE FROM device_data
+            WHERE device_id = :deviceId
+              AND device_date BETWEEN :dateFrom AND :dateTo
+              AND (t1 IS NULL OR t1 = 0)
+              AND (t2 IS NULL OR t2 = 0)
+        ';
+
+        $stmt = $conn->prepare($sql);
+        return $stmt->executeStatement([
+            'deviceId' => $deviceId,
+            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
+            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /**
      * Count available records for a specific interval shift
      *
      * @param int $deviceId
@@ -333,6 +365,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
+                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
         ';
 
@@ -402,6 +435,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
+                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
             ORDER BY dd.device_date
         ';
@@ -494,6 +528,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
                       AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
+                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
             ORDER BY dd.device_date
         ';

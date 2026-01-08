@@ -43,6 +43,6 @@ class DataExistenceChecker extends BaseAlarmHandler implements AlarmHandlerInter
 
     private function isHumidityDataWrong(Device $device, DeviceData $deviceData, int $entry): bool
     {
-        return (bool)$device->getEntryData($entry)['rh_use'] === true && (!is_numeric($deviceData->getRH($entry)) || $deviceData->getT($entry) == 0);
+        return (bool)$device->getEntryData($entry)['rh_use'] === true && (!is_numeric($deviceData->getRH($entry)) || $deviceData->getRh($entry) == 0);
     }
 }

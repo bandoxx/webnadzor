@@ -119,6 +119,14 @@ class ShiftDeviceDataService
             $dateTo
         );
 
+        // Delete empty records (sensor errors) in target range before inserting
+        // This allows replacement of empty logs with valid shifted data
+        $this->deviceDataRepository->deleteEmptyRecordsInRange(
+            $deviceId,
+            $dateFrom,
+            $dateTo
+        );
+
         // Insert shifted data
         $insertedCount = $this->deviceDataRepository->insertShiftedData(
             $deviceId,
