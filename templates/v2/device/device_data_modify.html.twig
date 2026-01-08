@@ -493,7 +493,7 @@
 
     <!-- Edit Modal -->
     <div x-show="modalOpen" x-transition class="fixed left-0 top-0 z-99999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5">
-        <div @click.outside="modalOpen = false" class="w-full max-w-4xl rounded-lg bg-white px-6 py-8 dark:bg-boxdark md:px-10 md:py-10">
+        <div @click.outside="modalOpen = false" class="w-full max-w-2xl rounded-lg bg-white px-5 py-6 dark:bg-boxdark md:px-8 md:py-8">
             <h3 class="pb-2 text-xl font-bold text-black dark:text-white sm:text-2xl text-center">
                 Uredi podatke
             </h3>
@@ -536,7 +536,7 @@
                 });
             ">
                 <!-- Two-column layout for sensors -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="grid grid-cols-2 gap-4 mb-6">
                     <!-- Sensor 1 -->
                     <div class="border border-stroke dark:border-strokedark rounded-lg p-4">
                         <h4 class="text-center font-semibold text-primary mb-4 border-b border-stroke pb-2 dark:border-strokedark">
@@ -557,21 +557,21 @@
                             </div>
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">Min</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">Min</label>
                                     <input x-model="editData.tMin1" type="number" step="0.01" min="-99.99" max="99.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="20.00" />
                                 </div>
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">Max</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">Max</label>
                                     <input x-model="editData.tMax1" type="number" step="0.01" min="-99.99" max="99.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="30.00" />
                                 </div>
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">MKT</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">MKT</label>
                                     <input x-model="editData.mkt1" type="number" step="0.01" min="-999.99" max="999.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="25.00" />
                                 </div>
                             </div>
@@ -598,21 +598,21 @@
                             </div>
                             <div class="grid grid-cols-3 gap-2">
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">Min</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">Min</label>
                                     <input x-model="editData.tMin2" type="number" step="0.01" min="-99.99" max="99.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="20.00" />
                                 </div>
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">Max</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">Max</label>
                                     <input x-model="editData.tMax2" type="number" step="0.01" min="-99.99" max="99.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="30.00" />
                                 </div>
                                 <div>
-                                    <label class="mb-1.5 block text-left text-xs text-black dark:text-white">MKT</label>
+                                    <label class="mb-1.5 block text-left text-sm text-black dark:text-white">MKT</label>
                                     <input x-model="editData.mkt2" type="number" step="0.01" min="-999.99" max="999.99"
-                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-2 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary text-sm"
+                                           class="w-full rounded border-[1.5px] border-stroke bg-transparent px-4 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                            placeholder="25.00" />
                                 </div>
                             </div>
