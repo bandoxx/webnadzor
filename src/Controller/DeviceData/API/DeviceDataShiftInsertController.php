@@ -128,33 +128,22 @@ class DeviceDataShiftInsertController extends AbstractController
 
         try {
             // Insert shifted data
-            // Always filters out records that exceed device limits and finds alternatives
-            $result = $this->shiftDeviceDataService->insertShiftedData(
+            $insertedCount = $this->shiftDeviceDataService->insertShiftedData(
                 $deviceId,
                 $dateFromObj,
                 $dateToObj,
                 $intervalDays
             );
 
-            $totalInserted = $result['inserted'] + $result['alternatives'];
-            $message = "Uspješno uneseno {$totalInserted} zapisa";
-
-            if ($result['filtered'] > 0) {
-                $message .= " ({$result['alternatives']} alternativnih zapisa pronađeno za {$result['filtered']} filtriranih alarma)";
-            }
-
             return $this->json([
                 'success' => true,
-                'message' => $message,
+                'message' => "Successfully inserted {$insertedCount} record(s)",
                 'data' => [
                     'deviceId' => $deviceId,
                     'dateFrom' => $dateFromObj->format('Y-m-d H:i:s'),
                     'dateTo' => $dateToObj->format('Y-m-d H:i:s'),
                     'intervalDays' => $intervalDays,
-                    'insertedCount' => $result['inserted'],
-                    'alternativesCount' => $result['alternatives'],
-                    'filteredCount' => $result['filtered'],
-                    'totalInserted' => $totalInserted,
+                    'insertedCount' => $insertedCount,
                 ],
             ], Response::HTTP_CREATED);
         } catch (\InvalidArgumentException $e) {
