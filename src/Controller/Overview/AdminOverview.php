@@ -29,10 +29,14 @@ class AdminOverview extends AbstractController
         }
 
         $data = $overviewService->buildOverview($user);
+        $alarmStats = $user->getPermission() === User::ROLE_ROOT
+            ? $overviewService->getOfflineAlarmStats()
+            : null;
 
         return $this->render('v2/overview/admin.html.twig', [
             'clients' => $data,
-            'smtp' => $smtpRepository->findOneBy([])
+            'smtp' => $smtpRepository->findOneBy([]),
+            'alarmStats' => $alarmStats,
         ]);
     }
 }

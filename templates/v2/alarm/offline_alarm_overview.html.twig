@@ -1,0 +1,254 @@
+{% extends 'v2/base.html.twig' %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <meta charset="UTF-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+{% endblock %}
+
+{% block body %}
+<body
+        :class="{'dark text-bodydark bg-boxdark-2': darkMode === true}"
+        x-data="{ page: 'dataTables', 'loaded': true, 'darkMode': true, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }"
+        x-init="
+          darkMode = JSON.parse(localStorage.getItem('darkMode'));
+          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))"
+>
+<!-- ===== Preloader Start ===== -->
+{% block preloader %}
+    {{ parent() }}
+{% endblock %}
+<!-- ===== Preloader End ===== -->
+
+<!-- ===== Page Wrapper Start ===== -->
+<div class="flex h-screen overflow-hidden">
+    <!-- ===== Sidebar Start ===== -->
+    <aside
+            :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'"
+            class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0"
+            @click.outside="sidebarToggle = false"
+    >
+
+        <!-- SIDEBAR HEADER -->
+        {% block sidebar_header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- SIDEBAR HEADER -->
+
+        <div
+                class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear"
+        >
+            <!-- Sidebar Menu -->
+            <nav
+                    class="mt-5 px-4 py-4 lg:mt-9 lg:px-6"
+                    x-data="{selected: $persist('Dashboard')}"
+            >
+                <!-- Menu Group -->
+                <div>
+                    <h3 class="mb-4 ml-4 text-sm font-medium text-bodydark2">MENU</h3>
+                    <!-- Support Group -->
+                    <div>
+                        <ul class="mb-6 flex flex-col gap-1.5">
+                            <li class="cursor-pointer">
+                                <a
+                                        href="{{ path('admin_overview') }}"
+                                        class="group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                                    </svg>
+                                    Povratak na dashboard
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <!-- Sidebar Menu -->
+        </div>
+    </aside>
+
+    <!-- ===== Sidebar End ===== -->
+
+    <!-- ===== Content Area Start ===== -->
+    <div
+            class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden"
+    >
+
+        <!-- ===== Header Start ===== -->
+        {% block header %}
+            {{ parent() }}
+        {% endblock %}
+        <!-- ===== Header End ===== -->
+
+        <!-- ===== Main Content Start ===== -->
+        <main>
+            <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                <!-- Breadcrumb Start -->
+                <div
+                        class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+                >
+                    <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                        Pregled offline alarma
+                    </h2>
+
+                    <nav>
+                        <ol class="flex items-center gap-2">
+                            <li>
+                                <a class="font-medium" href="{{ path('admin_overview') }}">Dashboard /</a>
+                            </li>
+                            <li class="font-medium text-primary">Pregled offline alarma</li>
+                        </ol>
+                    </nav>
+                </div>
+                <!-- Breadcrumb End -->
+
+                <!-- Filter Card Start -->
+                <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 p-4">
+                    <h4 class="mb-4 font-bold text-black dark:text-white">Filteri</h4>
+                    <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap gap-4 items-end">
+                        <div class="w-full sm:w-auto">
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                                Mjerno mjesto
+                            </label>
+                            <select name="device" class="w-full sm:w-64 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
+                                <option value="">Sva mjerna mjesta</option>
+                                {% for device in devices %}
+                                    <option value="{{ device.id }}" {% if selectedDevice == device.id %}selected{% endif %}>
+                                        {{ device.name }}{% if device.client %} ({{ device.client.name }}){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                                Datum od
+                            </label>
+                            <input type="text" name="dateFrom" id="dateFrom" value="{{ dateFrom }}"
+                                   class="w-full sm:w-40 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                   placeholder="YYYY-MM-DD">
+                        </div>
+                        <div class="w-full sm:w-auto">
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                                Datum do
+                            </label>
+                            <input type="text" name="dateTo" id="dateTo" value="{{ dateTo }}"
+                                   class="w-full sm:w-40 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                   placeholder="YYYY-MM-DD">
+                        </div>
+                        <div class="w-full sm:w-auto flex gap-2">
+                            <button type="submit" class="rounded bg-primary px-6 py-2 text-white hover:bg-opacity-90">
+                                Filtriraj
+                            </button>
+                            <a href="{{ path('app_offline_alarm_overview') }}" class="rounded border border-stroke bg-gray px-6 py-2 text-black hover:bg-opacity-90 dark:border-strokedark dark:bg-meta-4 dark:text-white">
+                                Poništi
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <!-- Filter Card End -->
+
+                <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+
+                    <!-- ====== Data Table Start -->
+                    <div
+                            class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark"
+                    >
+                        <div
+                                class="data-table-common data-table-two max-w-full overflow-x-auto p-3"
+                        >
+                            <h3 class="title-dt font-bold text-black dark:text-white">
+                                Offline alarmi ({{ alarms|length }})
+                            </h3>
+                            <table class="table w-full table-auto" id="datatableOfflineAlarms">
+                                <thead>
+                                <tr>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Klijent</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Mjerno mjesto</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Lokacija</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Tip alarma</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Datum početka</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Datum kraja</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex items-center justify-between gap-1.5">
+                                            <p>Aktivan</p>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for alarm in alarms %}
+                                <tr>
+                                    <td>{{ alarm.client_name }}</td>
+                                    <td>{{ alarm.device_name }}</td>
+                                    <td>{{ alarm.location }}</td>
+                                    <td>{{ alarm.type }}</td>
+                                    <td data-sort="{{ alarm.date|date('U') }}">{{ alarm.date|date('d.m.Y H:i:s') }}</td>
+                                    <td data-sort="{{ alarm.end_date ? alarm.end_date|date('U') : '0' }}">{% if alarm.end_date %}{{ alarm.end_date|date('d.m.Y H:i:s') }}{% else %}-{% endif %}</td>
+                                    <td>
+                                        {% if alarm.active %}
+                                            <span class="inline-flex rounded-full bg-danger bg-opacity-10 px-3 py-1 text-sm font-medium text-danger">Da</span>
+                                        {% else %}
+                                            <span class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">Ne</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4 text-bodydark">Nema pronađenih alarma</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ====== Data Table End -->
+                </div>
+            </div>
+        </main>
+        <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr('#dateFrom', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+        flatpickr('#dateTo', {
+            dateFormat: 'Y-m-d',
+            allowInput: true
+        });
+    });
+</script>
+</body>
+{% endblock %}

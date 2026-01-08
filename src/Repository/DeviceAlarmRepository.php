@@ -158,4 +158,68 @@ class DeviceAlarmRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    private const OFFLINE_ALARM_TYPES = ['device-offline', 'device-sensor-missing-data'];
+
+    /**
+     * @return DeviceAlarm[]
+     */
+    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null): array
+    {
+        $builder = $this->createQueryBuilder('a')
+            ->where('a.type IN (:types)')
+            ->setParameter('types', self::OFFLINE_ALARM_TYPES)
+            ->orderBy('a.deviceDate', 'DESC')
+        ;
+
+        if ($device !== null) {
+            $builder->andWhere('a.device = :device')
+                ->setParameter('device', $device);
+        }
+
+        if ($dateFrom !== null) {
+            $builder->andWhere('a.deviceDate >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo !== null) {
+            $builder->andWhere('a.deviceDate <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        return $builder->getQuery()->getResult();
+    }
+
+    public function countActiveOfflineAlarms(): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->select('COUNT(a)')
+            ->where('a.type IN (:types)')
+            ->andWhere('a.endDeviceDate IS NULL')
+            ->setParameter('types', self::OFFLINE_ALARM_TYPES)
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    public function countOfflineAlarmsInRange(?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null): int
+    {
+        $builder = $this->createQueryBuilder('a')
+            ->select('COUNT(a)')
+            ->where('a.type IN (:types)')
+            ->setParameter('types', self::OFFLINE_ALARM_TYPES)
+        ;
+
+        if ($dateFrom !== null) {
+            $builder->andWhere('a.deviceDate >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo !== null) {
+            $builder->andWhere('a.deviceDate <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        return (int) $builder->getQuery()->getSingleScalarResult();
+    }
 }

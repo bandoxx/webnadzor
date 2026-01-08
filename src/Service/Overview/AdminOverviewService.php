@@ -214,4 +214,20 @@ class AdminOverviewService
 
         return $data;
     }
+
+    /**
+     * Returns offline alarm statistics for the dashboard.
+     */
+    public function getOfflineAlarmStats(): array
+    {
+        $todayStart = new \DateTime('today');
+        $todayEnd = new \DateTime('tomorrow');
+        $weekAgo = new \DateTime('-7 days');
+
+        return [
+            'active' => $this->deviceAlarmRepository->countActiveOfflineAlarms(),
+            'total_today' => $this->deviceAlarmRepository->countOfflineAlarmsInRange($todayStart, $todayEnd),
+            'total_week' => $this->deviceAlarmRepository->countOfflineAlarmsInRange($weekAgo),
+        ];
+    }
 }
