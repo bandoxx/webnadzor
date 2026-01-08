@@ -69,13 +69,13 @@ class OfflineAlarmOverviewController extends AbstractController
                 $location = $entryData['t_name'] ?? 'Nema';
             }
 
-            // Build device display name: address [ t1_name | t2_name ]
+            // Build device display name: name [ t1_name | t2_name ]
             $deviceDisplayName = '-';
             if ($alarmDevice) {
-                $address = $client?->getAddress() ?? '';
+                $name = $alarmDevice->getName() ?? '';
                 $t1Name = $alarmDevice->getEntry1()['t_name'] ?? '-';
                 $t2Name = $alarmDevice->getEntry2()['t_name'] ?? '-';
-                $deviceDisplayName = trim($address . ' [ ' . $t1Name . ' | ' . $t2Name . ' ]');
+                $deviceDisplayName = trim($name . ' [ ' . $t1Name . ' | ' . $t2Name . ' ]');
             }
 
             $table[] = [
