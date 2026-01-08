@@ -17,7 +17,7 @@
                 editingId: null,
                 deletingId: null,
                 selectedIds: [],
-                editData: { t1: '', t2: '', rh1: '', rh2: '' },
+                editData: { t1: '', t2: '', rh1: '', rh2: '', tMin1: '', tMin2: '', tMax1: '', tMax2: '', mkt1: '', mkt2: '' },
                 loading: false,
                 deleteLoading: false,
                 bulkDeleteLoading: false,
@@ -272,10 +272,10 @@
                                         <th class="min-w-[160px] py-4 px-4 text-left font-medium text-black dark:text-white" rowspan="2">
                                             Datum
                                         </th>
-                                        <th class="py-4 px-4 text-center font-medium text-black dark:text-white border-b border-stroke dark:border-strokedark" colspan="2">
+                                        <th class="py-4 px-4 text-center font-medium text-black dark:text-white border-b border-stroke dark:border-strokedark" colspan="5">
                                             {{ device.entry1['t_name'] ?? 'Senzor 1' }}
                                         </th>
-                                        <th class="py-4 px-4 text-center font-medium text-black dark:text-white border-b border-stroke dark:border-strokedark bg-success bg-opacity-10" colspan="2">
+                                        <th class="py-4 px-4 text-center font-medium text-black dark:text-white border-b border-stroke dark:border-strokedark bg-success bg-opacity-10" colspan="5">
                                             {{ device.entry2['t_name'] ?? 'Senzor 2' }}
                                         </th>
                                         <th class="py-4 px-4 text-center font-medium text-black dark:text-white" rowspan="2">
@@ -283,17 +283,35 @@
                                         </th>
                                     </tr>
                                     <tr class="bg-gray-2 dark:bg-meta-4">
-                                        <th class="py-3 px-4 text-center font-medium text-black dark:text-white">
-                                            T1 (°C)
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white text-xs whitespace-nowrap">
+                                            T (°C)
                                         </th>
-                                        <th class="py-3 px-4 text-center font-medium text-black dark:text-white">
-                                            RH1 (%)
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white text-xs whitespace-nowrap">
+                                            RH (%)
                                         </th>
-                                        <th class="py-3 px-4 text-center font-medium text-black dark:text-white bg-success bg-opacity-5">
-                                            T2 (°C)
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white text-xs whitespace-nowrap">
+                                            Min (°C)
                                         </th>
-                                        <th class="py-3 px-4 text-center font-medium text-black dark:text-white bg-success bg-opacity-5">
-                                            RH2 (%)
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white text-xs whitespace-nowrap">
+                                            Max (°C)
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white text-xs whitespace-nowrap">
+                                            MKT
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white bg-success bg-opacity-5 text-xs whitespace-nowrap">
+                                            T (°C)
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white bg-success bg-opacity-5 text-xs whitespace-nowrap">
+                                            RH (%)
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white bg-success bg-opacity-5 text-xs whitespace-nowrap">
+                                            Min (°C)
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white bg-success bg-opacity-5 text-xs whitespace-nowrap">
+                                            Max (°C)
+                                        </th>
+                                        <th class="py-3 px-2 text-center font-medium text-black dark:text-white bg-success bg-opacity-5 text-xs whitespace-nowrap">
+                                            MKT
                                         </th>
                                     </tr>
                                     </thead>
@@ -324,32 +342,52 @@
                                                 <p class="text-black dark:text-white font-medium">{{ data.deviceDate|date('d.m.Y') }}</p>
                                                 <p class="text-sm text-body dark:text-bodydark">{{ data.deviceDate|date('H:i:s') }}</p>
                                             </td>
-                                            <td class="border-b border-stroke py-4 px-4 text-center dark:border-strokedark" id="t1-{{ data.id }}">
-                                                <span class="text-black dark:text-white">{{ data.t1 is not null ? data.t1 ~ ' °C' : '-' }}</span>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark text-sm" id="t1-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.t1 ?? '-' }}</span>
                                             </td>
-                                            <td class="border-b border-stroke py-4 px-4 text-center dark:border-strokedark" id="rh1-{{ data.id }}">
-                                                <span class="text-black dark:text-white">{{ data.rh1 is not null ? data.rh1 ~ ' %' : '-' }}</span>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark text-sm" id="rh1-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.rh1 ?? '-' }}</span>
                                             </td>
-                                            <td class="border-b border-stroke py-4 px-4 text-center dark:border-strokedark" id="t2-{{ data.id }}">
-                                                <span class="text-black dark:text-white">{{ data.t2 is not null ? data.t2 ~ ' °C' : '-' }}</span>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark text-sm" id="tMin1-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.tMin1 ?? '-' }}</span>
                                             </td>
-                                            <td class="border-b border-stroke py-4 px-4 text-center dark:border-strokedark" id="rh2-{{ data.id }}">
-                                                <span class="text-black dark:text-white">{{ data.rh2 is not null ? data.rh2 ~ ' %' : '-' }}</span>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark text-sm" id="tMax1-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.tMax1 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark text-sm" id="mkt1-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.mkt1 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark bg-success bg-opacity-5 text-sm" id="t2-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.t2 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark bg-success bg-opacity-5 text-sm" id="rh2-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.rh2 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark bg-success bg-opacity-5 text-sm" id="tMin2-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.tMin2 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark bg-success bg-opacity-5 text-sm" id="tMax2-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.tMax2 ?? '-' }}</span>
+                                            </td>
+                                            <td class="border-b border-stroke py-4 px-2 text-center dark:border-strokedark bg-success bg-opacity-5 text-sm" id="mkt2-{{ data.id }}">
+                                                <span class="text-black dark:text-white">{{ data.mkt2 ?? '-' }}</span>
                                             </td>
                                             <td class="border-b border-stroke py-4 px-4 text-center dark:border-strokedark">
                                                 <div class="flex items-center justify-center gap-2">
                                                     <button
                                                         @click="
                                                             editingId = {{ data.id }};
-                                                            let t1Val = document.getElementById('t1-' + editingId).textContent.trim().replace(' °C', '');
-                                                            let t2Val = document.getElementById('t2-' + editingId).textContent.trim().replace(' °C', '');
-                                                            let rh1Val = document.getElementById('rh1-' + editingId).textContent.trim().replace(' %', '');
-                                                            let rh2Val = document.getElementById('rh2-' + editingId).textContent.trim().replace(' %', '');
                                                             editData = {
-                                                                t1: t1Val === '-' ? '' : t1Val,
-                                                                t2: t2Val === '-' ? '' : t2Val,
-                                                                rh1: rh1Val === '-' ? '' : rh1Val,
-                                                                rh2: rh2Val === '-' ? '' : rh2Val
+                                                                t1: '{{ data.t1 ?? '' }}',
+                                                                t2: '{{ data.t2 ?? '' }}',
+                                                                rh1: '{{ data.rh1 ?? '' }}',
+                                                                rh2: '{{ data.rh2 ?? '' }}',
+                                                                tMin1: '{{ data.tMin1 ?? '' }}',
+                                                                tMin2: '{{ data.tMin2 ?? '' }}',
+                                                                tMax1: '{{ data.tMax1 ?? '' }}',
+                                                                tMax2: '{{ data.tMax2 ?? '' }}',
+                                                                mkt1: '{{ data.mkt1 ?? '' }}',
+                                                                mkt2: '{{ data.mkt2 ?? '' }}'
                                                             };
                                                             modalOpen = true;
                                                         "
@@ -374,7 +412,7 @@
                                         </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="7" class="text-center py-8 text-body dark:text-bodydark">Nema podataka za prikaz</td>
+                                            <td colspan="13" class="text-center py-8 text-body dark:text-bodydark">Nema podataka za prikaz</td>
                                         </tr>
                                     {% endfor %}
                                     </tbody>
@@ -475,10 +513,16 @@
                     if (data.success) {
                         message = data.message;
                         messageType = 'success';
-                        document.getElementById('t1-' + editingId).textContent = data.data.t1 ? data.data.t1 + ' °C' : '-';
-                        document.getElementById('t2-' + editingId).textContent = data.data.t2 ? data.data.t2 + ' °C' : '-';
-                        document.getElementById('rh1-' + editingId).textContent = data.data.rh1 ? data.data.rh1 + ' %' : '-';
-                        document.getElementById('rh2-' + editingId).textContent = data.data.rh2 ? data.data.rh2 + ' %' : '-';
+                        document.getElementById('t1-' + editingId).textContent = data.data.t1 ?? '-';
+                        document.getElementById('t2-' + editingId).textContent = data.data.t2 ?? '-';
+                        document.getElementById('rh1-' + editingId).textContent = data.data.rh1 ?? '-';
+                        document.getElementById('rh2-' + editingId).textContent = data.data.rh2 ?? '-';
+                        document.getElementById('tMin1-' + editingId).textContent = data.data.tMin1 ?? '-';
+                        document.getElementById('tMin2-' + editingId).textContent = data.data.tMin2 ?? '-';
+                        document.getElementById('tMax1-' + editingId).textContent = data.data.tMax1 ?? '-';
+                        document.getElementById('tMax2-' + editingId).textContent = data.data.tMax2 ?? '-';
+                        document.getElementById('mkt1-' + editingId).textContent = data.data.mkt1 ?? '-';
+                        document.getElementById('mkt2-' + editingId).textContent = data.data.mkt2 ?? '-';
                         modalOpen = false;
                     } else {
                         message = data.message;
@@ -496,7 +540,7 @@
                     <h4 class="text-left font-semibold text-primary mb-3 border-b border-stroke pb-2 dark:border-strokedark">
                         {{ device.entry1['t_name'] ?? 'Senzor 1' }}
                     </h4>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 mb-3">
                         <div>
                             <label class="mb-2.5 block text-left text-black dark:text-white">Temperatura (T1)</label>
                             <input x-model="editData.t1" type="number" step="0.01" min="-99.99" max="99.99"
@@ -510,6 +554,26 @@
                                    placeholder="npr. 65.00" />
                         </div>
                     </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">Min. temp.</label>
+                            <input x-model="editData.tMin1" type="number" step="0.01" min="-99.99" max="99.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 20.00" />
+                        </div>
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">Max. temp.</label>
+                            <input x-model="editData.tMax1" type="number" step="0.01" min="-99.99" max="99.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 30.00" />
+                        </div>
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">MKT</label>
+                            <input x-model="editData.mkt1" type="number" step="0.01" min="-999.99" max="999.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 25.00" />
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Sensor 2 -->
@@ -517,7 +581,7 @@
                     <h4 class="text-left font-semibold text-primary mb-3 border-b border-stroke pb-2 dark:border-strokedark">
                         {{ device.entry2['t_name'] ?? 'Senzor 2' }}
                     </h4>
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 mb-3">
                         <div>
                             <label class="mb-2.5 block text-left text-black dark:text-white">Temperatura (T2)</label>
                             <input x-model="editData.t2" type="number" step="0.01" min="-99.99" max="99.99"
@@ -529,6 +593,26 @@
                             <input x-model="editData.rh2" type="number" step="0.01" min="-999.99" max="999.99"
                                    class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                                    placeholder="npr. 65.00" />
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">Min. temp.</label>
+                            <input x-model="editData.tMin2" type="number" step="0.01" min="-99.99" max="99.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 20.00" />
+                        </div>
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">Max. temp.</label>
+                            <input x-model="editData.tMax2" type="number" step="0.01" min="-99.99" max="99.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 30.00" />
+                        </div>
+                        <div>
+                            <label class="mb-2.5 block text-left text-black dark:text-white">MKT</label>
+                            <input x-model="editData.mkt2" type="number" step="0.01" min="-999.99" max="999.99"
+                                   class="w-full rounded border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                                   placeholder="npr. 25.00" />
                         </div>
                     </div>
                 </div>

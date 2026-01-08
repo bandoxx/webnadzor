@@ -66,6 +66,36 @@ class DeviceDataUpdateValuesController extends AbstractController
             $updated = true;
         }
 
+        if (isset($data['tMin1'])) {
+            $deviceData->setTMin1($data['tMin1'] === '' ? null : (string)$data['tMin1']);
+            $updated = true;
+        }
+
+        if (isset($data['tMin2'])) {
+            $deviceData->setTMin2($data['tMin2'] === '' ? null : (string)$data['tMin2']);
+            $updated = true;
+        }
+
+        if (isset($data['tMax1'])) {
+            $deviceData->setTMax1($data['tMax1'] === '' ? null : (string)$data['tMax1']);
+            $updated = true;
+        }
+
+        if (isset($data['tMax2'])) {
+            $deviceData->setTMax2($data['tMax2'] === '' ? null : (string)$data['tMax2']);
+            $updated = true;
+        }
+
+        if (isset($data['mkt1'])) {
+            $deviceData->setMkt1($data['mkt1'] === '' ? null : (string)$data['mkt1']);
+            $updated = true;
+        }
+
+        if (isset($data['mkt2'])) {
+            $deviceData->setMkt2($data['mkt2'] === '' ? null : (string)$data['mkt2']);
+            $updated = true;
+        }
+
         if (!$updated) {
             return $this->json([
                 'success' => false,
@@ -84,6 +114,12 @@ class DeviceDataUpdateValuesController extends AbstractController
                 't2' => $deviceData->getT2(),
                 'rh1' => $deviceData->getRh1(),
                 'rh2' => $deviceData->getRh2(),
+                'tMin1' => $deviceData->getTMin1(),
+                'tMin2' => $deviceData->getTMin2(),
+                'tMax1' => $deviceData->getTMax1(),
+                'tMax2' => $deviceData->getTMax2(),
+                'mkt1' => $deviceData->getMkt1(),
+                'mkt2' => $deviceData->getMkt2(),
             ],
         ]);
     }
