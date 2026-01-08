@@ -106,43 +106,18 @@
                 </div>
                 <!-- Breadcrumb End -->
 
+                <script>
+                    window.devicesByClient = {{ devicesByClient|json_encode|raw }};
+                </script>
                 <!-- Filter Card Start -->
                 <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 p-4"
-                     x-data="{
-                        selectedClient: '{{ selectedClient }}',
-                        selectedDevice: '{{ selectedDevice }}',
-                        devicesByClient: {{ devicesByClient|json_encode|raw }},
-                        init() {
-                            this.updateDeviceOptions();
-                        },
-                        updateDeviceOptions() {
-                            const select = this.$refs.deviceSelect;
-                            const currentValue = this.selectedDevice;
-
-                            // Clear existing options except first
-                            while (select.options.length > 1) {
-                                select.remove(1);
-                            }
-
-                            // Add new options
-                            const devices = this.devicesByClient[this.selectedClient] || [];
-                            devices.forEach(device => {
-                                const option = document.createElement('option');
-                                option.value = device.id;
-                                option.textContent = device.name + ' [ ' + device.t1_name + ' | ' + device.t2_name + ' ]';
-                                if (device.id == currentValue) {
-                                    option.selected = true;
-                                }
-                                select.appendChild(option);
-                            });
-                        }
-                     }">
+                     x-data="filterData()">
                     <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap lg:flex-nowrap gap-3 items-end">
                         <div class="w-full sm:w-1/2 lg:w-1/4">
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Klijent
                             </label>
-                            <select name="client" x-model="selectedClient" @change="selectedDevice = ''; updateDeviceOptions()"
+                            <select name="client" x-model="selectedClient"
                                     class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
                                 <option value="">Svi klijenti</option>
                                 {% for client in clients %}
@@ -275,6 +250,47 @@
 </div>
 
 <script>
+    function filterData() {
+        return {
+            selectedClient: '{{ selectedClient }}',
+            selectedDevice: '{{ selectedDevice }}',
+            init() {
+                // Watch for client changes
+                this.$watch('selectedClient', (value, oldValue) => {
+                    if (value !== oldValue) {
+                        this.selectedDevice = '';
+                    }
+                    this.updateDeviceOptions();
+                });
+                // Initial load
+                this.updateDeviceOptions();
+            },
+            updateDeviceOptions() {
+                const select = this.$refs.deviceSelect;
+                if (!select) return;
+
+                const currentValue = this.selectedDevice;
+
+                // Clear existing options except first
+                while (select.options.length > 1) {
+                    select.remove(1);
+                }
+
+                // Add new options
+                const devices = window.devicesByClient[this.selectedClient] || [];
+                devices.forEach(device => {
+                    const option = document.createElement('option');
+                    option.value = device.id;
+                    option.textContent = device.name + ' [ ' + device.t1_name + ' | ' + device.t2_name + ' ]';
+                    if (device.id == currentValue) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         flatpickr('#dateFrom', {
             dateFormat: 'Y-m-d',

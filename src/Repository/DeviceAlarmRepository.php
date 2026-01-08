@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Client;
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -164,7 +165,7 @@ class DeviceAlarmRepository extends ServiceEntityRepository
     /**
      * @return DeviceAlarm[]
      */
-    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null, ?int $limit = null): array
+    public function findOfflineAlarms(?Client $client = null, ?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null, ?int $limit = null): array
     {
         $builder = $this->createQueryBuilder('a')
             ->select('a', 'd', 'c')
@@ -174,6 +175,11 @@ class DeviceAlarmRepository extends ServiceEntityRepository
             ->setParameter('types', self::OFFLINE_ALARM_TYPES)
             ->orderBy('a.deviceDate', 'DESC')
         ;
+
+        if ($client !== null) {
+            $builder->andWhere('d.client = :client')
+                ->setParameter('client', $client);
+        }
 
         if ($device !== null) {
             $builder->andWhere('a.device = :device')

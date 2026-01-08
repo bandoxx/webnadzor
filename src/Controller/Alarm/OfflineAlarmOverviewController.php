@@ -32,6 +32,11 @@ class OfflineAlarmOverviewController extends AbstractController
         $dateFrom = $request->query->get('dateFrom');
         $dateTo = $request->query->get('dateTo');
 
+        $client = null;
+        if ($clientId) {
+            $client = $clientRepository->find((int) $clientId);
+        }
+
         $device = null;
         if ($deviceId) {
             $device = $deviceRepository->find((int) $deviceId);
@@ -74,7 +79,7 @@ class OfflineAlarmOverviewController extends AbstractController
         }
 
         // Limit results to prevent memory issues - uses JOINs to avoid N+1
-        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 300);
+        $alarms = $deviceAlarmRepository->findOfflineAlarms($client, $device, $dateFromObj, $dateToObj, 300);
 
         $table = [];
         foreach ($alarms as $alarm) {
