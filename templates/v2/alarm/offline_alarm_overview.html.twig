@@ -108,13 +108,12 @@
 
                 <!-- Filter Card Start -->
                 <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 p-4">
-                    <h4 class="mb-4 font-bold text-black dark:text-white">Filteri</h4>
-                    <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap gap-4 items-end">
-                        <div class="w-full sm:w-auto">
+                    <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap lg:flex-nowrap gap-3 items-end">
+                        <div class="w-full lg:w-1/2">
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Mjerno mjesto
                             </label>
-                            <select name="device" class="w-full sm:w-auto min-w-64 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
+                            <select name="device" class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
                                 <option value="">Sva mjerna mjesta</option>
                                 {% for device in devices %}
                                     <option value="{{ device.id }}" {% if selectedDevice == device.id %}selected{% endif %}>
@@ -123,23 +122,23 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="w-full sm:w-auto">
+                        <div class="w-full sm:w-1/2 lg:w-1/4">
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Datum od
                             </label>
                             <input type="text" name="dateFrom" id="dateFrom" value="{{ dateFrom }}"
-                                   class="w-full sm:w-40 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                   class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
                                    placeholder="YYYY-MM-DD">
                         </div>
-                        <div class="w-full sm:w-auto">
+                        <div class="w-full sm:w-1/2 lg:w-1/4">
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Datum do
                             </label>
                             <input type="text" name="dateTo" id="dateTo" value="{{ dateTo }}"
-                                   class="w-full sm:w-40 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                   class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input"
                                    placeholder="YYYY-MM-DD">
                         </div>
-                        <div class="w-full sm:w-auto flex gap-2">
+                        <div class="flex gap-2 shrink-0">
                             <button type="submit" class="rounded bg-primary px-6 py-2 text-white hover:bg-opacity-90">
                                 Filtriraj
                             </button>
