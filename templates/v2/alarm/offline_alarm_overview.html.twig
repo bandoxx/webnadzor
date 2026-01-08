@@ -112,9 +112,29 @@
                         selectedClient: '{{ selectedClient }}',
                         selectedDevice: '{{ selectedDevice }}',
                         devicesByClient: {{ devicesByClient|json_encode|raw }},
-                        get filteredDevices() {
-                            if (!this.selectedClient) return [];
-                            return this.devicesByClient[this.selectedClient] || [];
+                        init() {
+                            this.updateDeviceOptions();
+                        },
+                        updateDeviceOptions() {
+                            const select = this.$refs.deviceSelect;
+                            const currentValue = this.selectedDevice;
+
+                            // Clear existing options except first
+                            while (select.options.length > 1) {
+                                select.remove(1);
+                            }
+
+                            // Add new options
+                            const devices = this.devicesByClient[this.selectedClient] || [];
+                            devices.forEach(device => {
+                                const option = document.createElement('option');
+                                option.value = device.id;
+                                option.textContent = device.name + ' [ ' + device.t1_name + ' | ' + device.t2_name + ' ]';
+                                if (device.id == currentValue) {
+                                    option.selected = true;
+                                }
+                                select.appendChild(option);
+                            });
                         }
                      }">
                     <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap lg:flex-nowrap gap-3 items-end">
@@ -122,7 +142,7 @@
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Klijent
                             </label>
-                            <select name="client" x-model="selectedClient" @change="selectedDevice = ''"
+                            <select name="client" x-model="selectedClient" @change="selectedDevice = ''; updateDeviceOptions()"
                                     class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
                                 <option value="">Svi klijenti</option>
                                 {% for client in clients %}
@@ -134,12 +154,9 @@
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Mjerno mjesto
                             </label>
-                            <select name="device" x-model="selectedDevice" :disabled="!selectedClient"
+                            <select name="device" x-ref="deviceSelect" x-model="selectedDevice" :disabled="!selectedClient"
                                     class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input disabled:opacity-50 disabled:cursor-not-allowed">
                                 <option value="">Sva mjerna mjesta</option>
-                                <template x-for="device in filteredDevices" :key="device.id">
-                                    <option :value="device.id" x-text="device.name + ' [ ' + device.t1_name + ' | ' + device.t2_name + ' ]'"></option>
-                                </template>
                             </select>
                         </div>
                         <div class="w-full sm:w-1/2 lg:w-1/4">
