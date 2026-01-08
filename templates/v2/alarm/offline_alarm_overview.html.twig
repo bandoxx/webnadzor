@@ -114,11 +114,11 @@
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Mjerno mjesto
                             </label>
-                            <select name="device" class="w-full sm:w-64 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
+                            <select name="device" class="w-full sm:w-auto min-w-64 rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
                                 <option value="">Sva mjerna mjesta</option>
                                 {% for device in devices %}
                                     <option value="{{ device.id }}" {% if selectedDevice == device.id %}selected{% endif %}>
-                                        {{ device.name }}{% if device.client_name %} ({{ device.client_name }}){% endif %}
+                                        {% if device.client %}{{ device.client.address }}{% endif %} [ {{ device.entry1['t_name'] ?? '-' }} | {{ device.entry2['t_name'] ?? '-' }} ]
                                     </option>
                                 {% endfor %}
                             </select>

@@ -133,13 +133,13 @@ class DeviceRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get devices for dropdown (lightweight - only id, name, client name)
-     * @return array<array{id: int, name: string, client_name: string|null}>
+     * Get devices for dropdown with client (uses JOIN to load in single query)
+     * @return Device[]
      */
     public function findForDropdown(): array
     {
         return $this->createQueryBuilder('d')
-            ->select('d.id', 'd.name', 'c.name as client_name')
+            ->select('d', 'c')
             ->leftJoin('d.client', 'c')
             ->where('d.isDeleted = :isDeleted')
             ->setParameter('isDeleted', false)
