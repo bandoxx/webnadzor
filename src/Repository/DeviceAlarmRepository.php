@@ -164,9 +164,12 @@ class DeviceAlarmRepository extends ServiceEntityRepository
     /**
      * @return DeviceAlarm[]
      */
-    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null): array
+    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null, ?int $limit = null): array
     {
         $builder = $this->createQueryBuilder('a')
+            ->select('a', 'd', 'c')
+            ->leftJoin('a.device', 'd')
+            ->leftJoin('d.client', 'c')
             ->where('a.type IN (:types)')
             ->setParameter('types', self::OFFLINE_ALARM_TYPES)
             ->orderBy('a.deviceDate', 'DESC')
@@ -185,6 +188,10 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         if ($dateTo !== null) {
             $builder->andWhere('a.deviceDate <= :dateTo')
                 ->setParameter('dateTo', $dateTo);
+        }
+
+        if ($limit !== null) {
+            $builder->setMaxResults($limit);
         }
 
         return $builder->getQuery()->getResult();

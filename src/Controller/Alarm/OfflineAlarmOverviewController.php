@@ -50,13 +50,24 @@ class OfflineAlarmOverviewController extends AbstractController
             }
         }
 
-        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj);
-        $devices = $deviceRepository->findAll();
+        // Get devices for filter dropdown first (lightweight - only id, name, client)
+        $devices = $deviceRepository->findForDropdown();
+
+        // Limit results to prevent memory issues - uses JOINs to avoid N+1
+        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 500);
 
         $table = [];
         foreach ($alarms as $alarm) {
             $alarmDevice = $alarm->getDevice();
             $client = $alarmDevice?->getClient();
+
+            // Get sensor location without additional query
+            $sensor = $alarm->getSensor();
+            $location = 'Nema';
+            if ($sensor && $alarmDevice) {
+                $entryData = $alarmDevice->getEntryData((int) $sensor);
+                $location = $entryData['t_name'] ?? 'Nema';
+            }
 
             $table[] = [
                 'id' => $alarm->getId(),
@@ -66,7 +77,7 @@ class OfflineAlarmOverviewController extends AbstractController
                 'date' => $alarm->getDeviceDate(),
                 'end_date' => $alarm->getEndDeviceDate(),
                 'active' => $alarm->isActive(),
-                'location' => $alarm->getLocation(),
+                'location' => $location,
             ];
         }
 

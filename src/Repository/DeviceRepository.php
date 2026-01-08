@@ -131,4 +131,22 @@ class DeviceRepository extends ServiceEntityRepository
             ->getResult()
         ;
     }
+
+    /**
+     * Get devices for dropdown (lightweight - only id, name, client name)
+     * @return array<array{id: int, name: string, client_name: string|null}>
+     */
+    public function findForDropdown(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->select('d.id', 'd.name', 'c.name as client_name')
+            ->leftJoin('d.client', 'c')
+            ->where('d.isDeleted = :isDeleted')
+            ->setParameter('isDeleted', false)
+            ->orderBy('c.name', 'ASC')
+            ->addOrderBy('d.name', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
