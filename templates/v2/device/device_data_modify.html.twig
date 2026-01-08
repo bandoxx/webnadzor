@@ -493,12 +493,13 @@
 
     <!-- Edit Modal -->
     <div x-show="modalOpen" x-transition class="fixed left-0 top-0 z-99999 flex h-full min-h-screen w-full items-center justify-center bg-black/90 px-4 py-5">
-        <div @click.outside="modalOpen = false" class="w-full max-w-2xl rounded-lg bg-white px-5 py-6 dark:bg-boxdark md:px-8 md:py-8">
-            <h3 class="pb-2 text-xl font-bold text-black dark:text-white sm:text-2xl text-center">
-                Uredi podatke
-            </h3>
-            <span class="mx-auto mb-6 inline-block h-1 w-22.5 rounded bg-primary"></span>
+        <div @click.outside="modalOpen = false" class="w-full max-w-xl rounded-lg bg-white dark:bg-boxdark overflow-hidden">
+            <!-- Header -->
+            <div class="bg-primary px-6 py-4">
+                <h3 class="text-lg font-bold text-white text-center">Uredi podatke</h3>
+            </div>
 
+            <!-- Form -->
             <form @submit.prevent="
                 loading = true;
                 message = '';
@@ -534,91 +535,75 @@
                     message = 'Greška prilikom ažuriranja podataka.';
                     messageType = 'error';
                 });
-            ">
-                <!-- Two-column layout for sensors -->
-                <div class="grid grid-cols-2 gap-6 mb-6">
-                    <!-- Sensor 1 -->
-                    <div>
-                        <h4 class="text-center font-semibold text-primary mb-3 border-b border-stroke pb-2 dark:border-strokedark">
-                            {{ device.entry1['t_name'] ?? 'Senzor 1' }}
-                        </h4>
-                        <div class="space-y-2">
+            " class="p-6">
+                <!-- Two columns: Sensor 1 | Sensor 2 -->
+                <div class="flex gap-6">
+                    <!-- Sensor 1 Column -->
+                    <div class="flex-1 rounded-lg border border-stroke dark:border-strokedark p-4">
+                        <h4 class="font-semibold text-primary mb-4 text-center">{{ device.entry1['t_name'] ?? 'Senzor 1' }}</h4>
+                        <div class="space-y-3">
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">T (°C)</label>
-                                <input x-model="editData.t1" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">T (°C)</label>
+                                <input x-model="editData.t1" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">RH (%)</label>
-                                <input x-model="editData.rh1" type="number" step="0.01" min="-999.99" max="999.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">RH (%)</label>
+                                <input x-model="editData.rh1" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">Min (°C)</label>
-                                <input x-model="editData.tMin1" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">Min (°C)</label>
+                                <input x-model="editData.tMin1" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">Max (°C)</label>
-                                <input x-model="editData.tMax1" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">Max (°C)</label>
+                                <input x-model="editData.tMax1" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">MKT</label>
-                                <input x-model="editData.mkt1" type="number" step="0.01" min="-999.99" max="999.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">MKT</label>
+                                <input x-model="editData.mkt1" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Sensor 2 -->
-                    <div>
-                        <h4 class="text-center font-semibold text-primary mb-3 border-b border-stroke pb-2 dark:border-strokedark">
-                            {{ device.entry2['t_name'] ?? 'Senzor 2' }}
-                        </h4>
-                        <div class="space-y-2">
+                    <!-- Sensor 2 Column -->
+                    <div class="flex-1 rounded-lg border border-stroke dark:border-strokedark p-4 bg-success/5">
+                        <h4 class="font-semibold text-primary mb-4 text-center">{{ device.entry2['t_name'] ?? 'Senzor 2' }}</h4>
+                        <div class="space-y-3">
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">T (°C)</label>
-                                <input x-model="editData.t2" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">T (°C)</label>
+                                <input x-model="editData.t2" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">RH (%)</label>
-                                <input x-model="editData.rh2" type="number" step="0.01" min="-999.99" max="999.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">RH (%)</label>
+                                <input x-model="editData.rh2" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">Min (°C)</label>
-                                <input x-model="editData.tMin2" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">Min (°C)</label>
+                                <input x-model="editData.tMin2" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">Max (°C)</label>
-                                <input x-model="editData.tMax2" type="number" step="0.01" min="-99.99" max="99.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">Max (°C)</label>
+                                <input x-model="editData.tMax2" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                             <div>
-                                <label class="mb-1 block text-left text-sm text-black dark:text-white">MKT</label>
-                                <input x-model="editData.mkt2" type="number" step="0.01" min="-999.99" max="999.99"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent px-3 py-2 font-normal text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary" />
+                                <label class="block text-sm font-medium text-black dark:text-white mb-1">MKT</label>
+                                <input x-model="editData.mkt2" type="number" step="0.01" class="w-full rounded border border-stroke bg-transparent py-2 px-3 outline-none focus:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="-mx-3 flex flex-wrap gap-y-4">
-                    <div class="w-full px-3 2xsm:w-1/2">
-                        <button @click="modalOpen = false" type="button"
-                                class="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1">
-                            Odustani
-                        </button>
-                    </div>
-                    <div class="w-full px-3 2xsm:w-1/2">
-                        <button type="submit" :disabled="loading"
-                                class="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90 disabled:opacity-50">
-                            <span x-show="!loading">Spremi</span>
-                            <span x-show="loading">Spremanje...</span>
-                        </button>
-                    </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-4 mt-6">
+                    <button @click="modalOpen = false" type="button"
+                            class="flex-1 rounded border border-stroke bg-gray py-2 px-4 font-medium text-black hover:bg-opacity-90 dark:border-strokedark dark:bg-meta-4 dark:text-white">
+                        Odustani
+                    </button>
+                    <button type="submit" :disabled="loading"
+                            class="flex-1 rounded bg-primary py-2 px-4 font-medium text-white hover:bg-opacity-90 disabled:opacity-50">
+                        <span x-show="!loading">Spremi</span>
+                        <span x-show="loading">Spremanje...</span>
+                    </button>
                 </div>
             </form>
         </div>
