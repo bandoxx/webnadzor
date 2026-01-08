@@ -3,6 +3,7 @@
 namespace App\Controller\Alarm;
 
 use App\Entity\User;
+use App\Repository\ClientRepository;
 use App\Repository\DeviceAlarmRepository;
 use App\Repository\DeviceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,7 +17,8 @@ class OfflineAlarmOverviewController extends AbstractController
     public function __invoke(
         Request $request,
         DeviceAlarmRepository $deviceAlarmRepository,
-        DeviceRepository $deviceRepository
+        DeviceRepository $deviceRepository,
+        ClientRepository $clientRepository
     ): Response {
         /** @var User $user */
         $user = $this->getUser();
@@ -25,6 +27,7 @@ class OfflineAlarmOverviewController extends AbstractController
             throw $this->createAccessDeniedException('Nemate pristup ovoj stranici.');
         }
 
+        $clientId = $request->query->get('client');
         $deviceId = $request->query->get('device');
         $dateFrom = $request->query->get('dateFrom');
         $dateTo = $request->query->get('dateTo');
@@ -50,8 +53,25 @@ class OfflineAlarmOverviewController extends AbstractController
             }
         }
 
-        // Get devices for filter dropdown first (lightweight - only id, name, client)
+        // Get clients for filter dropdown
+        $clients = $clientRepository->findBy([], ['name' => 'ASC']);
+
+        // Get devices for filter dropdown (with client JOIN)
         $devices = $deviceRepository->findForDropdown();
+
+        // Build devices grouped by client for JavaScript
+        $devicesByClient = [];
+        foreach ($devices as $d) {
+            $cId = $d->getClient()?->getId();
+            if ($cId) {
+                $devicesByClient[$cId][] = [
+                    'id' => $d->getId(),
+                    'name' => $d->getName(),
+                    't1_name' => $d->getEntry1()['t_name'] ?? '-',
+                    't2_name' => $d->getEntry2()['t_name'] ?? '-',
+                ];
+            }
+        }
 
         // Limit results to prevent memory issues - uses JOINs to avoid N+1
         $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 300);
@@ -92,7 +112,9 @@ class OfflineAlarmOverviewController extends AbstractController
 
         return $this->render('v2/alarm/offline_alarm_overview.html.twig', [
             'alarms' => $table,
-            'devices' => $devices,
+            'clients' => $clients,
+            'devicesByClient' => $devicesByClient,
+            'selectedClient' => $clientId,
             'selectedDevice' => $deviceId,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,

@@ -107,19 +107,39 @@
                 <!-- Breadcrumb End -->
 
                 <!-- Filter Card Start -->
-                <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 p-4">
+                <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mb-5 p-4"
+                     x-data="{
+                        selectedClient: '{{ selectedClient }}',
+                        selectedDevice: '{{ selectedDevice }}',
+                        devicesByClient: {{ devicesByClient|json_encode|raw }},
+                        get filteredDevices() {
+                            if (!this.selectedClient) return [];
+                            return this.devicesByClient[this.selectedClient] || [];
+                        }
+                     }">
                     <form method="GET" action="{{ path('app_offline_alarm_overview') }}" class="flex flex-wrap lg:flex-nowrap gap-3 items-end">
-                        <div class="w-full lg:w-1/2">
+                        <div class="w-full sm:w-1/2 lg:w-1/4">
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                                Klijent
+                            </label>
+                            <select name="client" x-model="selectedClient" @change="selectedDevice = ''"
+                                    class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
+                                <option value="">Svi klijenti</option>
+                                {% for client in clients %}
+                                    <option value="{{ client.id }}">{{ client.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="w-full sm:w-1/2 lg:w-1/4">
                             <label class="mb-2 block text-sm font-medium text-black dark:text-white">
                                 Mjerno mjesto
                             </label>
-                            <select name="device" class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input">
+                            <select name="device" x-model="selectedDevice" :disabled="!selectedClient"
+                                    class="w-full rounded border border-stroke bg-transparent px-4 py-2 outline-none transition focus:border-primary dark:border-form-strokedark dark:bg-form-input disabled:opacity-50 disabled:cursor-not-allowed">
                                 <option value="">Sva mjerna mjesta</option>
-                                {% for device in devices %}
-                                    <option value="{{ device.id }}" {% if selectedDevice == device.id %}selected{% endif %}>
-                                        {{ device.name }} [ {{ device.entry1['t_name'] ?? '-' }} | {{ device.entry2['t_name'] ?? '-' }} ]
-                                    </option>
-                                {% endfor %}
+                                <template x-for="device in filteredDevices" :key="device.id">
+                                    <option :value="device.id" x-text="device.name + ' [ ' + device.t1_name + ' | ' + device.t2_name + ' ]'"></option>
+                                </template>
                             </select>
                         </div>
                         <div class="w-full sm:w-1/2 lg:w-1/4">
