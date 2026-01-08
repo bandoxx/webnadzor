@@ -54,7 +54,7 @@ class OfflineAlarmOverviewController extends AbstractController
         $devices = $deviceRepository->findForDropdown();
 
         // Limit results to prevent memory issues - uses JOINs to avoid N+1
-        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 500);
+        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 300);
 
         $table = [];
         foreach ($alarms as $alarm) {
