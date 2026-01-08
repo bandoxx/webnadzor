@@ -28,6 +28,8 @@ class OfflineAlarmOverviewController extends AbstractController
         $deviceId = $request->query->get('device');
         $dateFrom = $request->query->get('dateFrom');
         $dateTo = $request->query->get('dateTo');
+        $page = max(1, (int) $request->query->get('page', 1));
+        $perPage = 250;
 
         $device = null;
         if ($deviceId) {
@@ -50,11 +52,16 @@ class OfflineAlarmOverviewController extends AbstractController
             }
         }
 
-        // Get devices for filter dropdown first (lightweight - only id, name, client)
+        // Get devices for filter dropdown first (lightweight - with client JOIN)
         $devices = $deviceRepository->findForDropdown();
 
-        // Limit results to prevent memory issues - uses JOINs to avoid N+1
-        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, 500);
+        // Get total count for pagination
+        $totalCount = $deviceAlarmRepository->countOfflineAlarms($device, $dateFromObj, $dateToObj);
+        $totalPages = (int) ceil($totalCount / $perPage);
+        $offset = ($page - 1) * $perPage;
+
+        // Get paginated results - uses JOINs to avoid N+1
+        $alarms = $deviceAlarmRepository->findOfflineAlarms($device, $dateFromObj, $dateToObj, $perPage, $offset);
 
         $table = [];
         foreach ($alarms as $alarm) {
@@ -96,6 +103,10 @@ class OfflineAlarmOverviewController extends AbstractController
             'selectedDevice' => $deviceId,
             'dateFrom' => $dateFrom,
             'dateTo' => $dateTo,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'totalCount' => $totalCount,
+            'perPage' => $perPage,
         ]);
     }
 }

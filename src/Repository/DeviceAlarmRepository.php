@@ -164,7 +164,7 @@ class DeviceAlarmRepository extends ServiceEntityRepository
     /**
      * @return DeviceAlarm[]
      */
-    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null, ?int $limit = null): array
+    public function findOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null, int $limit = 250, int $offset = 0): array
     {
         $builder = $this->createQueryBuilder('a')
             ->select('a', 'd', 'c')
@@ -173,6 +173,8 @@ class DeviceAlarmRepository extends ServiceEntityRepository
             ->where('a.type IN (:types)')
             ->setParameter('types', self::OFFLINE_ALARM_TYPES)
             ->orderBy('a.deviceDate', 'DESC')
+            ->setMaxResults($limit)
+            ->setFirstResult($offset)
         ;
 
         if ($device !== null) {
@@ -190,11 +192,33 @@ class DeviceAlarmRepository extends ServiceEntityRepository
                 ->setParameter('dateTo', $dateTo);
         }
 
-        if ($limit !== null) {
-            $builder->setMaxResults($limit);
+        return $builder->getQuery()->getResult();
+    }
+
+    public function countOfflineAlarms(?Device $device = null, ?\DateTimeInterface $dateFrom = null, ?\DateTimeInterface $dateTo = null): int
+    {
+        $builder = $this->createQueryBuilder('a')
+            ->select('COUNT(a)')
+            ->where('a.type IN (:types)')
+            ->setParameter('types', self::OFFLINE_ALARM_TYPES)
+        ;
+
+        if ($device !== null) {
+            $builder->andWhere('a.device = :device')
+                ->setParameter('device', $device);
         }
 
-        return $builder->getQuery()->getResult();
+        if ($dateFrom !== null) {
+            $builder->andWhere('a.deviceDate >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo !== null) {
+            $builder->andWhere('a.deviceDate <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        return (int) $builder->getQuery()->getSingleScalarResult();
     }
 
     public function countActiveOfflineAlarms(): int
