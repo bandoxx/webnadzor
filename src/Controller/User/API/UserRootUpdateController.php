@@ -20,7 +20,7 @@ class UserRootUpdateController extends AbstractController
         $password = $request->request->get('password');
         $passwordConfirm = $request->request->get('password_again');
 
-        if ($password !== null && $passwordConfirm !== null && $password === $passwordConfirm) {
+        if ($password !== null && $passwordConfirm !== null && $password !== $passwordConfirm) {
             return $this->json(['error_message' => 'Zaporke se ne podudaraju.']);
         }
 
