@@ -235,6 +235,27 @@
                                             Stavite datume u prošlosti i izaberite uređaj za koji želite da vidite nedostajuće podatke.
                                         </h3>
                                     </div>
+
+                                    <!-- Preview Table -->
+                                    <div id="previewTableContainer" class="mt-6 hidden">
+                                        <h4 class="mb-3 text-sm font-semibold text-black dark:text-white">Podaci koji će biti ubačeni:</h4>
+                                        <div class="max-h-96 overflow-auto">
+                                            <table class="w-full table-auto border-collapse">
+                                                <thead class="sticky top-0 bg-gray-2 dark:bg-meta-4">
+                                                    <tr>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">Novi datum</th>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">Originalni datum</th>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">T1 (°C)</th>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">RH1 (%)</th>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">T2 (°C)</th>
+                                                        <th class="border border-stroke px-3 py-2 text-left text-sm font-medium text-black dark:border-strokedark dark:text-white">RH2 (%)</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="previewTableBody">
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
