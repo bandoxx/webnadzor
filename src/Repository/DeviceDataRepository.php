@@ -364,7 +364,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     SELECT 1
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
-                      AND ABS(TIMESTAMPDIFF(SECOND, dd2.device_date, DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY))) <= 180
+                      AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                       AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
         ';
@@ -434,7 +434,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     SELECT 1
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
-                      AND ABS(TIMESTAMPDIFF(SECOND, dd2.device_date, DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY))) <= 180
+                      AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                       AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
             ORDER BY dd.device_date
@@ -527,7 +527,7 @@ class DeviceDataRepository extends ServiceEntityRepository
                     SELECT 1
                     FROM device_data dd2
                     WHERE dd2.device_id = dd.device_id
-                      AND ABS(TIMESTAMPDIFF(SECOND, dd2.device_date, DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY))) <= 180
+                      AND dd2.device_date = DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)
                       AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
                 )
             ORDER BY dd.device_date
