@@ -458,12 +458,16 @@ class DeviceDataRepository extends ServiceEntityRepository
         $intervalSeconds = $intervalDays * 86400;
 
         // Filter in PHP - only include records where target minute doesn't exist
+        // Also track added minutes to avoid duplicates from source
         $filtered = [];
+        $addedMinutes = [];
         foreach ($sourceRecords as $record) {
             $shiftedTimestamp = strtotime($record['device_date']) + $intervalSeconds;
             $shiftedMinuteKey = date('Y-m-d H:i', $shiftedTimestamp);
 
-            if (!isset($existingMinutes[$shiftedMinuteKey])) {
+            // Skip if target minute already has data OR we already added a record for this minute
+            if (!isset($existingMinutes[$shiftedMinuteKey]) && !isset($addedMinutes[$shiftedMinuteKey])) {
+                $addedMinutes[$shiftedMinuteKey] = true;
                 $filtered[] = [
                     'id' => $record['id'],
                     'device_id' => $record['device_id'],
