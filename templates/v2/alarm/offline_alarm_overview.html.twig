@@ -292,14 +292,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        flatpickr('#dateFrom', {
+        const fpConfig = {
             dateFormat: 'Y-m-d',
-            allowInput: true
-        });
-        flatpickr('#dateTo', {
-            dateFormat: 'Y-m-d',
-            allowInput: true
-        });
+            allowInput: true,
+            locale: flatpickr.l10ns.hr
+        };
+        flatpickr('#dateFrom', fpConfig);
+        flatpickr('#dateTo', fpConfig);
     });
 </script>
 </body>
