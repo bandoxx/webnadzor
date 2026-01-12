@@ -338,6 +338,32 @@ class DeviceDataRepository extends ServiceEntityRepository
     }
 
     /**
+     * Get existing record minutes in target period (for fast PHP comparison)
+     * Returns array of "Y-m-d H:i" strings for quick lookup
+     */
+    private function getExistingTargetMinutes(int $deviceId, \DateTimeInterface $dateFrom, \DateTimeInterface $dateTo): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT DATE_FORMAT(dd.device_date, \'%Y-%m-%d %H:%i\') as minute_key
+            FROM device_data dd
+            WHERE dd.device_id = :deviceId
+              AND dd.device_date BETWEEN :dateFrom AND :dateTo
+              AND NOT ((dd.t1 IS NULL OR dd.t1 = 0) AND (dd.t2 IS NULL OR dd.t2 = 0))
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery([
+            'deviceId' => $deviceId,
+            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
+            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
+        ]);
+
+        return array_flip(array_column($result->fetchAllAssociative(), 'minute_key'));
+    }
+
+    /**
      * Count available records for a specific interval shift
      *
      * @param int $deviceId
@@ -352,33 +378,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         \DateTimeInterface $dateTo,
         int $intervalDays
     ): int {
-        $conn = $this->getEntityManager()->getConnection();
-
-        $sql = '
-            SELECT COUNT(*) as cnt
-            FROM device_data dd
-            WHERE dd.device_id = :deviceId
-              AND dd.device_date BETWEEN DATE_SUB(:dateFrom, INTERVAL :intervalDays DAY)
-                                     AND DATE_SUB(:dateTo, INTERVAL :intervalDays DAY)
-              AND NOT EXISTS (
-                    SELECT 1
-                    FROM device_data dd2
-                    WHERE dd2.device_id = dd.device_id
-                      AND dd2.device_date >= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND
-                      AND dd2.device_date <= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND + INTERVAL 59 SECOND
-                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
-                )
-        ';
-
-        $stmt = $conn->prepare($sql);
-        $result = $stmt->executeQuery([
-            'deviceId' => $deviceId,
-            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
-            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
-            'intervalDays' => $intervalDays,
-        ]);
-
-        return (int) $result->fetchOne();
+        return count($this->getShiftedDataPreview($deviceId, $dateFrom, $dateTo, $intervalDays));
     }
 
     /**
@@ -399,14 +399,13 @@ class DeviceDataRepository extends ServiceEntityRepository
     ): array {
         $conn = $this->getEntityManager()->getConnection();
 
+        // Simple query to get source records
         $sql = '
             SELECT
                 dd.id,
                 dd.device_id,
-                dd.server_date AS old_server_date,
-                dd.device_date AS old_device_date,
-                DATE_ADD(dd.server_date, INTERVAL :intervalDays DAY) AS new_server_date,
-                DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) AS new_device_date,
+                dd.server_date,
+                dd.device_date,
                 dd.gsm_signal,
                 dd.supply,
                 dd.vbat,
@@ -431,14 +430,6 @@ class DeviceDataRepository extends ServiceEntityRepository
             WHERE dd.device_id = :deviceId
               AND dd.device_date BETWEEN DATE_SUB(:dateFrom, INTERVAL :intervalDays DAY)
                                      AND DATE_SUB(:dateTo, INTERVAL :intervalDays DAY)
-              AND NOT EXISTS (
-                    SELECT 1
-                    FROM device_data dd2
-                    WHERE dd2.device_id = dd.device_id
-                      AND dd2.device_date >= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND
-                      AND dd2.device_date <= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND + INTERVAL 59 SECOND
-                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
-                )
             ORDER BY dd.device_date
         ';
 
@@ -450,12 +441,60 @@ class DeviceDataRepository extends ServiceEntityRepository
             'intervalDays' => $intervalDays,
         ]);
 
-        return $result->fetchAllAssociative();
+        $sourceRecords = $result->fetchAllAssociative();
+
+        if (empty($sourceRecords)) {
+            return [];
+        }
+
+        // Get existing minutes in target period (hash map for O(1) lookup)
+        $existingMinutes = $this->getExistingTargetMinutes($deviceId, $dateFrom, $dateTo);
+        $intervalSeconds = $intervalDays * 86400;
+
+        // Filter in PHP - only include records where target minute doesn't exist
+        $filtered = [];
+        foreach ($sourceRecords as $record) {
+            $shiftedTimestamp = strtotime($record['device_date']) + $intervalSeconds;
+            $shiftedMinuteKey = date('Y-m-d H:i', $shiftedTimestamp);
+
+            if (!isset($existingMinutes[$shiftedMinuteKey])) {
+                $filtered[] = [
+                    'id' => $record['id'],
+                    'device_id' => $record['device_id'],
+                    'old_server_date' => $record['server_date'],
+                    'old_device_date' => $record['device_date'],
+                    'new_server_date' => date('Y-m-d H:i:s', strtotime($record['server_date']) + $intervalSeconds),
+                    'new_device_date' => date('Y-m-d H:i:s', $shiftedTimestamp),
+                    'gsm_signal' => $record['gsm_signal'],
+                    'supply' => $record['supply'],
+                    'vbat' => $record['vbat'],
+                    'battery' => $record['battery'],
+                    'd1' => $record['d1'],
+                    't1' => $record['t1'],
+                    'rh1' => $record['rh1'],
+                    'mkt1' => $record['mkt1'],
+                    't_avrg1' => $record['t_avrg1'],
+                    't_min1' => $record['t_min1'],
+                    't_max1' => $record['t_max1'],
+                    'note1' => $record['note1'],
+                    'd2' => $record['d2'],
+                    't2' => $record['t2'],
+                    'rh2' => $record['rh2'],
+                    'mkt2' => $record['mkt2'],
+                    't_avrg2' => $record['t_avrg2'],
+                    't_min2' => $record['t_min2'],
+                    't_max2' => $record['t_max2'],
+                    'note2' => $record['note2'],
+                ];
+            }
+        }
+
+        return $filtered;
     }
 
     /**
      * Insert device data with shifted dates
-     * Fetches data from the past and inserts it with target dates
+     * Uses preview results for consistent filtering
      *
      * @param int $deviceId
      * @param \DateTimeInterface $dateFrom Target date from (where data should end up)
@@ -469,79 +508,58 @@ class DeviceDataRepository extends ServiceEntityRepository
         \DateTimeInterface $dateTo,
         int $intervalDays
     ): int {
+        $records = $this->getShiftedDataPreview($deviceId, $dateFrom, $dateTo, $intervalDays);
+
+        if (empty($records)) {
+            return 0;
+        }
+
         $conn = $this->getEntityManager()->getConnection();
 
         $sql = '
             INSERT INTO device_data (
-                device_id,
-                server_date,
-                device_date,
-                gsm_signal,
-                supply,
-                vbat,
-                battery,
-                d1,
-                t1,
-                rh1,
-                mkt1,
-                t_avrg1,
-                t_min1,
-                t_max1,
-                note1,
-                d2,
-                t2,
-                rh2,
-                mkt2,
-                t_avrg2,
-                t_min2,
-                t_max2,
-                note2
+                device_id, server_date, device_date, gsm_signal, supply, vbat, battery,
+                d1, t1, rh1, mkt1, t_avrg1, t_min1, t_max1, note1,
+                d2, t2, rh2, mkt2, t_avrg2, t_min2, t_max2, note2
+            ) VALUES (
+                :device_id, :server_date, :device_date, :gsm_signal, :supply, :vbat, :battery,
+                :d1, :t1, :rh1, :mkt1, :t_avrg1, :t_min1, :t_max1, :note1,
+                :d2, :t2, :rh2, :mkt2, :t_avrg2, :t_min2, :t_max2, :note2
             )
-            SELECT
-                dd.device_id,
-                DATE_ADD(dd.server_date, INTERVAL :intervalDays DAY),
-                DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY),
-                dd.gsm_signal,
-                dd.supply,
-                dd.vbat,
-                dd.battery,
-                dd.d1,
-                dd.t1,
-                dd.rh1,
-                dd.mkt1,
-                dd.t_avrg1,
-                dd.t_min1,
-                dd.t_max1,
-                dd.note1,
-                dd.d2,
-                dd.t2,
-                dd.rh2,
-                dd.mkt2,
-                dd.t_avrg2,
-                dd.t_min2,
-                dd.t_max2,
-                dd.note2
-            FROM device_data dd
-            WHERE dd.device_id = :deviceId
-              AND dd.device_date BETWEEN DATE_SUB(:dateFrom, INTERVAL :intervalDays DAY)
-                                     AND DATE_SUB(:dateTo, INTERVAL :intervalDays DAY)
-              AND NOT EXISTS (
-                    SELECT 1
-                    FROM device_data dd2
-                    WHERE dd2.device_id = dd.device_id
-                      AND dd2.device_date >= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND
-                      AND dd2.device_date <= DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY) - INTERVAL SECOND(DATE_ADD(dd.device_date, INTERVAL :intervalDays DAY)) SECOND + INTERVAL 59 SECOND
-                      AND NOT ((dd2.t1 IS NULL OR dd2.t1 = 0) AND (dd2.t2 IS NULL OR dd2.t2 = 0))
-                )
-            ORDER BY dd.device_date
         ';
 
         $stmt = $conn->prepare($sql);
-        return $stmt->executeStatement([
-            'deviceId' => $deviceId,
-            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
-            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
-            'intervalDays' => $intervalDays,
-        ]);
+        $insertedCount = 0;
+
+        foreach ($records as $record) {
+            $stmt->executeStatement([
+                'device_id' => $record['device_id'],
+                'server_date' => $record['new_server_date'],
+                'device_date' => $record['new_device_date'],
+                'gsm_signal' => $record['gsm_signal'],
+                'supply' => $record['supply'],
+                'vbat' => $record['vbat'],
+                'battery' => $record['battery'],
+                'd1' => $record['d1'],
+                't1' => $record['t1'],
+                'rh1' => $record['rh1'],
+                'mkt1' => $record['mkt1'],
+                't_avrg1' => $record['t_avrg1'],
+                't_min1' => $record['t_min1'],
+                't_max1' => $record['t_max1'],
+                'note1' => $record['note1'],
+                'd2' => $record['d2'],
+                't2' => $record['t2'],
+                'rh2' => $record['rh2'],
+                'mkt2' => $record['mkt2'],
+                't_avrg2' => $record['t_avrg2'],
+                't_min2' => $record['t_min2'],
+                't_max2' => $record['t_max2'],
+                'note2' => $record['note2'],
+            ]);
+            $insertedCount++;
+        }
+
+        return $insertedCount;
     }
 }
