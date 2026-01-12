@@ -29,7 +29,7 @@ class MapMarkerFactory
         $counter = [];
 
         foreach ($devices as $device) {
-            $locationHash = sha1($device->getLongitude() . $device->getLongitude());
+            $locationHash = sha1($device->getLatitude() . $device->getLongitude());
 
             if (array_key_exists($locationHash, $markers['places'])) {
                 $counter[$locationHash]++;
