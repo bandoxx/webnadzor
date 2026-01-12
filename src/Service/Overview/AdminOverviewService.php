@@ -28,6 +28,11 @@ class AdminOverviewService
      */
     public function getRedirectClientId(User $user): ?int
     {
+        // ROOT users always see full overview, never auto-redirect
+        if ($user->getPermission() === User::ROLE_ROOT) {
+            return null;
+        }
+
         if ($user->getClients()->count() !== 1) {
             return null;
         }
@@ -53,8 +58,11 @@ class AdminOverviewService
         $clients = $this->clientRepository->findAllActive();
 
         foreach ($clients as $client) {
-            // Skip moderators; include only user's clients
-            if ($user->isModerator() || $user->getClients()->contains($client) === false) {
+            // ROOT sees all clients; others must have client assigned
+            if ($user->isModerator()) {
+                continue;
+            }
+            if ($user->getPermission() !== User::ROLE_ROOT && $user->getClients()->contains($client) === false) {
                 continue;
             }
 
