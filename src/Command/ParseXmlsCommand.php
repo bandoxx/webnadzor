@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\Device;
 use App\Factory\DeviceDataFactory;
 use App\Factory\LockFactory;
 use App\Factory\UnresolvedDeviceDataFactory;
