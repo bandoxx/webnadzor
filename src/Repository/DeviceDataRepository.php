@@ -345,8 +345,9 @@ class DeviceDataRepository extends ServiceEntityRepository
     {
         $conn = $this->getEntityManager()->getConnection();
 
+        // Fetch raw timestamps, format in PHP (faster than DATE_FORMAT in SQL)
         $sql = '
-            SELECT DATE_FORMAT(dd.device_date, \'%Y-%m-%d %H:%i\') as minute_key
+            SELECT dd.device_date
             FROM device_data dd
             WHERE dd.device_id = :deviceId
               AND dd.device_date BETWEEN :dateFrom AND :dateTo
@@ -360,7 +361,12 @@ class DeviceDataRepository extends ServiceEntityRepository
             'dateTo' => $dateTo->format('Y-m-d H:i:s'),
         ]);
 
-        return array_flip(array_column($result->fetchAllAssociative(), 'minute_key'));
+        $minutes = [];
+        foreach ($result->fetchAllAssociative() as $row) {
+            $minutes[substr($row['device_date'], 0, 16)] = true; // "Y-m-d H:i"
+        }
+
+        return $minutes;
     }
 
     /**
