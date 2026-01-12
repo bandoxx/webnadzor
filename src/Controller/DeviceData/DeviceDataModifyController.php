@@ -19,6 +19,8 @@ use Symfony\Component\Routing\Attribute\Route;
 )]
 class DeviceDataModifyController extends AbstractController
 {
+    private const int ITEMS_PER_PAGE = 50;
+
     public function __construct(
         private readonly DeviceDataRepository $deviceDataRepository,
         private readonly EntityManagerInterface $entityManager
@@ -34,7 +36,7 @@ class DeviceDataModifyController extends AbstractController
         Request $request
     ): Response {
         $page = max(1, $request->query->getInt('page', 1));
-        $limit = 50;
+        $limit = self::ITEMS_PER_PAGE;
         $offset = ($page - 1) * $limit;
 
         $dateFrom = $request->query->get('date_from');

@@ -25,7 +25,7 @@ class UserAccess
     {
         // TODO: Ako user nema attachovanog klijenta
 
-        if ($user->getPermission() > 1) {
+        if ($user->getPermission() >= User::ROLE_MODERATOR) {
             $devices = $this->deviceRepository->findDevicesByClient($client->getId());
         } else {
             $accesses = $this->deviceAccessRepository->findAccessibleEntries($user);
@@ -47,7 +47,7 @@ class UserAccess
     public function getAccessibleEntries(User $user, Client $client): array
     {
         $entries = [];
-        if ($user->getPermission() > 1) {
+        if ($user->getPermission() >= User::ROLE_MODERATOR) {
             $devices = $this->deviceRepository->findDevicesByClient($client->getId());
             foreach ($devices as $device) {
                 for ($entry = 1; $entry <= 2; $entry++) {
