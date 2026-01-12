@@ -35,6 +35,13 @@ class UserDeviceAccessRepository extends ServiceEntityRepository
      */
     public function findAccessibleEntries(User $user): array
     {
-        return $this->findBy(['user' => $user]);
+        return $this->createQueryBuilder('a')
+            ->select('a', 'd')
+            ->leftJoin('a.device', 'd')
+            ->where('a.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult()
+        ;
     }
 }

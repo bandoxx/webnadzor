@@ -235,4 +235,47 @@ class DeviceAlarmRepository extends ServiceEntityRepository
 
         return (int) $builder->getQuery()->getSingleScalarResult();
     }
+
+    /**
+     * Fetch all alarms that need notification in a single query.
+     * Returns alarms grouped by device ID and sensor.
+     *
+     * @return array<int, array{main: DeviceAlarm[], entry1: DeviceAlarm[], entry2: DeviceAlarm[]}>
+     */
+    public function findAllAlarmsThatNeedNotification(): array
+    {
+        $alarms = $this->createQueryBuilder('a')
+            ->select('a', 'd')
+            ->leftJoin('a.device', 'd')
+            ->where('a.endDeviceDate IS NULL AND a.isNotified = false')
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $grouped = [];
+        foreach ($alarms as $alarm) {
+            /** @var DeviceAlarm $alarm */
+            $deviceId = $alarm->getDevice()->getId();
+            $sensor = $alarm->getSensor();
+
+            if (!isset($grouped[$deviceId])) {
+                $grouped[$deviceId] = [
+                    'device' => $alarm->getDevice(),
+                    'main' => [],
+                    'entry1' => [],
+                    'entry2' => [],
+                ];
+            }
+
+            if ($sensor === null) {
+                $grouped[$deviceId]['main'][] = $alarm;
+            } elseif ($sensor === 1) {
+                $grouped[$deviceId]['entry1'][] = $alarm;
+            } elseif ($sensor === 2) {
+                $grouped[$deviceId]['entry2'][] = $alarm;
+            }
+        }
+
+        return $grouped;
+    }
 }

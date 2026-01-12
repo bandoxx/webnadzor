@@ -80,9 +80,10 @@ class MigrateIconsIntoGlobalCommand extends Command
                     }
                 }
             }
-
-            $this->entityManager->flush();
         }
+
+        // Single flush after all changes
+        $this->entityManager->flush();
 
         return Command::SUCCESS;
     }
