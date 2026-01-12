@@ -8,6 +8,7 @@ use App\Factory\UnresolvedDeviceDataFactory;
 use App\Repository\DeviceRepository;
 use App\Service\Alarm\ValidatorCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -26,8 +27,7 @@ class ParseXmlsCommand extends Command
 
     public function __construct(
         private DeviceDataFactory      $deviceDataFactory,
-        private DeviceRepository       $deviceRepository,
-        private EntityManagerInterface $entityManager,
+        private readonly ManagerRegistry $managerRegistry,
         private LoggerInterface        $logger,
         private ValidatorCollection    $alarmValidator,
         private LockFactory            $lockFactory,
@@ -36,6 +36,22 @@ class ParseXmlsCommand extends Command
     )
     {
         parent::__construct();
+    }
+
+    private function getEntityManager(): EntityManagerInterface
+    {
+        $em = $this->managerRegistry->getManager();
+        if (!$em->isOpen()) {
+            $this->logger->warning('EntityManager was closed, resetting...');
+            $this->managerRegistry->resetManager();
+            $em = $this->managerRegistry->getManager();
+        }
+        return $em;
+    }
+
+    private function getDeviceRepository(): DeviceRepository
+    {
+        return $this->getEntityManager()->getRepository(Device::class);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -58,7 +74,7 @@ class ParseXmlsCommand extends Command
 
             $name = rtrim($fileName, '.xml');
             $xmlPath = sprintf("%s/%s", $this->xmlDirectory, $fileName);
-            $device = $this->deviceRepository->binaryFindOneByName($name);
+            $device = $this->getDeviceRepository()->binaryFindOneByName($name);
 
             if (!$device) {
                 try {
@@ -93,16 +109,17 @@ class ParseXmlsCommand extends Command
             try {
                 $deviceData = $this->deviceDataFactory->createFromXml($device, $xmlPath);
 
-                $this->entityManager->beginTransaction();
+                $em = $this->getEntityManager();
+                $em->beginTransaction();
                 try {
-                    $this->entityManager->persist($deviceData);
-                    $this->entityManager->flush();
-                    $this->entityManager->commit();
+                    $em->persist($deviceData);
+                    $em->flush();
+                    $em->commit();
                 } catch (\Throwable $e) {
-                    if ($this->entityManager->getConnection()->isTransactionActive()) {
-                        $this->entityManager->rollback();
+                    if ($em->getConnection()->isTransactionActive()) {
+                        $em->rollback();
                     }
-                    $this->entityManager->clear();
+                    $em->clear();
                     throw $e;
                 }
 
@@ -125,16 +142,17 @@ class ParseXmlsCommand extends Command
     {
         $unresolvedXML = $this->unresolvedXMLFactory->createFromXml($xmlPath);
 
-        $this->entityManager->beginTransaction();
+        $em = $this->getEntityManager();
+        $em->beginTransaction();
         try {
-            $this->entityManager->persist($unresolvedXML);
-            $this->entityManager->flush();
-            $this->entityManager->commit();
+            $em->persist($unresolvedXML);
+            $em->flush();
+            $em->commit();
         } catch (\Throwable $e) {
-            if ($this->entityManager->getConnection()->isTransactionActive()) {
-                $this->entityManager->rollback();
+            if ($em->getConnection()->isTransactionActive()) {
+                $em->rollback();
             }
-            $this->entityManager->clear();
+            $em->clear();
             throw $e;
         }
     }
