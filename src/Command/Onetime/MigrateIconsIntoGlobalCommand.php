@@ -2,6 +2,7 @@
 
 namespace App\Command\Onetime;
 
+use App\Entity\Device;
 use App\Repository\DeviceIconRepository;
 use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,7 +66,7 @@ class MigrateIconsIntoGlobalCommand extends Command
         $devices = $this->deviceRepository->findAll();
 
         foreach ($devices as $device) {
-            foreach ([1, 2] as $entry) {
+            foreach (Device::SENSOR_ENTRIES as $entry) {
                 $data = $device->getEntryData($entry);
 
                 foreach ($replaces as $key => $replace) {

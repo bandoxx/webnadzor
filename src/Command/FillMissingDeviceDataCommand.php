@@ -340,7 +340,7 @@ class FillMissingDeviceDataCommand extends Command
         }
 
         // Process both entries
-        foreach ([1, 2] as $entry) {
+        foreach (Device::SENSOR_ENTRIES as $entry) {
             // Copy digital entry status (no modification)
             $dGetter = "getD{$entry}";
             $dSetter = "setD{$entry}";

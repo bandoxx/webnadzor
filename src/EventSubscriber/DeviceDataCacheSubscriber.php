@@ -23,7 +23,7 @@ class DeviceDataCacheSubscriber
         $device = $deviceData->getDevice();
         $date = $deviceData->getDeviceDate();
 
-        foreach ([1, 2] as $entry) {
+        foreach (Device::SENSOR_ENTRIES as $entry) {
             $value = $deviceData->getT($entry);
             if ($value === null) {
                 continue;

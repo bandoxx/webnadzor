@@ -2,6 +2,7 @@
 
 namespace App\Command\Archiver;
 
+use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;
 use App\Repository\DeviceDataRepository;
@@ -79,7 +80,7 @@ class HistoryDeviceDataArchiver extends Command
             if ($daily) {
                 $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
-                foreach([1, 2] as $entry) {
+                foreach (Device::SENSOR_ENTRIES as $entry) {
                     $this->generateDailyReport($device, $data, $entry, $date);
                 }
             }
@@ -87,7 +88,7 @@ class HistoryDeviceDataArchiver extends Command
             if ($monthly && $date->format('d') == 1) {
                 $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $date);
 
-                foreach([1, 2] as $entry) {
+                foreach (Device::SENSOR_ENTRIES as $entry) {
                     $this->generateMonthlyReport($device, $data, $entry, $date);
                 }
             }

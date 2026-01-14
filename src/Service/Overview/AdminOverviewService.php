@@ -189,7 +189,7 @@ class AdminOverviewService
                 }
 
                 if ($sensor === null) {
-                    $byDevice[$deviceId] = [1, 2];
+                    $byDevice[$deviceId] = Device::SENSOR_ENTRIES;
                 } elseif (!in_array($sensor, $byDevice[$deviceId], true)) {
                     $byDevice[$deviceId][] = (int) $sensor;
                 }
@@ -241,7 +241,7 @@ class AdminOverviewService
         foreach ($devices as $device) {
             $deviceId = $device->getId();
 
-            foreach ([1, 2] as $entry) {
+            foreach (Device::SENSOR_ENTRIES as $entry) {
                 if (!$this->isEntryAllowed($deviceId, $entry, $accessFilter)) {
                     continue;
                 }

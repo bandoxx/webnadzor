@@ -36,7 +36,7 @@ class PopulateDeviceDataLastCacheCommand extends Command
         $processed = 0;
 
         foreach ($devices as $device) {
-            foreach ([1, 2] as $entry) {
+            foreach (Device::SENSOR_ENTRIES as $entry) {
                 $deviceData = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $entry);
                 if (!$deviceData) {
                     continue;

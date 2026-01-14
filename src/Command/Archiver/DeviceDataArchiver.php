@@ -65,7 +65,7 @@ class DeviceDataArchiver extends Command
 
             foreach ($devices as $device) {
                 $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
-                foreach([1, 2] as $entry) {
+                foreach (Device::SENSOR_ENTRIES as $entry) {
                     $fromDate = (clone $date)->setTime(0, 0, 0);
                     $toDate = (clone $date)->setTime(23, 59, 59);
 

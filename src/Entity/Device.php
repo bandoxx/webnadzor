@@ -10,6 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: DeviceRepository::class)]
 class Device
 {
+    /** Available sensor entry numbers */
+    public const array SENSOR_ENTRIES = [1, 2];
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

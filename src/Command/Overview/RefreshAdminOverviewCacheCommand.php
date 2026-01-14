@@ -3,6 +3,7 @@
 namespace App\Command\Overview;
 
 use App\Entity\AdminOverviewCache;
+use App\Entity\Device;
 use App\Entity\User;
 use App\Repository\AdminOverviewCacheRepository;
 use App\Repository\ClientRepository;
@@ -50,7 +51,7 @@ class RefreshAdminOverviewCacheCommand extends Command
             $alarmMessages = [];
 
             foreach ($devices as $device) {
-                foreach ([1, 2] as $sensor) {
+                foreach (Device::SENSOR_ENTRIES as $sensor) {
                     $output->writeln(sprintf("%d %d", $device->getId(), $sensor));
                     $deviceData = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $sensor);
                     if (!$deviceData) {

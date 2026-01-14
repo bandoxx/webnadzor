@@ -111,7 +111,7 @@ class DeviceDataDailyArchiveService
             $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
             // Create archives for both entries (1 and 2)
-            foreach ([1, 2] as $entry) {
+            foreach (Device::SENSOR_ENTRIES as $entry) {
                 $fromDate = (clone $date)->setTime(0, 0, 0);
                 $toDate = (clone $date)->setTime(23, 59, 59);
 

@@ -76,7 +76,7 @@ class DeviceDataMonthlyArchiver extends Command
         foreach ($devices as $device) {
             $data = $this->deviceDataRepository->findByDeviceAndForMonth($device, $dataFetchDate);
 
-            foreach([1, 2] as $entry) {
+            foreach (Device::SENSOR_ENTRIES as $entry) {
                 $fromDate = (clone $dataFetchDate)->modify('first day of this month')->setTime(0, 0, 0);
                 $toDate = (clone $dataFetchDate)->modify('last day of this month')->setTime(23, 59, 59);
 

@@ -230,7 +230,7 @@ class DeviceDataImport
                 } elseif (str_contains($data->filename, '_t2_')) {
                     $entries = [2];
                 } else {
-                    $entries = [1, 2];
+                    $entries = Device::SENSOR_ENTRIES;
                 }
 
                 foreach ($entries as $entry) {
