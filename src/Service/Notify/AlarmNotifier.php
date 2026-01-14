@@ -5,6 +5,8 @@ namespace App\Service\Notify;
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmLog;
+use App\Repository\DeviceAlarmRepository;
+use App\Repository\DeviceRepository;
 use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
 use App\Service\Alarm\Types\DeviceSupplyOff;
@@ -16,16 +18,36 @@ use App\Service\Alarm\Types\TemperatureLow;
 use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
+use Monolog\Attribute\WithMonologChannel;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Email;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
-use Psr\Log\LoggerInterface;
-use Monolog\Attribute\WithMonologChannel;
 
 class AlarmNotifier
 {
+    private const array INTERNAL_RECIPIENTS = [
+        'damir.cerjak@intelteh.hr',
+        'petar.simic@intelteh.hr',
+    ];
+
+    private const string SENDER_EMAIL = 'rht@intelteh.hr';
+    private const string BCC_LOG_EMAIL = 'logs@banox.dev';
+    private const string SMS_SIGNATURE = 'Intelteh D.O.O';
+
+    private const array DEVICE_LEVEL_ALARM_TYPES = [
+        DeviceSupplyOff::TYPE,
+        DeviceOffline::TYPE,
+    ];
+
+    private const array TEMPERATURE_ALARM_TYPES = [
+        TemperatureHigh::TYPE,
+        TemperatureLow::TYPE,
+    ];
+
+    private const array HUMIDITY_ALARM_TYPES = [
+        HumidityHigh::TYPE,
+        HumidityLow::TYPE,
+    ];
 
     public function __construct(
         private readonly Mailer $mailer,
@@ -36,37 +58,46 @@ class AlarmNotifier
         private readonly AlarmLogFactory $alarmLogFactory,
         #[WithMonologChannel('mailer')]
         private readonly LoggerInterface $logger,
-    )
-    {}
+    ) {}
 
     public function notify(): void
     {
-        $devices = $this->entityManager->getRepository(Device::class)->findAll();
-        $deviceAlarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
+        $deviceRepository = $this->entityManager->getRepository(Device::class);
+        $alarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
+
+        $devices = $deviceRepository->findAll();
 
         foreach ($devices as $device) {
-            // Process main alarms (no sensor)
-            $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
-            $this->notifyByMail($alarms);
-            $this->notifyBySMS($alarms);
-
-            foreach ($alarms as $alarm) {
-                $alarm->setIsNotified(true);
-            }
-            $this->entityManager->flush();
-
-            // Process alarms for entries 1 and 2
-            for ($entry = 1; $entry <= 2; $entry++) {
-                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
-                $this->notifyByMail($entryAlarms, $entry);
-                $this->notifyBySMS($entryAlarms);
-
-                foreach ($entryAlarms as $alarm) {
-                    $alarm->setIsNotified(true);
-                }
-                $this->entityManager->flush();
-            }
+            $this->processDeviceAlarms($device, $alarmRepository);
         }
+    }
+
+    private function processDeviceAlarms(Device $device, DeviceAlarmRepository $alarmRepository): void
+    {
+        $entries = [null, 1, 2];
+
+        foreach ($entries as $entry) {
+            $alarms = $alarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+
+            if (empty($alarms)) {
+                continue;
+            }
+
+            $this->notifyByMail($alarms, $entry);
+            $this->notifyBySMS($alarms);
+            $this->markAlarmsAsNotified($alarms);
+        }
+    }
+
+    /**
+     * @param array<DeviceAlarm> $alarms
+     */
+    private function markAlarmsAsNotified(array $alarms): void
+    {
+        foreach ($alarms as $alarm) {
+            $alarm->setIsNotified(true);
+        }
+        $this->entityManager->flush();
     }
 
     /**
@@ -75,44 +106,41 @@ class AlarmNotifier
     public function notifyBySMS(array $alarms): void
     {
         foreach ($alarms as $alarm) {
-            $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
-
-            if (empty($recipients)) {
-                continue;
-            }
-
-            $message = sprintf("%s Intelteh D.O.O", $alarm->getShortMessage());
-            $this->infobipClient->sendMessage($recipients, iconv('UTF-8', 'ASCII//TRANSLIT', $message));
-
-            foreach ($recipients as $recipient) {
-                $log = $this->alarmLogFactory->create($alarm, $recipient, DeviceAlarmLog::TYPE_PHONE_SMS, $message);
-                $this->entityManager->persist($log);
-            }
-
-            $this->entityManager->flush();
+            $this->sendSmsForAlarm($alarm);
         }
     }
 
-    /**
-     * @param Device $device
-     * @param array<DeviceAlarm> $alarms
-     */
-    public function notifyByVoiceMessage(array $alarms)
+    private function sendSmsForAlarm(DeviceAlarm $alarm): void
     {
-        // TODO:
-        //foreach ($alarms as $alarm) {
-        //    $recipients = $this->alarmRecipients->getRecipientsForVoiceMessage($alarm);
-        //
-        //    $this->infobipClient->sendVoiceMessage($recipients);
-        //}
+        $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
+
+        if (empty($recipients)) {
+            return;
+        }
+
+        $message = $this->buildSmsMessage($alarm);
+        $this->infobipClient->sendMessage($recipients, $message);
+        $this->logSmsNotifications($alarm, $recipients, $message);
+    }
+
+    private function buildSmsMessage(DeviceAlarm $alarm): string
+    {
+        $message = sprintf('%s %s', $alarm->getShortMessage(), self::SMS_SIGNATURE);
+
+        return iconv('UTF-8', 'ASCII//TRANSLIT', $message);
+    }
+
+    private function logSmsNotifications(DeviceAlarm $alarm, array $recipients, string $message): void
+    {
+        foreach ($recipients as $recipient) {
+            $log = $this->alarmLogFactory->create($alarm, $recipient, DeviceAlarmLog::TYPE_PHONE_SMS, $message);
+            $this->entityManager->persist($log);
+        }
+        $this->entityManager->flush();
     }
 
     /**
      * @param array<DeviceAlarm> $alarms
-     * @param int|null $entry
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
     private function notifyByMail(array $alarms, ?int $entry = null): void
     {
@@ -121,107 +149,164 @@ class AlarmNotifier
         }
 
         foreach ($alarms as $alarm) {
-            /** @var Device $device */
-            $device = $alarm->getDevice();
+            $this->sendEmailForAlarm($alarm, $alarms, $entry);
+        }
+    }
 
-            $settings = $device->getClient()->getClientSetting();
+    private function sendEmailForAlarm(DeviceAlarm $alarm, array $alarms, ?int $entry): void
+    {
+        $device = $alarm->getDevice();
+        $recipients = $this->collectEmailRecipients($device, $alarm->getType(), $entry);
 
-            $alarmType = $alarm->getType();
+        if (empty($recipients)) {
+            return;
+        }
 
-            // Start with internal recipients
-            $emails = ['damir.cerjak@intelteh.hr', 'petar.simic@intelteh.hr'];
+        $email = $this->buildEmail($device, $alarms, $recipients);
+        $this->mailer->send($email);
+        $this->logEmailNotification($device, $alarms, $recipients, $entry);
+    }
 
-            // Client-level notification list (already a flat list of emails)
-            $clientEmails = $settings->getAlarmNotificationList() ?? [];
-            foreach ((array) $clientEmails as $ce) {
-                if (is_string($ce) && $ce !== '') {
-                    $emails[] = $ce;
-                }
+    private function collectEmailRecipients(Device $device, string $alarmType, ?int $entry): array
+    {
+        $emails = self::INTERNAL_RECIPIENTS;
+
+        $emails = $this->addClientEmails($device, $emails);
+        $emails = $this->addGeneralApplicationEmails($device, $alarmType, $emails);
+
+        if ($entry !== null) {
+            $emails = $this->addEntryApplicationEmails($device, $alarmType, $entry, $emails);
+        }
+
+        return $this->filterUniqueEmails($emails);
+    }
+
+    private function addClientEmails(Device $device, array $emails): array
+    {
+        $settings = $device->getClient()->getClientSetting();
+        $clientEmails = $settings->getAlarmNotificationList() ?? [];
+
+        foreach ((array) $clientEmails as $clientEmail) {
+            if (is_string($clientEmail) && $clientEmail !== '') {
+                $emails[] = $clientEmail;
             }
+        }
 
-            // Alarm type flags
-            $powerSupplyAlarm = in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true);
-            $isTempAlarm = in_array($alarmType, [TemperatureHigh::TYPE, TemperatureLow::TYPE], true);
-            $isHumAlarm = in_array($alarmType, [HumidityHigh::TYPE, HumidityLow::TYPE], true);
+        return $emails;
+    }
 
-            // General application emails can be either a flat list ["a@b.com", ...]
-            // or a map ["a@b.com" => ["is_device_power_supply_active" => true], ...]
-            $general = $device->getApplicationEmailList() ?? [];
-            foreach ($general as $key => $value) {
-                if (is_string($value)) {
-                    // Flat list element
-                    if ($powerSupplyAlarm) {
-                        $emails[] = $value;
-                    }
-                } elseif (is_string($key) && is_array($value)) {
-                    // Map: email => settings
-                    $isActive = (bool)($value['is_device_power_supply_active'] ?? true);
-                    if ($powerSupplyAlarm && $isActive) {
-                        $emails[] = $key;
-                    }
-                }
-            }
+    private function addGeneralApplicationEmails(Device $device, string $alarmType, array $emails): array
+    {
+        $isDeviceLevelAlarm = $this->isDeviceLevelAlarm($alarmType);
+        $generalEmails = $device->getApplicationEmailList() ?? [];
 
-            // Entry-specific application emails (either flat list or map)
-            if ($entry) {
-                $entryData = $device->getEntryData($entry) ?? [];
-                $entryAppEmails = $entryData['application_email'] ?? [];
-                foreach ($entryAppEmails as $key => $value) {
-                    if (is_string($value)) {
-                        // Flat list: default to receive temp/humidity alarms
-                        if ($isTempAlarm || $isHumAlarm) {
-                            $emails[] = $value;
-                        }
-                    } elseif (is_string($key) && is_array($value)) {
-                        // Map: email => settings
-                        if ($isTempAlarm && (bool)($value['is_temperature_active'] ?? true)) {
-                            $emails[] = $key;
-                            continue;
-                        }
-                        if ($isHumAlarm && (bool)($value['is_humidity_active'] ?? true)) {
-                            $emails[] = $key;
-                        }
-                    }
-                }
-            }
-
-            // Keep only unique, non-empty strings
-            $emails = array_values(array_unique(array_filter($emails, static fn($e) => is_string($e) && $e !== '')));
-
-            if (empty($emails)) {
+        foreach ($generalEmails as $key => $value) {
+            if (is_string($value) && $isDeviceLevelAlarm) {
+                $emails[] = $value;
                 continue;
             }
 
-            $email = (new Email())
-                ->from('rht@intelteh.hr')
-                ->sender('rht@intelteh.hr')
-                ->to(...$emails)
-                ->bcc('logs@banox.dev')
-                ->subject(sprintf("Aktivni alarmi za uređaj: %s", $device->getName()))
-                ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
-                    'device' => $device,
-                    'alarms' => $alarms
-                ]));
-
-            $this->mailer->send($email);
-
-            // Log mail notification via Monolog (mailer channel)
-            try {
-                $alarmIds = array_map(static fn($a) => method_exists($a, 'getId') ? $a->getId() : null, $alarms);
-                $alarmTypes = array_map(static fn($a) => method_exists($a, 'getType') ? $a->getType() : null, $alarms);
-                $this->logger->info('AlarmNotifier: sent alarm notification email.', [
-                    'device_id' => $device->getId(),
-                    'device_name' => $device->getName(),
-                    'entry' => $entry,
-                    'recipients' => $emails,
-                    'subject' => sprintf('Aktivni alarmi za uređaj: %s', $device->getName()),
-                    'alarm_ids' => $alarmIds,
-                    'alarm_types' => $alarmTypes,
-                    'alarm_count' => count($alarms),
-                ]);
-            } catch (\Throwable $e) {
-                // Do not break the flow if logging fails
+            if (is_string($key) && is_array($value)) {
+                $isActive = (bool) ($value['is_device_power_supply_active'] ?? true);
+                if ($isDeviceLevelAlarm && $isActive) {
+                    $emails[] = $key;
+                }
             }
         }
+
+        return $emails;
+    }
+
+    private function addEntryApplicationEmails(Device $device, string $alarmType, int $entry, array $emails): array
+    {
+        $entryData = $device->getEntryData($entry) ?? [];
+        $entryAppEmails = $entryData['application_email'] ?? [];
+
+        $isTemperatureAlarm = $this->isTemperatureAlarm($alarmType);
+        $isHumidityAlarm = $this->isHumidityAlarm($alarmType);
+
+        foreach ($entryAppEmails as $key => $value) {
+            if (is_string($value) && ($isTemperatureAlarm || $isHumidityAlarm)) {
+                $emails[] = $value;
+                continue;
+            }
+
+            if (is_string($key) && is_array($value)) {
+                if ($isTemperatureAlarm && (bool) ($value['is_temperature_active'] ?? true)) {
+                    $emails[] = $key;
+                    continue;
+                }
+                if ($isHumidityAlarm && (bool) ($value['is_humidity_active'] ?? true)) {
+                    $emails[] = $key;
+                }
+            }
+        }
+
+        return $emails;
+    }
+
+    private function filterUniqueEmails(array $emails): array
+    {
+        $filtered = array_filter($emails, static fn($e) => is_string($e) && $e !== '');
+
+        return array_values(array_unique($filtered));
+    }
+
+    private function buildEmail(Device $device, array $alarms, array $recipients): Email
+    {
+        $subject = sprintf('Aktivni alarmi za uređaj: %s', $device->getName());
+
+        return (new Email())
+            ->from(self::SENDER_EMAIL)
+            ->sender(self::SENDER_EMAIL)
+            ->to(...$recipients)
+            ->bcc(self::BCC_LOG_EMAIL)
+            ->subject($subject)
+            ->html($this->twig->render('v2/mail/active_alarm_notification.html.twig', [
+                'device' => $device,
+                'alarms' => $alarms,
+            ]));
+    }
+
+    private function logEmailNotification(Device $device, array $alarms, array $recipients, ?int $entry): void
+    {
+        try {
+            $alarmIds = array_map(
+                static fn($a) => method_exists($a, 'getId') ? $a->getId() : null,
+                $alarms
+            );
+            $alarmTypes = array_map(
+                static fn($a) => method_exists($a, 'getType') ? $a->getType() : null,
+                $alarms
+            );
+
+            $this->logger->info('AlarmNotifier: sent alarm notification email.', [
+                'device_id' => $device->getId(),
+                'device_name' => $device->getName(),
+                'entry' => $entry,
+                'recipients' => $recipients,
+                'subject' => sprintf('Aktivni alarmi za uređaj: %s', $device->getName()),
+                'alarm_ids' => $alarmIds,
+                'alarm_types' => $alarmTypes,
+                'alarm_count' => count($alarms),
+            ]);
+        } catch (\Throwable) {
+            // Do not break the flow if logging fails
+        }
+    }
+
+    private function isDeviceLevelAlarm(string $alarmType): bool
+    {
+        return in_array($alarmType, self::DEVICE_LEVEL_ALARM_TYPES, true);
+    }
+
+    private function isTemperatureAlarm(string $alarmType): bool
+    {
+        return in_array($alarmType, self::TEMPERATURE_ALARM_TYPES, true);
+    }
+
+    private function isHumidityAlarm(string $alarmType): bool
+    {
+        return in_array($alarmType, self::HUMIDITY_ALARM_TYPES, true);
     }
 }

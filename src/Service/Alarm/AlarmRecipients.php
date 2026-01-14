@@ -15,97 +15,135 @@ use App\Service\Alarm\Types\TemperatureLow;
 
 class AlarmRecipients
 {
+    private const array DEVICE_LEVEL_ALARM_TYPES = [
+        DeviceSupplyOff::TYPE,
+        DeviceOffline::TYPE,
+    ];
+
+    private const array TEMPERATURE_ALARM_TYPES = [
+        TemperatureLow::TYPE,
+        TemperatureHigh::TYPE,
+    ];
+
+    private const array HUMIDITY_ALARM_TYPES = [
+        HumidityLow::TYPE,
+        HumidityHigh::TYPE,
+    ];
+
     public function getRecipientsForSms(DeviceAlarm $alarm): array
     {
-        /** @var Device $device */
-        $device = $alarm->getDevice();
-        $recipients = [];
-
-        if ($alarm->getSensor() === null) {
-            $alarmSettings = $device->getDeviceAlarmSetupGenerals()->toArray();
-
-            foreach ($alarmSettings as $alarmSetting) {
-                if ($alarmSetting->isSmsActive() === false) {
-                    continue;
-                }
-
-                if ($recipient = $this->getRecipientsForGeneralAlarms($alarm, $alarmSetting)) {
-                    $recipients[] = $recipient;
-                }
-            }
-        } else {
-            $alarmSettings = $device->getDeviceAlarmSetupEntries()->toArray();
-
-            foreach ($alarmSettings as $alarmSetting) {
-                if ($alarmSetting->isSmsActive() === false) {
-                    continue;
-                }
-
-                if ($recipient = $this->getRecipientsForEntryAlarms($alarm, $alarmSetting)) {
-                    $recipients[] = $recipient;
-                }
-            }
-        }
-
-        return $recipients;
+        return $this->getRecipientsByNotificationType($alarm, 'sms');
     }
 
     public function getRecipientsForVoiceMessage(DeviceAlarm $alarm): array
     {
+        return $this->getRecipientsByNotificationType($alarm, 'voice');
+    }
+
+    private function getRecipientsByNotificationType(DeviceAlarm $alarm, string $notificationType): array
+    {
         /** @var Device $device */
         $device = $alarm->getDevice();
         $recipients = [];
 
-        if ($alarm->getSensor() === null) {
-            $alarmSettings = $device->getDeviceAlarmSetupGenerals()->toArray();
+        $isGeneralAlarm = $alarm->getSensor() === null;
 
-            foreach ($alarmSettings as $alarmSetting) {
-                if ($alarmSetting->isVoiceMessageActive() === false) {
-                    continue;
-                }
-
-                if ($recipient = $this->getRecipientsForGeneralAlarms($alarm, $alarmSetting)) {
-                    $recipients[] = $recipient;
-                }
-            }
+        if ($isGeneralAlarm) {
+            $recipients = $this->collectGeneralAlarmRecipients($device, $alarm, $notificationType);
         } else {
-            $alarmSettings = $device->getDeviceAlarmSetupEntries()->toArray();
+            $recipients = $this->collectEntryAlarmRecipients($device, $alarm, $notificationType);
+        }
 
-            foreach ($alarmSettings as $alarmSetting) {
-                if ($alarmSetting->isVoiceMessageActive() === false) {
-                    continue;
-                }
+        return $recipients;
+    }
 
-                if ($recipient = $this->getRecipientsForEntryAlarms($alarm, $alarmSetting)) {
-                    $recipients[] = $recipient;
-                }
+    private function collectGeneralAlarmRecipients(Device $device, DeviceAlarm $alarm, string $notificationType): array
+    {
+        $recipients = [];
+        $alarmSettings = $device->getDeviceAlarmSetupGenerals()->toArray();
+
+        foreach ($alarmSettings as $alarmSetting) {
+            if (!$this->isNotificationTypeActive($alarmSetting, $notificationType)) {
+                continue;
+            }
+
+            $recipient = $this->getRecipientForGeneralAlarm($alarm, $alarmSetting);
+            if ($recipient !== null) {
+                $recipients[] = $recipient;
             }
         }
 
         return $recipients;
     }
 
-    private function getRecipientsForGeneralAlarms(DeviceAlarm $alarm, DeviceAlarmSetupGeneral $alarmSetting): ?string
+    private function collectEntryAlarmRecipients(Device $device, DeviceAlarm $alarm, string $notificationType): array
     {
-        $alarmType = $alarm->getType();
+        $recipients = [];
+        $alarmSettings = $device->getDeviceAlarmSetupEntries()->toArray();
 
-        if (in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true) && $alarmSetting->isDevicePowerSupplyOffActive()) {
+        foreach ($alarmSettings as $alarmSetting) {
+            if (!$this->isNotificationTypeActive($alarmSetting, $notificationType)) {
+                continue;
+            }
+
+            $recipient = $this->getRecipientForEntryAlarm($alarm, $alarmSetting);
+            if ($recipient !== null) {
+                $recipients[] = $recipient;
+            }
+        }
+
+        return $recipients;
+    }
+
+    private function isNotificationTypeActive(DeviceAlarmSetupGeneral|DeviceAlarmSetupEntry $setting, string $type): bool
+    {
+        return match ($type) {
+            'sms' => $setting->isSmsActive(),
+            'voice' => $setting->isVoiceMessageActive(),
+            default => false,
+        };
+    }
+
+    private function getRecipientForGeneralAlarm(DeviceAlarm $alarm, DeviceAlarmSetupGeneral $alarmSetting): ?string
+    {
+        $isDeviceLevelAlarm = in_array($alarm->getType(), self::DEVICE_LEVEL_ALARM_TYPES, true);
+
+        if ($isDeviceLevelAlarm && $alarmSetting->isDevicePowerSupplyOffActive()) {
             return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
         return null;
     }
 
-    private function getRecipientsForEntryAlarms(DeviceAlarm $alarm, DeviceAlarmSetupEntry $alarmSetting): ?string
+    private function getRecipientForEntryAlarm(DeviceAlarm $alarm, DeviceAlarmSetupEntry $alarmSetting): ?string
     {
-        if ($alarmSetting->isHumidityActive() && $alarmSetting->getEntry() == $alarm->getSensor() && in_array($alarm->getType(), [HumidityLow::TYPE, HumidityHigh::TYPE], true)) {
+        $alarmSensor = $alarm->getSensor();
+        $settingEntry = $alarmSetting->getEntry();
+
+        if ($alarmSensor !== $settingEntry) {
+            return null;
+        }
+
+        $alarmType = $alarm->getType();
+
+        if ($this->isHumidityAlarm($alarmType) && $alarmSetting->isHumidityActive()) {
             return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
-        if ($alarmSetting->isTemperatureActive() && $alarmSetting->getEntry() == $alarm->getSensor() && in_array($alarm->getType(), [TemperatureLow::TYPE, TemperatureHigh::TYPE], true)) {
+        if ($this->isTemperatureAlarm($alarmType) && $alarmSetting->isTemperatureActive()) {
             return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
         return null;
+    }
+
+    private function isTemperatureAlarm(string $alarmType): bool
+    {
+        return in_array($alarmType, self::TEMPERATURE_ALARM_TYPES, true);
+    }
+
+    private function isHumidityAlarm(string $alarmType): bool
+    {
+        return in_array($alarmType, self::HUMIDITY_ALARM_TYPES, true);
     }
 }
