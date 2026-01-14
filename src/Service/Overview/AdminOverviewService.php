@@ -281,7 +281,7 @@ class AdminOverviewService
 
         $secondsSinceLastData = time() - $cache->getDeviceDate()->format('U');
 
-        return $secondsSinceLastData < $device->getIntervalTrashholdInSeconds();
+        return $secondsSinceLastData < $device->getIntervalThresholdInSeconds();
     }
 
     private function collectAlarmMessages(array $devices, int $clientId, array $accessFilter): array

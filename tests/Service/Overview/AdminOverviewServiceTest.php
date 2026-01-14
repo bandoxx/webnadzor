@@ -304,7 +304,7 @@ class AdminOverviewServiceTest extends TestCase
         $device->method('isTUsed')->willReturnCallback(fn($e) => in_array($e, $usedEntries));
         $device->method('isRhUsed')->willReturn(false);
         $device->method('isDUsed')->willReturn(false);
-        $device->method('getIntervalTrashholdInSeconds')->willReturn(300);
+        $device->method('getIntervalThresholdInSeconds')->willReturn(300);
 
         return $device;
     }

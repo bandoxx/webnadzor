@@ -58,7 +58,7 @@ class DeviceReadController extends AbstractController
             $online = false;
 
             if ($data !== null && $data->getDeviceDate() !== null) {
-                $online = (time() - $data->getDeviceDate()->getTimestamp()) < $device->getIntervalTrashholdInSeconds();
+                $online = (time() - $data->getDeviceDate()->getTimestamp()) < $device->getIntervalThresholdInSeconds();
             }
 
             if (empty($device->getXmlName()) === false) {
