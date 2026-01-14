@@ -5,7 +5,6 @@ namespace App\Service\Notify;
 use App\Entity\Device;
 use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmLog;
-use App\Repository\DeviceAlarmRepository;
 use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
 use App\Service\Alarm\Types\DeviceSupplyOff;
@@ -35,7 +34,6 @@ class AlarmNotifier
         private readonly AlarmRecipients $alarmRecipients,
         private readonly Environment $twig,
         private readonly AlarmLogFactory $alarmLogFactory,
-        private readonly DeviceAlarmRepository $deviceAlarmRepository,
         #[WithMonologChannel('mailer')]
         private readonly LoggerInterface $logger,
     )
@@ -43,43 +41,32 @@ class AlarmNotifier
 
     public function notify(): void
     {
-        // Fetch all alarms needing notification in a single query (grouped by device and sensor)
-        $groupedAlarms = $this->deviceAlarmRepository->findAllAlarmsThatNeedNotification();
+        $devices = $this->entityManager->getRepository(Device::class)->findAll();
+        $deviceAlarmRepository = $this->entityManager->getRepository(DeviceAlarm::class);
 
-        foreach ($groupedAlarms as $deviceData) {
+        foreach ($devices as $device) {
             // Process main alarms (no sensor)
-            $mainAlarms = $deviceData['main'];
-            if (!empty($mainAlarms)) {
-                $this->notifyByMail($mainAlarms);
-                $this->notifyBySMS($mainAlarms);
-                foreach ($mainAlarms as $alarm) {
-                    $alarm->setIsNotified(true);
-                }
-            }
+            $alarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device);
+            $this->notifyByMail($alarms);
+            $this->notifyBySMS($alarms);
 
-            // Process entry 1 alarms
-            $entry1Alarms = $deviceData['entry1'];
-            if (!empty($entry1Alarms)) {
-                $this->notifyByMail($entry1Alarms, 1);
-                $this->notifyBySMS($entry1Alarms);
-                foreach ($entry1Alarms as $alarm) {
-                    $alarm->setIsNotified(true);
-                }
+            foreach ($alarms as $alarm) {
+                $alarm->setIsNotified(true);
             }
+            $this->entityManager->flush();
 
-            // Process entry 2 alarms
-            $entry2Alarms = $deviceData['entry2'];
-            if (!empty($entry2Alarms)) {
-                $this->notifyByMail($entry2Alarms, 2);
-                $this->notifyBySMS($entry2Alarms);
-                foreach ($entry2Alarms as $alarm) {
+            // Process alarms for entries 1 and 2
+            for ($entry = 1; $entry <= 2; $entry++) {
+                $entryAlarms = $deviceAlarmRepository->findAlarmsThatNeedsNotification($device, $entry);
+                $this->notifyByMail($entryAlarms, $entry);
+                $this->notifyBySMS($entryAlarms);
+
+                foreach ($entryAlarms as $alarm) {
                     $alarm->setIsNotified(true);
                 }
+                $this->entityManager->flush();
             }
         }
-
-        // Single flush at the end for all changes
-        $this->entityManager->flush();
     }
 
     /**
@@ -91,7 +78,7 @@ class AlarmNotifier
             $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
 
             if (empty($recipients)) {
-                continue;
+                return;
             }
 
             $message = sprintf("%s Intelteh D.O.O", $alarm->getShortMessage());
