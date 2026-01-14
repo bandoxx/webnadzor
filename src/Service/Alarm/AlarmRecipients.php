@@ -7,6 +7,7 @@ use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmSetupEntry;
 use App\Entity\DeviceAlarmSetupGeneral;
 use App\Service\Alarm\Types\DeviceSupplyOff;
+use App\Service\Alarm\Types\Standalone\DeviceOffline;
 use App\Service\Alarm\Types\HumidityHigh;
 use App\Service\Alarm\Types\HumidityLow;
 use App\Service\Alarm\Types\TemperatureHigh;
@@ -86,7 +87,9 @@ class AlarmRecipients
 
     private function getRecipientsForGeneralAlarms(DeviceAlarm $alarm, DeviceAlarmSetupGeneral $alarmSetting): ?string
     {
-        if ($alarm->getType() === DeviceSupplyOff::TYPE && $alarmSetting->isDevicePowerSupplyOffActive()) {
+        $alarmType = $alarm->getType();
+
+        if (in_array($alarmType, [DeviceSupplyOff::TYPE, DeviceOffline::TYPE], true) && $alarmSetting->isDevicePowerSupplyOffActive()) {
             return $alarmSetting->getPhoneNumberWithoutPlus();
         }
 
