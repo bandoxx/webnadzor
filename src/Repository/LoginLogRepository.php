@@ -42,7 +42,7 @@ class LoginLogRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('ll')
             ->where('ll.client = :client_id')
             ->andWhere('ll.serverDate >= :start AND ll.serverDate <= :end')
-            ->setParameter('client_id', $client->getid())
+            ->setParameter('client_id', $client->getId())
             ->setParameter('start', $start)
             ->setParameter('end', $end)
             ->orderBy('ll.serverDate', 'DESC')
