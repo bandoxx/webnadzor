@@ -6,15 +6,9 @@ use App\Entity\Device;
 use App\Entity\DeviceAlarm;
 use App\Entity\DeviceAlarmLog;
 use App\Repository\DeviceAlarmRepository;
-use App\Repository\DeviceRepository;
 use App\Service\Alarm\AlarmLog\AlarmLogFactory;
 use App\Service\Alarm\AlarmRecipients;
-use App\Service\Alarm\Types\DeviceSupplyOff;
-use App\Service\Alarm\Types\HumidityHigh;
-use App\Service\Alarm\Types\HumidityLow;
-use App\Service\Alarm\Types\Standalone\DeviceOffline;
-use App\Service\Alarm\Types\TemperatureHigh;
-use App\Service\Alarm\Types\TemperatureLow;
+use App\Service\Alarm\AlarmTypeGroups;
 use App\Service\APIClient\InfobipClient;
 use App\Service\Mailer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,21 +27,6 @@ class AlarmNotifier
     private const string SENDER_EMAIL = 'rht@intelteh.hr';
     private const string BCC_LOG_EMAIL = 'logs@banox.dev';
     private const string SMS_SIGNATURE = 'Intelteh D.O.O';
-
-    private const array DEVICE_LEVEL_ALARM_TYPES = [
-        DeviceSupplyOff::TYPE,
-        DeviceOffline::TYPE,
-    ];
-
-    private const array TEMPERATURE_ALARM_TYPES = [
-        TemperatureHigh::TYPE,
-        TemperatureLow::TYPE,
-    ];
-
-    private const array HUMIDITY_ALARM_TYPES = [
-        HumidityHigh::TYPE,
-        HumidityLow::TYPE,
-    ];
 
     public function __construct(
         private readonly Mailer $mailer,
@@ -197,7 +176,7 @@ class AlarmNotifier
 
     private function addGeneralApplicationEmails(Device $device, string $alarmType, array $emails): array
     {
-        $isDeviceLevelAlarm = $this->isDeviceLevelAlarm($alarmType);
+        $isDeviceLevelAlarm = AlarmTypeGroups::isDeviceLevelAlarm($alarmType);
         $generalEmails = $device->getApplicationEmailList() ?? [];
 
         foreach ($generalEmails as $key => $value) {
@@ -222,8 +201,8 @@ class AlarmNotifier
         $entryData = $device->getEntryData($entry) ?? [];
         $entryAppEmails = $entryData['application_email'] ?? [];
 
-        $isTemperatureAlarm = $this->isTemperatureAlarm($alarmType);
-        $isHumidityAlarm = $this->isHumidityAlarm($alarmType);
+        $isTemperatureAlarm = AlarmTypeGroups::isTemperatureAlarm($alarmType);
+        $isHumidityAlarm = AlarmTypeGroups::isHumidityAlarm($alarmType);
 
         foreach ($entryAppEmails as $key => $value) {
             if (is_string($value) && ($isTemperatureAlarm || $isHumidityAlarm)) {
@@ -293,20 +272,5 @@ class AlarmNotifier
         } catch (\Throwable) {
             // Do not break the flow if logging fails
         }
-    }
-
-    private function isDeviceLevelAlarm(string $alarmType): bool
-    {
-        return in_array($alarmType, self::DEVICE_LEVEL_ALARM_TYPES, true);
-    }
-
-    private function isTemperatureAlarm(string $alarmType): bool
-    {
-        return in_array($alarmType, self::TEMPERATURE_ALARM_TYPES, true);
-    }
-
-    private function isHumidityAlarm(string $alarmType): bool
-    {
-        return in_array($alarmType, self::HUMIDITY_ALARM_TYPES, true);
     }
 }
