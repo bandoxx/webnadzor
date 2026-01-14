@@ -19,7 +19,7 @@ class HomeController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        if ($user->getClients()->count() > 1 || $user->getPermission() === 4) {
+        if ($user->getClients()->count() > 1 || $user->getPermission() === User::ROLE_ROOT) {
             return $this->redirectToRoute('admin_overview');
         }
 

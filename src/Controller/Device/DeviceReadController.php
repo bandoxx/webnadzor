@@ -28,7 +28,7 @@ class DeviceReadController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
 
-        if ($user->getPermission() === 1) {
+        if ($user->getPermission() === User::ROLE_USER) {
             $accesses = $user->getUserDeviceAccesses()->toArray();
             $devices = [];
 

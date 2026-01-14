@@ -279,7 +279,7 @@ class AdminOverviewService
             return false;
         }
 
-        $secondsSinceLastData = time() - $cache->getDeviceDate()->format('U');
+        $secondsSinceLastData = time() - $cache->getDeviceDate()->getTimestamp();
 
         return $secondsSinceLastData < $device->getIntervalThresholdInSeconds();
     }

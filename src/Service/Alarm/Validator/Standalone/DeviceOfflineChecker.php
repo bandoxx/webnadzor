@@ -25,7 +25,7 @@ class DeviceOfflineChecker extends BaseAlarmHandler
             throw new \RuntimeException(sprintf("Xml interval is required. Device with id %d, doesn't have interval set!", $device->getId()));
         }
 
-        if (time() - $lastDeviceData->getDeviceDate()?->format('U') > $xmlInterval) {
+        if (time() - $lastDeviceData->getDeviceDate()?->getTimestamp() > $xmlInterval) {
             $this->createAlarm($lastDeviceData, $type);
         } else {
             $this->closeAlarm($lastDeviceData, $type);

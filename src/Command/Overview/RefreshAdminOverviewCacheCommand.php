@@ -58,7 +58,7 @@ class RefreshAdminOverviewCacheCommand extends Command
                         continue;
                     }
 
-                    $isDeviceOnline = time() - $deviceData->getDeviceDate()->format('U') < $device->getIntervalThresholdInSeconds();
+                    $isDeviceOnline = time() - $deviceData->getDeviceDate()->getTimestamp() < $device->getIntervalThresholdInSeconds();
 
                     if ($device->isTUsed($sensor) || $device->isRhUsed($sensor) || $device->isDUsed($sensor)) {
                         $totalUsedSensors++;

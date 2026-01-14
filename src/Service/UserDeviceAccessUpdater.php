@@ -31,7 +31,7 @@ class UserDeviceAccessUpdater
 
         $this->entityManager->flush();
 
-        if ($user->getPermission() === 1) {
+        if ($user->getPermission() === User::ROLE_USER) {
             foreach ($locations as $location) {
                 [$clientId, $deviceId, $entry] = explode('-', $location);
 
@@ -58,7 +58,7 @@ class UserDeviceAccessUpdater
             }
         }
 
-        if (in_array($user->getPermission(), [2, 3], true)) {
+        if (in_array($user->getPermission(), [User::ROLE_MODERATOR, User::ROLE_ADMINISTRATOR], true)) {
             foreach ($clients as $clientId) {
                 $this->assignClients($user, $clientId);
             }

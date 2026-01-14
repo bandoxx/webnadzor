@@ -10,7 +10,7 @@ class PermissionChecker
 
     public static function isValid(User $user, Client $client): bool
     {
-        if ($user->getPermission() === 4) {
+        if ($user->getPermission() === User::ROLE_ROOT) {
             return true;
         }
 
