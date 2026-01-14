@@ -78,7 +78,7 @@ class AlarmNotifier
             $recipients = $this->alarmRecipients->getRecipientsForSms($alarm);
 
             if (empty($recipients)) {
-                return;
+                continue;
             }
 
             $message = sprintf("%s Intelteh D.O.O", $alarm->getShortMessage());
