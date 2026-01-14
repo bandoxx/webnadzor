@@ -105,8 +105,9 @@ class AlarmNotifier
     private function buildSmsMessage(DeviceAlarm $alarm): string
     {
         $message = sprintf('%s %s', $alarm->getShortMessage(), self::SMS_SIGNATURE);
+        $converted = iconv('UTF-8', 'ASCII//TRANSLIT', $message);
 
-        return iconv('UTF-8', 'ASCII//TRANSLIT', $message);
+        return $converted !== false ? $converted : $message;
     }
 
     private function logSmsNotifications(DeviceAlarm $alarm, array $recipients, string $message): void
@@ -250,14 +251,8 @@ class AlarmNotifier
     private function logEmailNotification(Device $device, array $alarms, array $recipients, ?int $entry): void
     {
         try {
-            $alarmIds = array_map(
-                static fn($a) => method_exists($a, 'getId') ? $a->getId() : null,
-                $alarms
-            );
-            $alarmTypes = array_map(
-                static fn($a) => method_exists($a, 'getType') ? $a->getType() : null,
-                $alarms
-            );
+            $alarmIds = array_map(static fn(DeviceAlarm $a) => $a->getId(), $alarms);
+            $alarmTypes = array_map(static fn(DeviceAlarm $a) => $a->getType(), $alarms);
 
             $this->logger->info('AlarmNotifier: sent alarm notification email.', [
                 'device_id' => $device->getId(),
@@ -269,8 +264,9 @@ class AlarmNotifier
                 'alarm_types' => $alarmTypes,
                 'alarm_count' => count($alarms),
             ]);
-        } catch (\Throwable) {
-            // Do not break the flow if logging fails
+        } catch (\Throwable $e) {
+            // Fallback to error_log if main logger fails
+            error_log(sprintf('AlarmNotifier logging failed: %s', $e->getMessage()));
         }
     }
 }
