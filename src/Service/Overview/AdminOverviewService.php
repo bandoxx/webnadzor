@@ -2,6 +2,9 @@
 
 namespace App\Service\Overview;
 
+use App\Entity\Client;
+use App\Entity\Device;
+use App\Entity\DeviceAlarm;
 use App\Entity\User;
 use App\Repository\AdminOverviewCacheRepository;
 use App\Repository\ClientRepository;
@@ -28,7 +31,6 @@ class AdminOverviewService
      */
     public function getRedirectClientId(User $user): ?int
     {
-        // ROOT users always see full overview, never auto-redirect
         if ($user->getPermission() === User::ROLE_ROOT) {
             return null;
         }
@@ -41,7 +43,10 @@ class AdminOverviewService
         $clientId = $singleClient->getId();
 
         if ($user->getPermission() === User::ROLE_USER) {
-            $hasAccess = (bool) $this->userDeviceAccessRepository->findOneBy(['user' => $user, 'client' => $singleClient]);
+            $hasAccess = (bool) $this->userDeviceAccessRepository->findOneBy([
+                'user' => $user,
+                'client' => $singleClient,
+            ]);
             return $hasAccess ? $clientId : null;
         }
 
@@ -50,7 +55,6 @@ class AdminOverviewService
 
     /**
      * Build admin overview clients data for the given user.
-     * Returns array keyed by client id with overview data.
      */
     public function buildOverview(User $user): array
     {
@@ -58,169 +62,274 @@ class AdminOverviewService
         $clients = $this->clientRepository->findAllActive();
 
         foreach ($clients as $client) {
-            // ROOT sees all clients; others must have client assigned
-            if ($user->isModerator()) {
-                continue;
-            }
-            if ($user->getPermission() !== User::ROLE_ROOT && $user->getClients()->contains($client) === false) {
+            if (!$this->canUserAccessClient($user, $client)) {
                 continue;
             }
 
-            $clientId = $client->getId();
-
-            // ROOT uses cached summary
-            if ($user->getPermission() === User::ROLE_ROOT) {
-                $cache = $this->cacheRepository->findOneByClient($client);
-
-                $data[$clientId] = [
-                    'id' => $clientId,
-                    'name' => $client->getName(),
-                    'address' => $client->getAddress(),
-                    'oib' => $client->getOIB(),
-                    'numberOfDevices' => $cache?->getNumberOfDevices() ?? 0,
-                    'onlineDevices' => $cache?->getOnlineDevices() ?? 0,
-                    'offlineDevices' => $cache?->getOfflineDevices() ?? 0,
-                    'overview' => $client->getOverviewViews(),
-                    'pdfLogo' => $client->getPdfLogo(),
-                    'mainLogo' => $client->getMainLogo(),
-                    'mapIcon' => $client->getMapMarkerIcon(),
-                    'devicePageView' => $client->getDevicePageView(),
-                    'alarms' => $cache?->getAlarms() ?? [],
-                ];
-                continue;
+            $clientData = $this->buildClientOverviewData($user, $client);
+            if ($clientData !== null) {
+                $data[$client->getId()] = $clientData;
             }
-
-            // Non-root: compute live
-            $devices = $this->deviceRepository->findDevicesByClient($clientId);
-
-            $totalUsedSensors = 0;
-            $onlineSensors = 0;
-            $offlineSensors = 0;
-            $alarmMessages = [];
-
-            // Access filtering for ROLE_USER
-            $restrictByAccess = $user->getPermission() === User::ROLE_USER;
-            $clientWideAccess = false;
-            $allowedByDevice = [];
-
-            if ($restrictByAccess) {
-                $accessList = $this->userDeviceAccessRepository->findBy(['user' => $user, 'client' => $client]);
-                foreach ($accessList as $access) {
-                    $accDevice = $access->getDevice();
-                    $sensor = $access->getSensor();
-                    if (!$accDevice && $access->getClient()) {
-                        $clientWideAccess = true;
-                        continue;
-                    }
-                    if ($accDevice) {
-                        $deviceId = $accDevice->getId();
-                        if (!isset($allowedByDevice[$deviceId])) {
-                            $allowedByDevice[$deviceId] = [];
-                        }
-                        if ($sensor === null) {
-                            $allowedByDevice[$deviceId] = [1, 2];
-                        } else {
-                            if (!in_array($sensor, $allowedByDevice[$deviceId], true)) {
-                                $allowedByDevice[$deviceId][] = (int) $sensor;
-                            }
-                        }
-                    }
-                }
-
-                // Edge case: no device/sensor access -> skip client
-                if (!$clientWideAccess && empty($allowedByDevice)) {
-                    continue;
-                }
-            }
-
-            foreach ($devices as $device) {
-                $deviceId = $device->getId();
-
-                foreach ([1, 2] as $entry) {
-                    if ($restrictByAccess && !$clientWideAccess) {
-                        $allowed = isset($allowedByDevice[$deviceId]) && in_array($entry, $allowedByDevice[$deviceId], true);
-                        if (!$allowed) {
-                            continue;
-                        }
-                    }
-
-                    // Only used sensors
-                    if (!($device->isTUsed($entry) || $device->isRhUsed($entry) || $device->isDUsed($entry))) {
-                        continue;
-                    }
-
-                    $totalUsedSensors++;
-
-                    $cache = $this->lastCacheRepository->findOneBy(['device' => $device, 'entry' => $entry]);
-                    if (!$cache || !$cache->getDeviceDate()) {
-                        $offlineSensors++;
-                        continue;
-                    }
-
-                    $isOnline = (time() - $cache->getDeviceDate()->format('U')) < $device->getIntervalTrashholdInSeconds();
-                    if ($isOnline) {
-                        $onlineSensors++;
-                    } else {
-                        $offlineSensors++;
-                    }
-                }
-
-                // Collect alarms; apply entry restrictions if any
-                $alarmsCount = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
-                if ($alarmsCount) {
-                    $activeAlarms = $this->deviceAlarmRepository->findActiveAlarms($device);
-                    foreach ($activeAlarms as $alarm) {
-                        $sensor = $alarm->getSensor();
-                        if ($restrictByAccess && !$clientWideAccess) {
-                            if ($sensor !== null) {
-                                if (!(isset($allowedByDevice[$deviceId]) && in_array((int)$sensor, $allowedByDevice[$deviceId], true))) {
-                                    continue;
-                                }
-                            } else {
-                                if (!isset($allowedByDevice[$deviceId])) {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        $path = null;
-                        if ($sensor) {
-                            $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
-                                $this->router->generate('app_alarm_list', [
-                                    'clientId' => $clientId,
-                                    'id' => $device->getId(),
-                                    'entry' => $sensor,
-                                ], UrlGeneratorInterface::ABSOLUTE_PATH)
-                            );
-                        }
-
-                        if ($path) {
-                            $alarmMessages[] = sprintf("%s %s - %s", $alarm->getMessage(), $alarm->getTimeString(), $path);
-                        } else {
-                            $alarmMessages[] = trim(($alarm->getMessage() ?? '') . ' ' . $alarm->getTimeString());
-                        }
-                    }
-                }
-            }
-
-            $data[$clientId] = [
-                'id' => $clientId,
-                'name' => $client->getName(),
-                'address' => $client->getAddress(),
-                'oib' => $client->getOIB(),
-                'numberOfDevices' => $totalUsedSensors,
-                'onlineDevices' => $onlineSensors,
-                'offlineDevices' => $offlineSensors,
-                'overview' => $client->getOverviewViews(),
-                'pdfLogo' => $client->getPdfLogo(),
-                'mainLogo' => $client->getMainLogo(),
-                'mapIcon' => $client->getMapMarkerIcon(),
-                'devicePageView' => $client->getDevicePageView(),
-                'alarms' => $alarmMessages,
-            ];
         }
 
         return $data;
+    }
+
+    private function canUserAccessClient(User $user, Client $client): bool
+    {
+        if ($user->isModerator()) {
+            return false;
+        }
+
+        if ($user->getPermission() === User::ROLE_ROOT) {
+            return true;
+        }
+
+        return $user->getClients()->contains($client);
+    }
+
+    private function buildClientOverviewData(User $user, Client $client): ?array
+    {
+        if ($user->getPermission() === User::ROLE_ROOT) {
+            return $this->buildClientDataFromCache($client);
+        }
+
+        return $this->buildClientDataLive($user, $client);
+    }
+
+    private function buildClientDataFromCache(Client $client): array
+    {
+        $cache = $this->cacheRepository->findOneByClient($client);
+
+        return $this->buildClientData(
+            $client,
+            $cache?->getNumberOfDevices() ?? 0,
+            $cache?->getOnlineDevices() ?? 0,
+            $cache?->getOfflineDevices() ?? 0,
+            $cache?->getAlarms() ?? []
+        );
+    }
+
+    private function buildClientDataLive(User $user, Client $client): ?array
+    {
+        $accessFilter = $this->buildUserAccessFilter($user, $client);
+
+        if ($accessFilter === null) {
+            return null;
+        }
+
+        $devices = $this->deviceRepository->findDevicesByClient($client->getId());
+        $sensorStats = $this->countSensorStatus($devices, $accessFilter);
+        $alarmMessages = $this->collectAlarmMessages($devices, $client->getId(), $accessFilter);
+
+        return $this->buildClientData(
+            $client,
+            $sensorStats['total'],
+            $sensorStats['online'],
+            $sensorStats['offline'],
+            $alarmMessages
+        );
+    }
+
+    private function buildClientData(
+        Client $client,
+        int $numberOfDevices,
+        int $onlineDevices,
+        int $offlineDevices,
+        array $alarms
+    ): array {
+        return [
+            'id' => $client->getId(),
+            'name' => $client->getName(),
+            'address' => $client->getAddress(),
+            'oib' => $client->getOIB(),
+            'numberOfDevices' => $numberOfDevices,
+            'onlineDevices' => $onlineDevices,
+            'offlineDevices' => $offlineDevices,
+            'overview' => $client->getOverviewViews(),
+            'pdfLogo' => $client->getPdfLogo(),
+            'mainLogo' => $client->getMainLogo(),
+            'mapIcon' => $client->getMapMarkerIcon(),
+            'devicePageView' => $client->getDevicePageView(),
+            'alarms' => $alarms,
+        ];
+    }
+
+    /**
+     * Build access filter for user. Returns null if user has no access.
+     * @return array{clientWide: bool, byDevice: array<int, int[]>}|null
+     */
+    private function buildUserAccessFilter(User $user, Client $client): ?array
+    {
+        if ($user->getPermission() !== User::ROLE_USER) {
+            return ['clientWide' => true, 'byDevice' => []];
+        }
+
+        $accessList = $this->userDeviceAccessRepository->findBy([
+            'user' => $user,
+            'client' => $client,
+        ]);
+
+        $clientWide = false;
+        $byDevice = [];
+
+        foreach ($accessList as $access) {
+            $device = $access->getDevice();
+            $sensor = $access->getSensor();
+
+            if (!$device && $access->getClient()) {
+                $clientWide = true;
+                continue;
+            }
+
+            if ($device) {
+                $deviceId = $device->getId();
+                if (!isset($byDevice[$deviceId])) {
+                    $byDevice[$deviceId] = [];
+                }
+
+                if ($sensor === null) {
+                    $byDevice[$deviceId] = [1, 2];
+                } elseif (!in_array($sensor, $byDevice[$deviceId], true)) {
+                    $byDevice[$deviceId][] = (int) $sensor;
+                }
+            }
+        }
+
+        if (!$clientWide && empty($byDevice)) {
+            return null;
+        }
+
+        return ['clientWide' => $clientWide, 'byDevice' => $byDevice];
+    }
+
+    private function isEntryAllowed(int $deviceId, int $entry, array $accessFilter): bool
+    {
+        if ($accessFilter['clientWide']) {
+            return true;
+        }
+
+        return isset($accessFilter['byDevice'][$deviceId])
+            && in_array($entry, $accessFilter['byDevice'][$deviceId], true);
+    }
+
+    private function isAlarmAllowed(DeviceAlarm $alarm, int $deviceId, array $accessFilter): bool
+    {
+        if ($accessFilter['clientWide']) {
+            return true;
+        }
+
+        $sensor = $alarm->getSensor();
+
+        if ($sensor !== null) {
+            return isset($accessFilter['byDevice'][$deviceId])
+                && in_array((int) $sensor, $accessFilter['byDevice'][$deviceId], true);
+        }
+
+        return isset($accessFilter['byDevice'][$deviceId]);
+    }
+
+    /**
+     * @return array{total: int, online: int, offline: int}
+     */
+    private function countSensorStatus(array $devices, array $accessFilter): array
+    {
+        $total = 0;
+        $online = 0;
+        $offline = 0;
+
+        foreach ($devices as $device) {
+            $deviceId = $device->getId();
+
+            foreach ([1, 2] as $entry) {
+                if (!$this->isEntryAllowed($deviceId, $entry, $accessFilter)) {
+                    continue;
+                }
+
+                if (!$this->isSensorUsed($device, $entry)) {
+                    continue;
+                }
+
+                $total++;
+
+                if ($this->isSensorOnline($device, $entry)) {
+                    $online++;
+                } else {
+                    $offline++;
+                }
+            }
+        }
+
+        return ['total' => $total, 'online' => $online, 'offline' => $offline];
+    }
+
+    private function isSensorUsed(Device $device, int $entry): bool
+    {
+        return $device->isTUsed($entry) || $device->isRhUsed($entry) || $device->isDUsed($entry);
+    }
+
+    private function isSensorOnline(Device $device, int $entry): bool
+    {
+        $cache = $this->lastCacheRepository->findOneBy([
+            'device' => $device,
+            'entry' => $entry,
+        ]);
+
+        if (!$cache || !$cache->getDeviceDate()) {
+            return false;
+        }
+
+        $secondsSinceLastData = time() - $cache->getDeviceDate()->format('U');
+
+        return $secondsSinceLastData < $device->getIntervalTrashholdInSeconds();
+    }
+
+    private function collectAlarmMessages(array $devices, int $clientId, array $accessFilter): array
+    {
+        $messages = [];
+
+        foreach ($devices as $device) {
+            $deviceId = $device->getId();
+            $alarmsCount = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+
+            if (!$alarmsCount) {
+                continue;
+            }
+
+            $activeAlarms = $this->deviceAlarmRepository->findActiveAlarms($device);
+
+            foreach ($activeAlarms as $alarm) {
+                if (!$this->isAlarmAllowed($alarm, $deviceId, $accessFilter)) {
+                    continue;
+                }
+
+                $messages[] = $this->formatAlarmMessage($alarm, $clientId, $deviceId);
+            }
+        }
+
+        return $messages;
+    }
+
+    private function formatAlarmMessage(DeviceAlarm $alarm, int $clientId, int $deviceId): string
+    {
+        $sensor = $alarm->getSensor();
+        $message = $alarm->getMessage() ?? '';
+        $timeString = $alarm->getTimeString();
+
+        if (!$sensor) {
+            return trim($message . ' ' . $timeString);
+        }
+
+        $link = sprintf(
+            "<a href='%s'><b><u>Link do alarma</u></b></a>",
+            $this->router->generate('app_alarm_list', [
+                'clientId' => $clientId,
+                'id' => $deviceId,
+                'entry' => $sensor,
+            ], UrlGeneratorInterface::ABSOLUTE_PATH)
+        );
+
+        return sprintf('%s %s - %s', $message, $timeString, $link);
     }
 
     /**
