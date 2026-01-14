@@ -91,7 +91,7 @@ class AlarmRecipients
 
     private function getRecipientForEntryAlarm(DeviceAlarm $alarm, DeviceAlarmSetupEntry $alarmSetting): ?string
     {
-        if ($alarm->getSensor() !== $alarmSetting->getEntry()) {
+        if ((int) $alarm->getSensor() !== $alarmSetting->getEntry()) {
             return null;
         }
 
