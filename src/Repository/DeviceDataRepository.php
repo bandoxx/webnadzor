@@ -22,6 +22,9 @@ class DeviceDataRepository extends ServiceEntityRepository
         parent::__construct($registry, DeviceData::class);
     }
 
+    /**
+     * @return array<int, DeviceData>
+     */
     public function getLast50Records(int $deviceId): array
     {
         return $this->createQueryBuilder('dd')
@@ -33,7 +36,7 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getNumberOfRecordsForLastDay(int $deviceId)
+    public function getNumberOfRecordsForLastDay(int $deviceId): int
     {
         return $this->createQueryBuilder('dd')
             ->select('COUNT(dd)')
@@ -63,144 +66,6 @@ class DeviceDataRepository extends ServiceEntityRepository
             "DELETE FROM device_data WHERE device_id = :deviceId",
             ['deviceId' => $deviceId]
         );
-    }
-
-    public function getNumberOfRecords(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): int
-    {
-        $builder = $this->createQueryBuilder('dd');
-        $builder->select('COUNT(dd.id) as count');
-        if ($fromDate && $toDate) {
-            $builder->where('dd.deviceDate BETWEEN :fromDate AND :toDate')
-                ->setParameter('fromDate', $fromDate)
-                ->setParameter('toDate', $toDate)
-            ;
-        }
-
-        return $builder->andWhere('dd.device = :device_id')
-            ->setParameter('device_id', $deviceId)
-            ->getQuery()
-            ->getSingleScalarResult()
-        ;
-    }
-
-    public function getDateDifferenceBetweenFirstAndLastRecord(int $deviceId): int
-    {
-        return abs($this->createQueryBuilder('d')
-            ->select('DATEDIFF(MIN(d.deviceDate), MAX(d.deviceDate))')
-            ->where('d.device = :device')->setParameter('device', $deviceId)
-            ->getQuery()
-            ->getSingleScalarResult())
-        ;
-    }
-
-    public function getDeviceChartData(int $deviceId, int $limit = 20): array
-    {
-        return $this->createQueryBuilder('dd')
-            ->where('dd.device = :device')->setParameter('device', $deviceId)
-            ->orderBy('dd.deviceDate', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
-    public function getChartData(int $deviceId, ?\DateTime $fromDate = null, ?\DateTime $toDate = null): array
-    {
-        $numberOfRecords = $this->getNumberOfRecords($deviceId, $fromDate, $toDate);
-
-        if ($fromDate && $toDate) {
-            $daysDiff = (int) $toDate->diff($fromDate)->format("%a");
-        } else {
-            $daysDiff = $this->getDateDifferenceBetweenFirstAndLastRecord($deviceId);
-        }
-
-        // If few records or short time span, return all data
-        if ($numberOfRecords <= 288 || $daysDiff <= 2) {
-            return $this->getChartDataAll($deviceId, $fromDate, $toDate);
-        }
-
-        // Calculate target points based on time span
-        $targetPoints = $this->calculateTargetPoints($daysDiff);
-        $step = max(1, (int) floor($numberOfRecords / $targetPoints));
-
-        return $this->getChartDataSampled($deviceId, $fromDate, $toDate, $step);
-    }
-
-    private function calculateTargetPoints(int $daysDiff): int
-    {
-        if ($daysDiff < 15) {
-            return 288; // ~24 points per day
-        } elseif ($daysDiff < 365 * 2) {
-            return min($daysDiff, 730); // ~1 point per day, max 730
-        } else {
-            return 365; // ~1 point per 2 days for very long spans
-        }
-    }
-
-    private function getChartDataAll(int $deviceId, ?\DateTime $fromDate, ?\DateTime $toDate): array
-    {
-        $builder = $this->createQueryBuilder('dd')
-            ->select("DATE(dd.deviceDate) as date", "YEAR(dd.deviceDate) as year", "HOUR(dd.deviceDate) as hour", "WEEK(dd.deviceDate) as week", "dd")
-            ->where("dd.device = :device_id")
-            ->setParameter('device_id', $deviceId);
-
-        if ($fromDate && $toDate) {
-            $builder->andWhere('dd.deviceDate >= :from_date')
-                ->andWhere('dd.deviceDate <= :to_date')
-                ->setParameter('from_date', $fromDate)
-                ->setParameter('to_date', $toDate);
-        }
-
-        return $builder
-            ->orderBy('dd.deviceDate', 'ASC')
-            ->getQuery()
-            ->getResult();
-    }
-
-    private function getChartDataSampled(int $deviceId, ?\DateTime $fromDate, ?\DateTime $toDate, int $step): array
-    {
-        // First, fetch all IDs in order (lightweight query)
-        $builder = $this->createQueryBuilder('dd')
-            ->select('dd.id')
-            ->where('dd.device = :device_id')
-            ->setParameter('device_id', $deviceId)
-            ->orderBy('dd.deviceDate', 'ASC');
-
-        if ($fromDate && $toDate) {
-            $builder->andWhere('dd.deviceDate >= :from_date')
-                ->andWhere('dd.deviceDate <= :to_date')
-                ->setParameter('from_date', $fromDate)
-                ->setParameter('to_date', $toDate);
-        }
-
-        $allIds = array_column($builder->getQuery()->getArrayResult(), 'id');
-
-        if (empty($allIds)) {
-            return [];
-        }
-
-        // Sample IDs: always include first, every Nth, and last
-        $sampledIds = [];
-        $total = count($allIds);
-
-        for ($i = 0; $i < $total; $i += $step) {
-            $sampledIds[] = $allIds[$i];
-        }
-
-        // Always include the last record
-        $lastId = $allIds[$total - 1];
-        if (!in_array($lastId, $sampledIds, true)) {
-            $sampledIds[] = $lastId;
-        }
-
-        // Fetch full entities for sampled IDs
-        return $this->createQueryBuilder('dd')
-            ->select("DATE(dd.deviceDate) as date", "YEAR(dd.deviceDate) as year", "HOUR(dd.deviceDate) as hour", "WEEK(dd.deviceDate) as week", "dd")
-            ->where('dd.id IN (:ids)')
-            ->setParameter('ids', $sampledIds)
-            ->orderBy('dd.deviceDate', 'ASC')
-            ->getQuery()
-            ->getResult();
     }
 
     public function findLastRecordForDevice(Device $device): ?DeviceData
@@ -252,13 +117,18 @@ class DeviceDataRepository extends ServiceEntityRepository
         return $indexed;
     }
 
-    public function findLastRecordForDeviceAndEntry(Device $device, $entry): ?DeviceData
+    /**
+     * @param Device $device
+     * @param int $entry
+     * @return DeviceData|null
+     */
+    public function findLastRecordForDeviceAndEntry(Device $device, int $entry): ?DeviceData
     {
         // Try cache first
         try {
             $em = $this->getEntityManager();
             $cacheRepo = $em->getRepository(\App\Entity\DeviceDataLastCache::class);
-            $cache = $cacheRepo->findOneBy(['device' => $device, 'entry' => (int)$entry]);
+            $cache = $cacheRepo->findOneBy(['device' => $device, 'entry' => $entry]);
             if ($cache) {
                 return $cache->getDeviceData();
             }
@@ -290,6 +160,9 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, DeviceData>
+     */
     public function findByDeviceAndForDay(Device $device, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->setTime(0, 0);
@@ -307,6 +180,9 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, DeviceData>
+     */
     public function findByDeviceAndBetweenDates(Device $device, \DateTime $fromDate, \DateTime $toDate): array
     {
         $fromDate->setTime(0, 0);
@@ -324,6 +200,9 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @return array<int, DeviceData>
+     */
     public function findByDeviceAndForMonth(Device $device, \DateTime $dateTime): array
     {
         $start = (clone ($dateTime))->modify('first day of this month')->setTime(0, 0);

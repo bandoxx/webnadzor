@@ -3,7 +3,7 @@
 namespace App\Service\Chart;
 
 use App\Entity\Device;
-use App\Repository\DeviceDataRepository;
+use App\Repository\DeviceDataChartRepository;
 use App\Service\Chart\Type\Device\DeviceChartInterface;
 use App\Service\Chart\Type\DeviceData\DeviceDataChartInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -13,7 +13,7 @@ class ChartHandler
 {
 
     public function __construct(
-        private readonly DeviceDataRepository $deviceDataRepository,
+        private readonly DeviceDataChartRepository $deviceDataChartRepository,
         private readonly iterable $deviceTypes,
         private readonly iterable $deviceDataTypes
     ) {}
@@ -58,7 +58,7 @@ class ChartHandler
 
         return (new FilesystemAdapter('', 60))
             ->get($cacheKey, function() use ($deviceId, $limit) {
-                return $this->deviceDataRepository->getDeviceChartData(
+                return $this->deviceDataChartRepository->getDeviceChartData(
                     $deviceId, $limit
                 );
             }
@@ -74,7 +74,7 @@ class ChartHandler
 
         return (new FilesystemAdapter('', 60))
             ->get($cacheKey, function() use ($deviceId, $fromDate, $toDate) {
-                return $this->deviceDataRepository->getChartData(
+                return $this->deviceDataChartRepository->getChartData(
                     $deviceId,
                     $fromDate,
                     $toDate
