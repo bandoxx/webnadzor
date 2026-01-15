@@ -7,6 +7,7 @@ use App\Entity\DeviceData;
 use App\Repository\DeviceDataRepository;
 use App\Repository\DeviceRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use JetBrains\PhpStorm\Deprecated;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -18,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:fill-missing-device-data',
     description: 'Fills missing DeviceData entries by copying and slightly modifying past records',
 )]
+#[Deprecated]
 class FillMissingDeviceDataCommand extends Command
 {
     private const BATCH_SIZE = 50;
