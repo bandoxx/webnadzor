@@ -119,8 +119,13 @@ class AdminOverviewService
         }
 
         $devices = $this->deviceRepository->findDevicesByClient($client->getId());
-        $sensorStats = $this->countSensorStatus($devices, $accessFilter);
-        $alarmMessages = $this->collectAlarmMessages($devices, $client->getId(), $accessFilter);
+
+        // Batch load all data upfront to avoid N+1 queries
+        $cacheMap = $this->lastCacheRepository->findByDevicesIndexed($devices);
+        $alarmsMap = $this->deviceAlarmRepository->findActiveAlarmsByDevices($devices);
+
+        $sensorStats = $this->countSensorStatus($devices, $accessFilter, $cacheMap);
+        $alarmMessages = $this->collectAlarmMessages($devices, $client->getId(), $accessFilter, $alarmsMap);
 
         return $this->buildClientData(
             $client,
@@ -230,9 +235,10 @@ class AdminOverviewService
     }
 
     /**
+     * @param array<int, array<int, \App\Entity\DeviceDataLastCache>> $cacheMap Preloaded cache indexed by [deviceId][entry]
      * @return array{total: int, online: int, offline: int}
      */
-    private function countSensorStatus(array $devices, array $accessFilter): array
+    private function countSensorStatus(array $devices, array $accessFilter, array $cacheMap): array
     {
         $total = 0;
         $online = 0;
@@ -252,7 +258,7 @@ class AdminOverviewService
 
                 $total++;
 
-                if ($this->isSensorOnline($device, $entry)) {
+                if ($this->isSensorOnline($device, $entry, $cacheMap)) {
                     $online++;
                 } else {
                     $offline++;
@@ -268,12 +274,13 @@ class AdminOverviewService
         return $device->isTUsed($entry) || $device->isRhUsed($entry) || $device->isDUsed($entry);
     }
 
-    private function isSensorOnline(Device $device, int $entry): bool
+    /**
+     * @param array<int, array<int, \App\Entity\DeviceDataLastCache>> $cacheMap Preloaded cache indexed by [deviceId][entry]
+     */
+    private function isSensorOnline(Device $device, int $entry, array $cacheMap): bool
     {
-        $cache = $this->lastCacheRepository->findOneBy([
-            'device' => $device,
-            'entry' => $entry,
-        ]);
+        $deviceId = $device->getId();
+        $cache = $cacheMap[$deviceId][$entry] ?? null;
 
         if (!$cache || !$cache->getDeviceDate()) {
             return false;
@@ -284,19 +291,16 @@ class AdminOverviewService
         return $secondsSinceLastData < $device->getIntervalThresholdInSeconds();
     }
 
-    private function collectAlarmMessages(array $devices, int $clientId, array $accessFilter): array
+    /**
+     * @param array<int, \App\Entity\DeviceAlarm[]> $alarmsMap Preloaded alarms indexed by deviceId
+     */
+    private function collectAlarmMessages(array $devices, int $clientId, array $accessFilter, array $alarmsMap): array
     {
         $messages = [];
 
         foreach ($devices as $device) {
             $deviceId = $device->getId();
-            $alarmsCount = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
-
-            if (!$alarmsCount) {
-                continue;
-            }
-
-            $activeAlarms = $this->deviceAlarmRepository->findActiveAlarms($device);
+            $activeAlarms = $alarmsMap[$deviceId] ?? [];
 
             foreach ($activeAlarms as $alarm) {
                 if (!$this->isAlarmAllowed($alarm, $deviceId, $accessFilter)) {

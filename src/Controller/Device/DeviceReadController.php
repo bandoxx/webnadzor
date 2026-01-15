@@ -59,11 +59,16 @@ class DeviceReadController extends AbstractController
             $devices = $deviceRepository->findBy(['client' => $client]);
         }
 
+        // Batch load all data upfront to avoid N+1 queries
+        $lastRecords = $deviceDataRepository->findLastRecordsByDevices($devices);
+        $alarmCounts = $deviceAlarmRepository->findActiveAlarmsCountByDevices($devices);
+
         $deviceTable = [];
 
         foreach ($devices as $device) {
-            $data = $deviceDataRepository->findLastRecordForDevice($device);
-            $numberOfAlarms = $deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
+            $deviceId = $device->getId();
+            $data = $lastRecords[$deviceId] ?? null;
+            $numberOfAlarms = $alarmCounts[$deviceId] ?? 0;
 
             $online = false;
 
@@ -85,7 +90,7 @@ class DeviceReadController extends AbstractController
                 ->setOnline($online)
                 ->setAlarm($numberOfAlarms > 0)
                 ->setSignal($data?->getGsmSignal())
-                ->setPower(number_format($data?->getVbat(), 1))
+                ->setPower(number_format($data?->getVbat() ?? 0, 1))
                 ->setBattery($data?->getBattery())
             ;
 

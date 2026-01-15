@@ -207,11 +207,15 @@ class AdminOverviewServiceTest extends TestCase
 
         $this->clientRepository->method('findAllActive')->willReturn([$client]);
         $this->deviceRepository->method('findDevicesByClient')->willReturn([$device]);
-        $this->lastCacheRepository->method('findOneBy')
-            ->willReturnCallback(function ($criteria) use ($onlineCache, $offlineCache) {
-                return $criteria['entry'] === 1 ? $onlineCache : $offlineCache;
-            });
-        $this->deviceAlarmRepository->method('findNumberOfActiveAlarmsForDevice')->willReturn(0);
+        // Mock the batch method with indexed array [deviceId][entry] => cache
+        $this->lastCacheRepository->method('findByDevicesIndexed')
+            ->willReturn([
+                100 => [
+                    1 => $onlineCache,
+                    2 => $offlineCache,
+                ]
+            ]);
+        $this->deviceAlarmRepository->method('findActiveAlarmsByDevices')->willReturn([]);
 
         $result = $this->service->buildOverview($user);
 

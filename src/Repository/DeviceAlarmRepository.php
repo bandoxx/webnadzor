@@ -237,6 +237,69 @@ class DeviceAlarmRepository extends ServiceEntityRepository
     }
 
     /**
+     * Fetch active alarm counts for multiple devices in a single query.
+     *
+     * @param Device[] $devices
+     * @return array<int, int> [deviceId => alarmCount]
+     */
+    public function findActiveAlarmsCountByDevices(array $devices): array
+    {
+        if (empty($devices)) {
+            return [];
+        }
+
+        $deviceIds = array_map(fn(Device $d) => $d->getId(), $devices);
+
+        $results = $this->createQueryBuilder('a')
+            ->select('IDENTITY(a.device) as deviceId, COUNT(a.id) as alarmCount')
+            ->where('a.device IN (:deviceIds)')
+            ->andWhere('a.endDeviceDate IS NULL')
+            ->setParameter('deviceIds', $deviceIds)
+            ->groupBy('a.device')
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        foreach ($results as $row) {
+            $indexed[(int) $row['deviceId']] = (int) $row['alarmCount'];
+        }
+
+        return $indexed;
+    }
+
+    /**
+     * Fetch all active alarms for multiple devices in a single query.
+     *
+     * @param Device[] $devices
+     * @return array<int, DeviceAlarm[]> [deviceId => alarms]
+     */
+    public function findActiveAlarmsByDevices(array $devices): array
+    {
+        if (empty($devices)) {
+            return [];
+        }
+
+        $deviceIds = array_map(fn(Device $d) => $d->getId(), $devices);
+
+        $alarms = $this->createQueryBuilder('a')
+            ->where('a.device IN (:deviceIds)')
+            ->andWhere('a.endDeviceDate IS NULL')
+            ->setParameter('deviceIds', $deviceIds)
+            ->orderBy('a.deviceDate', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        /** @var DeviceAlarm $alarm */
+        foreach ($alarms as $alarm) {
+            $deviceId = $alarm->getDevice()->getId();
+            $indexed[$deviceId][] = $alarm;
+        }
+
+        return $indexed;
+    }
+
+    /**
      * Fetch all alarms that need notification in a single query.
      * Returns alarms grouped by device ID and sensor.
      *

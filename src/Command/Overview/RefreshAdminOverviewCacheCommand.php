@@ -45,14 +45,19 @@ class RefreshAdminOverviewCacheCommand extends Command
             $clientId = $client->getId();
             $devices = $this->deviceRepository->findDevicesByClient($clientId);
 
+            // Batch load all alarms for this client's devices to avoid N+1 queries
+            $alarmsMap = $this->deviceAlarmRepository->findActiveAlarmsByDevices($devices);
+
             $totalUsedSensors = 0;
             $onlineSensors = 0;
             $offlineSensors = 0;
             $alarmMessages = [];
 
             foreach ($devices as $device) {
+                $deviceId = $device->getId();
+
                 foreach (Device::SENSOR_ENTRIES as $sensor) {
-                    $output->writeln(sprintf("%d %d", $device->getId(), $sensor));
+                    // findLastRecordForDeviceAndEntry already uses cache internally
                     $deviceData = $this->deviceDataRepository->findLastRecordForDeviceAndEntry($device, $sensor);
                     if (!$deviceData) {
                         continue;
@@ -70,30 +75,28 @@ class RefreshAdminOverviewCacheCommand extends Command
                     }
                 }
 
-                $alarmsCount = $this->deviceAlarmRepository->findNumberOfActiveAlarmsForDevice($device);
-                if ($alarmsCount) {
-                    $activeAlarms = $this->deviceAlarmRepository->findActiveAlarms($device);
-                    foreach ($activeAlarms as $alarm) {
-                        $path = null;
-                        if ($alarm->getSensor()) {
-                            // Generate relative path to avoid needing host context in CLI
-                            $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
-                                $this->router->generate('app_alarm_list', [
-                                    'clientId' => $clientId,
-                                    'id' => $device->getId(),
-                                    'entry' => $alarm->getSensor(),
-                                ], UrlGeneratorInterface::ABSOLUTE_PATH)
-                            );
-                        }
+                // Use preloaded alarms instead of querying per device
+                $activeAlarms = $alarmsMap[$deviceId] ?? [];
+                foreach ($activeAlarms as $alarm) {
+                    $path = null;
+                    if ($alarm->getSensor()) {
+                        // Generate relative path to avoid needing host context in CLI
+                        $path = sprintf("<a href='%s'><b><u>Link do alarma</u></b></a>",
+                            $this->router->generate('app_alarm_list', [
+                                'clientId' => $clientId,
+                                'id' => $deviceId,
+                                'entry' => $alarm->getSensor(),
+                            ], UrlGeneratorInterface::ABSOLUTE_PATH)
+                        );
+                    }
 
-                        $escapedMessage = htmlspecialchars($alarm->getMessage() ?? '', ENT_QUOTES, 'UTF-8');
-                        $escapedTime = htmlspecialchars($alarm->getTimeString() ?? '', ENT_QUOTES, 'UTF-8');
+                    $escapedMessage = htmlspecialchars($alarm->getMessage() ?? '', ENT_QUOTES, 'UTF-8');
+                    $escapedTime = htmlspecialchars($alarm->getTimeString() ?? '', ENT_QUOTES, 'UTF-8');
 
-                        if ($path) {
-                            $alarmMessages[] = sprintf("%s %s - %s", $escapedMessage, $escapedTime, $path);
-                        } else {
-                            $alarmMessages[] = trim($escapedMessage . ' ' . $escapedTime);
-                        }
+                    if ($path) {
+                        $alarmMessages[] = sprintf("%s %s - %s", $escapedMessage, $escapedTime, $path);
+                    } else {
+                        $alarmMessages[] = trim($escapedMessage . ' ' . $escapedTime);
                     }
                 }
             }

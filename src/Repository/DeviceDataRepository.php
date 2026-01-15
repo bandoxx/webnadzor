@@ -216,6 +216,43 @@ class DeviceDataRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * Fetch last records for multiple devices in a single query.
+     *
+     * @param Device[] $devices
+     * @return array<int, DeviceData> [deviceId => lastRecord]
+     */
+    public function findLastRecordsByDevices(array $devices): array
+    {
+        if (empty($devices)) {
+            return [];
+        }
+
+        $deviceIds = array_map(fn(Device $d) => $d->getId(), $devices);
+
+        // Use a subquery to get the max deviceDate per device, then fetch those records
+        $subQuery = $this->createQueryBuilder('sub')
+            ->select('MAX(sub.id)')
+            ->where('sub.device IN (:deviceIds)')
+            ->groupBy('sub.device')
+            ->getDQL();
+
+        $records = $this->createQueryBuilder('dd')
+            ->where("dd.id IN ($subQuery)")
+            ->setParameter('deviceIds', $deviceIds)
+            ->getQuery()
+            ->getResult();
+
+        $indexed = [];
+        /** @var DeviceData $record */
+        foreach ($records as $record) {
+            $deviceId = $record->getDevice()->getId();
+            $indexed[$deviceId] = $record;
+        }
+
+        return $indexed;
+    }
+
     public function findLastRecordForDeviceAndEntry(Device $device, $entry): ?DeviceData
     {
         // Try cache first
