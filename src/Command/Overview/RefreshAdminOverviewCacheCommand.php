@@ -86,10 +86,13 @@ class RefreshAdminOverviewCacheCommand extends Command
                             );
                         }
 
+                        $escapedMessage = htmlspecialchars($alarm->getMessage() ?? '', ENT_QUOTES, 'UTF-8');
+                        $escapedTime = htmlspecialchars($alarm->getTimeString() ?? '', ENT_QUOTES, 'UTF-8');
+
                         if ($path) {
-                            $alarmMessages[] = sprintf("%s %s - %s", $alarm->getMessage(), $alarm->getTimeString(), $path);
+                            $alarmMessages[] = sprintf("%s %s - %s", $escapedMessage, $escapedTime, $path);
                         } else {
-                            $alarmMessages[] = trim(($alarm->getMessage() ?? '') . ' ' . $alarm->getTimeString());
+                            $alarmMessages[] = trim($escapedMessage . ' ' . $escapedTime);
                         }
                     }
                 }

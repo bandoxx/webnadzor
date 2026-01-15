@@ -23,10 +23,15 @@ class DeviceReadController extends AbstractController
         DeviceRepository $deviceRepository,
         DeviceAlarmRepository $deviceAlarmRepository,
         DeviceDataRepository $deviceDataRepository
-    ): Response|NotFoundHttpException
+    ): Response
     {
         /** @var User $user */
         $user = $this->getUser();
+
+        // Authorization check: non-root users must have access to this client
+        if ($user->getPermission() !== User::ROLE_ROOT && !$user->getClients()->contains($client)) {
+            throw $this->createAccessDeniedException('You do not have access to this client.');
+        }
 
         if ($user->getPermission() === User::ROLE_USER) {
             $accesses = $user->getUserDeviceAccesses()->toArray();
@@ -36,7 +41,12 @@ class DeviceReadController extends AbstractController
                 $device = $access->getDevice();
 
                 if (!$device) {
-                    return $this->createNotFoundException("Device not found.");
+                    continue; // Skip invalid access entries
+                }
+
+                // Only include devices belonging to the requested client
+                if ($device->getClient()?->getId() !== $client->getId()) {
+                    continue;
                 }
 
                 if (array_key_exists($device->getId(), $devices) === false) {

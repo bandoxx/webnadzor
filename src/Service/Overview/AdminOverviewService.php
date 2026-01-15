@@ -313,8 +313,8 @@ class AdminOverviewService
     private function formatAlarmMessage(DeviceAlarm $alarm, int $clientId, int $deviceId): string
     {
         $sensor = $alarm->getSensor();
-        $message = $alarm->getMessage() ?? '';
-        $timeString = $alarm->getTimeString();
+        $message = htmlspecialchars($alarm->getMessage() ?? '', ENT_QUOTES, 'UTF-8');
+        $timeString = htmlspecialchars($alarm->getTimeString() ?? '', ENT_QUOTES, 'UTF-8');
 
         if (!$sensor) {
             return trim($message . ' ' . $timeString);
