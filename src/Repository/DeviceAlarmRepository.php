@@ -203,6 +203,98 @@ class DeviceAlarmRepository extends ServiceEntityRepository
         return $builder->getQuery()->getResult();
     }
 
+    /**
+     * Find offline alarms with active alarms always included (no limit on active).
+     * Returns active alarms first, then resolved alarms up to the history limit.
+     *
+     * @return DeviceAlarm[]
+     */
+    public function findOfflineAlarmsWithActiveFirst(
+        ?Client $client = null,
+        ?Device $device = null,
+        ?\DateTimeInterface $dateFrom = null,
+        ?\DateTimeInterface $dateTo = null,
+        int $historyLimit = 300
+    ): array {
+        // First, get ALL active alarms (no limit) - these are critical
+        $activeAlarms = $this->findOfflineAlarmsByStatus(
+            true,
+            $client,
+            $device,
+            $dateFrom,
+            $dateTo,
+            null
+        );
+
+        // Then, get resolved alarms with a limit
+        $resolvedAlarms = $this->findOfflineAlarmsByStatus(
+            false,
+            $client,
+            $device,
+            $dateFrom,
+            $dateTo,
+            $historyLimit
+        );
+
+        // Merge: active first, then resolved
+        return array_merge($activeAlarms, $resolvedAlarms);
+    }
+
+    /**
+     * Find offline alarms filtered by active/resolved status.
+     *
+     * @return DeviceAlarm[]
+     */
+    private function findOfflineAlarmsByStatus(
+        bool $activeOnly,
+        ?Client $client = null,
+        ?Device $device = null,
+        ?\DateTimeInterface $dateFrom = null,
+        ?\DateTimeInterface $dateTo = null,
+        ?int $limit = null
+    ): array {
+        $builder = $this->createQueryBuilder('a')
+            ->select('a', 'd', 'c')
+            ->leftJoin('a.device', 'd')
+            ->leftJoin('d.client', 'c')
+            ->where('a.type IN (:types)')
+            ->setParameter('types', self::OFFLINE_ALARM_TYPES)
+            ->orderBy('a.deviceDate', 'DESC')
+        ;
+
+        if ($activeOnly) {
+            $builder->andWhere('a.endDeviceDate IS NULL');
+        } else {
+            $builder->andWhere('a.endDeviceDate IS NOT NULL');
+        }
+
+        if ($client !== null) {
+            $builder->andWhere('d.client = :client')
+                ->setParameter('client', $client);
+        }
+
+        if ($device !== null) {
+            $builder->andWhere('a.device = :device')
+                ->setParameter('device', $device);
+        }
+
+        if ($dateFrom !== null) {
+            $builder->andWhere('a.deviceDate >= :dateFrom')
+                ->setParameter('dateFrom', $dateFrom);
+        }
+
+        if ($dateTo !== null) {
+            $builder->andWhere('a.deviceDate <= :dateTo')
+                ->setParameter('dateTo', $dateTo);
+        }
+
+        if ($limit !== null) {
+            $builder->setMaxResults($limit);
+        }
+
+        return $builder->getQuery()->getResult();
+    }
+
     public function countActiveOfflineAlarms(): int
     {
         return (int) $this->createQueryBuilder('a')

@@ -78,8 +78,9 @@ class OfflineAlarmOverviewController extends AbstractController
             }
         }
 
-        // Limit results to prevent memory issues - uses JOINs to avoid N+1
-        $alarms = $deviceAlarmRepository->findOfflineAlarms($client, $device, $dateFromObj, $dateToObj, 300);
+        // Get all active alarms (no limit) + limited history of resolved alarms
+        // This ensures no client with an active offline alarm is ever hidden
+        $alarms = $deviceAlarmRepository->findOfflineAlarmsWithActiveFirst($client, $device, $dateFromObj, $dateToObj, 500);
 
         $table = [];
         foreach ($alarms as $alarm) {
