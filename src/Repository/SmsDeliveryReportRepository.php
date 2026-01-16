@@ -38,6 +38,7 @@ class SmsDeliveryReportRepository extends ServiceEntityRepository
         }
 
         return $queryBuilder
+            ->orderBy('a.createdAt', 'DESC')
             ->getQuery()
             ->getResult();
     }
