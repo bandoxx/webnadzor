@@ -60,7 +60,7 @@ class ShiftDeviceDataServiceTest extends TestCase
             new \DateTime('2024-01-31')
         );
 
-        $this->assertEquals(20, $result['intervalDays']);
+        $this->assertEquals(7, $result['intervalDays']);
         $this->assertEquals(0, $result['recordCount']);
     }
 
@@ -183,7 +183,7 @@ class ShiftDeviceDataServiceTest extends TestCase
         );
 
         // Should use minimum interval (20) when no records found
-        $this->assertEquals(20, $result['intervalDays']);
+        $this->assertEquals(7, $result['intervalDays']);
     }
 
     public function testPreviewShiftedDataReturnsTransformedRecords(): void
@@ -545,7 +545,7 @@ class ShiftDeviceDataServiceTest extends TestCase
         $service = $this->createService();
         $result = $service->findBestInterval(1, $date, clone $date);
 
-        $this->assertEquals(20, $result['intervalDays']);
+        $this->assertEquals(7, $result['intervalDays']);
     }
 
     public function testPreviewShiftedDataWithSameDates(): void

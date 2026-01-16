@@ -8,8 +8,11 @@ use Doctrine\DBAL\Connection;
 
 class ShiftDeviceDataService
 {
-    private const MIN_INTERVAL_DAYS = 20;
-    private const MAX_INTERVAL_DAYS = 35;
+    // Search range for finding source data to fill gaps
+    // Min 7 days: avoid copying very recent data that might have same issues
+    // Max 21 days: search up to 3 weeks back for suitable source data
+    private const MIN_INTERVAL_DAYS = 7;
+    private const MAX_INTERVAL_DAYS = 21;
 
     public function __construct(
         private readonly Connection $connection,
