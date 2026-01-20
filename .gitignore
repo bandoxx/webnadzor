@@ -29,6 +29,7 @@ deploy.php
 /public/assets/images/client-storage/
 /public/uploads/device-document/
 /key/
+/.claude
 ###> phpstan/phpstan ###
 phpstan.neon
 ###< phpstan/phpstan ###
