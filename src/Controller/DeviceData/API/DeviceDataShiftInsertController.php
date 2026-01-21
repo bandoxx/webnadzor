@@ -45,6 +45,7 @@ class DeviceDataShiftInsertController extends AbstractController
         $dateFrom = $data['dateFrom'] ?? null;
         $dateTo = $data['dateTo'] ?? null;
         $intervalDays = $data['intervalDays'] ?? null;
+        $entry = $data['entry'] ?? null; // Optional: 1 or 2 for per-entry filling
 
         // Validate required parameters
         if (!$deviceId) {
@@ -93,6 +94,18 @@ class DeviceDataShiftInsertController extends AbstractController
         }
         $intervalDays = (int)$intervalDays;
 
+        // Validate and parse entry (optional: 1 or 2 for per-entry filling, null for both)
+        $entryInt = null;
+        if ($entry !== null) {
+            if (!is_numeric($entry) || !in_array((int)$entry, [1, 2], true)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Neispravan broj ulaza. Dozvoljene vrijednosti: 1 ili 2.',
+                ], Response::HTTP_BAD_REQUEST);
+            }
+            $entryInt = (int)$entry;
+        }
+
         // Parse dates (set time to start/end of day for full day coverage)
         try {
             $dateFromObj = (new \DateTime($dateFrom))->setTime(0, 0, 0);
@@ -132,18 +145,22 @@ class DeviceDataShiftInsertController extends AbstractController
                 $deviceId,
                 $dateFromObj,
                 $dateToObj,
-                $intervalDays
+                $intervalDays,
+                $entryInt
             );
+
+            $message = "Uspješno uneseno/ažurirano {$insertedCount} zapisa";
 
             return $this->json([
                 'success' => true,
-                'message' => "Successfully inserted {$insertedCount} record(s)",
+                'message' => $message,
                 'data' => [
                     'deviceId' => $deviceId,
                     'dateFrom' => $dateFromObj->format('Y-m-d H:i:s'),
                     'dateTo' => $dateToObj->format('Y-m-d H:i:s'),
                     'intervalDays' => $intervalDays,
                     'insertedCount' => $insertedCount,
+                    'entry' => $entryInt,
                 ],
             ], Response::HTTP_CREATED);
         } catch (\InvalidArgumentException $e) {

@@ -85,12 +85,14 @@ class DeviceDataDailyArchiveService
      * @param Device $device
      * @param \DateTimeInterface $dateFrom
      * @param \DateTimeInterface $dateTo
+     * @param int|null $entry Entry number (1 or 2) to generate archives for, null for both entries
      * @return int Number of archives created
      */
     public function generateDailyArchivesForDateRange(
         Device $device,
         \DateTimeInterface $dateFrom,
-        \DateTimeInterface $dateTo
+        \DateTimeInterface $dateTo,
+        ?int $entry = null
     ): int {
         $archiveCount = 0;
         $batchSize = 20;
@@ -106,25 +108,28 @@ class DeviceDataDailyArchiveService
         // Get all dates in the range (excluding today)
         $dates = $this->getDatesInRange($dateFrom, $adjustedToDate);
 
+        // Determine which entries to process
+        $entries = $entry !== null ? [$entry] : Device::SENSOR_ENTRIES;
+
         foreach ($dates as $date) {
             // Get device data for this day
             $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
 
-            // Create archives for both entries (1 and 2)
-            foreach (Device::SENSOR_ENTRIES as $entry) {
+            // Create archives for specified entry/entries
+            foreach ($entries as $entryNum) {
                 $fromDate = (clone $date)->setTime(0, 0, 0);
                 $toDate = (clone $date)->setTime(23, 59, 59);
 
                 // Generate chart image
                 $this->chartImageGenerator->generateTemperatureAndHumidityChartImage(
                     $device,
-                    $entry,
+                    $entryNum,
                     $fromDate,
                     $toDate
                 );
 
                 // Generate daily report (without immediate flush)
-                $this->generateDailyReport($device, $data, $entry, $date, false);
+                $this->generateDailyReport($device, $data, $entryNum, $date, false);
 
                 $archiveCount++;
 
