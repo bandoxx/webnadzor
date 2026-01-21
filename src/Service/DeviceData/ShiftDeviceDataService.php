@@ -149,7 +149,8 @@ class ShiftDeviceDataService
             );
 
             // Create new daily archives (excluding today if it's in the range)
-            $this->dailyArchiveService->generateDailyArchivesForDateRange($device, $dateFrom, $dateTo);
+            // Only regenerate for the specific entry being filled (or both if entry is null)
+            $this->dailyArchiveService->generateDailyArchivesForDateRange($device, $dateFrom, $dateTo, $entry);
 
             $this->connection->commit();
 
