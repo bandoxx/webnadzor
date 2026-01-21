@@ -128,36 +128,36 @@ class ShiftDeviceDataService
             throw new \InvalidArgumentException("Device with ID {$deviceId} not found");
         }
 
-        // Delete old daily archives for the full date range (from/to)
-        $this->deviceDataArchiveRepository->deleteDailyArchivesForDeviceAndDateRange(
-            $deviceId,
-            $dateFrom,
-            $dateTo
-        );
+        // Wrap in transaction for data consistency
+        $this->connection->beginTransaction();
 
-        // For full device filling (both entries), delete empty records first
-        // For per-entry filling, we'll update existing records instead
-        if ($entry === null) {
-            $this->deleteEmptyRecordsInRange(
+        try {
+            // Delete old daily archives for the full date range (from/to)
+            $this->deviceDataArchiveRepository->deleteDailyArchivesForDeviceAndDateRange(
                 $deviceId,
                 $dateFrom,
                 $dateTo
             );
+
+            // Insert new records or update existing empty records (no deletes)
+            $count = $this->insertShiftedDataRecords(
+                $deviceId,
+                $dateFrom,
+                $dateTo,
+                $intervalDays,
+                $entry
+            );
+
+            // Create new daily archives (excluding today if it's in the range)
+            $this->dailyArchiveService->generateDailyArchivesForDateRange($device, $dateFrom, $dateTo);
+
+            $this->connection->commit();
+
+            return $count;
+        } catch (\Exception $e) {
+            $this->connection->rollBack();
+            throw $e;
         }
-
-        // Insert/update shifted data
-        $insertedCount = $this->insertShiftedDataRecords(
-            $deviceId,
-            $dateFrom,
-            $dateTo,
-            $intervalDays,
-            $entry
-        );
-
-        // Create new daily archives (excluding today if it's in the range)
-        $this->dailyArchiveService->generateDailyArchivesForDateRange($device, $dateFrom, $dateTo);
-
-        return $insertedCount;
     }
 
     /**
@@ -247,11 +247,9 @@ class ShiftDeviceDataService
         }
 
         // Get existing minutes in target period (hash map for O(1) lookup)
-        // Also get records that exist but have empty entry data (for per-entry updates)
+        // Also get records that exist but have empty entry data (for updates)
         $existingMinutes = $this->getExistingTargetMinutes($deviceId, $dateFrom, $dateTo, $entry);
-        $existingRecordsWithEmptyEntry = $entry !== null
-            ? $this->getExistingRecordsWithEmptyEntry($deviceId, $dateFrom, $dateTo, $entry)
-            : [];
+        $existingRecordsWithEmptyEntry = $this->getExistingRecordsWithEmptyEntry($deviceId, $dateFrom, $dateTo, $entry);
         $intervalSeconds = $intervalDays * 86400;
 
         // Filter in PHP - only include records where target minute doesn't exist
@@ -262,7 +260,7 @@ class ShiftDeviceDataService
             // For per-entry filling, skip source records where the specific entry has no data
             if ($entry !== null) {
                 $entryField = "t{$entry}";
-                if ($record[$entryField] === null || $record[$entryField] == 0) {
+                if ($record[$entryField] === null) {
                     continue;
                 }
             }
@@ -333,11 +331,11 @@ class ShiftDeviceDataService
         // For per-entry: check only that specific entry has valid data
         // For both entries (null): check that at least one entry has valid data
         if ($entry === 1) {
-            $validDataCondition = 'AND NOT (dd.t1 IS NULL OR dd.t1 = 0)';
+            $validDataCondition = 'AND dd.t1 IS NOT NULL';
         } elseif ($entry === 2) {
-            $validDataCondition = 'AND NOT (dd.t2 IS NULL OR dd.t2 = 0)';
+            $validDataCondition = 'AND dd.t2 IS NOT NULL';
         } else {
-            $validDataCondition = 'AND NOT ((dd.t1 IS NULL OR dd.t1 = 0) AND (dd.t2 IS NULL OR dd.t2 = 0))';
+            $validDataCondition = 'AND (dd.t1 IS NOT NULL OR dd.t2 IS NOT NULL)';
         }
 
         $sql = "
@@ -370,20 +368,24 @@ class ShiftDeviceDataService
      * @param int $deviceId
      * @param \DateTimeInterface $dateFrom
      * @param \DateTimeInterface $dateTo
-     * @param int $entry Entry number (1 or 2)
+     * @param int|null $entry Entry number (1 or 2), or null for both entries empty
      * @return array<string, int>
      */
     private function getExistingRecordsWithEmptyEntry(
         int $deviceId,
         \DateTimeInterface $dateFrom,
         \DateTimeInterface $dateTo,
-        int $entry
+        ?int $entry
     ): array {
         // Get records where the specific entry is empty but record exists
-        // (the other entry might have data)
-        $emptyCondition = $entry === 1
-            ? '(dd.t1 IS NULL OR dd.t1 = 0)'
-            : '(dd.t2 IS NULL OR dd.t2 = 0)';
+        if ($entry === 1) {
+            $emptyCondition = 'dd.t1 IS NULL';
+        } elseif ($entry === 2) {
+            $emptyCondition = 'dd.t2 IS NULL';
+        } else {
+            // Both entries must be empty for "both entries" mode
+            $emptyCondition = 'dd.t1 IS NULL AND dd.t2 IS NULL';
+        }
 
         $sql = "
             SELECT dd.id, dd.device_date
@@ -406,36 +408,6 @@ class ShiftDeviceDataService
         }
 
         return $records;
-    }
-
-    /**
-     * Delete empty device data records (sensor errors) in the given date range.
-     * A record is considered "empty" if both temperature values are NULL or 0.
-     *
-     * @param int $deviceId
-     * @param \DateTimeInterface $dateFrom
-     * @param \DateTimeInterface $dateTo
-     * @return int Number of deleted records
-     */
-    private function deleteEmptyRecordsInRange(
-        int $deviceId,
-        \DateTimeInterface $dateFrom,
-        \DateTimeInterface $dateTo
-    ): int {
-        $sql = '
-            DELETE FROM device_data
-            WHERE device_id = :deviceId
-              AND device_date BETWEEN :dateFrom AND :dateTo
-              AND (t1 IS NULL OR t1 = 0)
-              AND (t2 IS NULL OR t2 = 0)
-        ';
-
-        $stmt = $this->connection->prepare($sql);
-        return $stmt->executeStatement([
-            'deviceId' => $deviceId,
-            'dateFrom' => $dateFrom->format('Y-m-d H:i:s'),
-            'dateTo' => $dateTo->format('Y-m-d H:i:s'),
-        ]);
     }
 
     /**
@@ -474,7 +446,7 @@ class ShiftDeviceDataService
             )
         ';
 
-        // For per-entry updates, prepare update SQL
+        // Update SQL for entry 1 only
         $updateSql1 = '
             UPDATE device_data SET
                 d1 = :d1, t1 = :t1, rh1 = :rh1, mkt1 = :mkt1,
@@ -482,8 +454,21 @@ class ShiftDeviceDataService
             WHERE id = :id
         ';
 
+        // Update SQL for entry 2 only
         $updateSql2 = '
             UPDATE device_data SET
+                d2 = :d2, t2 = :t2, rh2 = :rh2, mkt2 = :mkt2,
+                t_avrg2 = :t_avrg2, t_min2 = :t_min2, t_max2 = :t_max2, note2 = :note2
+            WHERE id = :id
+        ';
+
+        // Update SQL for both entries
+        $updateSqlBoth = '
+            UPDATE device_data SET
+                server_date = :server_date,
+                gsm_signal = :gsm_signal, supply = :supply, vbat = :vbat, battery = :battery,
+                d1 = :d1, t1 = :t1, rh1 = :rh1, mkt1 = :mkt1,
+                t_avrg1 = :t_avrg1, t_min1 = :t_min1, t_max1 = :t_max1, note1 = :note1,
                 d2 = :d2, t2 = :t2, rh2 = :rh2, mkt2 = :mkt2,
                 t_avrg2 = :t_avrg2, t_min2 = :t_min2, t_max2 = :t_max2, note2 = :note2
             WHERE id = :id
@@ -492,6 +477,7 @@ class ShiftDeviceDataService
         $insertStmt = $this->connection->prepare($insertSql);
         $updateStmt1 = $this->connection->prepare($updateSql1);
         $updateStmt2 = $this->connection->prepare($updateSql2);
+        $updateStmtBoth = $this->connection->prepare($updateSqlBoth);
 
         $affectedCount = 0;
 
@@ -499,9 +485,9 @@ class ShiftDeviceDataService
             $operation = $record['operation'] ?? 'insert';
             $existingRecordId = $record['existing_record_id'] ?? null;
 
-            if ($operation === 'update' && $existingRecordId !== null && $entry !== null) {
-                // Update only the specific entry fields
+            if ($operation === 'update' && $existingRecordId !== null) {
                 if ($entry === 1) {
+                    // Update only entry 1 fields
                     $updateStmt1->executeStatement([
                         'id' => $existingRecordId,
                         'd1' => $record['d1'],
@@ -513,9 +499,36 @@ class ShiftDeviceDataService
                         't_max1' => $record['t_max1'],
                         'note1' => $record['note1'],
                     ]);
-                } else {
+                } elseif ($entry === 2) {
+                    // Update only entry 2 fields
                     $updateStmt2->executeStatement([
                         'id' => $existingRecordId,
+                        'd2' => $record['d2'],
+                        't2' => $record['t2'],
+                        'rh2' => $record['rh2'],
+                        'mkt2' => $record['mkt2'],
+                        't_avrg2' => $record['t_avrg2'],
+                        't_min2' => $record['t_min2'],
+                        't_max2' => $record['t_max2'],
+                        'note2' => $record['note2'],
+                    ]);
+                } else {
+                    // Update both entries
+                    $updateStmtBoth->executeStatement([
+                        'id' => $existingRecordId,
+                        'server_date' => $record['new_server_date'],
+                        'gsm_signal' => $record['gsm_signal'],
+                        'supply' => $record['supply'],
+                        'vbat' => $record['vbat'],
+                        'battery' => $record['battery'],
+                        'd1' => $record['d1'],
+                        't1' => $record['t1'],
+                        'rh1' => $record['rh1'],
+                        'mkt1' => $record['mkt1'],
+                        't_avrg1' => $record['t_avrg1'],
+                        't_min1' => $record['t_min1'],
+                        't_max1' => $record['t_max1'],
+                        'note1' => $record['note1'],
                         'd2' => $record['d2'],
                         't2' => $record['t2'],
                         'rh2' => $record['rh2'],
