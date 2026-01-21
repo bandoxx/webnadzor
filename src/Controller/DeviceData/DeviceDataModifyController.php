@@ -4,6 +4,7 @@ namespace App\Controller\DeviceData;
 
 use App\Entity\Client;
 use App\Entity\Device;
+use App\Entity\User;
 use App\Repository\DeviceDataRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -35,6 +36,13 @@ class DeviceDataModifyController extends AbstractController
         int $entry,
         Request $request
     ): Response {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($user->getPermission() !== 4) {
+            throw $this->createAccessDeniedException();
+        }
+
         $page = max(1, $request->query->getInt('page', 1));
         $limit = self::ITEMS_PER_PAGE;
         $offset = ($page - 1) * $limit;

@@ -118,6 +118,7 @@
                                     Umjernice
                                 </a>
                             </li>
+                            {% if app.user.permission == 4 %}
                             <li class="cursor-pointer">
                                 <a
                                         href="{{ path('app_device_data_modify', {clientId: clientId, id: device.id, entry: entry}) }}"
@@ -129,6 +130,7 @@
                                     Izmjena podataka
                                 </a>
                             </li>
+                            {% endif %}
                             <li class="cursor-pointer">
                                 <a
                                         href="{{ path('client_overview', {clientId: clientId}) }}"
