@@ -34,6 +34,7 @@ class DeviceDataShiftPreviewController extends AbstractController
         $deviceId = $request->query->get('deviceId');
         $dateFrom = $request->query->get('dateFrom');
         $dateTo = $request->query->get('dateTo');
+        $entry = $request->query->get('entry'); // Optional: 1 or 2 for per-entry filling
 
         // Validate required parameters
         if (!$deviceId) {
@@ -65,6 +66,18 @@ class DeviceDataShiftPreviewController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
         $deviceId = (int)$deviceId;
+
+        // Validate and parse entry (optional: 1 or 2 for per-entry filling, null for both)
+        $entryInt = null;
+        if ($entry !== null) {
+            if (!is_numeric($entry) || !in_array((int)$entry, [1, 2], true)) {
+                return $this->json([
+                    'success' => false,
+                    'message' => 'Neispravan broj ulaza. Dozvoljene vrijednosti: 1 ili 2.',
+                ], Response::HTTP_BAD_REQUEST);
+            }
+            $entryInt = (int)$entry;
+        }
 
         // Parse dates (set time to start/end of day for full day coverage)
         try {
@@ -102,11 +115,13 @@ class DeviceDataShiftPreviewController extends AbstractController
         }
 
         try {
-            // Get preview data (automatically finds best interval 20-35 days)
+            // Get preview data (automatically finds best interval 7-21 days)
             $previewData = $this->shiftDeviceDataService->previewShiftedData(
                 $deviceId,
                 $dateFromObj,
-                $dateToObj
+                $dateToObj,
+                null, // intervalDays - auto-detect
+                $entryInt
             );
 
             return $this->json([
@@ -120,6 +135,7 @@ class DeviceDataShiftPreviewController extends AbstractController
                     'intervalDays' => $previewData['intervalDays'],
                     'recordCount' => count($previewData['records']),
                     'records' => $previewData['records'],
+                    'entry' => $entryInt,
                 ],
             ], Response::HTTP_OK);
         } catch (\Exception $e) {

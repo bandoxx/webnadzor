@@ -23,7 +23,7 @@ class DeviceTypesDropdown
                 $isTUsed = $device->isTUsed($entry);
                 if ($isTUsed) {
                     $list[] = [
-                        'value' => sprintf("%s", $device->getId()),
+                        'value' => sprintf("%s-%s", $device->getId(), $entry),
                         'text' => sprintf("%s, %s", $text, $device->getEntryData($entry)['t_name']),
                     ];
                 }
@@ -48,7 +48,7 @@ class DeviceTypesDropdown
                         : ($entryData['rh_name'] ?? '');
 
                     $result[] = [
-                        'value' => sprintf('%s', $device->getId()),
+                        'value' => sprintf('%s-%s', $device->getId(), $entry),
                         'text'  => $device->getName() . ' - ' . $entryName,
                     ];
                 }
