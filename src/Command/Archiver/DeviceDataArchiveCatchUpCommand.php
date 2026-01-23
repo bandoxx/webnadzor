@@ -77,16 +77,19 @@ class DeviceDataArchiveCatchUpCommand extends Command
         $dryRun = $input->getOption('dry-run');
         $entryFilter = $input->getOption('entry');
 
-        if (!$fromDateStr || !$toDateStr) {
-            $io->error('Both --fromDate and --toDate are required');
-            return Command::FAILURE;
+        // Default to last 7 days if no dates specified
+        if (!$fromDateStr) {
+            $fromDateStr = '-7 days';
+        }
+        if (!$toDateStr) {
+            $toDateStr = '-1 day';
         }
 
         try {
             $fromDate = new \DateTime($fromDateStr);
             $toDate = new \DateTime($toDateStr);
         } catch (\Exception $e) {
-            $io->error('Invalid date format. Use Y-m-d (e.g., 2026-01-01)');
+            $io->error('Invalid date format. Use Y-m-d (e.g., 2026-01-01) or relative (e.g., -7days)');
             return Command::FAILURE;
         }
 
