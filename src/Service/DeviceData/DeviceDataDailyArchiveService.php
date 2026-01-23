@@ -13,6 +13,7 @@ use App\Service\Chart\ChartImageGenerator;
 use App\Service\RawData\Factory\DeviceDataRawDataFactory;
 use App\Service\RawData\RawDataHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Service for creating daily device data archives
@@ -27,7 +28,8 @@ class DeviceDataDailyArchiveService
         private readonly RawDataHandler $rawDataHandler,
         private readonly DeviceDataRawDataFactory $deviceDataRawDataFactory,
         private readonly ChartImageGenerator $chartImageGenerator,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ?LoggerInterface $logger = null
     ) {
     }
 
@@ -95,6 +97,7 @@ class DeviceDataDailyArchiveService
         ?int $entry = null
     ): int {
         $archiveCount = 0;
+        $errorCount = 0;
         $batchSize = 20;
 
         // Adjust toDate to exclude today if it's in the range
@@ -117,25 +120,37 @@ class DeviceDataDailyArchiveService
 
             // Create archives for specified entry/entries
             foreach ($entries as $entryNum) {
-                $fromDate = (clone $date)->setTime(0, 0, 0);
-                $toDate = (clone $date)->setTime(23, 59, 59);
+                // Wrap in try-catch to ensure all entries are processed even if one fails
+                try {
+                    $fromDate = (clone $date)->setTime(0, 0, 0);
+                    $toDate = (clone $date)->setTime(23, 59, 59);
 
-                // Generate chart image
-                $this->chartImageGenerator->generateTemperatureAndHumidityChartImage(
-                    $device,
-                    $entryNum,
-                    $fromDate,
-                    $toDate
-                );
+                    // Generate chart image
+                    $this->chartImageGenerator->generateTemperatureAndHumidityChartImage(
+                        $device,
+                        $entryNum,
+                        $fromDate,
+                        $toDate
+                    );
 
-                // Generate daily report (without immediate flush)
-                $this->generateDailyReport($device, $data, $entryNum, $date, false);
+                    // Generate daily report (without immediate flush)
+                    $this->generateDailyReport($device, $data, $entryNum, $date, false);
 
-                $archiveCount++;
+                    $archiveCount++;
 
-                // Flush every $batchSize archives
-                if ($archiveCount % $batchSize === 0) {
-                    $this->entityManager->flush();
+                    // Flush every $batchSize archives
+                    if ($archiveCount % $batchSize === 0) {
+                        $this->entityManager->flush();
+                    }
+                } catch (\Throwable $e) {
+                    $errorCount++;
+                    $this->logger?->error('Failed to generate daily archive', [
+                        'device_id' => $device->getId(),
+                        'entry' => $entryNum,
+                        'date' => $date->format('Y-m-d'),
+                        'error' => $e->getMessage(),
+                    ]);
+                    // Continue to next entry - don't let one failure prevent others
                 }
             }
 
@@ -151,6 +166,15 @@ class DeviceDataDailyArchiveService
         // Final flush for any remaining archives
         if ($archiveCount % $batchSize !== 0) {
             $this->entityManager->flush();
+        }
+
+        // Log summary if there were errors
+        if ($errorCount > 0) {
+            $this->logger?->warning('Daily archive generation completed with errors', [
+                'device_id' => $device->getId(),
+                'archives_created' => $archiveCount,
+                'errors' => $errorCount,
+            ]);
         }
 
         return $archiveCount;

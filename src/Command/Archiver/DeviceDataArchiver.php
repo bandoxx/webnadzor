@@ -10,6 +10,7 @@ use App\Repository\DeviceRepository;
 use App\Service\Chart\ChartImageGenerator;
 use App\Service\DeviceData\DeviceDataDailyArchiveService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,7 +29,8 @@ class DeviceDataArchiver extends Command
         private DeviceDataArchiveRepository  $deviceDataArchiveRepository,
         private ChartImageGenerator          $chartImageGenerator,
         private DeviceDataDailyArchiveService $dailyArchiveService,
-        private EntityManagerInterface       $entityManager
+        private EntityManagerInterface       $entityManager,
+        private ?LoggerInterface             $logger = null
     )
     {
         parent::__construct();
@@ -54,10 +56,11 @@ class DeviceDataArchiver extends Command
         }
 
         $dates = $this->getDates($input->getOption('fromDate'), $input->getOption('toDate'));
-        
+
         // Batch size for flushing to database
         $batchSize = 20;
         $archiveCount = 0;
+        $errorCount = 0;
 
         foreach ($dates as $date) {
             // Pre-check which archives already exist to avoid unnecessary processing
@@ -75,13 +78,36 @@ class DeviceDataArchiver extends Command
                         continue;
                     }
 
-                    $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
-                    $this->dailyArchiveService->generateDailyReport($device, $data, $entry, $date, false);
+                    // Wrap in try-catch to ensure Entry 2 is processed even if Entry 1 fails
+                    try {
+                        $this->chartImageGenerator->generateTemperatureAndHumidityChartImage($device, $entry, $fromDate, $toDate);
+                        $this->dailyArchiveService->generateDailyReport($device, $data, $entry, $date, false);
 
-                    $archiveCount++;
-                    // Flush every $batchSize archives
-                    if ($archiveCount % $batchSize === 0) {
-                        $this->entityManager->flush();
+                        $archiveCount++;
+                        // Flush every $batchSize archives
+                        if ($archiveCount % $batchSize === 0) {
+                            $this->entityManager->flush();
+                        }
+                    } catch (\Throwable $e) {
+                        $errorCount++;
+                        $errorMsg = sprintf(
+                            'Failed to generate archive for Device %d, Entry %d, Date %s: %s',
+                            $device->getId(),
+                            $entry,
+                            $date->format('Y-m-d'),
+                            $e->getMessage()
+                        );
+                        $output->writeln("<error>$errorMsg</error>");
+
+                        $this->logger?->error('Archive generation failed', [
+                            'device_id' => $device->getId(),
+                            'entry' => $entry,
+                            'date' => $date->format('Y-m-d'),
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+
+                        // Continue to next entry - don't let Entry 1 failure prevent Entry 2
                     }
                 }
 
@@ -94,14 +120,21 @@ class DeviceDataArchiver extends Command
                 gc_collect_cycles();
             }
         }
-        
+
         // Final flush for any remaining archives
         if ($archiveCount % $batchSize !== 0) {
             $this->entityManager->flush();
         }
 
-        $output->writeln(sprintf("%s - %s finished successfully", (new \DateTime())->format('Y-m-d H:i:s'), $this->getName()));
-        return Command::SUCCESS;
+        $output->writeln(sprintf(
+            "%s - %s finished. Archives: %d, Errors: %d",
+            (new \DateTime())->format('Y-m-d H:i:s'),
+            $this->getName(),
+            $archiveCount,
+            $errorCount
+        ));
+
+        return $errorCount > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function getDates(?string $fromDate = null, ?string $toDate = null): \DatePeriod
