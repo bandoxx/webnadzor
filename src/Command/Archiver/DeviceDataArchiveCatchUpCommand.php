@@ -216,8 +216,7 @@ class DeviceDataArchiveCatchUpCommand extends Command
                 }
             }
 
-            // Clear entity manager periodically to free memory
-            $this->entityManager->clear();
+            // Free memory without detaching Device entities
             gc_collect_cycles();
 
             $io->progressAdvance();
@@ -347,21 +346,32 @@ class DeviceDataArchiveCatchUpCommand extends Command
      */
     private function generateMissingArchive(Device $device, \DateTime $date, int $entry): void
     {
+        // Re-fetch device to ensure it's managed by entity manager
+        $managedDevice = $this->deviceRepository->find($device->getId());
+        if (!$managedDevice) {
+            throw new \RuntimeException(sprintf('Device %d not found', $device->getId()));
+        }
+
         // Get device data for this day
-        $data = $this->deviceDataRepository->findByDeviceAndForDay($device, $date);
+        $data = $this->deviceDataRepository->findByDeviceAndForDay($managedDevice, $date);
 
         // Generate chart image
         $fromDate = (clone $date)->setTime(0, 0, 0);
         $toDate = (clone $date)->setTime(23, 59, 59);
 
         $this->chartImageGenerator->generateTemperatureAndHumidityChartImage(
-            $device,
+            $managedDevice,
             $entry,
             $fromDate,
             $toDate
         );
 
         // Generate the daily report (with immediate flush)
-        $this->dailyArchiveService->generateDailyReport($device, $data, $entry, $date, true);
+        $this->dailyArchiveService->generateDailyReport($managedDevice, $data, $entry, $date, true);
+
+        // Clear device data from memory
+        foreach ($data as $row) {
+            $this->entityManager->detach($row);
+        }
     }
 }
