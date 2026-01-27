@@ -133,10 +133,12 @@ class ShiftDeviceDataService
 
         try {
             // Delete old daily archives for the full date range (from/to)
+            // Only delete archives for the specific entry being filled (or both if entry is null)
             $this->deviceDataArchiveRepository->deleteDailyArchivesForDeviceAndDateRange(
                 $deviceId,
                 $dateFrom,
-                $dateTo
+                $dateTo,
+                $entry
             );
 
             // Insert new records or update existing empty records (no deletes)

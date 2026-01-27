@@ -5,6 +5,7 @@ namespace App\Service\DeviceData;
 use App\Entity\Device;
 use App\Entity\DeviceDataArchive;
 use App\Factory\DeviceDataArchiveFactory;
+use App\Repository\DeviceDataArchiveRepository;
 use App\Repository\DeviceDataRepository;
 use App\Service\Archiver\ArchiverInterface;
 use App\Service\Archiver\DeviceData\DeviceDataPDFArchiver;
@@ -24,6 +25,7 @@ class DeviceDataDailyArchiveService
         private readonly DeviceDataXLSXArchiver $XLSXArchiver,
         private readonly DeviceDataPDFArchiver $PDFArchiver,
         private readonly DeviceDataRepository $deviceDataRepository,
+        private readonly DeviceDataArchiveRepository $deviceDataArchiveRepository,
         private readonly DeviceDataArchiveFactory $deviceDataArchiveFactory,
         private readonly RawDataHandler $rawDataHandler,
         private readonly DeviceDataRawDataFactory $deviceDataRawDataFactory,
@@ -122,6 +124,16 @@ class DeviceDataDailyArchiveService
             foreach ($entries as $entryNum) {
                 // Wrap in try-catch to ensure all entries are processed even if one fails
                 try {
+                    // Skip if archive already exists to prevent duplicates
+                    if ($this->deviceDataArchiveRepository->archiveExists(
+                        $device,
+                        $entryNum,
+                        $date,
+                        DeviceDataArchive::PERIOD_DAY
+                    )) {
+                        continue;
+                    }
+
                     $fromDate = (clone $date)->setTime(0, 0, 0);
                     $toDate = (clone $date)->setTime(23, 59, 59);
 
